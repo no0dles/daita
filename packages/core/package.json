@@ -1,0 +1,43 @@
+{
+  "name": "@daita/core",
+  "version": "0.0.4-alpha.6",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "prettier": "@tooling/prettier",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "mocha",
+    "coverage": "nyc mocha",
+    "prepack": "npm run build",
+    "build": "rm -rf dist || true && rm -f tsconfig.tsbuildinfo && tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pg-connection-string": "^2.1.0",
+    "uuid": "^3.3.3"
+  },
+  "peerDependencies": {
+    "mongodb": "3.3.x",
+    "pg": "7.14.x"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.2.4",
+    "@types/mocha": "^5.2.7",
+    "@types/mongodb": "^3.3.7",
+    "@types/pg": "^7.11.2",
+    "@types/uuid": "^3.4.6",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "mongodb": "^3.3.3",
+    "nyc": "^14.1.1",
+    "pg": "^7.14.0",
+    "source-map-support": "^0.5.16",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.7.2"
+  },
+  "gitHead": "2fcc782cbb64197462c122bf6277034ed37292a2"
+}

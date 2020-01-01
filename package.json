@@ -1,0 +1,19 @@
+{
+  "name": "daita",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "dependencies": {
+    "lerna": "^3.16.5"
+  },
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "build": "lerna run build",
+    "lint": "lerna run lint",
+    "clean": "npm run clean:dist && npm run clean:node_modules",
+    "clean:dist": "find . -name \"dist\" -type d -prune -exec rm -rf '{}' +",
+    "clean:node_modules": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' +"
+  },
+  "workspaces": ["packages/**"],
+  "license": "MIT"
+}

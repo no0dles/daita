@@ -1,0 +1,33 @@
+version: '2'
+
+tasks:
+  install:
+    cmds:
+      - yarn install
+    method: checksum
+    sources:
+      - package.json
+      - yarn.lock
+    generates:
+      - node_modules
+
+  serve:
+    cmds:
+      - yarn dc serve
+    method: checksum
+    sources:
+      - node_modules/**/*.js
+      - ../../node_modules/**/*.js
+      - src/**/*.ts
+
+  build:
+    deps: [install]
+    cmds:
+      - yarn build
+    method: checksum
+    sources:
+      - node_modules/**/*.js
+      - ../../node_modules/**/*.js
+      - src/**/*.ts
+    generates:
+      - dist

@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "types" : ["chai", "mocha", "node", "uuid", "mongodb", "pg"]
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test"
+  ]
+}

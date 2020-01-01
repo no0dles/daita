@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "declaration": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "outDir": "lib",
+    "rootDir": "src",
+    "strict": true,
+    "target": "es2017",
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "types" : ["chai", "mocha", "node", "cli-ux", "@oclif/test"]
+  },
+  "exclude": [
+    "node_modules",
+    "lib",
+    "test"
+  ]
+}

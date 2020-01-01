@@ -1,0 +1,1 @@
+export {createSocketApp} from './app';

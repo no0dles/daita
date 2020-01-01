@@ -1,0 +1,27 @@
+{
+  "name": "@daita/example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@daita/core": "0.0.4-alpha.6",
+    "pg": "^7.15.1"
+  },
+  "devDependencies": {
+    "@daita/cli": "0.0.4-alpha.2",
+    "@types/chai": "^4.2.4",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.17",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "source-map-support": "^0.5.16",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.7.2"
+  }
+}
