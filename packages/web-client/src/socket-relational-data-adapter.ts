@@ -64,6 +64,7 @@ export class SocketRelationalDataAdapter implements RelationalTransactionDataAda
     const cid = this.generateCid();
     const defer = new Defer<any>();
     this.defers[cid] = defer;
+    console.log('emit event ' + event + ' with cid ' + cid);
     this.socket.emit(event, {...data, cid: cid});
     return defer.promise;
   }
@@ -101,14 +102,14 @@ export class SocketRelationalDataAdapter implements RelationalTransactionDataAda
   }
 }
 
-export class SocketTRelationalDataAdapter extends SocketRelationalDataAdapter implements RelationalDataAdapter {
-  kind: 'dataAdapter' = 'dataAdapter';
-
-  get sqlBuilder(): RelationalSqlBuilder {
-    throw new Error('not implemented');
-  }
-
-  transaction(action: (adapter: RelationalTransactionDataAdapter) => Promise<any>): Promise<void> {
-
-  }
-}
+// export class SocketTRelationalDataAdapter extends SocketRelationalDataAdapter implements RelationalDataAdapter {
+//   kind: 'dataAdapter' = 'dataAdapter';
+//
+//   get sqlBuilder(): RelationalSqlBuilder {
+//     throw new Error('not implemented');
+//   }
+//
+//   transaction(action: (adapter: RelationalTransactionDataAdapter) => Promise<any>): Promise<void> {
+//
+//   }
+// }

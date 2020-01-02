@@ -3,8 +3,9 @@ import {ScriptKind, ScriptTarget} from 'typescript';
 import {isKind, parseSourceFile} from './utils';
 import * as fs from 'fs';
 import {getIdentifier} from './parse-migration';
-import {MigrationStep} from '../migration-step';
-import {capitalize} from '../../schema/source-code-schema-builder';
+import {capitalize} from '@daita/core/dist/schema/source-code-schema-builder';
+import {MigrationStep} from '@daita/core';
+import {ExtendedMigrationStep} from '../steps/base-migration-step';
 
 export function addMigrationImport(schemaFilePath: string, migrationFilePath: string, migrationName: string) {
   const sourceFile = parseSourceFile(schemaFilePath);
@@ -179,7 +180,7 @@ export function getMigrationName(name: string) {
   return capitalize(name) + 'Migration';
 }
 
-export function writeMigration(name: string, after: string | undefined, resolve: string | undefined, steps: MigrationStep[]): string {
+export function writeMigration(name: string, after: string | undefined, resolve: string | undefined, steps: ExtendedMigrationStep[]): string {
   const imports: string[] = [];
   for (const step of steps) {
     if (imports.indexOf(step.constructor.name) === -1) {

@@ -11,6 +11,7 @@ import {AppOptions} from '../app-options';
 
 function handle<T>(socket: socket.Socket, event: string, action: (data: T) => Promise<any>) {
   socket.on(event, async (data) => {
+    console.log('received event ' + event, data);
     try {
       const result = await action(data);
       socket.emit(event, {cid: data.cid, result: result});

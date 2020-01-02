@@ -3,12 +3,12 @@ import {
   SourceCodeModelProperty,
   SourceCodeModelPropertyType,
 } from '../model';
-import { SourceCodeModelArrayPropertyType } from '../model/source-code-model-array-property-type';
-import { SourceCodeModelPrimitivePropertyType } from '../model/source-code-model-primitive-property-type';
-import { SourceCodeModelUnionPropertyType } from '../model/source-code-model-union-property-type';
-import { DocumentCollectionSchemaCollectionFieldType } from './document-collection-schema-collection-field-type';
-import { getSourceCodeSchema } from './source-code-schema-builder';
-import { expect } from 'chai';
+import {SourceCodeModelArrayPropertyType} from '../model/source-code-model-array-property-type';
+import {SourceCodeModelPrimitivePropertyType} from '../model/source-code-model-primitive-property-type';
+import {SourceCodeModelUnionPropertyType} from '../model/source-code-model-union-property-type';
+import {DocumentCollectionSchemaCollectionFieldType} from './document-collection-schema-collection-field-type';
+import {getSourceCodeSchema} from './source-code-schema-builder';
+import {expect} from 'chai';
 
 function testCollectionPropertyType(
   type: SourceCodeModelPropertyType,
@@ -17,7 +17,11 @@ function testCollectionPropertyType(
   const model = new SourceCodeModel('foo');
   model.addProperty(new SourceCodeModelProperty('bar', type));
   const schema = getSourceCodeSchema([model], []);
-  expect(schema.collection('foo')?.field('bar').type).to.be.eq(result);
+  const collection = schema.collection('foo');
+  expect(collection).not.be.eq(null);
+  if (collection) {
+    expect(collection.field('bar').type).to.be.eq(result);
+  }
 }
 
 describe('source-code-schema-builder', () => {

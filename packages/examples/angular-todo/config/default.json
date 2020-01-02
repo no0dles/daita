@@ -1,0 +1,13 @@
+{
+  "daita": {
+    "context": {
+      "default": {
+        "type": "pg",
+        "host": "localhost",
+        "user": "postgres",
+        "password": "postgres",
+        "database": "todo"
+      }
+    }
+  }
+}

@@ -60,6 +60,7 @@ export class PostgresTransactionDataAdapter implements RelationalTransactionData
     const table = this.getSchemaTable(schema, tableName);
     const values: any[] = [];
     const conditions = this.parseFilter(table, filter, values);
+    console.log(conditions, filter);
     let sql = `DELETE FROM "${this.mapSourceTable(table, tableName)}" ${
       conditions.length > 0 ? 'WHERE ' + conditions : ''
     }`.trim();
@@ -130,7 +131,6 @@ export class PostgresTransactionDataAdapter implements RelationalTransactionData
     }`.trim();
 
     const result = await this.runQuery(sql, values);
-    ;
     return parseInt(result.rows[0].count);
   }
 
@@ -216,7 +216,8 @@ export class PostgresTransactionDataAdapter implements RelationalTransactionData
         if (
           value instanceof Date ||
           typeof value === 'number' ||
-          typeof value === 'string'
+          typeof value === 'string' ||
+          typeof value === 'boolean'
         ) {
           values.push(value);
           conditions.push(`"${this.getSourceField(table, key)}" = $${values.length}`);

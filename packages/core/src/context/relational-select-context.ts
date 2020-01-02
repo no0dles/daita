@@ -51,7 +51,7 @@ export class RelationalSelectContext<T> {
         skip: this.state.skip,
         orderBy: [
           ...this.state.orderBy,
-          {path: selectorResult.path, direction: direction ?? 'asc'},
+          {path: selectorResult.path, direction: direction || 'asc'},
         ],
       },
     );

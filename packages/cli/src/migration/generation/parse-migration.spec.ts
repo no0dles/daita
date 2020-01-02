@@ -1,10 +1,10 @@
 import {assert} from 'chai';
 import {parseModelSchema, parseSchemaTables} from './parse-migration';
 import {parseSourceFile} from './utils';
-import {DocumentCollectionSchemaCollectionField} from '../../schema';
-import {SourceCodeModelReferencePropertyType} from '../../model/source-code-model-reference-property-type';
-import {RelationalTableSchemaTableReferenceKey} from '../../schema/relational-table-schema-table-reference-key';
-import {DatabaseSchema} from '../../schema/database-schema';
+import {DocumentCollectionSchemaCollectionField} from '@daita/core';
+import {SourceCodeModelReferencePropertyType} from '@daita/core/dist/model/source-code-model-reference-property-type';
+import {RelationalTableSchemaTableReferenceKey} from '@daita/core/dist/schema/relational-table-schema-table-reference-key';
+import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
 
 function compareArray(actual: any[], expected: any[]) {
   assert.deepEqual(
@@ -63,7 +63,7 @@ function expectTableField(schema: DatabaseSchema, tableName: string, fieldName: 
 
 describe('parse-migration', () => {
   it('should parse reference type', () => {
-    const sourceFile = parseSourceFile(`${process.cwd()}/test/schema/schema.ts`);
+    const sourceFile = parseSourceFile(`${process.cwd()}/test/migration/schema/schema.ts`);
     const tables = parseSchemaTables(sourceFile, 'schema');
     const userRole = tables.filter(t => t.name === 'UserRole')[0];
     console.log(tables);
@@ -72,7 +72,7 @@ describe('parse-migration', () => {
   });
 
   it('should parse schema', () => {
-    const sourceFile = parseSourceFile(`${process.cwd()}/test/schema/schema.ts`);
+    const sourceFile = parseSourceFile(`${process.cwd()}/test/migration/schema/schema.ts`);
     const schema = parseModelSchema(sourceFile, 'schema');
 
     expectTable(schema, ['User', 'Permission', 'Role', 'RolePermission', 'UserRole']);

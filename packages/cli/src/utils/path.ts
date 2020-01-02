@@ -4,10 +4,10 @@ import * as ts from 'typescript';
 import cli from 'cli-ux';
 import {Command} from '@oclif/command';
 import * as inquirer from 'inquirer'
-import {getSchemas} from '@daita/core';
-import {MigrationTree, parseModelSchema, parseSchemaMigrations} from '@daita/core';
-import {parseSourceFile} from '@daita/core/dist/migration/generation/utils';
+import {MigrationTree} from '@daita/core';
 import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
+import {getSchemas, parseModelSchema, parseSchemaMigrations} from '../migration/generation';
+import {parseSourceFile} from '../migration/generation/utils';
 
 export function getMigrationRelativePath(schemaFilePath: string, migrationFilePath: string) {
   const relativePath = path.relative(schemaFilePath, migrationFilePath);

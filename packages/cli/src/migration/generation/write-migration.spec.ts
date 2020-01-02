@@ -8,9 +8,9 @@ import {
 } from './write-migration';
 
 describe('write-migration', () => {
-  const schemaSourceFilePath = `${process.cwd()}/test/schema/schema.source.ts`;
-  const schemaResultFilePath = `${process.cwd()}/test/schema/schema.result.ts`;
-  const schemaExceptedFilePath = `${process.cwd()}/test/schema/schema.ts`;
+  const schemaSourceFilePath = `${process.cwd()}/test/migration/schema/schema.source.ts`;
+  const schemaResultFilePath = `${process.cwd()}/test/migration/schema/schema.result.ts`;
+  const schemaExceptedFilePath = `${process.cwd()}/test/migration/schema/schema.ts`;
 
   beforeEach(() => {
     if (fs.existsSync(schemaResultFilePath)) {

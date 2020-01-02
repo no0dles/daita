@@ -37,7 +37,7 @@
     "pg": "^7.14.0",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.4.1",
-    "typescript": "^3.7.2"
+    "typescript": "~3.6.4"
   },
   "gitHead": "2fcc782cbb64197462c122bf6277034ed37292a2"
 }

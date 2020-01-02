@@ -16,7 +16,7 @@ export class MigrationSchemaTable extends DatabaseSchemaTable<MigrationSchemaTab
   }
 
   sourceField(name: string): MigrationSchemaTableField | null {
-    return this.sourceFieldMap[name] ?? null;
+    return this.sourceFieldMap[name] || null;
   }
 
   add(field: MigrationSchemaTableField) {

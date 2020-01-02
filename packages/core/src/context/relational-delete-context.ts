@@ -2,7 +2,6 @@ import {RelationalTransactionDataAdapter} from '../adapter';
 import {RootFilter} from '../query/root-filter';
 import {MigrationSchema} from '../schema/migration-schema';
 import {TableInformation} from './table-information';
-import {RelationalSelectContext} from './relational-select-context';
 
 export class RelationalDeleteContext<T> {
   constructor(private dataAdapter: RelationalTransactionDataAdapter,

@@ -1,12 +1,12 @@
 import {Command, flags} from '@oclif/command';
 import * as Listr from 'listr';
+import {getMigrationRelativePath, getSchemaInformation, getSchemaLocation} from '../../utils/path';
+import * as fs from "fs";
 import {
   getMigrationName,
   removeMigrationImport,
   removeMigrationRegistration,
-} from '@daita/core/dist/migration/generation/write-migration';
-import {getMigrationRelativePath, getSchemaInformation, getSchemaLocation} from '../../utils/path';
-import * as fs from "fs";
+} from '../../migration/generation/write-migration';
 
 export default class Undo extends Command {
   static description = 'undo last migration';

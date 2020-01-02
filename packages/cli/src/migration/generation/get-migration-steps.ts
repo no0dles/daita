@@ -1,21 +1,23 @@
+import {ExtendedMigrationStep} from '../steps/base-migration-step';
 import {
-  AddCollectionFieldMigrationStep,
-  AddCollectionMigrationStep,
-  DropCollectionFieldMigrationStep, DropCollectionMigrationStep,
-  ModifyCollectionFieldMigrationStep,
-  RelationalAddTableFieldMigrationStep, RelationalAddTableForeignKey,
-  RelationalAddTableMigrationStep,
-  RelationalAddTablePrimaryKey, RelationalDropTableFieldMigrationStep,
-  RelationalDropTableMigrationStep,
+  ExtendedAddCollectionFieldMigrationStep,
+  ExtendedAddCollectionMigrationStep,
+  ExtendedDropCollectionFieldMigrationStep,
+  ExtendedDropCollectionMigrationStep,
+  ExtendedModifyCollectionFieldMigrationStep,
+  ExtendedRelationalAddTableFieldMigrationStep,
+  ExtendedRelationalAddTableForeignKey,
+  ExtendedRelationalAddTableMigrationStep,
+  ExtendedRelationalAddTablePrimaryKey,
+  ExtendedRelationalDropTableFieldMigrationStep,
+  ExtendedRelationalDropTableMigrationStep,
 } from '../steps';
 import {
   DocumentCollectionSchema,
   DocumentCollectionSchemaCollection,
   RelationalTableSchema,
   RelationalTableSchemaTable,
-} from '../../schema';
-import {MigrationStep} from '../migration-step';
-
+} from '@daita/core';
 
 function merge(currentItems: string[], newItems: string[], functions: {
   add: (item: string) => void;
@@ -62,15 +64,15 @@ function mergeList<T>(currentItems: T[], newItems: T[], functions: {
 }
 
 export function getRelationalMigrationSteps(currentSchema: RelationalTableSchema, newSchema: RelationalTableSchema) {
-  const steps: MigrationStep[] = [];
+  const steps: ExtendedMigrationStep[] = [];
 
   mergeList(currentSchema.tables, newSchema.tables, {
     compare: (first, second) => first.name === second.name,
     add: table => {
-      steps.push(new RelationalAddTableMigrationStep(table.name));
+      steps.push(new ExtendedRelationalAddTableMigrationStep(table.name));
       for (const field of table.fields) {
         steps.push(
-          new RelationalAddTableFieldMigrationStep(
+          new ExtendedRelationalAddTableFieldMigrationStep(
             table.name,
             field.name,
             field.type,
@@ -80,13 +82,13 @@ export function getRelationalMigrationSteps(currentSchema: RelationalTableSchema
         );
       }
 
-      steps.push(new RelationalAddTablePrimaryKey(table.name, table.primaryKeys));
+      steps.push(new ExtendedRelationalAddTablePrimaryKey(table.name, table.primaryKeys));
       for(const foreignKey of table.foreignKeys) {
-        steps.push(new RelationalAddTableForeignKey(table.name, foreignKey.name, foreignKey.keys, foreignKey.table, foreignKey.foreignKeys));
+        steps.push(new ExtendedRelationalAddTableForeignKey(table.name, foreignKey.name, foreignKey.keys, foreignKey.table, foreignKey.foreignKeys));
       }
     },
     remove: table => {
-      steps.push(new RelationalDropTableMigrationStep(table.name));
+      steps.push(new ExtendedRelationalDropTableMigrationStep(table.name));
     },
     merge: (currentTable, newTable) => {
       steps.push(...mergeTable(currentTable, newTable));
@@ -97,15 +99,15 @@ export function getRelationalMigrationSteps(currentSchema: RelationalTableSchema
 }
 
 export function getDocumentMigrationSteps(currentSchema: DocumentCollectionSchema, newSchema: DocumentCollectionSchema) {
-  const steps: MigrationStep[] = [];
+  const steps: ExtendedMigrationStep[] = [];
 
   mergeList(currentSchema.collections, newSchema.collections, {
     compare: (first, second) => first.name === second.name,
     add: collection => {
-      steps.push(new AddCollectionMigrationStep(collection.name));
+      steps.push(new ExtendedAddCollectionMigrationStep(collection.name));
       for (const field of collection.fields) {
         steps.push(
-          new AddCollectionFieldMigrationStep(
+          new ExtendedAddCollectionFieldMigrationStep(
             collection.name,
             field.name,
             field.type,
@@ -116,7 +118,7 @@ export function getDocumentMigrationSteps(currentSchema: DocumentCollectionSchem
       }
     },
     remove: collection => {
-      steps.push(new DropCollectionMigrationStep(collection.name));
+      steps.push(new ExtendedDropCollectionMigrationStep(collection.name));
     },
     merge: (currentCollection, newCollection) => {
       steps.push(...mergeCollection(currentCollection, newCollection));
@@ -127,13 +129,13 @@ export function getDocumentMigrationSteps(currentSchema: DocumentCollectionSchem
 }
 
 function mergeTable(currentTable: RelationalTableSchemaTable, newTable: RelationalTableSchemaTable) {
-  const steps: MigrationStep[] = [];
+  const steps: ExtendedMigrationStep[] = [];
 
   mergeList(currentTable.fields, newTable.fields, {
     compare: (first, second) => first.name === second.name,
     add: field => {
       steps.push(
-        new RelationalAddTableFieldMigrationStep(
+        new ExtendedRelationalAddTableFieldMigrationStep(
           newTable.name,
           field.name,
           field.type,
@@ -143,7 +145,7 @@ function mergeTable(currentTable: RelationalTableSchemaTable, newTable: Relation
       );
     },
     remove: field => {
-      steps.push(new RelationalDropTableFieldMigrationStep(newTable.name, field.name));
+      steps.push(new ExtendedRelationalDropTableFieldMigrationStep(newTable.name, field.name));
     },
     merge: (currentField, newField) => {
       console.log(currentField, newField)
@@ -168,13 +170,13 @@ function mergeTable(currentTable: RelationalTableSchemaTable, newTable: Relation
 }
 
 function mergeCollection(currentCollection: DocumentCollectionSchemaCollection, newCollection: DocumentCollectionSchemaCollection) {
-  const steps: MigrationStep[] = [];
+  const steps: ExtendedMigrationStep[] = [];
 
   mergeList(currentCollection.fields, newCollection.fields, {
     compare: (first, second) => first.name === second.name,
     add: field => {
       steps.push(
-        new AddCollectionFieldMigrationStep(
+        new ExtendedAddCollectionFieldMigrationStep(
           newCollection.name,
           field.name,
           field.type,
@@ -185,16 +187,16 @@ function mergeCollection(currentCollection: DocumentCollectionSchemaCollection, 
     },
     remove: field => {
       steps.push(
-        new DropCollectionFieldMigrationStep(newCollection.name, field.name)
+        new ExtendedDropCollectionFieldMigrationStep(newCollection.name, field.name)
       );
     },
     merge: (currentField, newField) => {
       if (newField.type !== currentField.type) {
         steps.push(
-          new DropCollectionFieldMigrationStep(newCollection.name, currentField.name)
+          new ExtendedDropCollectionFieldMigrationStep(newCollection.name, currentField.name)
         );
         steps.push(
-          new AddCollectionFieldMigrationStep(
+          new ExtendedAddCollectionFieldMigrationStep(
             newCollection.name,
             currentField.name,
             newField.type,
@@ -207,7 +209,7 @@ function mergeCollection(currentCollection: DocumentCollectionSchemaCollection, 
         newField.defaultValue !== currentField.defaultValue
       ) {
         steps.push(
-          new ModifyCollectionFieldMigrationStep(
+          new ExtendedModifyCollectionFieldMigrationStep(
             newCollection.name,
             currentField.name,
             newField.required,

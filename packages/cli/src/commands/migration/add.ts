@@ -3,13 +3,15 @@ import cli from 'cli-ux';
 import * as Listr from 'listr';
 import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
 import * as fs from 'fs';
+import {getMigrationRelativePath, getSchemaInformation, getSchemaLocation, SchemaLocation} from '../../utils/path';
 import {
   addMigrationImport,
   addMigrationRegistration,
   getMigrationName,
-} from '@daita/core/dist/migration/generation/write-migration';
-import {getMigrationRelativePath, getSchemaInformation, getSchemaLocation, SchemaLocation} from '../../utils/path';
-import {getRelationalMigrationSteps, writeMigration} from '@daita/core';
+  writeMigration,
+} from '../../migration/generation/write-migration';
+import {getRelationalMigrationSteps} from '../../migration/generation';
+
 
 export default class Add extends Command {
   static description = 'adds a new migration';

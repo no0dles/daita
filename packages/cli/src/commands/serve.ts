@@ -50,10 +50,13 @@ export default class Serve extends Command {
         this.warn(`could not load schema`);
         return;
       }
+      console.log(schemaInfo);
 
       const lastMigrations = schemaInfo.migrationTree.last();
       if (lastMigrations.length > 1) {
         throw new Error('multiple migrations');
+      } else if(lastMigrations.length === 0) {
+        throw new Error('no migrations');
       }
       const schema = getMigrationSchema(schemaInfo.migrationTree.path(lastMigrations[0].id));
       const context = new RelationalContext(schema, schemaInfo.migrationTree, dataAdapter);

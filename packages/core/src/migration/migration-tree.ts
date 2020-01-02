@@ -67,7 +67,7 @@ export class MigrationTree {
   }
 
   get(id: string) {
-    return this.migrationMap[id] ?? null;
+    return this.migrationMap[id] || null;
   }
 
   schema(id: string) {

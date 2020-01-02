@@ -1,10 +1,10 @@
 import {assert} from 'chai';
 import * as ts from 'typescript';
-import {AddCollectionFieldMigrationStep} from './steps/document-add-collection-field.migration-step';
+import {ExtendedAddCollectionFieldMigrationStep} from './document-add-collection-field.migration-step';
 
 describe('steps', () => {
   it('AddCollectionFieldMigrationStep toNode()', () => {
-    const step = new AddCollectionFieldMigrationStep('user', 'test', 'string', true, 'abc');
+    const step = new ExtendedAddCollectionFieldMigrationStep('user', 'test', 'string', true, 'abc');
     const node = step.toNode();
 
     const sourceFile = ts.createSourceFile(`test.ts`, '', ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);

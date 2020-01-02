@@ -3,25 +3,26 @@ import * as ts from 'typescript';
 import {SyntaxKind} from 'typescript';
 import {getChildNodes, getFirstChildNode, isKind, parseSourceFile} from './utils';
 import {
-  AddCollectionFieldMigrationStep,
-  AddCollectionMigrationStep,
-  DropCollectionFieldMigrationStep,
-  DropCollectionMigrationStep,
-  ModifyCollectionFieldMigrationStep,
-  RelationalAddTableFieldMigrationStep,
-  RelationalAddTableForeignKey,
-  RelationalAddTableMigrationStep,
-  RelationalAddTablePrimaryKey, RenameCollectionFieldMigrationStep,
+  getSourceCodeSchema,
+  MigrationDescription,
+  MigrationStep,
+  MigrationTree,
+  SourceCodeModel, SourceCodeModelProperty,
+  SourceCodeModelPropertyType,
+} from '@daita/core';
+import {
+  ExtendedAddCollectionFieldMigrationStep,
+  ExtendedAddCollectionMigrationStep, ExtendedDropCollectionFieldMigrationStep,
+  ExtendedDropCollectionMigrationStep,
+  ExtendedModifyCollectionFieldMigrationStep,
+  ExtendedRelationalAddTableFieldMigrationStep, ExtendedRelationalAddTableForeignKey,
+  ExtendedRelationalAddTableMigrationStep,
+  ExtendedRelationalAddTablePrimaryKey, ExtendedRenameCollectionFieldMigrationStep,
 } from '../steps';
-import {getSourceCodeSchema} from '../../schema';
-import {SourceCodeModelUnionPropertyType} from '../../model/source-code-model-union-property-type';
-import {MigrationTree} from '../migration-tree';
-import {SourceCodeModel, SourceCodeModelProperty, SourceCodeModelPropertyType} from '../../model';
-import {SourceCodeModelPrimitivePropertyType} from '../../model/source-code-model-primitive-property-type';
-import {SourceCodeModelReferencePropertyType} from '../../model/source-code-model-reference-property-type';
-import {SourceCodeModelArrayPropertyType} from '../../model/source-code-model-array-property-type';
-import {MigrationStep} from '../migration-step';
-import {MigrationDescription} from '../migration-description';
+import {SourceCodeModelUnionPropertyType} from '@daita/core/dist/model/source-code-model-union-property-type';
+import {SourceCodeModelPrimitivePropertyType} from '@daita/core/dist/model/source-code-model-primitive-property-type';
+import {SourceCodeModelReferencePropertyType} from '@daita/core/dist/model/source-code-model-reference-property-type';
+import {SourceCodeModelArrayPropertyType} from '@daita/core/dist/model/source-code-model-array-property-type';
 
 class ParseContext {
   private modelDeclarations: { [filename: string]: { [className: string]: SourceCodeModel } } = {};
@@ -61,16 +62,16 @@ function parseMigrationSteps(arrayLiteral: ts.ArrayLiteralExpression): Migration
   const steps = new Array<MigrationStep>();
 
   const stepTypes = [
-    AddCollectionMigrationStep,
-    AddCollectionFieldMigrationStep,
-    DropCollectionMigrationStep,
-    DropCollectionFieldMigrationStep,
-    RenameCollectionFieldMigrationStep,
-    ModifyCollectionFieldMigrationStep,
-    RelationalAddTableMigrationStep,
-    RelationalAddTableFieldMigrationStep,
-    RelationalAddTableForeignKey,
-    RelationalAddTablePrimaryKey,
+    ExtendedAddCollectionMigrationStep,
+    ExtendedAddCollectionFieldMigrationStep,
+    ExtendedDropCollectionMigrationStep,
+    ExtendedDropCollectionFieldMigrationStep,
+    ExtendedRenameCollectionFieldMigrationStep,
+    ExtendedModifyCollectionFieldMigrationStep,
+    ExtendedRelationalAddTableMigrationStep,
+    ExtendedRelationalAddTableFieldMigrationStep,
+    ExtendedRelationalAddTableForeignKey,
+    ExtendedRelationalAddTablePrimaryKey,
   ];
 
   for (const element of arrayLiteral.elements) {
@@ -87,7 +88,7 @@ function parseMigrationSteps(arrayLiteral: ts.ArrayLiteralExpression): Migration
     const migrationType = getIdentifier(newExpression.expression);
 
     for (const stepType of stepTypes) {
-      if (stepType.name !== migrationType) {
+      if (stepType.name !== 'Extended' + migrationType) {
         continue;
       }
 

@@ -2,9 +2,13 @@ import {getDocumentMigrationSteps, getRelationalMigrationSteps} from './get-migr
 import {assert} from 'chai';
 import {parseModelSchema} from './parse-migration';
 import {parseSourceFile} from './utils';
-import {AddCollectionFieldMigrationStep, AddCollectionMigrationStep, RelationalAddTableMigrationStep} from '../steps';
-import {DatabaseSchemaCollection} from '../../schema/database-schema-collection';
-import {DatabaseSchema} from '../../schema/database-schema';
+import {DatabaseSchemaCollection} from '@daita/core/dist/schema/database-schema-collection';
+import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
+import {
+  ExtendedAddCollectionFieldMigrationStep,
+  ExtendedAddCollectionMigrationStep,
+  ExtendedRelationalAddTableMigrationStep,
+} from '../steps';
 
 
 describe('get-migration-steps', () => {
@@ -19,8 +23,8 @@ describe('get-migration-steps', () => {
     const steps = getDocumentMigrationSteps(oldSchema, newSchema);
 
     assert.deepEqual(steps, [
-      new AddCollectionMigrationStep('user'),
-      new AddCollectionFieldMigrationStep('user', 'foo', 'string', true, 'abc'),
+      new ExtendedAddCollectionMigrationStep('user'),
+      new ExtendedAddCollectionFieldMigrationStep('user', 'foo', 'string', true, 'abc'),
     ]);
   });
 
@@ -37,11 +41,11 @@ describe('get-migration-steps', () => {
 
   it('steps for test schema', () => {
     const currentSchema = new DatabaseSchema( {}, {});
-    const sourceFile = parseSourceFile(`${process.cwd()}/test/schema/schema.ts`);
+    const sourceFile = parseSourceFile(`${process.cwd()}/test/migration/schema/schema.ts`);
     const schema = parseModelSchema(sourceFile, 'schema');
     const steps = getRelationalMigrationSteps(currentSchema, schema);
 
-    expectContainsItem(steps, new RelationalAddTableMigrationStep('User'));
+    expectContainsItem(steps, new ExtendedRelationalAddTableMigrationStep('User'));
     // assert.deepEqual(steps, [
     //   new RelationalAddTableMigrationStep('User'),
     //   new RelationalAddTableMigrationStep('Role'),

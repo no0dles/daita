@@ -1,0 +1,5 @@
+- [ ] validation null check
+- [ ] logging
+- [ ] ast mess generation
+- [ ] data type abstraction
+- [ ] migration adapter
