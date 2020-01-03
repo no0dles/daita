@@ -27,7 +27,7 @@ async function getClient(config: ConnectionOptions) {
     host: config.host || undefined,
     port:
       config.port !== undefined && config.port !== null
-        ? parseInt(config.port)
+        ? parseInt(config.port, 0)
         : undefined,
     user: config.user || undefined,
     password: config.password || undefined,

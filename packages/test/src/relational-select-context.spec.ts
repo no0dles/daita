@@ -1,12 +1,25 @@
-import {PostgresDataAdapter} from '@daita/core/dist/postgres';
-import {dropDatabase} from '@daita/core/dist/postgres/postgres.util';
-import {RelationalContext} from '@daita/core';
-import {testConnectionString, testSchema, User} from './test';
-import {expect} from 'chai';
+import { PostgresDataAdapter } from '@daita/core/dist/postgres';
+import { dropDatabase } from '@daita/core/dist/postgres/postgres.util';
+import { RelationalContext } from '@daita/core';
+import { testConnectionString, testSchema, User } from './test';
+import { expect } from 'chai';
 
 describe('relational-select-context', () => {
-  const userA = {id: 'a', name: 'foo', count: 2, admin: true, parentId: null, parent: null};
-  const userB = {id: 'b', name: 'bar', count: 14, admin: false, parentId: 'a'};
+  const userA = {
+    id: 'a',
+    name: 'foo',
+    count: 2,
+    admin: true,
+    parentId: null,
+    parent: null,
+  };
+  const userB = {
+    id: 'b',
+    name: 'bar',
+    count: 14,
+    admin: false,
+    parentId: 'a',
+  };
 
   let dataAdapter: PostgresDataAdapter;
   let context: RelationalContext;
@@ -45,7 +58,7 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({name: foo})', async () => {
     const users = await context
       .select(User)
-      .where({name: 'foo'})
+      .where({ name: 'foo' })
       .exec();
     expect(users).to.deep.eq([userA]);
   });
@@ -53,7 +66,7 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({$or: [{name: foo}, {name: bar}])', async () => {
     const users = await context
       .select(User)
-      .where({$or: [{name: 'foo'}, {name: 'bar'}]})
+      .where({ $or: [{ name: 'foo' }, { name: 'bar' }] })
       .exec();
     expect(users).to.deep.eq([userA, userB]);
   });
@@ -61,7 +74,7 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({$and: [{name: foo}, {name: bar}])', async () => {
     const users = await context
       .select(User)
-      .where({$and: [{name: 'foo'}, {name: 'bar'}]})
+      .where({ $and: [{ name: 'foo' }, { name: 'bar' }] })
       .exec();
     expect(users).to.deep.eq([]);
   });
@@ -69,7 +82,7 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({name: {$eq: foo}})', async () => {
     const users = await context
       .select(User)
-      .where({name: {$eq: 'foo'}})
+      .where({ name: { $eq: 'foo' } })
       .exec();
     expect(users).to.deep.eq([userA]);
   });
@@ -77,7 +90,7 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({name: {$like: fo%}})', async () => {
     const users = await context
       .select(User)
-      .where({name: {$like: 'fo%'}})
+      .where({ name: { $like: 'fo%' } })
       .exec();
     expect(users).to.deep.eq([userA]);
   });
@@ -85,7 +98,7 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({count: {$gt: 2}})', async () => {
     const users = await context
       .select(User)
-      .where({count: {$gt: 2}})
+      .where({ count: { $gt: 2 } })
       .exec();
     expect(users).to.deep.eq([userB]);
   });
@@ -93,7 +106,7 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({count: {$gte: 2}})', async () => {
     const users = await context
       .select(User)
-      .where({count: {$gte: 2}})
+      .where({ count: { $gte: 2 } })
       .exec();
     expect(users).to.deep.eq([userA, userB]);
   });
@@ -101,7 +114,7 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({count: {$lt: 2}})', async () => {
     const users = await context
       .select(User)
-      .where({count: {$lt: 2}})
+      .where({ count: { $lt: 2 } })
       .exec();
     expect(users).to.deep.eq([]);
   });
@@ -109,7 +122,7 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({count: {$lte: 2}})', async () => {
     const users = await context
       .select(User)
-      .where({count: {$lte: 2}})
+      .where({ count: { $lte: 2 } })
       .exec();
     expect(users).to.deep.eq([userA]);
   });
@@ -117,7 +130,7 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({name: {$in: [foo, bar]}})', async () => {
     const users = await context
       .select(User)
-      .where({name: {$in: ['foo', 'bar']}})
+      .where({ name: { $in: ['foo', 'bar'] } })
       .exec();
     expect(users).to.deep.eq([userA, userB]);
   });
@@ -125,7 +138,7 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({name: {$nin: [foo, bar]}})', async () => {
     const users = await context
       .select(User)
-      .where({name: {$nin: ['foo', 'bar']}})
+      .where({ name: { $nin: ['foo', 'bar'] } })
       .exec();
     expect(users).to.deep.eq([]);
   });
@@ -133,11 +146,9 @@ describe('relational-select-context', () => {
   it('should execute select(User).where({name: {$ne: foo}})', async () => {
     const users = await context
       .select(User)
-      .where({name: {$ne: 'foo'}})
+      .where({ name: { $ne: 'foo' } })
       .exec();
-    expect(users).to.deep.eq([
-      userB,
-    ]);
+    expect(users).to.deep.eq([userB]);
   });
 
   it('should execute count(User)', async () => {
@@ -145,25 +156,20 @@ describe('relational-select-context', () => {
     expect(count).to.eq(2);
   });
 
-
   it('should execute select(User).include(parent)', async () => {
-    const users = await context.select(User)
+    const users = await context
+      .select(User)
       .include(u => u.parent)
       .exec();
-    expect(users).to.be.deep.eq([
-      userA,
-      { ...userB, parent: userA },
-    ]);
+    expect(users).to.be.deep.eq([userA, { ...userB, parent: userA }]);
   });
 
   it('should execute select(User).orderBy(name).orderThenBy(count)', async () => {
-    const users = await context.select(User)
+    const users = await context
+      .select(User)
       .orderBy(u => u.name)
       .orderThenBy(u => u.count)
       .exec();
-    expect(users).to.be.deep.eq([
-      userB,
-      userA,
-    ]);
+    expect(users).to.be.deep.eq([userB, userA]);
   });
 });

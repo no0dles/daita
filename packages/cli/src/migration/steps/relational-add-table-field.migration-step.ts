@@ -1,9 +1,14 @@
 import * as ts from 'typescript';
-import {ExtendedMigrationStep} from './base-migration-step';
-import {getBooleanValue, isKind} from '../generation/utils';
-import {RelationalAddTableFieldMigrationStep, RelationalTableSchemaTableFieldType} from '@daita/core';
+import { ExtendedMigrationStep } from './base-migration-step';
+import { getBooleanValue, isKind } from '../generation/utils';
+import {
+  RelationalAddTableFieldMigrationStep,
+  RelationalTableSchemaTableFieldType,
+} from '@daita/core';
 
-export class ExtendedRelationalAddTableFieldMigrationStep extends RelationalAddTableFieldMigrationStep implements ExtendedMigrationStep {
+export class ExtendedRelationalAddTableFieldMigrationStep
+  extends RelationalAddTableFieldMigrationStep
+  implements ExtendedMigrationStep {
   toNode(): ts.NewExpression {
     return ts.createNew(
       ts.createIdentifier(RelationalAddTableFieldMigrationStep.name),
@@ -13,12 +18,16 @@ export class ExtendedRelationalAddTableFieldMigrationStep extends RelationalAddT
         ts.createStringLiteral(this.fieldName),
         ts.createStringLiteral(this.type),
         this.required ? ts.createTrue() : ts.createFalse(),
-        this.defaultValue ? ts.createStringLiteral(this.defaultValue) : ts.createNull(),
-      ]
+        this.defaultValue
+          ? ts.createStringLiteral(this.defaultValue)
+          : ts.createNull(),
+      ],
     );
   }
 
-  static parse(args: ts.Expression[]): RelationalAddTableFieldMigrationStep | null {
+  static parse(
+    args: ts.Expression[],
+  ): RelationalAddTableFieldMigrationStep | null {
     const table = isKind(args[0], ts.SyntaxKind.StringLiteral);
     if (!table) {
       return null;
@@ -34,7 +43,8 @@ export class ExtendedRelationalAddTableFieldMigrationStep extends RelationalAddT
       return null;
     }
 
-    if (type.text !== 'string' &&
+    if (
+      type.text !== 'string' &&
       type.text !== 'number' &&
       type.text !== 'date' &&
       type.text !== 'boolean' &&
@@ -42,13 +52,20 @@ export class ExtendedRelationalAddTableFieldMigrationStep extends RelationalAddT
       type.text !== 'invalid' &&
       type.text !== 'string[]' &&
       type.text !== 'number[]' &&
-      type.text !== 'date[]') {
+      type.text !== 'date[]'
+    ) {
       return null;
     }
 
     const required = isKind(args[3], ts.SyntaxKind.BooleanKeyword);
     const defaultValue = isKind(args[4], ts.SyntaxKind.StringLiteral);
 
-    return new RelationalAddTableFieldMigrationStep(table.text, fieldName.text, type.text, required ? getBooleanValue(required) : false, defaultValue ? defaultValue.text : null);
+    return new RelationalAddTableFieldMigrationStep(
+      table.text,
+      fieldName.text,
+      type.text,
+      required ? getBooleanValue(required) : false,
+      defaultValue ? defaultValue.text : null,
+    );
   }
 }

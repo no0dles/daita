@@ -32,8 +32,8 @@ export class MongoDataAdapter implements DocumentDataAdapter {
     const operationId = uuid.v1();
     await dataCollection.insertOne({
       _id: data.id,
-      data: data,
-      operationId: operationId,
+      data,
+      operationId,
     });
   }
 
@@ -72,7 +72,7 @@ export class MongoDataAdapter implements DocumentDataAdapter {
       },
       {
         $set: {
-          data: data,
+          data,
           operationId,
         },
       },

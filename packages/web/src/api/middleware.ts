@@ -1,10 +1,18 @@
 import * as express from 'express';
-import {TableInformation} from '@daita/core/dist/context/table-information';
-import {count, getContext, insert, raw, remove, select, update} from '../functions';
-import {AppOptions} from '../app-options';
+import { TableInformation } from '@daita/core/dist/context/table-information';
+import {
+  count,
+  getContext,
+  insert,
+  raw,
+  remove,
+  select,
+  update,
+} from '../functions';
+import { AppOptions } from '../app-options';
 
 const getTable = (name: string): TableInformation<any> => {
-  return {name: name};
+  return { name: name };
 };
 
 export function relationalMiddleware(options: AppOptions): express.Router {
@@ -76,7 +84,6 @@ export function relationalMiddleware(options: AppOptions): express.Router {
 
   return router;
 }
-
 
 // router.post('/:migration/transaction', async (req, res, next) => {
 //   const result: { results: { success: boolean; result: any, message?: string }[]; success: boolean } = {

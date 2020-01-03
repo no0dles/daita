@@ -1,19 +1,21 @@
 import * as http from 'http';
 import * as express from 'express';
-import {expect} from 'chai';
+import { expect } from 'chai';
 import {
   RelationalContext,
-  RelationalDataAdapter, RelationalTransactionContext,
+  RelationalDataAdapter,
+  RelationalTransactionContext,
 } from '@daita/core';
-import {dropDatabase} from '@daita/core/dist/postgres/postgres.util';
-import {PostgresDataAdapter} from '@daita/core/dist/postgres';
-import {createSocketApp} from '@daita/web/dist/socket/app';
+import { dropDatabase } from '@daita/core/dist/postgres/postgres.util';
+import { PostgresDataAdapter } from '@daita/core/dist/postgres';
+import { createSocketApp } from '@daita/web/dist/socket/app';
 import schema = require('./test/schema');
-import {User} from './test/user';
-import {SocketRelationalDataAdapter} from '@daita/web-client';
+import { User } from './test/user';
+import { SocketRelationalDataAdapter } from '@daita/web-client';
 
 describe('socket-relational-data-adapter', () => {
-  const postgresConnectionString = 'postgres://postgres:postgres@localhost/socket-test';
+  const postgresConnectionString =
+    'postgres://postgres:postgres@localhost/socket-test';
   const apiPort = 3004;
 
   let server: http.Server;
@@ -33,15 +35,20 @@ describe('socket-relational-data-adapter', () => {
 
   beforeEach(async () => {
     await serverContext.delete(User).exec();
-    await new Promise<any>((resolve) => {
-      server = createSocketApp(new http.Server(express()), {dataAdapter: serverDataAdapter, schema});
+    await new Promise<any>(resolve => {
+      server = createSocketApp(new http.Server(express()), {
+        dataAdapter: serverDataAdapter,
+        schema,
+      });
       server.listen(apiPort, resolve);
     });
-    socketAdapter = new SocketRelationalDataAdapter(`http://localhost:${apiPort}`);
+    socketAdapter = new SocketRelationalDataAdapter(
+      `http://localhost:${apiPort}`,
+    );
     context = schema.context(socketAdapter);
   });
 
-  afterEach((done) => {
+  afterEach(done => {
     if (socketAdapter) {
       socketAdapter.close();
     }
@@ -53,42 +60,82 @@ describe('socket-relational-data-adapter', () => {
   });
 
   it('should insert', async () => {
-    await context.insert(User).value({id: 'a', name: 'foo'}).exec();
+    await context
+      .insert(User)
+      .value({ id: 'a', name: 'foo' })
+      .exec();
     const serverUsers = await serverContext.select(User).exec();
-    expect(serverUsers).to.be.deep.eq([{id: 'a', name: 'foo'}]);
+    expect(serverUsers).to.be.deep.eq([{ id: 'a', name: 'foo' }]);
   });
 
   it('should delete', async () => {
-    await context.insert(User).value({id: 'a', name: 'foo'}).exec();
-    await context.insert(User).value({id: 'b', name: 'bar'}).exec();
-    const result = await context.delete(User).where({id: 'a'}).exec();
-    expect(result).to.be.deep.eq({affectedRows: 1});
+    await context
+      .insert(User)
+      .value({ id: 'a', name: 'foo' })
+      .exec();
+    await context
+      .insert(User)
+      .value({ id: 'b', name: 'bar' })
+      .exec();
+    const result = await context
+      .delete(User)
+      .where({ id: 'a' })
+      .exec();
+    expect(result).to.be.deep.eq({ affectedRows: 1 });
     const serverUsers = await serverContext.select(User).exec();
-    expect(serverUsers).to.be.deep.eq([{id: 'b', name: 'bar'}]);
+    expect(serverUsers).to.be.deep.eq([{ id: 'b', name: 'bar' }]);
   });
 
   it('should select', async () => {
-    await context.insert(User).value({id: 'a', name: 'foo'}).exec();
-    await context.insert(User).value({id: 'b', name: 'bar'}).exec();
-    const users = await context.select(User).where({id: 'a'}).exec();
-    expect(users).to.be.deep.eq([{id: 'a', name: 'foo'}]);
+    await context
+      .insert(User)
+      .value({ id: 'a', name: 'foo' })
+      .exec();
+    await context
+      .insert(User)
+      .value({ id: 'b', name: 'bar' })
+      .exec();
+    const users = await context
+      .select(User)
+      .where({ id: 'a' })
+      .exec();
+    expect(users).to.be.deep.eq([{ id: 'a', name: 'foo' }]);
   });
 
   it('should update', async () => {
-    await context.insert(User).values({id: 'a', name: 'foo'}).exec();
-    await context.insert(User).values({id: 'b', name: 'bar'}).exec();
-    const result = await context.update(User).set({name: 'bar'}).where({id: 'a'}).exec();
-    expect(result).to.be.deep.eq({affectedRows: 1});
-    const serverUsers = await serverContext.select(User).orderBy(s => s.id).exec();
+    await context
+      .insert(User)
+      .values({ id: 'a', name: 'foo' })
+      .exec();
+    await context
+      .insert(User)
+      .values({ id: 'b', name: 'bar' })
+      .exec();
+    const result = await context
+      .update(User)
+      .set({ name: 'bar' })
+      .where({ id: 'a' })
+      .exec();
+    expect(result).to.be.deep.eq({ affectedRows: 1 });
+    const serverUsers = await serverContext
+      .select(User)
+      .orderBy(s => s.id)
+      .exec();
     expect(serverUsers).to.be.deep.eq([
-      {id: 'a', name: 'bar'},
-      {id: 'b', name: 'bar'},
+      { id: 'a', name: 'bar' },
+      { id: 'b', name: 'bar' },
     ]);
   });
 
   it('should count', async () => {
-    await context.insert(User).values({id: 'a', name: 'foo'}).exec();
-    await context.insert(User).values({id: 'b', name: 'bar'}).exec();
+    await context
+      .insert(User)
+      .values({ id: 'a', name: 'foo' })
+      .exec();
+    await context
+      .insert(User)
+      .values({ id: 'b', name: 'bar' })
+      .exec();
     const count = await context.select(User).execCount();
     expect(count).to.be.eq(2);
   });

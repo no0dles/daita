@@ -17,7 +17,7 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
   private readonly connectionString: string | undefined;
   private initalized = false;
 
-  public sqlBuilder = new PostgresSqlBuilder();
+  sqlBuilder = new PostgresSqlBuilder();
 
   constructor(private poolOrUrl: string | Pool) {
     if (typeof poolOrUrl === 'string') {
@@ -34,7 +34,7 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
     await this.pool.end();
   }
 
-  public async initalize() {
+  async initalize() {
     if (this.initalized) {
       return;
     }

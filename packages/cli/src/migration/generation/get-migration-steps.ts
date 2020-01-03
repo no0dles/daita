@@ -1,4 +1,4 @@
-import {ExtendedMigrationStep} from '../steps/base-migration-step';
+import { ExtendedMigrationStep } from '../steps/base-migration-step';
 import {
   ExtendedAddCollectionFieldMigrationStep,
   ExtendedAddCollectionMigrationStep,
@@ -19,11 +19,15 @@ import {
   RelationalTableSchemaTable,
 } from '@daita/core';
 
-function merge(currentItems: string[], newItems: string[], functions: {
-  add: (item: string) => void;
-  remove: (item: string) => void;
-  merge: (item: string) => void;
-}) {
+function merge(
+  currentItems: string[],
+  newItems: string[],
+  functions: {
+    add: (item: string) => void;
+    remove: (item: string) => void;
+    merge: (item: string) => void;
+  },
+) {
   const leftItems = [...newItems];
   for (const currentItem of currentItems) {
     const index = leftItems.indexOf(currentItem);
@@ -35,20 +39,26 @@ function merge(currentItems: string[], newItems: string[], functions: {
     }
   }
 
-  for(const leftItem of leftItems) {
+  for (const leftItem of leftItems) {
     functions.add(leftItem);
   }
 }
 
-function mergeList<T>(currentItems: T[], newItems: T[], functions: {
-  compare: (first: T, second: T) => boolean,
-  add: (item: T) => void;
-  remove: (item: T) => void;
-  merge: (currentItem: T, newItem: T) => void;
-}) {
+function mergeList<T>(
+  currentItems: T[],
+  newItems: T[],
+  functions: {
+    compare: (first: T, second: T) => boolean;
+    add: (item: T) => void;
+    remove: (item: T) => void;
+    merge: (currentItem: T, newItem: T) => void;
+  },
+) {
   const leftItems = [...newItems];
   for (const currentItem of currentItems) {
-    const newItem = newItems.filter(newItem => functions.compare(newItem, currentItem))[0];
+    const newItem = newItems.filter(newItem =>
+      functions.compare(newItem, currentItem),
+    )[0];
     if (newItem) {
       const index = leftItems.indexOf(newItem);
       leftItems.splice(index, 1);
@@ -58,12 +68,15 @@ function mergeList<T>(currentItems: T[], newItems: T[], functions: {
     }
   }
 
-  for(const leftItem of leftItems) {
+  for (const leftItem of leftItems) {
     functions.add(leftItem);
   }
 }
 
-export function getRelationalMigrationSteps(currentSchema: RelationalTableSchema, newSchema: RelationalTableSchema) {
+export function getRelationalMigrationSteps(
+  currentSchema: RelationalTableSchema,
+  newSchema: RelationalTableSchema,
+) {
   const steps: ExtendedMigrationStep[] = [];
 
   mergeList(currentSchema.tables, newSchema.tables, {
@@ -77,14 +90,24 @@ export function getRelationalMigrationSteps(currentSchema: RelationalTableSchema
             field.name,
             field.type,
             field.required,
-            field.defaultValue
-          )
+            field.defaultValue,
+          ),
         );
       }
 
-      steps.push(new ExtendedRelationalAddTablePrimaryKey(table.name, table.primaryKeys));
-      for(const foreignKey of table.foreignKeys) {
-        steps.push(new ExtendedRelationalAddTableForeignKey(table.name, foreignKey.name, foreignKey.keys, foreignKey.table, foreignKey.foreignKeys));
+      steps.push(
+        new ExtendedRelationalAddTablePrimaryKey(table.name, table.primaryKeys),
+      );
+      for (const foreignKey of table.foreignKeys) {
+        steps.push(
+          new ExtendedRelationalAddTableForeignKey(
+            table.name,
+            foreignKey.name,
+            foreignKey.keys,
+            foreignKey.table,
+            foreignKey.foreignKeys,
+          ),
+        );
       }
     },
     remove: table => {
@@ -98,7 +121,10 @@ export function getRelationalMigrationSteps(currentSchema: RelationalTableSchema
   return steps;
 }
 
-export function getDocumentMigrationSteps(currentSchema: DocumentCollectionSchema, newSchema: DocumentCollectionSchema) {
+export function getDocumentMigrationSteps(
+  currentSchema: DocumentCollectionSchema,
+  newSchema: DocumentCollectionSchema,
+) {
   const steps: ExtendedMigrationStep[] = [];
 
   mergeList(currentSchema.collections, newSchema.collections, {
@@ -112,8 +138,8 @@ export function getDocumentMigrationSteps(currentSchema: DocumentCollectionSchem
             field.name,
             field.type,
             field.required,
-            field.defaultValue
-          )
+            field.defaultValue,
+          ),
         );
       }
     },
@@ -122,13 +148,16 @@ export function getDocumentMigrationSteps(currentSchema: DocumentCollectionSchem
     },
     merge: (currentCollection, newCollection) => {
       steps.push(...mergeCollection(currentCollection, newCollection));
-    }
+    },
   });
 
   return steps;
 }
 
-function mergeTable(currentTable: RelationalTableSchemaTable, newTable: RelationalTableSchemaTable) {
+function mergeTable(
+  currentTable: RelationalTableSchemaTable,
+  newTable: RelationalTableSchemaTable,
+) {
   const steps: ExtendedMigrationStep[] = [];
 
   mergeList(currentTable.fields, newTable.fields, {
@@ -141,15 +170,20 @@ function mergeTable(currentTable: RelationalTableSchemaTable, newTable: Relation
           field.type,
           field.required,
           field.defaultValue,
-        )
+        ),
       );
     },
     remove: field => {
-      steps.push(new ExtendedRelationalDropTableFieldMigrationStep(newTable.name, field.name));
+      steps.push(
+        new ExtendedRelationalDropTableFieldMigrationStep(
+          newTable.name,
+          field.name,
+        ),
+      );
     },
     merge: (currentField, newField) => {
-      console.log(currentField, newField)
-    }
+      console.log(currentField, newField);
+    },
   });
 
   merge(currentTable.primaryKeys, newTable.primaryKeys, {
@@ -158,8 +192,8 @@ function mergeTable(currentTable: RelationalTableSchemaTable, newTable: Relation
     },
     merge: () => {},
     remove: key => {
-     throw new Error(`cant change primary key for table ${currentTable.name}`);
-    }
+      throw new Error(`cant change primary key for table ${currentTable.name}`);
+    },
   });
 
   // mergeList(currentTable.foreignKeys, newTable.foreignKeys, {
@@ -169,7 +203,10 @@ function mergeTable(currentTable: RelationalTableSchemaTable, newTable: Relation
   return steps;
 }
 
-function mergeCollection(currentCollection: DocumentCollectionSchemaCollection, newCollection: DocumentCollectionSchemaCollection) {
+function mergeCollection(
+  currentCollection: DocumentCollectionSchemaCollection,
+  newCollection: DocumentCollectionSchemaCollection,
+) {
   const steps: ExtendedMigrationStep[] = [];
 
   mergeList(currentCollection.fields, newCollection.fields, {
@@ -181,19 +218,25 @@ function mergeCollection(currentCollection: DocumentCollectionSchemaCollection, 
           field.name,
           field.type,
           field.required,
-          field.defaultValue
-        )
+          field.defaultValue,
+        ),
       );
     },
     remove: field => {
       steps.push(
-        new ExtendedDropCollectionFieldMigrationStep(newCollection.name, field.name)
+        new ExtendedDropCollectionFieldMigrationStep(
+          newCollection.name,
+          field.name,
+        ),
       );
     },
     merge: (currentField, newField) => {
       if (newField.type !== currentField.type) {
         steps.push(
-          new ExtendedDropCollectionFieldMigrationStep(newCollection.name, currentField.name)
+          new ExtendedDropCollectionFieldMigrationStep(
+            newCollection.name,
+            currentField.name,
+          ),
         );
         steps.push(
           new ExtendedAddCollectionFieldMigrationStep(
@@ -201,8 +244,8 @@ function mergeCollection(currentCollection: DocumentCollectionSchemaCollection, 
             currentField.name,
             newField.type,
             newField.required,
-            newField.defaultValue
-          )
+            newField.defaultValue,
+          ),
         );
       } else if (
         newField.required !== currentField.required ||
@@ -213,11 +256,11 @@ function mergeCollection(currentCollection: DocumentCollectionSchemaCollection, 
             newCollection.name,
             currentField.name,
             newField.required,
-            newField.defaultValue
-          )
+            newField.defaultValue,
+          ),
         );
       }
-    }
+    },
   });
 
   return steps;

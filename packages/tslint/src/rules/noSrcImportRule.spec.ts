@@ -1,10 +1,10 @@
-import { expect } from 'chai';
-import { helper } from '../lintRunner';
-import { Rule } from './noSrcImportRule';
+import { expect } from "chai";
+import { helper } from "../lintRunner";
+import { Rule } from "./noSrcImportRule";
 
-const rule = 'no-src-import';
+const rule = "no-src-import";
 
-describe('noSrcImport Rule', () => {
+describe("noSrcImport Rule", () => {
   it(`should not fail on * as import`, () => {
     const src = `import * as express from 'express';`;
     const result = helper({ src, rule });

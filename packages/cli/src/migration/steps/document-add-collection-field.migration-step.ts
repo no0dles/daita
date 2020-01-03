@@ -1,9 +1,11 @@
 import * as ts from 'typescript';
-import {ExtendedMigrationStep} from './base-migration-step';
-import {isKind, getBooleanValue} from '../generation/utils';
-import {AddCollectionFieldMigrationStep} from '@daita/core';
+import { ExtendedMigrationStep } from './base-migration-step';
+import { isKind, getBooleanValue } from '../generation/utils';
+import { AddCollectionFieldMigrationStep } from '@daita/core';
 
-export class ExtendedAddCollectionFieldMigrationStep extends AddCollectionFieldMigrationStep implements ExtendedMigrationStep {
+export class ExtendedAddCollectionFieldMigrationStep
+  extends AddCollectionFieldMigrationStep
+  implements ExtendedMigrationStep {
   toNode(): ts.NewExpression {
     return ts.createNew(
       ts.createIdentifier('AddCollectionFieldMigrationStep'),
@@ -13,7 +15,9 @@ export class ExtendedAddCollectionFieldMigrationStep extends AddCollectionFieldM
         ts.createStringLiteral(this.fieldName),
         ts.createStringLiteral(this.type),
         this.required ? ts.createTrue() : ts.createFalse(),
-        this.defaultValue ? ts.createStringLiteral(this.defaultValue) : ts.createNull(),
+        this.defaultValue
+          ? ts.createStringLiteral(this.defaultValue)
+          : ts.createNull(),
       ],
     );
   }
@@ -34,13 +38,27 @@ export class ExtendedAddCollectionFieldMigrationStep extends AddCollectionFieldM
       return null;
     }
 
-    if (type.text !== 'string' && type.text !== 'number' && type.text !== 'date' && type.text !== 'invalid' && type.text !== 'string[]' && type.text !== 'number[]' && type.text !== 'date[]') {
+    if (
+      type.text !== 'string' &&
+      type.text !== 'number' &&
+      type.text !== 'date' &&
+      type.text !== 'invalid' &&
+      type.text !== 'string[]' &&
+      type.text !== 'number[]' &&
+      type.text !== 'date[]'
+    ) {
       return null;
     }
 
     const required = isKind(args[3], ts.SyntaxKind.BooleanKeyword);
     const defaultValue = isKind(args[4], ts.SyntaxKind.StringLiteral);
 
-    return new AddCollectionFieldMigrationStep(collection.text, fieldName.text, type.text, required ? getBooleanValue(required) : false, defaultValue ? defaultValue.text : null);
+    return new AddCollectionFieldMigrationStep(
+      collection.text,
+      fieldName.text,
+      type.text,
+      required ? getBooleanValue(required) : false,
+      defaultValue ? defaultValue.text : null,
+    );
   }
 }

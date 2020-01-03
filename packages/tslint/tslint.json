@@ -17,6 +17,7 @@
     "object-literal-sort-keys": false,
     "ordered-imports": false,
     "member-access": [true, "no-public"],
+    "member-ordering": false,
     "array-type": [true, "array"],
     "comment-format": [false],
     "no-console": [false]

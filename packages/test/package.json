@@ -20,7 +20,9 @@
     "socket.io-client": "^2.3.0",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.4.1",
-    "typescript": "^3.6.4"
+    "typescript": "^3.6.4",
+    "tslint": "^5.20.1",
+    "@daita/tslint": "0.1.0-alpha.0"
   },
   "homepage": "https://github.com/no0dles/daita",
   "license": "MIT",
@@ -28,7 +30,9 @@
   "scripts": {
     "build": "tsc",
     "coverage": "./copy.sh && nyc mocha",
-    "test": "./copy.sh && mocha"
+    "test": "./copy.sh && mocha",
+    "lint": "tslint src/**/*.ts",
+    "prettier": "prettier 'src/**/*.ts' --write"
   },
   "types": "dist/index.d.ts"
 }

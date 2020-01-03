@@ -68,7 +68,7 @@ abstract class BaseRelationalSelectContext<T, C> {
     }
 
     return this.newContext({
-      filter: filter,
+      filter,
       limit: this.state.limit,
       skip: this.state.skip,
       include: this.state.include,

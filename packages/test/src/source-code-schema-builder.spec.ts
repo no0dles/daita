@@ -1,12 +1,14 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import {
   DocumentCollectionSchemaCollectionFieldType,
-  getSourceCodeSchema, SourceCodeModel, SourceCodeModelProperty,
+  getSourceCodeSchema,
+  SourceCodeModel,
+  SourceCodeModelProperty,
   SourceCodeModelPropertyType,
 } from '@daita/core';
-import {SourceCodeModelPrimitivePropertyType} from '@daita/core/dist/model/source-code-model-primitive-property-type';
-import {SourceCodeModelArrayPropertyType} from '@daita/core/dist/model/source-code-model-array-property-type';
-import {SourceCodeModelUnionPropertyType} from '@daita/core/dist/model/source-code-model-union-property-type';
+import { SourceCodeModelPrimitivePropertyType } from '@daita/core/dist/model/source-code-model-primitive-property-type';
+import { SourceCodeModelArrayPropertyType } from '@daita/core/dist/model/source-code-model-array-property-type';
+import { SourceCodeModelUnionPropertyType } from '@daita/core/dist/model/source-code-model-union-property-type';
 
 function testCollectionPropertyType(
   type: SourceCodeModelPropertyType,

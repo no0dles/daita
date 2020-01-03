@@ -1,50 +1,67 @@
-import {assert} from 'chai';
-import {DocumentCollectionSchemaCollectionField} from '@daita/core';
-import {SourceCodeModelReferencePropertyType} from '@daita/core/dist/model/source-code-model-reference-property-type';
-import {RelationalTableSchemaTableReferenceKey} from '@daita/core/dist/schema/relational-table-schema-table-reference-key';
-import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
-import {parseModelSchema, parseSchemaTables} from '@daita/cli/dist/migration/generation';
-import {parseSourceFile} from '@daita/cli/dist/migration/generation/utils';
+import { assert } from 'chai';
+import { DocumentCollectionSchemaCollectionField } from '@daita/core';
+import { SourceCodeModelReferencePropertyType } from '@daita/core/dist/model/source-code-model-reference-property-type';
+import { RelationalTableSchemaTableReferenceKey } from '@daita/core/dist/schema/relational-table-schema-table-reference-key';
+import { DatabaseSchema } from '@daita/core/dist/schema/database-schema';
+import {
+  parseModelSchema,
+  parseSchemaTables,
+} from '@daita/cli/dist/migration/generation';
+import { parseSourceFile } from '@daita/cli/dist/migration/generation/utils';
 
 function compareArray(actual: any[], expected: any[]) {
-  assert.deepEqual(
-    actual.sort(),
-    expected.sort()
-  );
+  assert.deepEqual(actual.sort(), expected.sort());
 }
 
 function expectTable(schema: DatabaseSchema, expectedTables: string[]) {
   compareArray(schema.tableNames, expectedTables);
 }
 
-function expectTableFields(schema: DatabaseSchema, tableName: string, expectedFieldNames: string[]) {
+function expectTableFields(
+  schema: DatabaseSchema,
+  tableName: string,
+  expectedFieldNames: string[],
+) {
   const table = schema.table(tableName);
   if (!table) {
     throw new Error(`table ${tableName} does not exist`);
   }
 
-  compareArray(table.fieldNames, expectedFieldNames)
+  compareArray(table.fieldNames, expectedFieldNames);
 }
 
-function expectTablePrimaryKeys(schema: DatabaseSchema, tableName: string, expectedPrimaryKeys: string[]) {
+function expectTablePrimaryKeys(
+  schema: DatabaseSchema,
+  tableName: string,
+  expectedPrimaryKeys: string[],
+) {
   const table = schema.table(tableName);
   if (!table) {
     throw new Error(`table ${tableName} does not exist`);
   }
 
-  compareArray(table.primaryKeys, expectedPrimaryKeys)
+  compareArray(table.primaryKeys, expectedPrimaryKeys);
 }
 
-function expectTableForeignKeys(schema: DatabaseSchema, tableName: string, expectedForeignKeys: RelationalTableSchemaTableReferenceKey[]) {
+function expectTableForeignKeys(
+  schema: DatabaseSchema,
+  tableName: string,
+  expectedForeignKeys: RelationalTableSchemaTableReferenceKey[],
+) {
   const table = schema.table(tableName);
   if (!table) {
     throw new Error(`table ${tableName} does not exist`);
   }
 
-  compareArray(table.foreignKeys, expectedForeignKeys)
+  compareArray(table.foreignKeys, expectedForeignKeys);
 }
 
-function expectTableField(schema: DatabaseSchema, tableName: string, fieldName: string, expected: DocumentCollectionSchemaCollectionField) {
+function expectTableField(
+  schema: DatabaseSchema,
+  tableName: string,
+  fieldName: string,
+  expected: DocumentCollectionSchemaCollectionField,
+) {
   const table = schema.table(tableName);
   if (!table) {
     throw new Error(`table ${tableName} does not exist`);
@@ -63,21 +80,40 @@ function expectTableField(schema: DatabaseSchema, tableName: string, fieldName: 
 
 describe('parse-migration', () => {
   it('should parse reference type', () => {
-    const sourceFile = parseSourceFile(`${process.cwd()}/test/migration/schema/schema.ts`);
+    const sourceFile = parseSourceFile(
+      `${process.cwd()}/test/migration/schema/schema.ts`,
+    );
     const tables = parseSchemaTables(sourceFile, 'schema');
     const userRole = tables.filter(t => t.name === 'UserRole')[0];
     console.log(tables);
     const roleProperty = userRole.properties.filter(p => p.name === 'role')[0];
-    assert.equal(roleProperty.type instanceof SourceCodeModelReferencePropertyType, true);
+    assert.equal(
+      roleProperty.type instanceof SourceCodeModelReferencePropertyType,
+      true,
+    );
   });
 
   it('should parse schema', () => {
-    const sourceFile = parseSourceFile(`${process.cwd()}/test/migration/schema/schema.ts`);
+    const sourceFile = parseSourceFile(
+      `${process.cwd()}/test/migration/schema/schema.ts`,
+    );
     const schema = parseModelSchema(sourceFile, 'schema');
 
-    expectTable(schema, ['User', 'Permission', 'Role', 'RolePermission', 'UserRole']);
+    expectTable(schema, [
+      'User',
+      'Permission',
+      'Role',
+      'RolePermission',
+      'UserRole',
+    ]);
 
-    expectTableFields(schema, 'User', ['username', 'firstName', 'lastName', 'password', 'email']);
+    expectTableFields(schema, 'User', [
+      'username',
+      'firstName',
+      'lastName',
+      'password',
+      'email',
+    ]);
     expectTableFields(schema, 'Role', ['name']);
     expectTableFields(schema, 'Permission', ['name']);
     expectTableFields(schema, 'RolePermission', ['permissionName', 'roleName']);
@@ -87,49 +123,72 @@ describe('parse-migration', () => {
       required: true,
       defaultValue: null,
       type: 'string',
-      name: 'username'
+      name: 'username',
     });
     expectTableField(schema, 'User', 'firstName', {
       required: false,
       defaultValue: null,
       type: 'string',
-      name: 'firstName'
+      name: 'firstName',
     });
     expectTableField(schema, 'User', 'lastName', {
       required: false,
       defaultValue: null,
       type: 'string',
-      name: 'lastName'
+      name: 'lastName',
     });
     expectTableField(schema, 'User', 'password', {
       required: true,
       defaultValue: null,
       type: 'string',
-      name: 'password'
+      name: 'password',
     });
     expectTableField(schema, 'User', 'email', {
       required: true,
       defaultValue: null,
       type: 'string',
-      name: 'email'
+      name: 'email',
     });
 
     expectTablePrimaryKeys(schema, 'User', ['username']);
     expectTablePrimaryKeys(schema, 'Role', ['name']);
     expectTablePrimaryKeys(schema, 'Permission', ['name']);
-    expectTablePrimaryKeys(schema, 'RolePermission', ['roleName', 'permissionName']);
+    expectTablePrimaryKeys(schema, 'RolePermission', [
+      'roleName',
+      'permissionName',
+    ]);
     expectTablePrimaryKeys(schema, 'UserRole', ['roleName', 'userUsername']);
 
     expectTableForeignKeys(schema, 'User', []);
     expectTableForeignKeys(schema, 'Role', []);
     expectTableForeignKeys(schema, 'Permission', []);
     expectTableForeignKeys(schema, 'RolePermission', [
-      {table: 'Role', name: 'role', keys: ['roleName'], foreignKeys: ['name']},
-      {table: 'Permission', name: 'permission', keys: ['permissionName'], foreignKeys: ['name']},
+      {
+        table: 'Role',
+        name: 'role',
+        keys: ['roleName'],
+        foreignKeys: ['name'],
+      },
+      {
+        table: 'Permission',
+        name: 'permission',
+        keys: ['permissionName'],
+        foreignKeys: ['name'],
+      },
     ]);
     expectTableForeignKeys(schema, 'UserRole', [
-      {table: 'Role', name: 'role', keys: ['roleName'], foreignKeys: ['name']},
-      {table: 'User', name: 'user', keys: ['userUsername'], foreignKeys: ['username']},
+      {
+        table: 'Role',
+        name: 'role',
+        keys: ['roleName'],
+        foreignKeys: ['name'],
+      },
+      {
+        table: 'User',
+        name: 'user',
+        keys: ['userUsername'],
+        foreignKeys: ['username'],
+      },
     ]);
   });
 });

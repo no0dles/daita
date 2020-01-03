@@ -2,7 +2,6 @@ import { MigrationDescription } from './migration-description';
 import { getMigrationSchema } from '../schema/migration-schema-builder';
 
 export class MigrationTree {
-  public migrationCount = 0;
   private migrationMap: { [id: string]: MigrationDescription } = {};
   private afterMigrations: { [id: string]: MigrationDescription[] } = {};
   private rootMigrations: {
@@ -12,6 +11,8 @@ export class MigrationTree {
       last: MigrationDescription | null;
     };
   } = {};
+
+  migrationCount = 0;
 
   constructor(migrations: MigrationDescription[] = []) {
     for (const migration of migrations) {

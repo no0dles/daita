@@ -16,7 +16,9 @@ import { RelationalTableSchemaTableFieldType } from './relational-table-schema-t
 import { RelationalTableSchemaTableReferenceKey } from './relational-table-schema-table-reference-key';
 
 export function capitalize(word: string) {
-  if (!word) return word;
+  if (!word) {
+    return word;
+  }
   return word[0].toUpperCase() + word.substr(1).toLowerCase();
 }
 
@@ -86,7 +88,9 @@ function parseType(
   if (type instanceof SourceCodeModelUnionPropertyType) {
     const subTypes = type.types
       .filter(t => {
-        if (!(t instanceof SourceCodeModelPrimitivePropertyType)) return true;
+        if (!(t instanceof SourceCodeModelPrimitivePropertyType)) {
+          return true;
+        }
         return t.type !== 'null';
       })
       .map(parseType);

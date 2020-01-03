@@ -1,26 +1,38 @@
-import {Command, flags} from '@oclif/command';
-import {getSchemaInformation, getSchemaLocation} from '../utils/path';
-import {getRelationalDataAdapter} from '../utils/data-adapter';
+import { Command, flags } from '@oclif/command';
+import { getSchemaInformation, getSchemaLocation } from '../utils/path';
+import { getRelationalDataAdapter } from '../utils/data-adapter';
 import * as fs from 'fs';
 import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as http from 'http';
-import {getApp} from '@daita/web';
-import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
-import {RelationalContext} from '@daita/core';
+import { getApp } from '@daita/web';
+import { getMigrationSchema } from '@daita/core/dist/schema/migration-schema-builder';
+import { RelationalContext } from '@daita/core';
 
 export default class Serve extends Command {
   static description = 'serve api';
 
   static flags = {
-    schema: flags.string({char: 's', description: 'path to schema', default: 'src/schema.ts'}),
-    migration: flags.string({char: 'm', description: 'migration id'}),
-    context: flags.string({char: 'c', description: 'name of context', default: 'default'}),
-    watch: flags.boolean({char: 'w', description: 'watch for reload', default: false}),
+    schema: flags.string({
+      char: 's',
+      description: 'path to schema',
+      default: 'src/schema.ts',
+    }),
+    migration: flags.string({ char: 'm', description: 'migration id' }),
+    context: flags.string({
+      char: 'c',
+      description: 'name of context',
+      default: 'default',
+    }),
+    watch: flags.boolean({
+      char: 'w',
+      description: 'watch for reload',
+      default: false,
+    }),
   };
 
   async run() {
-    const {flags} = this.parse(Serve);
+    const { flags } = this.parse(Serve);
     const schemaLocation = await getSchemaLocation(flags, this);
 
     const dataAdapter = getRelationalDataAdapter(flags, this);
@@ -55,27 +67,39 @@ export default class Serve extends Command {
       const lastMigrations = schemaInfo.migrationTree.last();
       if (lastMigrations.length > 1) {
         throw new Error('multiple migrations');
-      } else if(lastMigrations.length === 0) {
+      } else if (lastMigrations.length === 0) {
         throw new Error('no migrations');
       }
-      const schema = getMigrationSchema(schemaInfo.migrationTree.path(lastMigrations[0].id));
-      const context = new RelationalContext(schema, schemaInfo.migrationTree, dataAdapter);
+      const schema = getMigrationSchema(
+        schemaInfo.migrationTree.path(lastMigrations[0].id),
+      );
+      const context = new RelationalContext(
+        schema,
+        schemaInfo.migrationTree,
+        dataAdapter,
+      );
       await context.migration().apply();
 
-      const app = getApp({dataAdapter, migrationTree: schemaInfo.migrationTree});
+      const app = getApp({
+        dataAdapter,
+        migrationTree: schemaInfo.migrationTree,
+      });
       server = app.listen(8765, () => {
         console.log('listening on port 8765');
       });
     }, 200);
 
-    const watcher = chokidar.watch(watchPaths, {followSymlinks: true, ignored: /^(.[ts|js])$/});
-    watcher.on('change', (path) => {
+    const watcher = chokidar.watch(watchPaths, {
+      followSymlinks: true,
+      ignored: /^(.[ts|js])$/,
+    });
+    watcher.on('change', path => {
       debouncer.bounce();
     });
-    watcher.on('add', (path) => {
+    watcher.on('add', path => {
       debouncer.bounce();
     });
-    watcher.on('unlink', (path) => {
+    watcher.on('unlink', path => {
       debouncer.bounce();
     });
   }
@@ -85,8 +109,7 @@ class Debouncer {
   private timeout: NodeJS.Timeout | null = null;
   private timestamp: number | null = null;
 
-  constructor(private trigger: () => any, private wait: number) {
-  }
+  constructor(private trigger: () => any, private wait: number) {}
 
   clear() {
     if (this.timeout) {

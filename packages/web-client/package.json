@@ -12,13 +12,17 @@
     "socket.io-client": "^2.3.0"
   },
   "devDependencies": {
-    "typescript": "^3.6.4"
+    "typescript": "^3.6.4",
+    "tslint": "^5.20.1",
+    "@daita/tslint": "0.1.0-alpha.0"
   },
   "homepage": "https://github.com/no0dles/daita",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "tslint src/**/*.ts",
+    "prettier": "prettier 'src/**/*.ts' --write"
   },
   "types": "dist/index.d.ts"
 }

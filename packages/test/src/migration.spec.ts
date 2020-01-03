@@ -1,12 +1,13 @@
-import {expect} from 'chai';
+import { expect } from 'chai';
 import {
   MigrationDescription,
   MigrationExecution,
-  RelationalAddTableFieldMigrationStep, RelationalAddTableMigrationStep,
+  RelationalAddTableFieldMigrationStep,
+  RelationalAddTableMigrationStep,
   RelationalDropTableMigrationStep,
 } from '@daita/core';
-import {PostgresDataAdapter} from '@daita/core/dist/postgres';
-import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
+import { PostgresDataAdapter } from '@daita/core/dist/postgres';
+import { getMigrationSchema } from '@daita/core/dist/schema/migration-schema-builder';
 
 function testMigrations(
   migrationBefore: MigrationDescription[],
@@ -15,7 +16,8 @@ function testMigrations(
 ) {
   const exec = new MigrationExecution();
   const migrationSchema = getMigrationSchema(migrationBefore);
-  const sql = exec.plan(migration,
+  const sql = exec.plan(
+    migration,
     migrationSchema,
     new PostgresDataAdapter('postgres://localhost'),
   );
@@ -24,13 +26,18 @@ function testMigrations(
 
 describe('migration', () => {
   describe('plan', () => {
-
     it('should create table with varchar field', () => {
       const migration = {
-        id: 'test', steps: [
+        id: 'test',
+        steps: [
           new RelationalAddTableMigrationStep('foo'),
-          new RelationalAddTableFieldMigrationStep('foo', 'bar', 'string', true),
-        ]
+          new RelationalAddTableFieldMigrationStep(
+            'foo',
+            'bar',
+            'string',
+            true,
+          ),
+        ],
       };
       testMigrations([], migration, [
         'CREATE TABLE "test_foo" ("test_bar" varchar);',
@@ -40,7 +47,8 @@ describe('migration', () => {
     it('should alter table with new integer column', () => {
       const migrationBefore: MigrationDescription[] = [
         {
-          id: 'test', steps: [
+          id: 'test',
+          steps: [
             new RelationalAddTableMigrationStep('foo'),
             new RelationalAddTableFieldMigrationStep(
               'foo',
@@ -48,13 +56,19 @@ describe('migration', () => {
               'string',
               true,
             ),
-          ]
+          ],
         },
       ];
       const migration: MigrationDescription = {
-        id: 'test2', steps: [
-          new RelationalAddTableFieldMigrationStep('foo', 'foo', 'number', false),
-        ]
+        id: 'test2',
+        steps: [
+          new RelationalAddTableFieldMigrationStep(
+            'foo',
+            'foo',
+            'number',
+            false,
+          ),
+        ],
       };
       testMigrations(migrationBefore, migration, [
         'ALTER TABLE "test_foo" ADD COLUMN "test2_foo" integer;',
@@ -64,7 +78,8 @@ describe('migration', () => {
     it('should drop table', () => {
       const migrationBefore: MigrationDescription[] = [
         {
-          id: 'test', steps: [
+          id: 'test',
+          steps: [
             new RelationalAddTableMigrationStep('foo'),
             new RelationalAddTableFieldMigrationStep(
               'foo',
@@ -72,18 +87,14 @@ describe('migration', () => {
               'string',
               true,
             ),
-          ]
+          ],
         },
       ];
       const migration: MigrationDescription = {
-        id: 'test2', steps: [
-          new RelationalDropTableMigrationStep('foo'),
-        ]
+        id: 'test2',
+        steps: [new RelationalDropTableMigrationStep('foo')],
       };
-      testMigrations(migrationBefore, migration, [
-        'DROP TABLE "test_foo";',
-      ]);
+      testMigrations(migrationBefore, migration, ['DROP TABLE "test_foo";']);
     });
-
   });
 });

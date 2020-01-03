@@ -1,10 +1,11 @@
 import {
   MigrationDescription,
   RelationalAddTableFieldMigrationStep,
-  RelationalAddTableForeignKey, RelationalAddTableMigrationStep,
-  RelationalAddTablePrimaryKey, RelationalSchema,
+  RelationalAddTableForeignKey,
+  RelationalAddTableMigrationStep,
+  RelationalAddTablePrimaryKey,
+  RelationalSchema,
 } from '@daita/core';
-
 
 export class User {
   id!: string;
@@ -29,9 +30,16 @@ export class FirstMigration implements MigrationDescription {
     new RelationalAddTableFieldMigrationStep('User', 'id', 'string', true),
     new RelationalAddTableFieldMigrationStep('User', 'name', 'string', true),
     new RelationalAddTableFieldMigrationStep('User', 'count', 'number', false),
-    new RelationalAddTableFieldMigrationStep('User', 'parentId', 'string', false),
-    new RelationalAddTableForeignKey('User', 'parent', ['parentId'], 'User', ['id']),
-  ]
+    new RelationalAddTableFieldMigrationStep(
+      'User',
+      'parentId',
+      'string',
+      false,
+    ),
+    new RelationalAddTableForeignKey('User', 'parent', ['parentId'], 'User', [
+      'id',
+    ]),
+  ];
 }
 
 export class SecondMigration implements MigrationDescription {
@@ -43,12 +51,20 @@ export class SecondMigration implements MigrationDescription {
     new RelationalAddTablePrimaryKey('Comment', ['id']),
     new RelationalAddTableFieldMigrationStep('Comment', 'id', 'string', true),
     new RelationalAddTableFieldMigrationStep('Comment', 'text', 'string', true),
-    new RelationalAddTableFieldMigrationStep('Comment', 'userId', 'string', true),
-    new RelationalAddTableForeignKey('Comment', 'user', ['userId'], 'User', ['id']),
-  ]
+    new RelationalAddTableFieldMigrationStep(
+      'Comment',
+      'userId',
+      'string',
+      true,
+    ),
+    new RelationalAddTableForeignKey('Comment', 'user', ['userId'], 'User', [
+      'id',
+    ]),
+  ];
 }
 
-export const testConnectionString = 'postgres://postgres:postgres@localhost/daita-test';
+export const testConnectionString =
+  'postgres://postgres:postgres@localhost/daita-test';
 export const testSchema = new RelationalSchema();
 
 testSchema.table(User);

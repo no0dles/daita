@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import {assert} from 'chai';
+import { assert } from 'chai';
 import {
   addMigrationImport,
   addMigrationRegistration,
@@ -20,8 +20,18 @@ describe('write-migration', () => {
   });
 
   it('should add import and registration', () => {
-    assert.equal(addMigrationImport(schemaResultFilePath, './migrations/init.migration', 'InitMigration'), true);
-    assert.equal(addMigrationRegistration(schemaResultFilePath, 'schema', 'InitMigration'), true);
+    assert.equal(
+      addMigrationImport(
+        schemaResultFilePath,
+        './migrations/init.migration',
+        'InitMigration',
+      ),
+      true,
+    );
+    assert.equal(
+      addMigrationRegistration(schemaResultFilePath, 'schema', 'InitMigration'),
+      true,
+    );
 
     const expectedContent = fs.readFileSync(schemaExceptedFilePath).toString();
     const actualContent = fs.readFileSync(schemaResultFilePath).toString();
@@ -29,11 +39,30 @@ describe('write-migration', () => {
   });
 
   it('should add import, registration and undo', () => {
-    assert.equal(addMigrationImport(schemaResultFilePath, './migrations/init.migration', 'InitMigration'), true);
-    assert.equal(addMigrationRegistration(schemaResultFilePath, 'schema', 'InitMigration'), true);
-    assert.equal(removeMigrationImport(schemaResultFilePath, './migrations/init.migration', 'InitMigration'), true);
-    assert.equal(removeMigrationRegistration(schemaResultFilePath, 'InitMigration'), true);
-
+    assert.equal(
+      addMigrationImport(
+        schemaResultFilePath,
+        './migrations/init.migration',
+        'InitMigration',
+      ),
+      true,
+    );
+    assert.equal(
+      addMigrationRegistration(schemaResultFilePath, 'schema', 'InitMigration'),
+      true,
+    );
+    assert.equal(
+      removeMigrationImport(
+        schemaResultFilePath,
+        './migrations/init.migration',
+        'InitMigration',
+      ),
+      true,
+    );
+    assert.equal(
+      removeMigrationRegistration(schemaResultFilePath, 'InitMigration'),
+      true,
+    );
 
     const expectedContent = fs.readFileSync(schemaSourceFilePath).toString();
     const actualContent = fs.readFileSync(schemaResultFilePath).toString();

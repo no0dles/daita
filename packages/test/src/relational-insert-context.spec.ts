@@ -1,9 +1,8 @@
-import {PostgresDataAdapter} from '@daita/core/dist/postgres';
-import {dropDatabase} from '@daita/core/dist/postgres/postgres.util';
-import {RelationalContext} from '@daita/core';
-import {testConnectionString, testSchema, User} from './test';
-import {expect} from 'chai';
-
+import { PostgresDataAdapter } from '@daita/core/dist/postgres';
+import { dropDatabase } from '@daita/core/dist/postgres/postgres.util';
+import { RelationalContext } from '@daita/core';
+import { testConnectionString, testSchema, User } from './test';
+import { expect } from 'chai';
 
 describe('relational-insert-context', () => {
   let dataAdapter: PostgresDataAdapter;
@@ -24,23 +23,30 @@ describe('relational-insert-context', () => {
   });
 
   it('should execute insert(User).value(id: a, name: foo, count: 2)', async () => {
-    await testInsert({id: 'a', name: 'foo', count: 2});
+    await testInsert({ id: 'a', name: 'foo', count: 2 });
   });
 
   it('should execute insert(User).value(id: a, name: foo, count: null)', async () => {
-    await testInsert({id: 'a', name: 'foo', count: null});
+    await testInsert({ id: 'a', name: 'foo', count: null });
   });
 
   it('should not execute insert(User).value(id: a, name: null, count: null)', async () => {
-    await testFailInsert({
-      id: 'a',
-      name: null,
-      count: null,
-    }, Error, 'name is required');
+    await testFailInsert(
+      {
+        id: 'a',
+        name: null,
+        count: null,
+      },
+      Error,
+      'name is required',
+    );
   });
 
   async function testInsert(user: any) {
-    await context.insert(User).value(user).exec();
+    await context
+      .insert(User)
+      .value(user)
+      .exec();
   }
 
   async function testFailInsert(user: any, err: any, message: string) {

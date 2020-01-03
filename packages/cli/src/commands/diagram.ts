@@ -1,6 +1,6 @@
-import {Command, flags} from '@oclif/command'
-import * as fs from "fs";
-import * as path from "path";
+import { Command, flags } from '@oclif/command';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export default class Diagram extends Command {
   static description = 'create diagram for schema';
@@ -8,8 +8,9 @@ export default class Diagram extends Command {
   static flags = {};
 
   async run() {
-    const nomnoml = require("nomnoml");
-    const content = '#direction: right\n' +
+    const nomnoml = require('nomnoml');
+    const content =
+      '#direction: right\n' +
       '#edges: rounded\n' +
       '#zoom: 2\n' +
       '#fillArrows: true\n' +

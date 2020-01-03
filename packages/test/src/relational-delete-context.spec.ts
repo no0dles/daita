@@ -1,7 +1,10 @@
-import {getSourceCodeSchema, MigrationDescription, RelationalSchema} from '@daita/core';
-import {getRelationalMigrationSteps} from '@daita/cli/dist/migration/generation';
-import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
-
+import {
+  getSourceCodeSchema,
+  MigrationDescription,
+  RelationalSchema,
+} from '@daita/core';
+import { getRelationalMigrationSteps } from '@daita/cli/dist/migration/generation';
+import { DatabaseSchema } from '@daita/core/dist/schema/database-schema';
 
 class DataTable {
   id!: string;
@@ -25,7 +28,6 @@ class DataTable {
   stringUndefined?: string;
   stringUndefined2!: string | undefined;
   stringNull!: string | null;
-
 }
 
 class ReferenceTable {
@@ -83,7 +85,7 @@ const schema = new RelationalSchema();
 schema.table(DataTable);
 schema.table(ReferenceTable);
 schema.table(MultiReferenceTable);
-schema.table(MultiPrimaryKeyTable, {key: ['id', 'order']});
+schema.table(MultiPrimaryKeyTable, { key: ['id', 'order'] });
 
 // class Migration implements MigrationDescription {
 //   id = 'inital';
@@ -95,7 +97,7 @@ schema.table(MultiPrimaryKeyTable, {key: ['id', 'order']});
 describe('relational-delete-context', () => {
   const testCases = [
     {
-      filter: {admin: true},
+      filter: { admin: true },
     },
-  ]
+  ];
 });

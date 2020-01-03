@@ -1,5 +1,5 @@
-import {Command, flags} from '@oclif/command'
-import {cli} from 'cli-ux';
+import { Command, flags } from '@oclif/command';
+import { cli } from 'cli-ux';
 
 export default class Doc extends Command {
   static description = 'open documentation';

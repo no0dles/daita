@@ -96,7 +96,7 @@ export class PostgresTransactionDataAdapter
     const values: any[] = [];
     const conditions = this.parseFilter(table, filter, values);
     console.log(conditions, filter);
-    let sql = `DELETE FROM "${this.mapSourceTable(table)}" ${
+    const sql = `DELETE FROM "${this.mapSourceTable(table)}" ${
       conditions.length > 0 ? 'WHERE ' + conditions : ''
     }`.trim();
 
@@ -135,7 +135,7 @@ export class PostgresTransactionDataAdapter
       rowPlaceholders.push(`(${placeholders.join(', ')})`);
     }
 
-    let sql = `INSERT INTO "${this.mapSourceTable(table)}" (${fields
+    const sql = `INSERT INTO "${this.mapSourceTable(table)}" (${fields
       .map(field => `"${this.getSourceField(table, field)}"`)
       .join(', ')}) VALUES ${rowPlaceholders.join(', ')}`;
 
@@ -169,12 +169,12 @@ export class PostgresTransactionDataAdapter
     const values: any[] = [];
     const conditions = this.parseFilter(table, query.filter, values);
 
-    let sql = `SELECT count(*) count FROM "${this.mapSourceTable(table)}" ${
+    const sql = `SELECT count(*) count FROM "${this.mapSourceTable(table)}" ${
       conditions.length > 0 ? 'WHERE ' + conditions : ''
     }`.trim();
 
     const result = await this.runQuery(sql, values);
-    return parseInt(result.rows[0].count);
+    return parseInt(result.rows[0].count, 0);
   }
 
   private addInclude(
@@ -301,7 +301,7 @@ export class PostgresTransactionDataAdapter
       fields.push(`"${this.getSourceField(table, key)}" = $${values.length}`);
     }
     const conditions = this.parseFilter(table, filter, values);
-    let sql = `UPDATE "${this.mapSourceTable(table)}" SET ${fields.join(
+    const sql = `UPDATE "${this.mapSourceTable(table)}" SET ${fields.join(
       ', ',
     )} ${conditions.length > 0 ? 'WHERE ' + conditions : ''}`;
 

@@ -9,7 +9,9 @@
   },
   "scripts": {
     "prepack": "npm run build",
-    "build": "rm -rf dist || true && rm -f tsconfig.tsbuildinfo && tsc"
+    "build": "rm -rf dist || true && rm -f tsconfig.tsbuildinfo && tsc",
+    "lint": "tslint src/**/*.ts",
+    "prettier": "prettier 'src/**/*.ts' --write"
   },
   "author": "",
   "license": "MIT",
@@ -27,7 +29,9 @@
     "@types/uuid": "^3.4.6",
     "mongodb": "^3.3.3",
     "pg": "^7.14.0",
-    "typescript": "~3.6.4"
+    "typescript": "~3.6.4",
+    "tslint": "^5.20.1",
+    "@daita/tslint": "0.1.0-alpha.0"
   },
   "gitHead": "2fcc782cbb64197462c122bf6277034ed37292a2"
 }

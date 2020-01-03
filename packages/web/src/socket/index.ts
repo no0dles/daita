@@ -1,1 +1,1 @@
-export {createSocketApp} from './app';
+export { createSocketApp } from './app';

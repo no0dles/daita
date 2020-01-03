@@ -1,7 +1,7 @@
 import * as http from 'http';
-import {getApi} from './api';
-import {createSocketApp} from './socket';
-import {AppOptions} from './app-options';
+import { getApi } from './api';
+import { createSocketApp } from './socket';
+import { AppOptions } from './app-options';
 
 export function getApp(options: AppOptions) {
   const app = getApi(options);

@@ -5,12 +5,13 @@ import {
   RelationalSelectQuery,
   RelationalTransactionDataAdapter,
 } from '@daita/core';
-import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
-import {Defer} from './defer';
+import { MigrationSchema } from '@daita/core/dist/schema/migration-schema';
+import { Defer } from './defer';
 import * as client from 'socket.io-client';
-import {RelationalSqlBuilder} from '@daita/core/dist/adapter/relational-sql-builder';
+import { RelationalSqlBuilder } from '@daita/core/dist/adapter/relational-sql-builder';
 
-export class SocketRelationalDataAdapter implements RelationalTransactionDataAdapter {
+export class SocketRelationalDataAdapter
+  implements RelationalTransactionDataAdapter {
   private socket: SocketIOClient.Socket;
   private defers: { [key: string]: Defer<any> } = {};
 
@@ -37,16 +38,31 @@ export class SocketRelationalDataAdapter implements RelationalTransactionDataAda
 
   private generateCid() {
     let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     for (let i = 0; i < 12; i++) {
-      result += characters.charAt(Math.floor(Math.random() * characters.length));
+      result += characters.charAt(
+        Math.floor(Math.random() * characters.length),
+      );
     }
     return result;
   }
 
-  count(schema: MigrationSchema, table: string, query: RelationalSelectQuery): Promise<number>;
-  count(schema: MigrationSchema, table: string, query: RelationalSelectQuery): Promise<number>;
-  count(schema: MigrationSchema, table: string, query: RelationalSelectQuery): Promise<number> {
+  count(
+    schema: MigrationSchema,
+    table: string,
+    query: RelationalSelectQuery,
+  ): Promise<number>;
+  count(
+    schema: MigrationSchema,
+    table: string,
+    query: RelationalSelectQuery,
+  ): Promise<number>;
+  count(
+    schema: MigrationSchema,
+    table: string,
+    query: RelationalSelectQuery,
+  ): Promise<number> {
     return this.emit('count', {
       migrationId: schema.migrationId,
       table,
@@ -54,10 +70,26 @@ export class SocketRelationalDataAdapter implements RelationalTransactionDataAda
     });
   }
 
-  delete(schema: MigrationSchema, table: string, filter: OrRootFilter<any> | AndRootFilter<any> | any | null): Promise<{ affectedRows: number }>;
-  delete(schema: MigrationSchema, table: string, filter: OrRootFilter<any> | AndRootFilter<any> | any | null): Promise<{ affectedRows: number }>;
-  delete(schema: MigrationSchema, table: string, filter: OrRootFilter<any> | AndRootFilter<any> | any | null): Promise<{ affectedRows: number }> {
-    return this.emit('delete', {migrationId: schema.migrationId, table, where: filter});
+  delete(
+    schema: MigrationSchema,
+    table: string,
+    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
+  ): Promise<{ affectedRows: number }>;
+  delete(
+    schema: MigrationSchema,
+    table: string,
+    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
+  ): Promise<{ affectedRows: number }>;
+  delete(
+    schema: MigrationSchema,
+    table: string,
+    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
+  ): Promise<{ affectedRows: number }> {
+    return this.emit('delete', {
+      migrationId: schema.migrationId,
+      table,
+      where: filter,
+    });
   }
 
   private emit<T>(event: string, data: T) {
@@ -65,14 +97,18 @@ export class SocketRelationalDataAdapter implements RelationalTransactionDataAda
     const defer = new Defer<any>();
     this.defers[cid] = defer;
     console.log('emit event ' + event + ' with cid ' + cid);
-    this.socket.emit(event, {...data, cid: cid});
+    this.socket.emit(event, { ...data, cid: cid });
     return defer.promise;
   }
 
   insert(schema: MigrationSchema, table: string, data: any[]): Promise<void>;
   insert(schema: MigrationSchema, table: string, data: any[]): Promise<void>;
   insert(schema: MigrationSchema, table: string, data: any[]): Promise<void> {
-    return this.emit('insert', {migrationId: schema.migrationId, table, data});
+    return this.emit('insert', {
+      migrationId: schema.migrationId,
+      table,
+      data,
+    });
   }
 
   raw(sql: string, values: any[]): Promise<{ rowCount: number; rows: any[] }> {
@@ -82,9 +118,21 @@ export class SocketRelationalDataAdapter implements RelationalTransactionDataAda
     });
   }
 
-  select(schema: MigrationSchema, table: string, query: RelationalSelectQuery): Promise<any[]>;
-  select(schema: MigrationSchema, table: string, query: RelationalSelectQuery): Promise<any[]>;
-  select(schema: MigrationSchema, table: string, query: RelationalSelectQuery): Promise<any[]> {
+  select(
+    schema: MigrationSchema,
+    table: string,
+    query: RelationalSelectQuery,
+  ): Promise<any[]>;
+  select(
+    schema: MigrationSchema,
+    table: string,
+    query: RelationalSelectQuery,
+  ): Promise<any[]>;
+  select(
+    schema: MigrationSchema,
+    table: string,
+    query: RelationalSelectQuery,
+  ): Promise<any[]> {
     return this.emit('select', {
       migrationId: schema.migrationId,
       table,
@@ -95,10 +143,30 @@ export class SocketRelationalDataAdapter implements RelationalTransactionDataAda
     });
   }
 
-  update(schema: MigrationSchema, table: string, data: any, filter: OrRootFilter<any> | AndRootFilter<any> | any | null): Promise<{ affectedRows: number }>;
-  update(schema: MigrationSchema, table: string, data: any, filter: OrRootFilter<any> | AndRootFilter<any> | any | null): Promise<{ affectedRows: number }>;
-  update(schema: MigrationSchema, table: string, data: any, filter: OrRootFilter<any> | AndRootFilter<any> | any | null): Promise<{ affectedRows: number }> {
-    return this.emit('update', {migrationId: schema.migrationId, table, set: data, where: filter});
+  update(
+    schema: MigrationSchema,
+    table: string,
+    data: any,
+    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
+  ): Promise<{ affectedRows: number }>;
+  update(
+    schema: MigrationSchema,
+    table: string,
+    data: any,
+    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
+  ): Promise<{ affectedRows: number }>;
+  update(
+    schema: MigrationSchema,
+    table: string,
+    data: any,
+    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
+  ): Promise<{ affectedRows: number }> {
+    return this.emit('update', {
+      migrationId: schema.migrationId,
+      table,
+      set: data,
+      where: filter,
+    });
   }
 }
 

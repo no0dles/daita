@@ -1,9 +1,10 @@
 import * as ts from 'typescript';
-import {ExtendedMigrationStep} from './base-migration-step';
-import {RelationalDropTableFieldMigrationStep} from '@daita/core';
+import { ExtendedMigrationStep } from './base-migration-step';
+import { RelationalDropTableFieldMigrationStep } from '@daita/core';
 
-export class ExtendedRelationalDropTableFieldMigrationStep extends RelationalDropTableFieldMigrationStep implements ExtendedMigrationStep {
-
+export class ExtendedRelationalDropTableFieldMigrationStep
+  extends RelationalDropTableFieldMigrationStep
+  implements ExtendedMigrationStep {
   toNode(): ts.NewExpression {
     return ts.createNew(
       ts.createIdentifier('RelationalDropTableFieldMigrationStep'),
@@ -11,7 +12,7 @@ export class ExtendedRelationalDropTableFieldMigrationStep extends RelationalDro
       [
         ts.createStringLiteral(this.table),
         ts.createStringLiteral(this.fieldName),
-      ]
+      ],
     );
   }
 }

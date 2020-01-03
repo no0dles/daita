@@ -1,32 +1,45 @@
 import * as path from 'path';
 import * as ts from 'typescript';
-import {SyntaxKind} from 'typescript';
-import {getChildNodes, getFirstChildNode, isKind, parseSourceFile} from './utils';
+import { SyntaxKind } from 'typescript';
+import {
+  getChildNodes,
+  getFirstChildNode,
+  isKind,
+  parseSourceFile,
+} from './utils';
 import {
   getSourceCodeSchema,
   MigrationDescription,
   MigrationStep,
   MigrationTree,
-  SourceCodeModel, SourceCodeModelProperty,
+  SourceCodeModel,
+  SourceCodeModelProperty,
   SourceCodeModelPropertyType,
 } from '@daita/core';
 import {
   ExtendedAddCollectionFieldMigrationStep,
-  ExtendedAddCollectionMigrationStep, ExtendedDropCollectionFieldMigrationStep,
+  ExtendedAddCollectionMigrationStep,
+  ExtendedDropCollectionFieldMigrationStep,
   ExtendedDropCollectionMigrationStep,
   ExtendedModifyCollectionFieldMigrationStep,
-  ExtendedRelationalAddTableFieldMigrationStep, ExtendedRelationalAddTableForeignKey,
+  ExtendedRelationalAddTableFieldMigrationStep,
+  ExtendedRelationalAddTableForeignKey,
   ExtendedRelationalAddTableMigrationStep,
-  ExtendedRelationalAddTablePrimaryKey, ExtendedRenameCollectionFieldMigrationStep,
+  ExtendedRelationalAddTablePrimaryKey,
+  ExtendedRenameCollectionFieldMigrationStep,
 } from '../steps';
-import {SourceCodeModelUnionPropertyType} from '@daita/core/dist/model/source-code-model-union-property-type';
-import {SourceCodeModelPrimitivePropertyType} from '@daita/core/dist/model/source-code-model-primitive-property-type';
-import {SourceCodeModelReferencePropertyType} from '@daita/core/dist/model/source-code-model-reference-property-type';
-import {SourceCodeModelArrayPropertyType} from '@daita/core/dist/model/source-code-model-array-property-type';
+import { SourceCodeModelUnionPropertyType } from '@daita/core/dist/model/source-code-model-union-property-type';
+import { SourceCodeModelPrimitivePropertyType } from '@daita/core/dist/model/source-code-model-primitive-property-type';
+import { SourceCodeModelReferencePropertyType } from '@daita/core/dist/model/source-code-model-reference-property-type';
+import { SourceCodeModelArrayPropertyType } from '@daita/core/dist/model/source-code-model-array-property-type';
 
 class ParseContext {
-  private modelDeclarations: { [filename: string]: { [className: string]: SourceCodeModel } } = {};
-  private migrationDeclarations: { [filename: string]: { [className: string]: MigrationDescription } } = {};
+  private modelDeclarations: {
+    [filename: string]: { [className: string]: SourceCodeModel };
+  } = {};
+  private migrationDeclarations: {
+    [filename: string]: { [className: string]: MigrationDescription };
+  } = {};
 
   containsSourceFile(sourceFile: ts.SourceFile) {
     if (this.modelDeclarations[sourceFile.fileName]) {
@@ -54,11 +67,15 @@ class ParseContext {
     if (!this.modelDeclarations[sourceFile.fileName]) {
       this.modelDeclarations[sourceFile.fileName] = {};
     }
-    this.modelDeclarations[sourceFile.fileName][sourceCodeModel.name] = sourceCodeModel;
+    this.modelDeclarations[sourceFile.fileName][
+      sourceCodeModel.name
+    ] = sourceCodeModel;
   }
 }
 
-function parseMigrationSteps(arrayLiteral: ts.ArrayLiteralExpression): MigrationStep[] {
+function parseMigrationSteps(
+  arrayLiteral: ts.ArrayLiteralExpression,
+): MigrationStep[] {
   const steps = new Array<MigrationStep>();
 
   const stepTypes = [
@@ -103,23 +120,35 @@ function parseMigrationSteps(arrayLiteral: ts.ArrayLiteralExpression): Migration
   return steps;
 }
 
-function parseMigration(fileName: string, sourceFile: ts.SourceFile): (MigrationDescription & { className: string }) | null {
+function parseMigration(
+  fileName: string,
+  sourceFile: ts.SourceFile,
+): (MigrationDescription & { className: string }) | null {
   let id: string | null = null;
   let after: string | null = null;
   let resolve: string | null = null;
   const steps: MigrationStep[] = [];
 
-  const classDeclaration = getFirstChildNode(sourceFile, ts.SyntaxKind.ClassDeclaration);
+  const classDeclaration = getFirstChildNode(
+    sourceFile,
+    ts.SyntaxKind.ClassDeclaration,
+  );
   if (!classDeclaration) {
     return null;
   }
 
-  const classNameIdentifier = isKind(classDeclaration.name, ts.SyntaxKind.Identifier);
+  const classNameIdentifier = isKind(
+    classDeclaration.name,
+    ts.SyntaxKind.Identifier,
+  );
   if (!classNameIdentifier) {
     return null;
   }
 
-  const properties = getChildNodes(classDeclaration, ts.SyntaxKind.PropertyDeclaration);
+  const properties = getChildNodes(
+    classDeclaration,
+    ts.SyntaxKind.PropertyDeclaration,
+  );
   for (const property of properties) {
     const propertyName = getIdentifier(property.name as ts.Identifier);
     if (!property.initializer) {
@@ -137,21 +166,36 @@ function parseMigration(fileName: string, sourceFile: ts.SourceFile): (Migration
         id = getIdentifier(property.initializer as ts.StringLiteral);
         break;
       case 'steps':
-        if (property.initializer.kind === ts.SyntaxKind.ArrayLiteralExpression) {
-          steps.push(...parseMigrationSteps(property.initializer as ts.ArrayLiteralExpression));
+        if (
+          property.initializer.kind === ts.SyntaxKind.ArrayLiteralExpression
+        ) {
+          steps.push(
+            ...parseMigrationSteps(
+              property.initializer as ts.ArrayLiteralExpression,
+            ),
+          );
         }
         break;
     }
   }
 
   if (id !== null && steps.length > 0) {
-    return {id, steps, after: after || undefined, resolve: resolve || undefined, className: classNameIdentifier.text};
+    return {
+      id,
+      steps,
+      after: after || undefined,
+      resolve: resolve || undefined,
+      className: classNameIdentifier.text,
+    };
   }
 
   return null;
 }
 
-export function parseModelSchema(sourceFile: ts.SourceFile, schemaName: string) {
+export function parseModelSchema(
+  sourceFile: ts.SourceFile,
+  schemaName: string,
+) {
   const collections = parseSchemaCollections(sourceFile, schemaName);
   const tables = parseSchemaTables(sourceFile, schemaName);
   return getSourceCodeSchema(collections, tables);
@@ -163,16 +207,25 @@ export interface SchemaDeclaration {
 }
 
 export function getSchemas(sourceFile: ts.SourceFile): SchemaDeclaration[] {
-  const variableStatements = getChildNodes(sourceFile, ts.SyntaxKind.VariableStatement);
+  const variableStatements = getChildNodes(
+    sourceFile,
+    ts.SyntaxKind.VariableStatement,
+  );
   const schemas: SchemaDeclaration[] = [];
   for (const variableStatement of variableStatements) {
     for (const declaration of variableStatement.declarationList.declarations) {
-      const newExpression = isKind(declaration.initializer, ts.SyntaxKind.NewExpression);
+      const newExpression = isKind(
+        declaration.initializer,
+        ts.SyntaxKind.NewExpression,
+      );
       if (!newExpression) {
         continue;
       }
 
-      const classNameIdentifier = isKind(newExpression.expression, SyntaxKind.Identifier);
+      const classNameIdentifier = isKind(
+        newExpression.expression,
+        SyntaxKind.Identifier,
+      );
       if (!classNameIdentifier) {
         continue;
       }
@@ -200,14 +253,23 @@ export function getSchemas(sourceFile: ts.SourceFile): SchemaDeclaration[] {
 
 export interface ParsedMigrations {
   migrationTree: MigrationTree;
-  migrationFiles: { [key: string]: { sourceFile: ts.SourceFile, name: string, id: string } };
+  migrationFiles: {
+    [key: string]: { sourceFile: ts.SourceFile; name: string; id: string };
+  };
 }
 
-export function parseSchemaMigrations(sourceFile: ts.SourceFile, variableName: string): ParsedMigrations {
+export function parseSchemaMigrations(
+  sourceFile: ts.SourceFile,
+  variableName: string,
+): ParsedMigrations {
   const migrationTree = new MigrationTree();
-  const migrationFiles: { [key: string]: { sourceFile: ts.SourceFile, name: string, id: string } } = {};
+  const migrationFiles: {
+    [key: string]: { sourceFile: ts.SourceFile; name: string; id: string };
+  } = {};
 
-  const migrationCalls = getMethodCalls(sourceFile, variableName, ['migration']);
+  const migrationCalls = getMethodCalls(sourceFile, variableName, [
+    'migration',
+  ]);
   const imports = getImports(sourceFile);
 
   for (const migrationCall of migrationCalls) {
@@ -216,15 +278,22 @@ export function parseSchemaMigrations(sourceFile: ts.SourceFile, variableName: s
     const migrationFile = parseSourceFile(importFile);
     const migration = parseMigration(importFile, migrationFile);
     if (migration) {
-      migrationFiles[migration.id] = {sourceFile: migrationFile, name: migration.className, id: migration.id};
+      migrationFiles[migration.id] = {
+        sourceFile: migrationFile,
+        name: migration.className,
+        id: migration.id,
+      };
       migrationTree.add(migration);
     }
   }
 
-  return {migrationTree, migrationFiles};
+  return { migrationTree, migrationFiles };
 }
 
-export function parseSchemaTables(sourceFile: ts.SourceFile, variableName: string) {
+export function parseSchemaTables(
+  sourceFile: ts.SourceFile,
+  variableName: string,
+) {
   const tables: SourceCodeModel[] = [];
 
   const parseContext = new ParseContext();
@@ -251,7 +320,10 @@ export function parseSchemaTables(sourceFile: ts.SourceFile, variableName: strin
   return tables;
 }
 
-export function parseSchemaCollections(sourceFile: ts.SourceFile, variableName: string) {
+export function parseSchemaCollections(
+  sourceFile: ts.SourceFile,
+  variableName: string,
+) {
   const collections: SourceCodeModel[] = [];
 
   const parseContext = new ParseContext();
@@ -281,45 +353,75 @@ function importClasses(parseContext: ParseContext, sourceFile: ts.SourceFile) {
     return;
   }
 
-  const models = new Array<{ model: SourceCodeModel, classDeclaration: ts.ClassDeclaration }>();
+  const models = new Array<{
+    model: SourceCodeModel;
+    classDeclaration: ts.ClassDeclaration;
+  }>();
 
-  const classDeclarations = getChildNodes(sourceFile, ts.SyntaxKind.ClassDeclaration);
+  const classDeclarations = getChildNodes(
+    sourceFile,
+    ts.SyntaxKind.ClassDeclaration,
+  );
   for (const classDeclaration of classDeclarations) {
-    const identifier = getFirstChildNode(classDeclaration, ts.SyntaxKind.Identifier);
+    const identifier = getFirstChildNode(
+      classDeclaration,
+      ts.SyntaxKind.Identifier,
+    );
     if (!identifier) {
       throw new Error(`missing class name in file ${sourceFile.fileName}`);
     }
     const name = identifier.text;
 
     const model = new SourceCodeModel(name);
-    models.push({model, classDeclaration});
+    models.push({ model, classDeclaration });
     parseContext.addModel(sourceFile, model);
   }
 
   for (const model of models) {
-    const properties = getChildNodes(model.classDeclaration, ts.SyntaxKind.PropertyDeclaration);
+    const properties = getChildNodes(
+      model.classDeclaration,
+      ts.SyntaxKind.PropertyDeclaration,
+    );
     for (const property of properties) {
-      model.model.addProperty(parseProperty(parseContext, sourceFile, property));
+      model.model.addProperty(
+        parseProperty(parseContext, sourceFile, property),
+      );
     }
   }
 }
 
-function getMethodCalls(sourceFile: ts.SourceFile, variableName: string, methods: string[]) {
+function getMethodCalls(
+  sourceFile: ts.SourceFile,
+  variableName: string,
+  methods: string[],
+) {
   const calls: { method: string; args: any[] }[] = [];
-  const expressionStatements = getChildNodes(sourceFile, ts.SyntaxKind.ExpressionStatement);
+  const expressionStatements = getChildNodes(
+    sourceFile,
+    ts.SyntaxKind.ExpressionStatement,
+  );
 
   for (const expressionStatement of expressionStatements) {
-    const callExpression = isKind(expressionStatement.expression, ts.SyntaxKind.CallExpression);
+    const callExpression = isKind(
+      expressionStatement.expression,
+      ts.SyntaxKind.CallExpression,
+    );
     if (!callExpression) {
-      continue
+      continue;
     }
 
-    const propertyAccessExpr = isKind(callExpression.expression, ts.SyntaxKind.PropertyAccessExpression);
+    const propertyAccessExpr = isKind(
+      callExpression.expression,
+      ts.SyntaxKind.PropertyAccessExpression,
+    );
     if (!propertyAccessExpr) {
       continue;
     }
 
-    const variableExpression = isKind(propertyAccessExpr.expression, ts.SyntaxKind.Identifier);
+    const variableExpression = isKind(
+      propertyAccessExpr.expression,
+      ts.SyntaxKind.Identifier,
+    );
     if (!variableExpression) {
       continue;
     }
@@ -353,15 +455,22 @@ function getMethodCalls(sourceFile: ts.SourceFile, variableName: string, methods
               }
 
               const primaryKeys = [];
-              if (propAssign.initializer.kind === ts.SyntaxKind.ArrayLiteralExpression) {
-                const arrayElm = <ts.ArrayLiteralExpression>propAssign.initializer;
+              if (
+                propAssign.initializer.kind ===
+                ts.SyntaxKind.ArrayLiteralExpression
+              ) {
+                const arrayElm = <ts.ArrayLiteralExpression>(
+                  propAssign.initializer
+                );
                 for (const elm of arrayElm.elements) {
                   if (elm.kind === ts.SyntaxKind.StringLiteral) {
                     const textElm = <ts.StringLiteral>elm;
                     primaryKeys.push(textElm.text);
                   }
                 }
-              } else if (propAssign.initializer.kind === ts.SyntaxKind.StringLiteral) {
+              } else if (
+                propAssign.initializer.kind === ts.SyntaxKind.StringLiteral
+              ) {
                 const textElm = <ts.StringLiteral>propAssign.initializer;
                 primaryKeys.push(textElm.text);
               }
@@ -379,7 +488,9 @@ function getMethodCalls(sourceFile: ts.SourceFile, variableName: string, methods
   return calls;
 }
 
-export function getIdentifier(expression: ts.Expression | ts.Identifier | ts.BindingName) {
+export function getIdentifier(
+  expression: ts.Expression | ts.Identifier | ts.BindingName,
+) {
   if (expression.kind === ts.SyntaxKind.Identifier) {
     const identfier = <ts.Identifier>expression;
     return identfier.text;
@@ -395,7 +506,10 @@ export function getIdentifier(expression: ts.Expression | ts.Identifier | ts.Bin
 
 function getImports(sourceFile: ts.SourceFile) {
   const result: { [indentifier: string]: string } = {};
-  const importDeclarations = getChildNodes(sourceFile, ts.SyntaxKind.ImportDeclaration);
+  const importDeclarations = getChildNodes(
+    sourceFile,
+    ts.SyntaxKind.ImportDeclaration,
+  );
 
   for (const importDeclaration of importDeclarations) {
     if (!importDeclaration.importClause) {
@@ -406,7 +520,10 @@ function getImports(sourceFile: ts.SourceFile) {
       continue;
     }
 
-    const namedImport = isKind(importDeclaration.importClause.namedBindings, ts.SyntaxKind.NamedImports);
+    const namedImport = isKind(
+      importDeclaration.importClause.namedBindings,
+      ts.SyntaxKind.NamedImports,
+    );
     if (!namedImport) {
       continue;
     }
@@ -425,7 +542,11 @@ function getImports(sourceFile: ts.SourceFile) {
   return result;
 }
 
-function parseProperty(parsedSources: ParseContext, sourceFile: ts.SourceFile, node: ts.PropertyDeclaration): SourceCodeModelProperty {
+function parseProperty(
+  parsedSources: ParseContext,
+  sourceFile: ts.SourceFile,
+  node: ts.PropertyDeclaration,
+): SourceCodeModelProperty {
   const name = getIdentifier(node.name as ts.Identifier);
 
   if (!node.type) {
@@ -436,10 +557,17 @@ function parseProperty(parsedSources: ParseContext, sourceFile: ts.SourceFile, n
     throw new Error('missing name');
   }
 
-  return new SourceCodeModelProperty(name, parseType(parsedSources, sourceFile, node.type));
+  return new SourceCodeModelProperty(
+    name,
+    parseType(parsedSources, sourceFile, node.type),
+  );
 }
 
-function parseType(parsedSources: ParseContext, sourceFile: ts.SourceFile, node: ts.TypeNode): SourceCodeModelPropertyType {
+function parseType(
+  parsedSources: ParseContext,
+  sourceFile: ts.SourceFile,
+  node: ts.TypeNode,
+): SourceCodeModelPropertyType {
   switch (node.kind) {
     case ts.SyntaxKind.UnionType:
       return parseUnion(parsedSources, sourceFile, node as ts.UnionTypeNode);
@@ -461,15 +589,31 @@ function parseType(parsedSources: ParseContext, sourceFile: ts.SourceFile, node:
   throw new Error('unknown type ' + ts.SyntaxKind[node.kind]);
 }
 
-function parseUnion(parsedSources: ParseContext, sourceFile: ts.SourceFile, node: ts.UnionTypeNode): SourceCodeModelUnionPropertyType {
-  return new SourceCodeModelUnionPropertyType(node.types.map(type => parseType(parsedSources, sourceFile, type)));
+function parseUnion(
+  parsedSources: ParseContext,
+  sourceFile: ts.SourceFile,
+  node: ts.UnionTypeNode,
+): SourceCodeModelUnionPropertyType {
+  return new SourceCodeModelUnionPropertyType(
+    node.types.map(type => parseType(parsedSources, sourceFile, type)),
+  );
 }
 
-function parseArray(parsedSources: ParseContext, sourceFile: ts.SourceFile, node: ts.ArrayTypeNode): SourceCodeModelArrayPropertyType {
-  return new SourceCodeModelArrayPropertyType(parseType(parsedSources, sourceFile, node.elementType));
+function parseArray(
+  parsedSources: ParseContext,
+  sourceFile: ts.SourceFile,
+  node: ts.ArrayTypeNode,
+): SourceCodeModelArrayPropertyType {
+  return new SourceCodeModelArrayPropertyType(
+    parseType(parsedSources, sourceFile, node.elementType),
+  );
 }
 
-function parseTypeRef(parsedSources: ParseContext, sourceFile: ts.SourceFile, node: ts.TypeReferenceNode): SourceCodeModelReferencePropertyType {
+function parseTypeRef(
+  parsedSources: ParseContext,
+  sourceFile: ts.SourceFile,
+  node: ts.TypeReferenceNode,
+): SourceCodeModelReferencePropertyType {
   const name = getIdentifier(node.typeName as ts.Identifier);
   if (!name) {
     throw new Error(`Reference name not valid for ${node.typeName}`);
