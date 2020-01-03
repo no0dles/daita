@@ -17,26 +17,17 @@
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.1",
-    "@types/chai": "^4.2.4",
     "@types/config": "^0.0.36",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.2",
-    "@types/mocha": "^5.2.7",
     "@types/socket.io": "^2.1.4",
-    "@types/socket.io-client": "^1.4.32",
-    "socket.io-client": "^2.3.0",
-    "chai": "^4.2.0",
-    "mocha": "^6.2.2",
-    "source-map-support": "^0.5.16",
-    "ts-node": "^8.4.1",
     "typescript": "^3.6.4"
   },
   "homepage": "https://github.com/no0dles/cli",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "test": "mocha"
+    "build": "tsc"
   },
   "types": "dist/index.d.ts"
 }

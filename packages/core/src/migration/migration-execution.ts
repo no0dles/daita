@@ -65,11 +65,20 @@ export class MigrationExecution {
         }
       } else if (step instanceof RelationalAddTableForeignKey) {
         if (tables[step.table]) {
-          tables[step.table].foreignKeys.push({
-            table: `"${migration.id}_${step.foreignTable}"`,
-            keys: step.fieldNames.map(field => `"${migration.id}_${field}"`),
-            foreignKeys: step.foreignFieldNames.map(field => `"${migration.id}_${field}"`),
-          });
+          const foreignTable = schema.table(step.foreignTable);
+          if(foreignTable) {
+            tables[step.table].foreignKeys.push({
+              table: `"${foreignTable.sourceMigration.id}_${step.foreignTable}"`,
+              keys: step.fieldNames.map(field => `"${migration.id}_${field}"`),
+              foreignKeys: step.foreignFieldNames.map(field => `"${foreignTable.sourceMigration.id}_${field}"`),
+            });
+          } else {
+            tables[step.table].foreignKeys.push({
+              table: `"${migration.id}_${step.foreignTable}"`,
+              keys: step.fieldNames.map(field => `"${migration.id}_${field}"`),
+              foreignKeys: step.foreignFieldNames.map(field => `"${migration.id}_${field}"`),
+            });
+          }
         } else {
           const table = schema.table(step.table);
           const foreignTable = schema.table(step.foreignTable);

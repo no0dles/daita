@@ -1,8 +1,8 @@
 import {assert} from 'chai';
-import {getSourceCodeProperty} from '../schema/source-code-schema-builder';
-import {SourceCodeModelPrimitivePropertyType} from './source-code-model-primitive-property-type';
-import {SourceCodeModelProperty} from './source-code-model-property';
-import {SourceCodeModelUnionPropertyType} from './source-code-model-union-property-type';
+import {getSourceCodeProperty} from '@daita/core/dist/schema/source-code-schema-builder';
+import {SourceCodeModelPrimitivePropertyType} from '@daita/core/dist/model/source-code-model-primitive-property-type';
+import {SourceCodeModelProperty} from '@daita/core';
+import {SourceCodeModelUnionPropertyType} from '@daita/core/dist/model/source-code-model-union-property-type';
 
 describe('model', () => {
   it('ModelSchemaCollectionField', () => {

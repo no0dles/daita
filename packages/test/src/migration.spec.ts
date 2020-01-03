@@ -1,11 +1,12 @@
-import {PostgresDataAdapter} from '../postgres';
-import {getMigrationSchema} from '../schema/migration-schema-builder';
-import {RelationalAddTableMigrationStep} from './steps/relation-add-table.migration-step';
-import {RelationalAddTableFieldMigrationStep} from './steps/relational-add-table-field.migration-step';
 import {expect} from 'chai';
-import {RelationalDropTableMigrationStep} from './steps/relational-drop-table.migration-step';
-import {MigrationDescription} from "./migration-description";
-import {MigrationExecution} from "./migration-execution";
+import {
+  MigrationDescription,
+  MigrationExecution,
+  RelationalAddTableFieldMigrationStep, RelationalAddTableMigrationStep,
+  RelationalDropTableMigrationStep,
+} from '@daita/core';
+import {PostgresDataAdapter} from '@daita/core/dist/postgres';
+import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
 
 function testMigrations(
   migrationBefore: MigrationDescription[],

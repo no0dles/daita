@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import {assert} from 'chai';
 import {
-  addMigrationRegistration,
   addMigrationImport,
+  addMigrationRegistration,
   removeMigrationImport,
   removeMigrationRegistration,
-} from './write-migration';
+} from '@daita/cli/dist/migration/generation/write-migration';
 
 describe('write-migration', () => {
   const schemaSourceFilePath = `${process.cwd()}/test/migration/schema/schema.source.ts`;

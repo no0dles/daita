@@ -1,14 +1,15 @@
 {
   "extension": [".ts"],
   "include": [
-    "src/**"
+    "node_modules/@daita/**"
   ],
+  "excludeNodeModules": false,
   "exclude": [
     "**/*.d.ts",
     "**/*.spec.ts",
     "coverage/**",
     "dist/**",
-    "node_modules/**"
+    "node_modules/@daita/**/node_modules/**"
   ],
   "reporter": [
     "json",

@@ -23,7 +23,6 @@ export class RelationalSchema {
     this.migrationTree.add(migration);
   }
 
-
   context(dataAdapter: RelationalDataAdapter, migrationId?: string): RelationalContext
   context(dataAdapter: RelationalTransactionDataAdapter, migrationId?: string): RelationalTransactionContext
   context(dataAdapter: RelationalDataAdapter | RelationalTransactionDataAdapter, migrationId?: string): RelationalContext | RelationalTransactionContext {

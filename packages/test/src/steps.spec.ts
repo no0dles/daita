@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import * as ts from 'typescript';
-import {ExtendedAddCollectionFieldMigrationStep} from './document-add-collection-field.migration-step';
+import {ExtendedAddCollectionFieldMigrationStep} from '@daita/cli/dist/migration/steps';
 
 describe('steps', () => {
   it('AddCollectionFieldMigrationStep toNode()', () => {

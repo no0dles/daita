@@ -1,10 +1,10 @@
 import {assert} from 'chai';
-import {parseModelSchema, parseSchemaTables} from './parse-migration';
-import {parseSourceFile} from './utils';
 import {DocumentCollectionSchemaCollectionField} from '@daita/core';
 import {SourceCodeModelReferencePropertyType} from '@daita/core/dist/model/source-code-model-reference-property-type';
 import {RelationalTableSchemaTableReferenceKey} from '@daita/core/dist/schema/relational-table-schema-table-reference-key';
 import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
+import {parseModelSchema, parseSchemaTables} from '@daita/cli/dist/migration/generation';
+import {parseSourceFile} from '@daita/cli/dist/migration/generation/utils';
 
 function compareArray(actual: any[], expected: any[]) {
   assert.deepEqual(

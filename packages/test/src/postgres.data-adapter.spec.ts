@@ -1,10 +1,10 @@
 import {Pool} from 'pg';
-import {PostgresDataAdapter} from './postgres.data-adapter';
 import {expect} from 'chai';
-import {MigrationSchemaTable} from '../schema/migration-schema-table';
-import {MigrationSchema} from '../schema/migration-schema';
-import {MigrationSchemaTableField} from '../schema/migration-schema-table-field';
-import {MigrationDescription} from '../migration';
+import {MigrationSchemaTable} from '@daita/core/dist/schema/migration-schema-table';
+import {PostgresDataAdapter} from '@daita/core/dist/postgres';
+import {MigrationSchemaTableField} from '@daita/core/dist/schema/migration-schema-table-field';
+import {MigrationDescription} from '@daita/core';
+import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
 
 class MockedPool {
   private expectedQuery: string = '';
@@ -55,7 +55,7 @@ describe('postgres.data-adapter', () => {
     mockedPool.expect('SELECT * FROM "init_author" WHERE "init_name" = $1', ['foo'], {rows: [{init_name: 'foo'}]});
     const adapter = new PostgresDataAdapter(mockedPool.pool());
     const result = await adapter.select(mockedSchema, 'author', {
-      filter: {name: 'foo'}, orderBy: [], limit: null, skip: null,
+      filter: {name: 'foo'}, orderBy: [], include: [], limit: null, skip: null,
     });
     expect(result).deep.eq([
       {name: 'foo'},
@@ -65,7 +65,7 @@ describe('postgres.data-adapter', () => {
   it('select * from author', async () => {
     mockedPool.expect('SELECT * FROM "init_author"', [], {rows: [{init_name: 'foo'}]});
     const adapter = new PostgresDataAdapter(mockedPool.pool());
-    const result = await adapter.select(mockedSchema, 'author', {filter: null, orderBy: [], limit: null, skip: null});
+    const result = await adapter.select(mockedSchema, 'author', {filter: null, orderBy: [], include: [], limit: null, skip: null});
     expect(result).deep.eq([
       {name: 'foo'},
     ]);

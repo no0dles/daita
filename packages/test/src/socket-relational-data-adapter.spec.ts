@@ -8,9 +8,9 @@ import {
 import {dropDatabase} from '@daita/core/dist/postgres/postgres.util';
 import {PostgresDataAdapter} from '@daita/core/dist/postgres';
 import {createSocketApp} from '@daita/web/dist/socket/app';
-import {SocketRelationalDataAdapter} from './socket-relational-data-adapter';
 import schema = require('./test/schema');
 import {User} from './test/user';
+import {SocketRelationalDataAdapter} from '@daita/web-client';
 
 describe('socket-relational-data-adapter', () => {
   const postgresConnectionString = 'postgres://postgres:postgres@localhost/socket-test';

@@ -13,22 +13,13 @@
     "socket.io-client": "^2.3.0"
   },
   "devDependencies": {
-    "@daita/web": "^0.0.4-alpha.0",
-    "@types/chai": "^4.2.4",
-    "@types/mocha": "^5.2.7",
-    "chai": "^4.2.0",
-    "mocha": "^6.2.2",
-    "pg": "^7.14.0",
-    "source-map-support": "^0.5.16",
-    "ts-node": "^8.4.1",
     "typescript": "^3.6.4"
   },
   "homepage": "https://github.com/no0dles/cli",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "test": "mocha"
+    "build": "tsc"
   },
   "types": "dist/index.d.ts"
 }

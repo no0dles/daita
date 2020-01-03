@@ -1,5 +1,5 @@
 import {DefaultConstructable} from '../constructable';
-import {DocumentDataAdapter, RelationalDataAdapter} from '../adapter';
+import {DocumentDataAdapter} from '../adapter';
 import {DocumentCreateContext} from './document-create-context';
 import {DocumentFindContext} from './document-find-context';
 import {DocumentRemoveContext} from './document-remove-context';

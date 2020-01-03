@@ -2,11 +2,11 @@ import {PostgresDataAdapter} from '@daita/core/dist/postgres';
 import {RelationalContext, RelationalDataAdapter, RelationalTransactionContext} from '@daita/core';
 import * as http from 'http';
 import {expect} from 'chai';
-import {ApiRelationalDataAdapter} from './index';
 import {dropDatabase} from '@daita/core/dist/postgres/postgres.util';
 import schema = require('./test/schema');
 import {User} from './test/user';
 import {getApi} from '@daita/web/dist/api/app';
+import {ApiRelationalDataAdapter} from '@daita/web-client';
 
 describe('api-relational-data-adapter', () => {
   const postgresConnectionString = 'postgres://postgres:postgres@localhost/api-test';

@@ -1,9 +1,16 @@
 import {PoolClient} from 'pg';
 import {RelationalSelectQuery, RelationalTransactionDataAdapter} from '../adapter';
 import {RootFilter} from '../query';
-import {RelationalSelectContext} from '../context';
 import {MigrationSchema} from '../schema/migration-schema';
 import {MigrationSchemaTable} from '../schema/migration-schema-table';
+import {RelationalTableSchemaTableReferenceKey} from '../schema/relational-table-schema-table-reference-key';
+
+export interface SelectSql {
+  select: { tableAlias: string, field: string, alias: string }[]
+  from: { table: string, alias: string };
+  where: { tableAlias: string, field: string, operator: string }[];
+  orderBy: { tableAlias: string, field: string, direction: string }[];
+}
 
 export class PostgresTransactionDataAdapter implements RelationalTransactionDataAdapter {
   kind: 'transactionDataAdapter' = 'transactionDataAdapter';
@@ -11,20 +18,41 @@ export class PostgresTransactionDataAdapter implements RelationalTransactionData
   constructor(private client: PoolClient) {
   }
 
-  private mapResults(table: MigrationSchemaTable, rows: any[]) {
+  private buildMapper(key: string) {
+    const [alias, fieldName] = key.split('.');
+    if (alias === 'base') {
+      return {set: (row: any, val: any) => row[fieldName] = val};
+    } else {
+      const aliasPath = alias.substr('base_'.length).split('_');
+      return {
+        set: (row: any, val: any) => {
+          let current = row;
+          if (val !== null && val !== undefined) {
+            for (const path of aliasPath) {
+              if (!current[path]) {
+                current[path] = {};
+              }
+              current = current[path];
+            }
+            current[fieldName] = val;
+          } else if (row[aliasPath[0]] === undefined) {
+            row[aliasPath[0]] = null;
+          }
+        },
+      };
+    }
+  }
+
+  private mapResults(rows: any[]) {
     const mappedRows: any[] = [];
-    const fieldMapping: { [key: string]: string } = {};
+    const fieldMapping: { [key: string]: { set: (row: any, val: any) => void } } = {};
     for (const row of rows) {
       const mappedRow: any = {};
       for (const key of Object.keys(row)) {
         if (!fieldMapping[key]) {
-          const field = table.sourceField(key);
-          if (!field) {
-            throw new Error(`Could not find field ${key} in table ${table.name}`);
-          }
-          fieldMapping[key] = field.name;
+          fieldMapping[key] = this.buildMapper(key);
         }
-        mappedRow[fieldMapping[key]] = row[key];
+        fieldMapping[key].set(mappedRow, row[key]);
       }
       mappedRows.push(mappedRow);
     }
@@ -32,8 +60,8 @@ export class PostgresTransactionDataAdapter implements RelationalTransactionData
     return mappedRows;
   }
 
-  private mapSourceTable(table: MigrationSchemaTable, tableName: string) {
-    return `${table.sourceMigration.id}_${tableName}`;
+  private mapSourceTable(table: MigrationSchemaTable) {
+    return `${table.sourceMigration.id}_${table.name}`;
   }
 
   private getSourceField(table: MigrationSchemaTable, fieldName: string) {
@@ -61,7 +89,7 @@ export class PostgresTransactionDataAdapter implements RelationalTransactionData
     const values: any[] = [];
     const conditions = this.parseFilter(table, filter, values);
     console.log(conditions, filter);
-    let sql = `DELETE FROM "${this.mapSourceTable(table, tableName)}" ${
+    let sql = `DELETE FROM "${this.mapSourceTable(table)}" ${
       conditions.length > 0 ? 'WHERE ' + conditions : ''
     }`.trim();
 
@@ -96,7 +124,7 @@ export class PostgresTransactionDataAdapter implements RelationalTransactionData
       rowPlaceholders.push(`(${placeholders.join(', ')})`);
     }
 
-    let sql = `INSERT INTO "${this.mapSourceTable(table, tableName)}" (${fields
+    let sql = `INSERT INTO "${this.mapSourceTable(table)}" (${fields
       .map(field => `"${this.getSourceField(table, field)}"`)
       .join(', ')}) VALUES ${rowPlaceholders.join(', ')}`;
 
@@ -126,12 +154,22 @@ export class PostgresTransactionDataAdapter implements RelationalTransactionData
     const values: any[] = [];
     const conditions = this.parseFilter(table, query.filter, values);
 
-    let sql = `SELECT count(*) count FROM "${this.mapSourceTable(table, tableName)}" ${
+    let sql = `SELECT count(*) count FROM "${this.mapSourceTable(table)}" ${
       conditions.length > 0 ? 'WHERE ' + conditions : ''
     }`.trim();
 
     const result = await this.runQuery(sql, values);
     return parseInt(result.rows[0].count);
+  }
+
+  private addInclude(baseTable: MigrationSchemaTable, baseAlias: string, joinTable: MigrationSchemaTable, joinAlias: string, foreignKey: RelationalTableSchemaTableReferenceKey) {
+    const sql = ` LEFT JOIN "${this.mapSourceTable(joinTable)}" "${joinAlias}" ON `;
+
+    return sql + Array.from(Array(foreignKey.keys.length).keys()).map(index => {
+      const foreignField = joinTable.field(foreignKey.foreignKeys[index]);
+      const field = baseTable.field(foreignKey.keys[index]);
+      return `"${joinAlias}"."${foreignField.baseFieldName}" = "${baseAlias}"."${field.baseFieldName}"`;
+    }).join(' AND ');
   }
 
   async select(schema: MigrationSchema,
@@ -143,10 +181,38 @@ export class PostgresTransactionDataAdapter implements RelationalTransactionData
     const values: any[] = [];
     const conditions = this.parseFilter(table, query.filter, values);
 
+    const includedTables: { table: MigrationSchemaTable, alias: string }[] = [{table, alias: 'base'}];
 
-    let sql = `SELECT * FROM "${this.mapSourceTable(table, tableName)}" ${
+    let sql = `FROM "${this.mapSourceTable(table)}" "base" ${
       conditions.length > 0 ? 'WHERE ' + conditions : ''
     }`.trim();
+
+    for (const include of query.include) {
+      let baseAlias = 'base';
+      let baseTable = table;
+
+      for (const pathPart of include.path) {
+        const foreignKey = baseTable.foreignKeys.filter(fk => fk.name === pathPart)[0];
+        if (!foreignKey) {
+          throw new Error(`could not find foreign table for ${pathPart} of ${baseTable.name}`);
+        }
+
+        const foreignTable = schema.table(foreignKey.table);
+        if (!foreignTable) {
+          continue;
+        }
+
+        sql += this.addInclude(baseTable, baseAlias, foreignTable, `${baseAlias}_${pathPart}`, foreignKey);
+        baseAlias = `${baseAlias}_${pathPart}`;
+        baseTable = foreignTable;
+        includedTables.push({table: foreignTable, alias: baseAlias});
+      }
+    }
+
+    for (const includedTable of includedTables) {
+      fields.push(...includedTable.table.fieldNames.map(field => `"${includedTable.alias}"."${this.getSourceField(includedTable.table, field)}" "${includedTable.alias}.${field}"`));
+    }
+    sql = `SELECT ${fields.join(', ')}` + sql;
 
     if (query.skip) {
       sql = sql + ` OFFSET ${query.skip}`;
@@ -158,13 +224,13 @@ export class PostgresTransactionDataAdapter implements RelationalTransactionData
     if (query.orderBy.length > 0) {
       sql = sql + `ORDER BY ${
         query.orderBy
-          .map(orderBy => `${this.getSourceField(table, orderBy.path)} ${orderBy.direction}`)
+          .map(orderBy => `${this.getSourceField(table, orderBy.path[0])} ${orderBy.direction}`)//todo
           .join(', ')
       }`;
     }
 
     const result = await this.runQuery(sql, values);
-    return this.mapResults(table, result.rows);
+    return this.mapResults(result.rows);
   }
 
   async update(schema: MigrationSchema,
@@ -180,7 +246,7 @@ export class PostgresTransactionDataAdapter implements RelationalTransactionData
       fields.push(`"${this.getSourceField(table, key)}" = $${values.length}`);
     }
     const conditions = this.parseFilter(table, filter, values);
-    let sql = `UPDATE "${this.mapSourceTable(table, tableName)}" SET ${fields.join(', ')} ${
+    let sql = `UPDATE "${this.mapSourceTable(table)}" SET ${fields.join(', ')} ${
       conditions.length > 0 ? 'WHERE ' + conditions : ''
     }`;
 

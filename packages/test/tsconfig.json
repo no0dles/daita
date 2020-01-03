@@ -11,7 +11,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo",
-    "types" : ["node", "cli-ux"]
+    "types" : ["chai", "mocha"]
   },
   "exclude": [
     "node_modules",

@@ -1,14 +1,13 @@
-import {RelationalAddTableMigrationStep} from '../migration/steps/relation-add-table.migration-step';
-import {RelationalAddTableFieldMigrationStep} from '../migration/steps/relational-add-table-field.migration-step';
-import {PostgresDataAdapter} from '../postgres';
-import {dropDatabase} from '../postgres/postgres.util';
-import {RelationalSchema} from '../schema';
-import {RelationalDataAdapter} from "../adapter";
+import {PostgresDataAdapter} from '@daita/core/dist/postgres';
+import {dropDatabase} from '@daita/core/dist/postgres/postgres.util';
+import {DefaultConstructable} from '@daita/core/dist/constructable';
+import {
+  MigrationDescription,
+  RelationalAddTableFieldMigrationStep,
+  RelationalAddTableForeignKey, RelationalAddTableMigrationStep,
+  RelationalAddTablePrimaryKey, RelationalDataAdapter, RelationalSchema,
+} from '@daita/core';
 import {expect} from 'chai';
-import {RelationalAddTablePrimaryKey} from "../migration/steps/relational-add-table-primary-key.migration-step";
-import {RelationalAddTableForeignKey} from "../migration/steps/relational-add-table-foreign-key.migration-step";
-import {MigrationDescription} from "../migration";
-import {DefaultConstructable} from "../constructable";
 
 describe('relational-context', () => {
   const connectionString = 'postgres://postgres:postgres@localhost/daita-test';

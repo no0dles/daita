@@ -1,14 +1,18 @@
-import {getDocumentMigrationSteps, getRelationalMigrationSteps} from './get-migration-steps';
 import {assert} from 'chai';
-import {parseModelSchema} from './parse-migration';
-import {parseSourceFile} from './utils';
 import {DatabaseSchemaCollection} from '@daita/core/dist/schema/database-schema-collection';
 import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
+import {
+  getDocumentMigrationSteps,
+  getRelationalMigrationSteps,
+  parseModelSchema,
+} from '@daita/cli/dist/migration/generation';
 import {
   ExtendedAddCollectionFieldMigrationStep,
   ExtendedAddCollectionMigrationStep,
   ExtendedRelationalAddTableMigrationStep,
-} from '../steps';
+} from '@daita/cli/dist/migration/steps';
+import {parseSourceFile} from '@daita/cli/dist/migration/generation/utils';
+
 
 
 describe('get-migration-steps', () => {
