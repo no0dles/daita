@@ -19,7 +19,7 @@ $ npm install -g @daita/cli
 $ dc COMMAND
 running command...
 $ dc (-v|--version|version)
-@daita/cli/0.0.4-alpha.2 darwin-x64 node-v13.3.0
+@daita/cli/0.1.0-alpha.0 darwin-x64 node-v13.3.0
 $ dc --help [COMMAND]
 USAGE
   $ dc COMMAND
@@ -32,9 +32,9 @@ USAGE
 * [`dc doc`](#dc-doc)
 * [`dc help [COMMAND]`](#dc-help-command)
 * [`dc migration:add [NAME]`](#dc-migrationadd-name)
-* [`dc migration:apply [FILE]`](#dc-migrationapply-file)
+* [`dc migration:apply`](#dc-migrationapply)
 * [`dc migration:undo [FILE]`](#dc-migrationundo-file)
-* [`dc serve [FILE]`](#dc-serve-file)
+* [`dc serve`](#dc-serve)
 
 ## `dc diagram`
 
@@ -43,10 +43,6 @@ create diagram for schema
 ```
 USAGE
   $ dc diagram
-
-EXAMPLE
-  $ dc hello
-  hello world from ./src/hello.ts!
 ```
 
 ## `dc doc`
@@ -56,10 +52,6 @@ open documentation
 ```
 USAGE
   $ dc doc
-
-EXAMPLE
-  $ dc hello
-  hello world from ./src/hello.ts!
 ```
 
 ## `dc help [COMMAND]`
@@ -94,20 +86,18 @@ EXAMPLE
   $ dc migration add initial
 ```
 
-## `dc migration:apply [FILE]`
+## `dc migration:apply`
 
 apply relational migrations
 
 ```
 USAGE
-  $ dc migration:apply [FILE]
+  $ dc migration:apply
 
 OPTIONS
-  -s, --schema=schema  path to schema
-
-EXAMPLE
-  $ dc migration undo
-  hello world from ./src/hello.ts!
+  -c, --context=context      [default: default] name of context
+  -m, --migration=migration  migration id
+  -s, --schema=schema        [default: src/schema.ts] path to schema
 ```
 
 ## `dc migration:undo [FILE]`
@@ -120,25 +110,20 @@ USAGE
 
 OPTIONS
   -s, --schema=schema  name to print
-
-EXAMPLE
-  $ dc migration undo
-  hello world from ./src/hello.ts!
 ```
 
-## `dc serve [FILE]`
+## `dc serve`
 
 serve api
 
 ```
 USAGE
-  $ dc serve [FILE]
+  $ dc serve
 
 OPTIONS
-  -s, --schema=schema  name to print
-
-EXAMPLE
-  $ dc hello
-  hello world from ./src/hello.ts!
+  -c, --context=context      [default: default] name of context
+  -m, --migration=migration  migration id
+  -s, --schema=schema        [default: src/schema.ts] path to schema
+  -w, --watch                watch for reload
 ```
 <!-- commandsstop -->

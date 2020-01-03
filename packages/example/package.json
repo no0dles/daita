@@ -1,6 +1,6 @@
 {
   "name": "@daita/example",
-  "version": "1.0.0",
+  "version": "0.1.0-alpha.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,11 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@daita/core": "0.0.4-alpha.6",
+    "@daita/core": "^0.1.0-alpha.0",
     "pg": "^7.15.1"
   },
   "devDependencies": {
-    "@daita/cli": "0.0.4-alpha.2",
+    "@daita/cli": "^0.1.0-alpha.0",
     "@types/chai": "^4.2.4",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.17",

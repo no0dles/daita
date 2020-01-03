@@ -1,6 +1,6 @@
 {
   "name": "@daita/test",
-  "version": "0.0.4-alpha.0",
+  "version": "0.1.0-alpha.0",
   "author": "Pascal Bertschi @no0dles",
   "prettier": "@tooling/prettier",
   "private": true,
@@ -9,18 +9,18 @@
   },
   "bugs": "https://github.com/no0dles/cli/issues",
   "dependencies": {
-    "@daita/core": "file:../core",
     "@daita/cli": "file:../cli",
+    "@daita/core": "file:../core",
     "@daita/web": "file:../web",
     "@daita/web-client": "file:../web-client"
   },
   "devDependencies": {
     "@types/chai": "^4.2.4",
     "@types/mocha": "^5.2.7",
+    "@types/socket.io-client": "^1.4.32",
     "chai": "^4.2.0",
     "mocha": "^6.2.2",
     "nyc": "^14.1.1",
-    "@types/socket.io-client": "^1.4.32",
     "socket.io-client": "^2.3.0",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.4.1",
