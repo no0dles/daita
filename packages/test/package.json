@@ -2,12 +2,8 @@
   "name": "@daita/test",
   "version": "0.1.0-alpha.0",
   "author": "Pascal Bertschi @no0dles",
-  "prettier": "@tooling/prettier",
   "private": true,
-  "publishConfig": {
-    "access": "public"
-  },
-  "bugs": "https://github.com/no0dles/cli/issues",
+  "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
     "@daita/cli": "file:../cli",
     "@daita/core": "file:../core",
@@ -26,13 +22,13 @@
     "ts-node": "^8.4.1",
     "typescript": "^3.6.4"
   },
-  "homepage": "https://github.com/no0dles/cli",
+  "homepage": "https://github.com/no0dles/daita",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "coverage": "nyc mocha",
-    "test": "mocha"
+    "coverage": "./copy.sh && nyc mocha",
+    "test": "./copy.sh && mocha"
   },
   "types": "dist/index.d.ts"
 }

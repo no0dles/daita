@@ -1,5 +1,5 @@
-import {Client} from 'pg';
-import {parse, ConnectionOptions} from 'pg-connection-string';
+import { Client } from 'pg';
+import { parse, ConnectionOptions } from 'pg-connection-string';
 
 export async function ensureDatabaseExists(connectionString: string) {
   const config = parse(connectionString);

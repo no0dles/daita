@@ -1,11 +1,17 @@
-import {MigrationDescription} from "./migration-description";
-import {getMigrationSchema} from '../schema/migration-schema-builder';
+import { MigrationDescription } from './migration-description';
+import { getMigrationSchema } from '../schema/migration-schema-builder';
 
 export class MigrationTree {
   public migrationCount = 0;
-  private migrationMap: {[id: string]: MigrationDescription} = {};
-  private afterMigrations: {[id: string]: MigrationDescription[]} = {};
-  private rootMigrations: { [id: string]: {root: MigrationDescription, next: MigrationDescription | null, last: MigrationDescription | null}} = {};
+  private migrationMap: { [id: string]: MigrationDescription } = {};
+  private afterMigrations: { [id: string]: MigrationDescription[] } = {};
+  private rootMigrations: {
+    [id: string]: {
+      root: MigrationDescription;
+      next: MigrationDescription | null;
+      last: MigrationDescription | null;
+    };
+  } = {};
 
   constructor(migrations: MigrationDescription[] = []) {
     for (const migration of migrations) {
@@ -14,20 +20,20 @@ export class MigrationTree {
   }
 
   add(migration: MigrationDescription) {
-    if(this.migrationMap[migration.id]) {
+    if (this.migrationMap[migration.id]) {
       throw new Error(`migration with id ${migration.id} already exists`);
     }
 
     this.migrationMap[migration.id] = migration;
     this.migrationCount++;
-    if(migration.after) {
-      if(!this.afterMigrations[migration.after]) {
+    if (migration.after) {
+      if (!this.afterMigrations[migration.after]) {
         this.afterMigrations[migration.after] = [];
       }
       this.afterMigrations[migration.after].push(migration);
 
-      if(migration.resolve) {
-        if(!this.afterMigrations[migration.resolve]) {
+      if (migration.resolve) {
+        if (!this.afterMigrations[migration.resolve]) {
           this.afterMigrations[migration.resolve] = [];
         }
         this.afterMigrations[migration.resolve].push(migration);
@@ -53,7 +59,7 @@ export class MigrationTree {
     const migrations: MigrationDescription[] = [];
     const migrationIds = Object.keys(this.migrationMap);
     for (const migrationId of migrationIds) {
-      if(this.afterMigrations[migrationId]) {
+      if (this.afterMigrations[migrationId]) {
         continue;
       }
 
@@ -77,7 +83,9 @@ export class MigrationTree {
   path(id: string) {
     const targetMigration = this.migrationMap[id];
     const migrations: MigrationDescription[] = [targetMigration];
-    let current = targetMigration.after ? this.migrationMap[targetMigration.after] : null;
+    let current = targetMigration.after
+      ? this.migrationMap[targetMigration.after]
+      : null;
     while (current !== null) {
       migrations.unshift(current);
       current = current.after ? this.migrationMap[current.after] : null;

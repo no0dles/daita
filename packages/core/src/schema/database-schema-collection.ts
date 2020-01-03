@@ -1,12 +1,13 @@
-import {DocumentCollectionSchemaCollection} from './document-collection-schema-collection';
-import {DocumentCollectionSchemaCollectionField} from './document-collection-schema-collection-field';
+import { DocumentCollectionSchemaCollection } from './document-collection-schema-collection';
+import { DocumentCollectionSchemaCollectionField } from './document-collection-schema-collection-field';
 
 export class DatabaseSchemaCollection<
   TField extends DocumentCollectionSchemaCollectionField = DocumentCollectionSchemaCollectionField
-  >  implements DocumentCollectionSchemaCollection {
-  constructor(public name: string,
-              protected fieldMap: {[key: string]: TField }) {
-  }
+> implements DocumentCollectionSchemaCollection {
+  constructor(
+    public name: string,
+    protected fieldMap: { [key: string]: TField },
+  ) {}
 
   get fieldNames() {
     return Object.keys(this.fieldMap);

@@ -1,4 +1,4 @@
-import {DocumentCollectionSchemaCollectionFieldType} from './document-collection-schema-collection-field-type';
+import { DocumentCollectionSchemaCollectionFieldType } from './document-collection-schema-collection-field-type';
 
 export interface DocumentCollectionSchemaCollectionField {
   name: string;

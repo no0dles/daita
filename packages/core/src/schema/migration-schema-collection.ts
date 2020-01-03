@@ -1,11 +1,11 @@
-import {DatabaseSchemaCollection} from './database-schema-collection';
-import {DocumentCollectionSchemaCollection} from './document-collection-schema-collection';
-import {MigrationSchemaCollectionField} from './migration-schema-collection-field';
-import {MigrationDescription} from "../migration";
+import { DatabaseSchemaCollection } from './database-schema-collection';
+import { DocumentCollectionSchemaCollection } from './document-collection-schema-collection';
+import { MigrationSchemaCollectionField } from './migration-schema-collection-field';
+import { MigrationDescription } from '../migration';
 
-export class MigrationSchemaCollection extends DatabaseSchemaCollection<MigrationSchemaCollectionField>
+export class MigrationSchemaCollection
+  extends DatabaseSchemaCollection<MigrationSchemaCollectionField>
   implements DocumentCollectionSchemaCollection {
-
   constructor(name: string, public sourceMigration: MigrationDescription) {
     super(name, {});
   }

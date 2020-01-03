@@ -7,7 +7,6 @@ export class DatabaseSchema<
   TSchemaCollection extends DocumentCollectionSchemaCollection = DocumentCollectionSchemaCollection,
   TRelationalTable extends RelationalTableSchemaTable = RelationalTableSchemaTable
 > implements RelationalTableSchema, DocumentCollectionSchema {
-
   constructor(
     protected collectionMap: { [key: string]: TSchemaCollection } = {},
     protected tableMap: { [key: string]: TRelationalTable } = {},

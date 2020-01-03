@@ -1,4 +1,4 @@
-import {RelationalTableSchemaTable} from './relational-table-schema-table';
+import { RelationalTableSchemaTable } from './relational-table-schema-table';
 
 export interface RelationalTableSchema {
   tableNames: string[];

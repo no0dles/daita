@@ -13,7 +13,7 @@ import { DatabaseSchemaTable } from './database-schema-table';
 import { DocumentCollectionSchemaCollectionField } from './document-collection-schema-collection-field';
 import { RelationalTableSchemaTableField } from './relational-table-schema-table-field';
 import { RelationalTableSchemaTableFieldType } from './relational-table-schema-table-field-type';
-import {RelationalTableSchemaTableReferenceKey} from "./relational-table-schema-table-reference-key";
+import { RelationalTableSchemaTableReferenceKey } from './relational-table-schema-table-reference-key';
 
 export function capitalize(word: string) {
   if (!word) return word;
@@ -28,11 +28,16 @@ export function getSourceCodeSchema(
   const tableMap: { [key: string]: DatabaseSchemaTable } = {};
 
   for (const model of collections) {
-    const fieldsMap: { [key: string]: DocumentCollectionSchemaCollectionField } = {};
+    const fieldsMap: {
+      [key: string]: DocumentCollectionSchemaCollectionField;
+    } = {};
     for (const property of model.properties) {
       fieldsMap[property.name] = getSourceCodeProperty(property);
     }
-    collectionMap[model.name] = new DatabaseSchemaCollection(model.name, fieldsMap);
+    collectionMap[model.name] = new DatabaseSchemaCollection(
+      model.name,
+      fieldsMap,
+    );
   }
   for (const model of tables) {
     const fieldsMap: { [key: string]: RelationalTableSchemaTableField } = {};
@@ -43,7 +48,9 @@ export function getSourceCodeSchema(
           name: property.name,
           table: property.type.referenceModel.name,
           foreignKeys: property.type.referenceModel.primaryKeys,
-          keys: property.type.referenceModel.primaryKeys.map(key => `${property.name}${capitalize(key)}`),
+          keys: property.type.referenceModel.primaryKeys.map(
+            key => `${property.name}${capitalize(key)}`,
+          ),
         };
         foreignKeys.push(foreignKey);
       } else {
@@ -51,7 +58,12 @@ export function getSourceCodeSchema(
         fieldsMap[property.name] = srcProp;
       }
     }
-    tableMap[model.name] = new DatabaseSchemaTable(model.name, fieldsMap, model.primaryKeys, foreignKeys); //TODO
+    tableMap[model.name] = new DatabaseSchemaTable(
+      model.name,
+      fieldsMap,
+      model.primaryKeys,
+      foreignKeys,
+    ); //TODO
   }
 
   return new DatabaseSchema(collectionMap, tableMap);
@@ -90,12 +102,11 @@ function parseType(
         return type.type;
     }
   } else if (type instanceof SourceCodeModelReferencePropertyType) {
-
   } else if (type instanceof SourceCodeModelArrayPropertyType) {
     const subType = parseType(type.itemType);
     if (subType === 'string') {
       return 'string[]';
-    } else if(subType === 'number') {
+    } else if (subType === 'number') {
       return 'number[]';
     }
   }

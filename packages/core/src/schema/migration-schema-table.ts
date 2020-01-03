@@ -1,14 +1,18 @@
-import {DatabaseSchemaTable} from './database-schema-table';
-import {MigrationSchemaTableField} from './migration-schema-table-field';
-import {RelationalTableSchemaTable} from './relational-table-schema-table';
-import {MigrationDescription} from '../migration';
+import { DatabaseSchemaTable } from './database-schema-table';
+import { MigrationSchemaTableField } from './migration-schema-table-field';
+import { RelationalTableSchemaTable } from './relational-table-schema-table';
+import { MigrationDescription } from '../migration';
 
-export class MigrationSchemaTable extends DatabaseSchemaTable<MigrationSchemaTableField>
+export class MigrationSchemaTable
+  extends DatabaseSchemaTable<MigrationSchemaTableField>
   implements RelationalTableSchemaTable {
-
   private sourceFieldMap: { [key: string]: MigrationSchemaTableField } = {};
 
-  constructor(name: string, public sourceMigration: MigrationDescription, fields: MigrationSchemaTableField[] = []) {
+  constructor(
+    name: string,
+    public sourceMigration: MigrationDescription,
+    fields: MigrationSchemaTableField[] = [],
+  ) {
     super(name, {}, [], []);
     for (const field of fields) {
       this.add(field);
@@ -21,7 +25,9 @@ export class MigrationSchemaTable extends DatabaseSchemaTable<MigrationSchemaTab
 
   add(field: MigrationSchemaTableField) {
     this.fieldMap[field.name] = field;
-    this.sourceFieldMap[`${field.sourceMigration.id}_${field.sourceFieldName}`] = field;
+    this.sourceFieldMap[
+      `${field.sourceMigration.id}_${field.sourceFieldName}`
+    ] = field;
   }
 
   rename(oldFieldName: string, newFieldName: string) {

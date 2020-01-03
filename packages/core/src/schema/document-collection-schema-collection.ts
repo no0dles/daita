@@ -1,4 +1,4 @@
-import {DocumentCollectionSchemaCollectionField} from './document-collection-schema-collection-field';
+import { DocumentCollectionSchemaCollectionField } from './document-collection-schema-collection-field';
 
 export interface DocumentCollectionSchemaCollection {
   name: string;
@@ -6,4 +6,3 @@ export interface DocumentCollectionSchemaCollection {
   field(name: string): DocumentCollectionSchemaCollectionField | null;
   fields: DocumentCollectionSchemaCollectionField[];
 }
-

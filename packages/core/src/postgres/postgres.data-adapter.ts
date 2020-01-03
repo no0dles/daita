@@ -1,17 +1,17 @@
-import {Pool, PoolClient} from 'pg';
+import { Pool, PoolClient } from 'pg';
 import {
   RelationalDataAdapter,
   RelationalSelectQuery,
   RelationalTransactionDataAdapter,
 } from '../adapter';
-import {RootFilter} from '../query';
-import {PostgresTransactionDataAdapter} from './postgres-transaction-data-adapter';
-import {PostgresSqlBuilder} from './postgres.sql-builder';
-import {ensureDatabaseExists} from './postgres.util';
-import {MigrationSchema} from '../schema/migration-schema';
+import { RootFilter } from '../query';
+import { PostgresTransactionDataAdapter } from './postgres-transaction-data-adapter';
+import { PostgresSqlBuilder } from './postgres.sql-builder';
+import { ensureDatabaseExists } from './postgres.util';
+import { MigrationSchema } from '../schema/migration-schema';
 
 export class PostgresDataAdapter implements RelationalDataAdapter {
-  kind: "dataAdapter" = 'dataAdapter';
+  kind: 'dataAdapter' = 'dataAdapter';
 
   private readonly pool: Pool;
   private readonly connectionString: string | undefined;
@@ -71,7 +71,11 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
     }
   }
 
-  delete(schema: MigrationSchema, table: string, filter: RootFilter<any> | null): Promise<{ affectedRows: number }> {
+  delete(
+    schema: MigrationSchema,
+    table: string,
+    filter: RootFilter<any> | null,
+  ): Promise<{ affectedRows: number }> {
     return this.run(async client => {
       const adapter = new PostgresTransactionDataAdapter(client);
       return adapter.delete(schema, table, filter);
@@ -85,17 +89,22 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
     });
   }
 
-  select(schema: MigrationSchema, table: string, query: RelationalSelectQuery): Promise<any[]> {
+  select(
+    schema: MigrationSchema,
+    table: string,
+    query: RelationalSelectQuery,
+  ): Promise<any[]> {
     return this.run(async client => {
       const adapter = new PostgresTransactionDataAdapter(client);
       return adapter.select(schema, table, query);
     });
   }
 
-  update(schema: MigrationSchema,
-         table: string,
-         data: any,
-         filter: RootFilter<any> | null,
+  update(
+    schema: MigrationSchema,
+    table: string,
+    data: any,
+    filter: RootFilter<any> | null,
   ): Promise<{ affectedRows: number }> {
     return this.run(async client => {
       const adapter = new PostgresTransactionDataAdapter(client);
@@ -119,14 +128,18 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
     });
   }
 
-  raw(sql: string, values: any[]): Promise<{ rowCount: number, rows: any[] }> {
+  raw(sql: string, values: any[]): Promise<{ rowCount: number; rows: any[] }> {
     return this.run(async client => {
       const adapter = new PostgresTransactionDataAdapter(client);
       return adapter.raw(sql, values);
     });
   }
 
-  count(schema: MigrationSchema, table: string, query: RelationalSelectQuery): Promise<number> {
+  count(
+    schema: MigrationSchema,
+    table: string,
+    query: RelationalSelectQuery,
+  ): Promise<number> {
     return this.run(async client => {
       const adapter = new PostgresTransactionDataAdapter(client);
       return adapter.count(schema, table, query);

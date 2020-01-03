@@ -1,11 +1,11 @@
-import {DefaultConstructable} from '../constructable';
-import {DocumentDataAdapter} from '../adapter';
-import {DocumentCreateContext} from './document-create-context';
-import {DocumentFindContext} from './document-find-context';
-import {DocumentRemoveContext} from './document-remove-context';
-import {DocumentUpdateContext} from './document-update-context';
-import {MigrationSchema} from '../schema/migration-schema';
-import {MigrationTree} from '../migration';
+import { DefaultConstructable } from '../constructable';
+import { DocumentDataAdapter } from '../adapter';
+import { DocumentCreateContext } from './document-create-context';
+import { DocumentFindContext } from './document-find-context';
+import { DocumentRemoveContext } from './document-remove-context';
+import { DocumentUpdateContext } from './document-update-context';
+import { MigrationSchema } from '../schema/migration-schema';
+import { MigrationTree } from '../migration';
 
 export class DocumentContext {
   constructor(
@@ -29,6 +29,12 @@ export class DocumentContext {
 
   async transaction(action: (trx: DocumentContext) => Promise<any>) {
     //const trx = await this.dataAdapter.transaction();
-    await action(new DocumentContext(this.schema, this.migrationTree, this.rootDataAdapter));
+    await action(
+      new DocumentContext(
+        this.schema,
+        this.migrationTree,
+        this.rootDataAdapter,
+      ),
+    );
   }
 }

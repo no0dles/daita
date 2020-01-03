@@ -1,8 +1,9 @@
-import {RelationalTableSchemaTableField} from './relational-table-schema-table-field';
-import {RelationalTableSchemaTableFieldType} from './relational-table-schema-table-field-type';
-import {MigrationDescription} from "../migration";
+import { RelationalTableSchemaTableField } from './relational-table-schema-table-field';
+import { RelationalTableSchemaTableFieldType } from './relational-table-schema-table-field-type';
+import { MigrationDescription } from '../migration';
 
-export class MigrationSchemaTableField implements RelationalTableSchemaTableField {
+export class MigrationSchemaTableField
+  implements RelationalTableSchemaTableField {
   constructor(
     public name: string,
     public type: RelationalTableSchemaTableFieldType,
@@ -10,11 +11,9 @@ export class MigrationSchemaTableField implements RelationalTableSchemaTableFiel
     public defaultValue: any,
     public sourceMigration: MigrationDescription,
     public sourceFieldName: string,
-  ) {
-  }
+  ) {}
 
   get baseFieldName() {
     return `${this.sourceMigration.id}_${this.sourceFieldName}`;
   }
 }
-

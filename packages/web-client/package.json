@@ -2,11 +2,10 @@
   "name": "@daita/web-client",
   "version": "0.1.0-alpha.0",
   "author": "Pascal Bertschi @no0dles",
-  "prettier": "@tooling/prettier",
   "publishConfig": {
     "access": "public"
   },
-  "bugs": "https://github.com/no0dles/cli/issues",
+  "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
     "@daita/core": "^0.1.0-alpha.0",
     "axios": "^0.19.0",
@@ -15,7 +14,7 @@
   "devDependencies": {
     "typescript": "^3.6.4"
   },
-  "homepage": "https://github.com/no0dles/cli",
+  "homepage": "https://github.com/no0dles/daita",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {

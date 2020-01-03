@@ -1,9 +1,9 @@
-import {RelationalDataAdapter} from '../adapter/relational-data-adapter';
-import {MigrationSchema} from '../schema/migration-schema';
-import {getMigrationSchema} from '../schema/migration-schema-builder';
-import {RelationalTransactionContext} from './relational-transaction-context';
-import {MigrationTree} from '../migration/migration-tree';
-import {MigrationExecution} from '../migration';
+import { RelationalDataAdapter } from '../adapter/relational-data-adapter';
+import { MigrationSchema } from '../schema/migration-schema';
+import { getMigrationSchema } from '../schema/migration-schema-builder';
+import { RelationalTransactionContext } from './relational-transaction-context';
+import { MigrationTree } from '../migration/migration-tree';
+import { MigrationExecution } from '../migration';
 
 export class RelationalContext extends RelationalTransactionContext {
   constructor(
@@ -37,16 +37,16 @@ export class RelationalContext extends RelationalTransactionContext {
 
           const currentMigration = currentMigrations[0];
           if (!(await exec.exists(currentMigration.id, this.rootDataAdapter))) {
-            const migrationPath = this.migrationTree.path(
-              currentMigration.id,
-            );
+            const migrationPath = this.migrationTree.path(currentMigration.id);
             const migrationSchema = getMigrationSchema(migrationPath);
-            await exec.apply(currentMigration, migrationSchema, this.rootDataAdapter);
+            await exec.apply(
+              currentMigration,
+              migrationSchema,
+              this.rootDataAdapter,
+            );
           }
 
-          currentMigrations = this.migrationTree.next(
-            currentMigration.id,
-          );
+          currentMigrations = this.migrationTree.next(currentMigration.id);
         }
       },
     };

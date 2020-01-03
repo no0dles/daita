@@ -1,3 +1,3 @@
-import {DefaultConstructable} from '../constructable';
+import { DefaultConstructable } from '../constructable';
 
-export type TableInformation<T> = DefaultConstructable<T> | {name:string};
+export type TableInformation<T> = DefaultConstructable<T> | { name: string };

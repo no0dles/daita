@@ -1,4 +1,4 @@
-import {DefaultConstructable} from '../constructable';
+import { DefaultConstructable } from '../constructable';
 
 export class DocumentRemoveContext<T> {
   constructor(private type: DefaultConstructable<T>) {}

@@ -1,5 +1,5 @@
-import {DocumentCollectionSchemaCollectionFieldType} from '../../schema';
-import {BaseMigrationStep} from './base-migration-step';
+import { DocumentCollectionSchemaCollectionFieldType } from '../../schema';
+import { BaseMigrationStep } from './base-migration-step';
 
 export class AddCollectionFieldMigrationStep implements BaseMigrationStep {
   kind = 'add_collection_field';
@@ -10,6 +10,5 @@ export class AddCollectionFieldMigrationStep implements BaseMigrationStep {
     public type: DocumentCollectionSchemaCollectionFieldType,
     public required: boolean = false,
     public defaultValue: any = null,
-  ) {
-  }
+  ) {}
 }

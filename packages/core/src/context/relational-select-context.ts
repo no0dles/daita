@@ -1,8 +1,8 @@
-import {RelationalTransactionDataAdapter} from '../adapter';
-import {RootFilter} from '../query/root-filter';
-import {MigrationSchema} from '../schema/migration-schema';
-import {TableInformation} from './table-information';
-import {ExcludePrimitive} from './types/exclude-primitive';
+import { RelationalTransactionDataAdapter } from '../adapter';
+import { RootFilter } from '../query/root-filter';
+import { MigrationSchema } from '../schema/migration-schema';
+import { TableInformation } from './table-information';
+import { ExcludePrimitive } from './types/exclude-primitive';
 
 interface RelationalSelectState {
   skip: number | null;
@@ -29,7 +29,7 @@ abstract class BaseRelationalSelectContext<T, C> {
       get: (obj: any, prop: any) => {
         //const table = this.schema.table(tableName);
         //const field = table?.field(prop);
-        return {path: [prop]};
+        return { path: [prop] };
       },
     };
 
@@ -37,53 +37,48 @@ abstract class BaseRelationalSelectContext<T, C> {
   }
 
   skip(value: number) {
-    return this.newContext(
-      {
-        filter: this.state.filter,
-        limit: this.state.limit,
-        include: this.state.include,
-        skip: value,
-        orderBy: this.state.orderBy,
-      },
-    );
+    return this.newContext({
+      filter: this.state.filter,
+      limit: this.state.limit,
+      include: this.state.include,
+      skip: value,
+      orderBy: this.state.orderBy,
+    });
   }
 
   limit(value: number) {
-    return this.newContext(
-      {
-        filter: this.state.filter,
-        limit: value,
-        include: this.state.include,
-        skip: this.state.skip,
-        orderBy: this.state.orderBy,
-      },
-    );
+    return this.newContext({
+      filter: this.state.filter,
+      limit: value,
+      include: this.state.include,
+      skip: this.state.skip,
+      orderBy: this.state.orderBy,
+    });
   }
 
   where(filter: RootFilter<T>) {
     if (this.state.filter) {
       return this.newContext({
-          filter: {$and: [this.state.filter, filter]},
-          limit: this.state.limit,
-          include: this.state.include,
-          skip: this.state.skip,
-          orderBy: this.state.orderBy,
-        },
-      );
+        filter: { $and: [this.state.filter, filter] },
+        limit: this.state.limit,
+        include: this.state.include,
+        skip: this.state.skip,
+        orderBy: this.state.orderBy,
+      });
     }
 
     return this.newContext({
-        filter: filter,
-        limit: this.state.limit,
-        skip: this.state.skip,
-        include: this.state.include,
-        orderBy: this.state.orderBy,
-      },
-    );
+      filter: filter,
+      limit: this.state.limit,
+      skip: this.state.skip,
+      include: this.state.include,
+      orderBy: this.state.orderBy,
+    });
   }
 
   async exec(): Promise<T[]> {
-    const results = await this.dataAdapter.select(this.schema,
+    const results = await this.dataAdapter.select(
+      this.schema,
       this.type.name,
       this.state,
     );
@@ -101,13 +96,12 @@ abstract class BaseRelationalSelectContext<T, C> {
         construct() {
           return {};
         },
-      });
+      })();
       return true;
     } catch (err) {
       return false;
     }
   }
-
 
   private mapResult(result: any): T {
     const instance = new (<any>this.type)();
@@ -118,17 +112,13 @@ abstract class BaseRelationalSelectContext<T, C> {
   }
 
   async execFirst(): Promise<T | null> {
-    const results = await this.dataAdapter.select(
-      this.schema,
-      this.type.name,
-      {
-        filter: this.state.filter,
-        limit: 1,
-        orderBy: this.state.orderBy,
-        skip: this.state.skip,
-        include: this.state.include,
-      },
-    );
+    const results = await this.dataAdapter.select(this.schema, this.type.name, {
+      filter: this.state.filter,
+      limit: 1,
+      orderBy: this.state.orderBy,
+      skip: this.state.skip,
+      include: this.state.include,
+    });
     const item = results[0] || null;
     if (!item) {
       return null;
@@ -155,22 +145,19 @@ abstract class BaseRelationalSelectContext<T, C> {
     const selectorValue = this.getSelectorPath(this.type.name);
     const selectorResult = selector(selectorValue);
 
-    return this.newContext(
-      {
-        filter: this.state.filter,
-        limit: this.state.limit,
-        skip: this.state.skip,
-        orderBy: this.state.orderBy,
-        include: [
-          ...this.state.include,
-          {path: selectorResult.path},
-        ],
-      },
-    );
+    return this.newContext({
+      filter: this.state.filter,
+      limit: this.state.limit,
+      skip: this.state.skip,
+      orderBy: this.state.orderBy,
+      include: [...this.state.include, { path: selectorResult.path }],
+    });
   }
 
-  protected addOrderBy(selector: (table: T) => any,
-                       direction?: 'asc' | 'desc') {
+  protected addOrderBy(
+    selector: (table: T) => any,
+    direction?: 'asc' | 'desc',
+  ) {
     const selectorValue = this.getSelectorPath(this.type.name);
     const selectorResult = selector(selectorValue);
 
@@ -185,7 +172,7 @@ abstract class BaseRelationalSelectContext<T, C> {
         include: this.state.include,
         orderBy: [
           ...this.state.orderBy,
-          {path: selectorResult.path, direction: direction || 'asc'},
+          { path: selectorResult.path, direction: direction || 'asc' },
         ],
       },
     );
@@ -194,8 +181,9 @@ abstract class BaseRelationalSelectContext<T, C> {
   protected abstract newContext(state: RelationalSelectState): C;
 }
 
-
-export class RelationalSelectContextOrdered<T> extends BaseRelationalSelectContext<T, RelationalSelectContextOrdered<T>> {
+export class RelationalSelectContextOrdered<
+  T
+> extends BaseRelationalSelectContext<T, RelationalSelectContextOrdered<T>> {
   orderThenBy(
     selector: (table: T) => any,
     direction?: 'asc' | 'desc',
@@ -213,7 +201,10 @@ export class RelationalSelectContextOrdered<T> extends BaseRelationalSelectConte
   }
 }
 
-export class RelationalSelectContext<T> extends BaseRelationalSelectContext<T, RelationalSelectContext<T>> {
+export class RelationalSelectContext<T> extends BaseRelationalSelectContext<
+  T,
+  RelationalSelectContext<T>
+> {
   orderBy(
     selector: (table: T) => any,
     direction?: 'asc' | 'desc',
@@ -221,7 +212,9 @@ export class RelationalSelectContext<T> extends BaseRelationalSelectContext<T, R
     return this.addOrderBy(selector, direction);
   }
 
-  protected newContext(state: RelationalSelectState): RelationalSelectContext<T> {
+  protected newContext(
+    state: RelationalSelectState,
+  ): RelationalSelectContext<T> {
     return new RelationalSelectContext<T>(
       this.dataAdapter,
       this.schema,

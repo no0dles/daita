@@ -1,5 +1,5 @@
-import {DefaultConstructable} from '../constructable';
-import {QueryFilter} from '../query/query-filter';
+import { DefaultConstructable } from '../constructable';
+import { QueryFilter } from '../query/query-filter';
 
 export class DocumentFindContext<T> {
   constructor(private type: DefaultConstructable<T>) {}

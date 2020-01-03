@@ -1,4 +1,4 @@
-import {RelationalTableSchemaTableFieldType} from './relational-table-schema-table-field-type';
+import { RelationalTableSchemaTableFieldType } from './relational-table-schema-table-field-type';
 
 export interface RelationalTableSchemaTableField {
   name: string;

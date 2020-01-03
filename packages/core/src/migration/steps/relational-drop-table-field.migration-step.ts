@@ -1,8 +1,8 @@
-import {BaseMigrationStep} from './base-migration-step';
+import { BaseMigrationStep } from './base-migration-step';
 
-export class RelationalDropTableFieldMigrationStep implements BaseMigrationStep {
+export class RelationalDropTableFieldMigrationStep
+  implements BaseMigrationStep {
   kind = 'drop_table_field';
 
-  constructor(public table: string, public fieldName: string) {
-  }
+  constructor(public table: string, public fieldName: string) {}
 }

@@ -1,4 +1,4 @@
-import {MigrationStep} from './migration-step';
+import { MigrationStep } from './migration-step';
 
 export interface MigrationDescription {
   id: string;

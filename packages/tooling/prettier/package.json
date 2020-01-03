@@ -1,0 +1,10 @@
+{
+  "name": "@daita/prettier",
+  "version": "0.1.0-alpha.0",
+  "private": true,
+  "main": "prettier.json",
+  "license": "MIT",
+  "scripts": {
+    "build": ""
+  }
+}

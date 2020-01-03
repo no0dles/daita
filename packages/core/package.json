@@ -4,7 +4,6 @@
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "prettier": "@tooling/prettier",
   "publishConfig": {
     "access": "public"
   },
@@ -13,7 +12,7 @@
     "build": "rm -rf dist || true && rm -f tsconfig.tsbuildinfo && tsc"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "pg-connection-string": "^2.1.0",
     "uuid": "^3.3.3"

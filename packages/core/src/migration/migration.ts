@@ -1,4 +1,4 @@
-import {RelationalTableSchemaTableFieldType} from '../schema';
+import { RelationalTableSchemaTableFieldType } from '../schema';
 
 export interface TableField {
   type: RelationalTableSchemaTableFieldType;
@@ -10,5 +10,5 @@ export interface Table {
   tableName: string;
   fields: { [key: string]: TableField };
   primaryKeys: string[];
-  foreignKeys: { table: string, keys: string[], foreignKeys: string[] }[];
+  foreignKeys: { table: string; keys: string[]; foreignKeys: string[] }[];
 }

@@ -1,4 +1,4 @@
-import {SourceCodeModelProperty} from './source-code-model-property';
+import { SourceCodeModelProperty } from './source-code-model-property';
 
 export class SourceCodeModel {
   properties: SourceCodeModelProperty[] = [];

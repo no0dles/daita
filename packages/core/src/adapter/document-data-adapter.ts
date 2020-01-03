@@ -1,4 +1,4 @@
-import {Doc} from '../context/types/document';
+import { Doc } from '../context/types/document';
 
 export interface DocumentDataAdapter {
   get(collection: string, id: string): Promise<Doc | null>;
@@ -9,8 +9,5 @@ export interface DocumentDataAdapter {
 
   delete(collection: string, id: string): Promise<void>;
 
-  query(
-    collection: string,
-    filter: any,
-  ): Promise<Doc[]>;
+  query(collection: string, filter: any): Promise<Doc[]>;
 }

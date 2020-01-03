@@ -1,8 +1,8 @@
-import {RelationalTransactionDataAdapter} from '../adapter';
-import {MigrationSchema} from '../schema/migration-schema';
-import {ExcludeNonPrimitive} from './types/exclude-non-primitive';
-import {TableInformation} from './table-information';
-import {MigrationSchemaTable} from '../schema/migration-schema-table';
+import { RelationalTransactionDataAdapter } from '../adapter';
+import { MigrationSchema } from '../schema/migration-schema';
+import { ExcludeNonPrimitive } from './types/exclude-non-primitive';
+import { TableInformation } from './table-information';
+import { MigrationSchemaTable } from '../schema/migration-schema-table';
 
 export class RelationalInsertContext<T> {
   private table: MigrationSchemaTable;
@@ -29,16 +29,22 @@ export class RelationalInsertContext<T> {
       if (index >= 0) {
         objectKeys.splice(index, 1);
         const value = item[field.name];
-        if (field.defaultValue !== undefined && (value === undefined || value === null)) {
+        if (
+          field.defaultValue !== undefined &&
+          (value === undefined || value === null)
+        ) {
           object[field.name] = field.defaultValue;
         } else {
           object[field.name] = value;
         }
       } else if (field.defaultValue !== undefined) {
-        object[field.name] = field.defaultValue
+        object[field.name] = field.defaultValue;
       }
 
-      if (field.required && (object[field.name] === null || object[field.name] === undefined)) {
+      if (
+        field.required &&
+        (object[field.name] === null || object[field.name] === undefined)
+      ) {
         throw new Error(`${field.name} is required`);
       }
 

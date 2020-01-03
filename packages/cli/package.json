@@ -5,11 +5,10 @@
   "bin": {
     "dc": "./bin/run"
   },
-  "prettier": "@tooling/prettier",
   "publishConfig": {
     "access": "public"
   },
-  "bugs": "https://github.com/no0dles/cli/issues",
+  "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
     "@daita/core": "^0.1.0-alpha.0",
     "@daita/web": "^0.1.0-alpha.0",
@@ -37,7 +36,7 @@
     "/npm-shrinkwrap.json",
     "/oclif.manifest.json"
   ],
-  "homepage": "https://github.com/no0dles/cli",
+  "homepage": "https://github.com/no0dles/daita",
   "keywords": [
     "oclif"
   ],

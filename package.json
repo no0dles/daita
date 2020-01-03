@@ -17,8 +17,10 @@
     "clean:nyc_output": "find . -name \".nyc_output\" -type d -prune -exec rm -rf '{}' +",
     "clean:node_modules": "find . -name \"node_modules\" -type d -prune -exec rm -rf '{}' +"
   },
-  "workspaces": [
-    "packages/**"
-  ],
+  "workspaces": {
+    "packages":[
+      "packages/**"
+    ]
+  },
   "license": "MIT"
 }
