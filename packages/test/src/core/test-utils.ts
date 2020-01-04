@@ -13,7 +13,7 @@ export interface AdapterTest {
 
 export function testCase(action: (testAdapter: AdapterTest) => Promise<any>) {
   for (const testAdapter of testAdapters) {
-    test(testAdapter.name, async () => {
+    it(testAdapter.name, async () => {
       await action(testAdapter);
     });
   }
@@ -27,7 +27,7 @@ export interface SetupAdapterOptions {
 }
 
 export function setupAdapters(options: SetupAdapterOptions) {
-  beforeAll(async () => {
+  before(async () => {
     console.log('before all');
     for (const setup of testAdapters) {
       await setup.before();
@@ -56,7 +56,7 @@ export function setupAdapters(options: SetupAdapterOptions) {
     }
   });
 
-  afterAll(async () => {
+  after(async () => {
     for (const testAdapter of testAdapters) {
       await testAdapter.after();
     }

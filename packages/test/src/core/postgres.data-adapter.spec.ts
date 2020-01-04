@@ -72,7 +72,7 @@ describe('postgres.data-adapter', () => {
   const mockedPool = new MockedPool();
   const mockedSchema = new MockedSchema();
 
-  test('select * from author where name = foo', async () => {
+  it('select * from author where name = foo', async () => {
     mockedPool.expect(
       'SELECT "base"."init_name" "base.name", "base"."init_test" "base.test" FROM "init_author" "base" WHERE "init_name" = $1',
       ['foo'],
@@ -89,7 +89,7 @@ describe('postgres.data-adapter', () => {
     expect(result).deep.eq([{ name: 'foo' }]);
   });
 
-  test('select * from author', async () => {
+  it('select * from author', async () => {
     mockedPool.expect('SELECT "base"."init_name" "base.name", "base"."init_test" "base.test" FROM "init_author" "base"', [], {
       rows: [{ 'base.name': 'foo' }],
     });
@@ -104,7 +104,7 @@ describe('postgres.data-adapter', () => {
     expect(result).deep.eq([{ name: 'foo' }]);
   });
 
-  test('delete from author where name = foo', async () => {
+  it('delete from author where name = foo', async () => {
     mockedPool.expect(
       'DELETE FROM "init_author" WHERE "init_name" = $1',
       ['foo'],
@@ -117,7 +117,7 @@ describe('postgres.data-adapter', () => {
     expect(result.affectedRows).be.eq(1);
   });
 
-  test('delete from author where name $eq foo', async () => {
+  it('delete from author where name $eq foo', async () => {
     mockedPool.expect(
       'DELETE FROM "init_author" WHERE "init_name" = $1',
       ['foo'],
@@ -130,7 +130,7 @@ describe('postgres.data-adapter', () => {
     expect(result.affectedRows).be.eq(1);
   });
 
-  test('update author set test=bar where name $eq foo', async () => {
+  it('update author set test=bar where name $eq foo', async () => {
     mockedPool.expect(
       'UPDATE "init_author" SET "init_test" = $1 WHERE "init_name" = $2',
       ['bar', 'foo'],
@@ -150,7 +150,7 @@ describe('postgres.data-adapter', () => {
     expect(result.affectedRows).be.eq(1);
   });
 
-  test('insert into author values (name=bar), (name=foo)', async () => {
+  it('insert into author values (name=bar), (name=foo)', async () => {
     mockedPool.expect(
       'INSERT INTO "init_author" ("init_name") VALUES ($1), ($2)',
       ['bar', 'foo'],
@@ -163,7 +163,7 @@ describe('postgres.data-adapter', () => {
     ]);
   });
 
-  test('insert into author values (name=bar), (test=foo)', async () => {
+  it('insert into author values (name=bar), (test=foo)', async () => {
     mockedPool.expect(
       'INSERT INTO "init_author" ("init_name", "init_test") VALUES ($1, $2), ($3, $4)',
       ['bar', null, null, 'foo'],

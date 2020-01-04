@@ -5,10 +5,10 @@
   "private": true,
   "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
-    "@daita/cli": "file:../cli",
-    "@daita/core": "file:../core",
-    "@daita/web": "file:../web",
-    "@daita/web-client": "file:../web-client"
+    "@daita/cli": "0.1.0-alpha.0",
+    "@daita/core": "0.1.0-alpha.0",
+    "@daita/web": "0.1.0-alpha.0",
+    "@daita/web-client": "0.1.0-alpha.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.4",
@@ -29,8 +29,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "coverage": "./copy.sh && nyc mocha",
-    "test": "./copy.sh && mocha",
+    "coverage": "nyc mocha",
+    "test": "mocha",
     "lint": "tslint src/**/*.ts",
     "prettier": "prettier 'src/**/*.ts' --write"
   },
