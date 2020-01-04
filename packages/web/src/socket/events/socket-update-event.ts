@@ -3,4 +3,5 @@ export interface SocketUpdateEvent {
   table: string;
   set: any;
   where: any;
+  tid?: string;
 }

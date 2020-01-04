@@ -5,3 +5,5 @@ export * from './migration';
 export * from './model';
 export * from './schema';
 export * from './query';
+export * from './defer';
+export * from './debouncer';

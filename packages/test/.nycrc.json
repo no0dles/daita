@@ -1,7 +1,9 @@
 {
   "extension": [".ts"],
   "include": [
-    "node_modules/@daita/**"
+    "**/node_modules/@daita/**",
+    "node_modules/@daita/**",
+    "../../packages/**"
   ],
   "excludeNodeModules": false,
   "exclude": [

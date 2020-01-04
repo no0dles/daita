@@ -17,16 +17,6 @@ export class ApiRelationalDataAdapter
     schema: MigrationSchema,
     tableName: string,
     query: RelationalSelectQuery,
-  ): Promise<number>;
-  async count(
-    schema: MigrationSchema,
-    tableName: string,
-    query: RelationalSelectQuery,
-  ): Promise<number>;
-  async count(
-    schema: MigrationSchema,
-    tableName: string,
-    query: RelationalSelectQuery,
   ): Promise<number> {
     return this.send(
       axios.post(`${this.baseUrl}/${schema.migrationId}/count/${tableName}`, {
@@ -35,16 +25,6 @@ export class ApiRelationalDataAdapter
     );
   }
 
-  async delete(
-    schema: MigrationSchema,
-    tableName: string,
-    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
-  ): Promise<{ affectedRows: number }>;
-  async delete(
-    schema: MigrationSchema,
-    tableName: string,
-    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
-  ): Promise<{ affectedRows: number }>;
   async delete(
     schema: MigrationSchema,
     tableName: string,
@@ -92,16 +72,6 @@ export class ApiRelationalDataAdapter
     schema: MigrationSchema,
     tableName: string,
     query: RelationalSelectQuery,
-  ): Promise<any[]>;
-  async select(
-    schema: MigrationSchema,
-    tableName: string,
-    query: RelationalSelectQuery,
-  ): Promise<any[]>;
-  async select(
-    schema: MigrationSchema,
-    tableName: string,
-    query: RelationalSelectQuery,
   ): Promise<any[]> {
     return this.send(
       axios.post(`${this.baseUrl}/${schema.migrationId}/select/${tableName}`, {
@@ -113,18 +83,6 @@ export class ApiRelationalDataAdapter
     );
   }
 
-  async update(
-    schema: MigrationSchema,
-    tableName: string,
-    data: any,
-    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
-  ): Promise<{ affectedRows: number }>;
-  async update(
-    schema: MigrationSchema,
-    tableName: string,
-    data: any,
-    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
-  ): Promise<{ affectedRows: number }>;
   async update(
     schema: MigrationSchema,
     tableName: string,

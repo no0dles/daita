@@ -1,21 +1,26 @@
-import { TableInformation } from '@daita/core/dist/context/table-information';
-import { RelationalContext, RelationalDataAdapter } from '@daita/core';
-import { SocketUpdateEvent } from './socket/events/socket-update-event';
-import { SocketInsertEvent } from './socket/events/socket-insert-event';
-import { SocketSelectEvent } from './socket/events/socket-select-event';
-import { SocketRawEvent } from './socket/events/socket-raw-event';
+import {TableInformation} from '@daita/core/dist/context/table-information';
+import {
+  RelationalContext,
+  RelationalDataAdapter,
+  RelationalTransactionContext, RelationalTransactionDataAdapter,
+} from '@daita/core';
+import {SocketUpdateEvent} from './socket/events/socket-update-event';
+import {SocketInsertEvent} from './socket/events/socket-insert-event';
+import {SocketSelectEvent} from './socket/events/socket-select-event';
+import {SocketRawEvent} from './socket/events/socket-raw-event';
 import {
   AppMigrationTreeOptions,
   AppOptions,
   AppSchemaOptions,
 } from './app-options';
-import { getMigrationSchema } from '@daita/core/dist/schema/migration-schema-builder';
-import { SocketDeleteEvent } from './socket/events/socket-delete-event';
-import { SocketCountEvent } from './socket/events/socket-count-event';
+import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
+import {SocketDeleteEvent} from './socket/events/socket-delete-event';
+import {SocketCountEvent} from './socket/events/socket-count-event';
+import {RelationalSelectContextOrdered} from '@daita/core/dist/context/relational-select-context';
 
 export const insert = async (
   type: TableInformation<any>,
-  context: RelationalContext,
+  context: RelationalTransactionContext,
   body: SocketInsertEvent,
 ) => {
   if (body.data instanceof Array) {
@@ -34,7 +39,7 @@ export const insert = async (
 
 export const remove = (
   type: TableInformation<any>,
-  context: RelationalContext,
+  context: RelationalTransactionContext,
   body: SocketDeleteEvent,
 ) => {
   return context
@@ -45,7 +50,7 @@ export const remove = (
 
 export const update = (
   type: TableInformation<any>,
-  context: RelationalContext,
+  context: RelationalTransactionContext,
   body: SocketUpdateEvent,
 ) => {
   return context
@@ -57,7 +62,7 @@ export const update = (
 
 export const count = async (
   type: TableInformation<any>,
-  context: RelationalContext,
+  context: RelationalTransactionContext,
   body: SocketCountEvent,
 ) => {
   let query = await context.select(type as any);
@@ -71,16 +76,13 @@ export const count = async (
 
 export const select = async (
   type: TableInformation<any>,
-  context: RelationalContext,
+  context: RelationalTransactionContext,
   body: SocketSelectEvent,
 ) => {
   let query = await context.select(type as any);
 
   if (body.where) {
     query = query.where(body.where);
-  }
-  if (body.orderBy) {
-    //query = query.orderBy(body.orderBy);
   }
   if (body.limit !== undefined && body.limit !== null) {
     query = query.limit(body.limit);
@@ -89,36 +91,32 @@ export const select = async (
     query = query.skip(body.skip);
   }
 
+  if (body.orderBy) {
+    //todo
+    const orderedQuery = new RelationalSelectContextOrdered<any>(
+      (<any>query).dataAdapter,
+      (<any>query).schema,
+      (<any>query).type,
+      {
+        filter: (<any>query).state.filter,
+        limit: (<any>query).state.limit,
+        skip: (<any>query).state.skip,
+        include: (<any>query).state.include,
+        orderBy: [
+          ...(<any>query).state.orderBy,
+          ...body.orderBy,
+        ],
+      },
+    );
+    return await orderedQuery.exec();
+  }
+
   return await query.exec();
 };
 
 export const raw = (
-  dataAdapter: RelationalDataAdapter,
+  dataAdapter: RelationalTransactionDataAdapter | RelationalDataAdapter,
   body: SocketRawEvent,
 ) => {
   return dataAdapter.raw(body.sql, body.values);
 };
-
-export function getContext(
-  options: AppOptions,
-  migrationId: string,
-): RelationalContext {
-  if ((<AppSchemaOptions>options).schema) {
-    return (<AppSchemaOptions>options).schema.context(
-      options.dataAdapter,
-      migrationId,
-    );
-  }
-
-  if ((<AppMigrationTreeOptions>options).migrationTree) {
-    const migrationTree = (<AppMigrationTreeOptions>options).migrationTree;
-    const path = migrationTree.path(migrationId);
-    return new RelationalContext(
-      getMigrationSchema(path),
-      (<AppMigrationTreeOptions>options).migrationTree,
-      options.dataAdapter,
-    );
-  }
-
-  throw new Error('Could not create context');
-}

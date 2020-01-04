@@ -5,4 +5,5 @@ export interface SocketSelectEvent {
   orderBy?: any[];
   limit?: number;
   skip?: number;
+  tid?: string;
 }

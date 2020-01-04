@@ -38,8 +38,6 @@ export class PostgresTransactionDataAdapter
               current = current[path];
             }
             current[fieldName] = val;
-          } else if (row[aliasPath[0]] === undefined) {
-            row[aliasPath[0]] = null;
           }
         },
       };
@@ -204,7 +202,7 @@ export class PostgresTransactionDataAdapter
     schema: MigrationSchema,
     tableName: string,
     query: RelationalSelectQuery,
-  ): Promise<Document[]> {
+  ): Promise<any[]> {
     const table = this.getSchemaTable(schema, tableName);
     const fields: string[] = [];
     const values: any[] = [];
@@ -261,19 +259,12 @@ export class PostgresTransactionDataAdapter
         ),
       );
     }
-    sql = `SELECT ${fields.join(', ')}` + sql;
-
-    if (query.skip) {
-      sql = sql + ` OFFSET ${query.skip}`;
-    }
-    if (query.limit) {
-      sql = sql + ` LIMIT ${query.limit}`;
-    }
+    sql = `SELECT ${fields.join(', ')} ` + sql;
 
     if (query.orderBy.length > 0) {
       sql =
         sql +
-        `ORDER BY ${query.orderBy
+        ` ORDER BY ${query.orderBy
           .map(
             orderBy =>
               `${this.getSourceField(table, orderBy.path[0])} ${
@@ -282,6 +273,14 @@ export class PostgresTransactionDataAdapter
           ) //todo
           .join(', ')}`;
     }
+
+    if (query.skip) {
+      sql = sql + ` OFFSET ${query.skip}`;
+    }
+    if (query.limit) {
+      sql = sql + ` LIMIT ${query.limit}`;
+    }
+
 
     const result = await this.runQuery(sql, values);
     return this.mapResults(result.rows);

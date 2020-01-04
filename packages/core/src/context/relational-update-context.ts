@@ -46,11 +46,6 @@ export class RelationalUpdateContext<T> {
   }
 
   async exec(): Promise<{ affectedRows: number }> {
-    const table = this.schema.table(this.type.name);
-    if (!table) {
-      throw new Error(`Could not find table ${this.type.name}`);
-    }
-
     return this.dataAdapter.update(
       this.schema,
       this.type.name,

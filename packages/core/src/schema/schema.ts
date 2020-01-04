@@ -3,18 +3,18 @@ import {
   RelationalDataAdapter,
   RelationalTransactionDataAdapter,
 } from '../adapter';
-import { Constructable, DefaultConstructable } from '../constructable';
+import {Constructable, DefaultConstructable} from '../constructable';
 import {
   DocumentContext,
   RelationalContext,
   RelationalTransactionContext,
 } from '../context';
-import { Doc } from '../context/types/document';
-import { getMigrationSchema } from './migration-schema-builder';
-import { MigrationDescription } from '../migration';
-import { MigrationTree } from '../migration/migration-tree';
-import { SchemaTableOptions } from './schema-table-options';
-import { MigrationSchema } from './migration-schema';
+import {Doc} from '../context/types/document';
+import {getMigrationSchema} from './migration-schema-builder';
+import {MigrationDescription} from '../migration';
+import {MigrationTree} from '../migration/migration-tree';
+import {SchemaTableOptions} from './schema-table-options';
+import {MigrationSchema} from './migration-schema';
 
 export class RelationalSchema {
   private migrationTree = new MigrationTree();
@@ -50,14 +50,11 @@ export class RelationalSchema {
     migrationId?: string,
   ): RelationalContext | RelationalTransactionContext {
     if (this.migrationTree.migrationCount === 0) {
-      const schema = getMigrationSchema([]);
-      return this.getContext(schema, this.migrationTree, dataAdapter);
+      return this.getContext(getMigrationSchema([]), this.migrationTree, dataAdapter);
     }
 
     if (migrationId) {
-      const path = this.migrationTree.path(migrationId);
-      const schema = getMigrationSchema(path);
-      return this.getContext(schema, this.migrationTree, dataAdapter);
+      return this.getContext(getMigrationSchema(this.migrationTree.path(migrationId)), this.migrationTree, dataAdapter);
     }
 
     const lastMigrations = this.migrationTree.last();
@@ -99,8 +96,7 @@ export class DocumentSchema {
 
   context(dataAdapter: DocumentDataAdapter): DocumentContext {
     if (this.migrationTree.migrationCount === 0) {
-      const schema = getMigrationSchema([]);
-      return new DocumentContext(schema, this.migrationTree, dataAdapter);
+      return new DocumentContext(getMigrationSchema([]), this.migrationTree, dataAdapter);
     }
 
     const lastMigrations = this.migrationTree.last();
