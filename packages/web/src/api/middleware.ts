@@ -28,6 +28,33 @@ export function relationalMiddleware(options: AppOptions): express.Router {
     }
   });
 
+  router.post('/trx/:tid', async (req, res, next) => {
+    try {
+      await manager.beginTransaction(req.params.tid);
+      res.status(200).send();
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  router.post('/trx/:tid/commit', async (req, res, next) => {
+    try {
+      await manager.commitTransaction(req.params.tid);
+      res.status(200).send();
+    } catch (e) {
+      next(e);
+    }
+  });
+
+  router.post('/trx/:tid/rollback', async (req, res, next) => {
+    try {
+      await manager.rollbackTransaction(req.params.tid);
+      res.status(200).send();
+    } catch (e) {
+      next(e);
+    }
+  });
+
   router.post('/:migration/insert/:table', async (req, res, next) => {
     try {
       const context = manager.getContext(req.params.migration, req.query.tid);
@@ -85,41 +112,3 @@ export function relationalMiddleware(options: AppOptions): express.Router {
 
   return router;
 }
-
-// router.post('/:migration/transaction', async (req, res, next) => {
-//   const result: { results: { success: boolean; result: any, message?: string }[]; success: boolean } = {
-//     results: [],
-//     success: true,
-//   };
-//
-//   try {
-//     const context = getContext(req.params.migration);
-//     await context
-//       .transaction(async (trx) => {
-//         for (const action of req.body.actions) {
-//           const type = getTable(action.table, req.params.migration);
-//           switch (action.type) {
-//             case 'update':
-//               result.results.push({result: await update(type, context, action.body), success: true});
-//               break;
-//             case 'select':
-//               result.results.push({result: await select(type, context, action.body), success: true});
-//               break;
-//             case 'delete':
-//               result.results.push({result: await remove(type, context, action.body), success: true});
-//               break;
-//             case 'insert':
-//               result.results.push({result: await insert(type, context, action.body), success: true});
-//               break;
-//           }
-//         }
-//       });
-//     res.status(200).json(result);
-//   } catch (e) {
-//     console.log(e);
-//     result.results.push({success: false, result: null, message: e.message});
-//     result.success = false;
-//     //(<any>result).test = true;
-//     res.status(409).json(result);
-//   }
-// });

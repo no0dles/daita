@@ -5,10 +5,21 @@ export interface AdapterTest {
   name: string;
   context: RelationalContext;
   dataAdapter: RelationalDataAdapter;
+  isRemote: boolean;
 
   before(): Promise<any>;
 
   after(): Promise<any>;
+}
+
+export function remoteTestCase(action: (testAdapter: AdapterTest) => Promise<any>) {
+  for (const testAdapter of testAdapters) {
+    if (testAdapter.isRemote) {
+      it(testAdapter.name, async () => {
+        await action(testAdapter);
+      });
+    }
+  }
 }
 
 export function testCase(action: (testAdapter: AdapterTest) => Promise<any>) {
@@ -28,7 +39,6 @@ export interface SetupAdapterOptions {
 
 export function setupAdapters(options: SetupAdapterOptions) {
   before(async () => {
-    console.log('before all');
     for (const setup of testAdapters) {
       await setup.before();
     }
@@ -40,7 +50,6 @@ export function setupAdapters(options: SetupAdapterOptions) {
   });
 
   beforeEach(async () => {
-    console.log('before each');
     if (options.seed) {
       for (const testAdapter of testAdapters) {
         await options.seed(testAdapter);

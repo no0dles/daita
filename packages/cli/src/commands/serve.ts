@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as http from 'http';
 import { getApp } from '@daita/web';
 import { getMigrationSchema } from '@daita/core/dist/schema/migration-schema-builder';
-import { RelationalContext } from '@daita/core';
+import {Debouncer, RelationalContext} from '@daita/core';
 
 export default class Serve extends Command {
   static description = 'serve api';
@@ -62,7 +62,6 @@ export default class Serve extends Command {
         this.warn(`could not load schema`);
         return;
       }
-      console.log(schemaInfo);
 
       const lastMigrations = schemaInfo.migrationTree.last();
       if (lastMigrations.length > 1) {
@@ -85,7 +84,7 @@ export default class Serve extends Command {
         migrationTree: schemaInfo.migrationTree,
       });
       server = app.listen(8765, () => {
-        console.log('listening on port 8765');
+        this.debug('listening on port 8765');
       });
     }, 200);
 

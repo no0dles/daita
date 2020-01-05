@@ -8,6 +8,7 @@ export class PostgresAdapterTest implements AdapterTest {
   context!: RelationalContext;
   dataAdapter!: PostgresDataAdapter;
   name = 'postgres-data-adapter';
+  isRemote = false;
 
   constructor(private connectionString: string, private schema: RelationalSchema) {
 

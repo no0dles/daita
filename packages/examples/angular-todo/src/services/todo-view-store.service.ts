@@ -33,7 +33,6 @@ export class TodoViewStore {
 
   async removeCompleted() {
     await this.context.delete(Todo).where({done: true}).exec();
-    console.log(this.todos);
     this.todos = this.getWithCompleted(false);
   }
 

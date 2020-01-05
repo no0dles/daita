@@ -15,7 +15,6 @@ describe('data-adapter', () => {
     try {
       await adapterTest.dataAdapter.raw('SELECT foo as date', []);
     } catch (e) {
-      console.log(e);
       expect(e.message).to.be.eq('column "foo" does not exist');
     }
   }));

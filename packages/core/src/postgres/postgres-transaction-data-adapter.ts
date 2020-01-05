@@ -7,6 +7,7 @@ import { RootFilter } from '../query';
 import { MigrationSchema } from '../schema/migration-schema';
 import { MigrationSchemaTable } from '../schema/migration-schema-table';
 import { RelationalTableSchemaTableReferenceKey } from '../schema/relational-table-schema-table-reference-key';
+import * as debug from 'debug';
 
 export interface SelectSql {
   select: { tableAlias: string; field: string; alias: string }[];
@@ -93,7 +94,6 @@ export class PostgresTransactionDataAdapter
     const table = this.getSchemaTable(schema, tableName);
     const values: any[] = [];
     const conditions = this.parseFilter(table, filter, values);
-    console.log(conditions, filter);
     const sql = `DELETE FROM "${this.mapSourceTable(table)}" ${
       conditions.length > 0 ? 'WHERE ' + conditions : ''
     }`.trim();
@@ -141,7 +141,7 @@ export class PostgresTransactionDataAdapter
   }
 
   private async runQuery(sql: string, values: any[]) {
-    console.log(sql);
+    debug('daita:core:postgres')(sql);
     return await this.mapError(this.client.query(sql, values));
   }
 
@@ -153,7 +153,7 @@ export class PostgresTransactionDataAdapter
       if (e.code === '23505') {
         throw new Error('primary key already exists');
       }
-      console.log(e);
+      debug('daita:core:postgres')(e.message);
       throw e;
     }
   }

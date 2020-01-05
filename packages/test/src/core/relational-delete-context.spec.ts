@@ -131,7 +131,6 @@ describe('relational-delete-context', () => {
     },
   });
 
-
   describe('should execute delete(User).where(id: b)', () => testCase(async (adapterTest) => {
     const result = await adapterTest.context
       .delete(User)
@@ -141,5 +140,4 @@ describe('relational-delete-context', () => {
     const serverUsers = await adapterTest.context.select(User).exec();
     expect(serverUsers).to.be.deep.eq([userA]);
   }));
-
 });

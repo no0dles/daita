@@ -85,7 +85,6 @@ describe('parse-migration', () => {
     );
     const tables = parseSchemaTables(sourceFile, 'schema');
     const userRole = tables.filter(t => t.name === 'UserRole')[0];
-    console.log(tables);
     const roleProperty = userRole.properties.filter(p => p.name === 'role')[0];
     assert.equal(
       roleProperty.type instanceof SourceCodeModelReferencePropertyType,

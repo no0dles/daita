@@ -16,6 +16,8 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@types/debug": "^4.1.5",
+    "debug": "^4.1.1",
     "pg-connection-string": "^2.1.0",
     "uuid": "^3.3.3"
   },
@@ -24,14 +26,14 @@
     "pg": "7.14.x"
   },
   "devDependencies": {
+    "@daita/tslint": "0.1.0-alpha.0",
     "@types/mongodb": "^3.3.7",
     "@types/pg": "^7.11.2",
     "@types/uuid": "^3.4.6",
     "mongodb": "^3.3.3",
     "pg": "^7.14.0",
-    "typescript": "~3.6.4",
     "tslint": "^5.20.1",
-    "@daita/tslint": "0.1.0-alpha.0"
+    "typescript": "~3.6.4"
   },
   "gitHead": "2fcc782cbb64197462c122bf6277034ed37292a2"
 }

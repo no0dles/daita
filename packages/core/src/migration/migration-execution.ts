@@ -7,6 +7,7 @@ import { RelationalDropTableMigrationStep } from './steps/relational-drop-table.
 import { RelationalAddTablePrimaryKey } from './steps/relational-add-table-primary-key.migration-step';
 import { RelationalAddTableForeignKey } from './steps/relational-add-table-foreign-key.migration-step';
 import { Table } from './migration';
+import * as debug from 'debug';
 
 export class MigrationExecution {
   async init(dataAdapter: RelationalDataAdapter) {
@@ -174,7 +175,7 @@ export class MigrationExecution {
       ]);
 
       for (const sql of sqls) {
-        console.log(sql);
+        debug('daita:core:migration')(sql);
         await client.raw(sql, []);
       }
     });

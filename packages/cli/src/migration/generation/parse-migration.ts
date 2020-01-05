@@ -60,7 +60,7 @@ class ParseContext {
     if (!this.modelDeclarations[sourceFile.fileName]) {
       return null;
     }
-    return this.modelDeclarations[sourceFile.fileName][name] ?? null;
+    return this.modelDeclarations[sourceFile.fileName][name] || null;
   }
 
   addModel(sourceFile: ts.SourceFile, sourceCodeModel: SourceCodeModel) {

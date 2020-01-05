@@ -82,6 +82,7 @@ export class ContextManager {
 
     const dataAdapter = await transactionDefer.promise;
     const debouncer = new Debouncer(() => {
+      delete this.transactions[transactionId];
       commitDefer.reject(new Error('timeout'));
       if (this.timeoutEmitter) {
         this.timeoutEmitter.emit('trxTimeout', {tid: transactionId});
@@ -98,6 +99,7 @@ export class ContextManager {
   async commitTransaction(transactionId: string) {
     const transaction = this.transactions[transactionId];
     if (transaction) {
+      delete this.transactions[transactionId];
       transaction.commitDefer.resolve();
       await transaction.resultDefer.promise;
     }
@@ -107,6 +109,7 @@ export class ContextManager {
   async rollbackTransaction(transactionId: string) {
     const transaction = this.transactions[transactionId];
     if (transaction) {
+      delete this.transactions[transactionId];
       transaction.commitDefer.reject(new Error('canceled'));
       await transaction.resultDefer.promise;
     }

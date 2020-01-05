@@ -25,7 +25,7 @@
     "@types/config": "^0.0.36",
     "@types/inquirer": "^6.5.0",
     "@types/listr": "^0.14.2",
-    "typescript": "^3.6.4",
+    "typescript": "~3.6.4",
     "tslint": "^5.20.1",
     "@daita/tslint": "0.1.0-alpha.0"
   },

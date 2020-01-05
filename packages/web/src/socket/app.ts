@@ -12,6 +12,7 @@ import {ContextManager} from '../context-manager';
 import {SocketBeginTransaction} from './events/socket-begin-transaction';
 import {SocketRollbackTransaction} from './events/socket-rollback-transaction';
 import {SocketCommitTransaction} from './events/socket-commit-transaction';
+import * as debug from 'debug';
 
 function handle<T>(
   socket: socket.Socket,
@@ -19,7 +20,7 @@ function handle<T>(
   action: (data: T) => Promise<any>,
 ) {
   socket.on(event, async data => {
-    console.log('received event ' + event, data);
+    debug('daita:web:socket')('received event ' + event, data);
     try {
       const result = await action(data);
       socket.emit(event, {cid: data.cid, result: result});

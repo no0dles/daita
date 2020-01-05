@@ -20,7 +20,7 @@
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.2",
     "@types/socket.io": "^2.1.4",
-    "typescript": "^3.6.4",
+    "typescript": "~3.6.4",
     "tslint": "^5.20.1",
     "@daita/tslint": "0.1.0-alpha.0"
   },

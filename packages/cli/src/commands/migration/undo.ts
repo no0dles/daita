@@ -1,5 +1,4 @@
 import { Command, flags } from '@oclif/command';
-import * as Listr from 'listr';
 import {
   getMigrationRelativePath,
   getSchemaInformation,
@@ -53,7 +52,7 @@ export default class Undo extends Command {
     );
 
     if (successImport && successRegistration) {
-      console.log('delete migration ' + file.sourceFile.fileName);
+      this.debug('delete migration ' + file.sourceFile.fileName);
       fs.unlinkSync(file.sourceFile.fileName);
     }
   }

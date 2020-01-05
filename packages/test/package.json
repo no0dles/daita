@@ -11,6 +11,7 @@
     "@daita/web-client": "0.1.0-alpha.0"
   },
   "devDependencies": {
+    "@daita/tslint": "0.1.0-alpha.0",
     "@types/chai": "^4.2.4",
     "@types/mocha": "^5.2.7",
     "@types/socket.io-client": "^1.4.32",
@@ -20,9 +21,8 @@
     "socket.io-client": "^2.3.0",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.4.1",
-    "typescript": "^3.6.4",
     "tslint": "^5.20.1",
-    "@daita/tslint": "0.1.0-alpha.0"
+    "typescript": "~3.6.4"
   },
   "homepage": "https://github.com/no0dles/daita",
   "license": "MIT",

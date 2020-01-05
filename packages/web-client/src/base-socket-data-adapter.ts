@@ -1,32 +1,24 @@
 import {AndRootFilter, Defer, OrRootFilter, RelationalSelectQuery} from '@daita/core';
 import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
+import * as debug from 'debug';
+import {IdGenerator} from './id-generator';
 
 export class BaseSocketDataAdapter {
-  protected defers: { [key: string]: Defer<any> } = {};
+  protected idGenerator: IdGenerator
 
-  constructor(protected socket: SocketIOClient.Socket, private globalEmitValue: any) {
+  constructor(protected defers: { [key: string]: Defer<any> }, protected socket: any, private globalEmitValue: any) {
+    this.idGenerator = new IdGenerator();
   }
 
   protected emit<T>(event: string, data: T) {
-    const cid = this.generateCid();
+    const cid = this.idGenerator.next();
     const defer = new Defer<any>();
     this.defers[cid] = defer;
-    console.log('emit event ' + event + ' with cid ' + cid);
+    debug('web:socket')('emit event ' + event + ' with cid ' + cid);
     this.socket.emit(event, {...data, cid: cid, ...this.globalEmitValue});
     return defer.promise;
   }
 
-  protected generateCid() {
-    let result = '';
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 12; i++) {
-      result += characters.charAt(
-        Math.floor(Math.random() * characters.length),
-      );
-    }
-    return result;
-  }
 
   count(
     schema: MigrationSchema,

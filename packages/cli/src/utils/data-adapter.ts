@@ -29,7 +29,7 @@ export function getRelationalDataAdapter(
       return new PostgresDataAdapter(
         `postgres://${contextConfig.user}:${contextConfig.password}@${
           contextConfig.host
-        }:${contextConfig.port ?? 5432}/${contextConfig.database}`,
+        }:${contextConfig.port || 5432}/${contextConfig.database}`,
       );
     }
   }
