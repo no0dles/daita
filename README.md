@@ -1,7 +1,8 @@
-![alt text](./logo.png "Daita Logo")
+![daita logo](./logo.png)
 
 ## Motiviation
-The daita project aims to make the development and deployment of applications easier and faster without sacrifising security. These goals are archived by the key features of daita.
+The daita project aims to make the development and deployment of applications easier and faster without sacrifising security. 
+These goals are archived by the key features of daita.
 
 ## Key features
 
@@ -9,13 +10,18 @@ The daita project aims to make the development and deployment of applications ea
 The @daita/cli contains a huge set of commands. 
 
 **Generate database migrations**
-Create migrations based on typescript classes. There is no need for annotations because the cli gets it‘s metadata directly from the typescript AST. This allows the cli to gather more information from less verbose code.
+Create migrations based on typescript classes. 
+There is no need for annotations because the cli gets it‘s metadata directly from the typescript AST. 
+This allows the cli to gather more information from less verbose code.
 
 **Backward compatible schema**
-All migrations create backward compatible data structures. Old applications will continue to work after applying breaking code changes to the database. Adding new required or renaming existing fields will not impact the previous versions of your application and only apply for the new one.
+All migrations create backward compatible data structures. 
+Old applications will continue to work after applying breaking code changes to the database. 
+Adding new required or renaming existing fields will not impact the previous versions of your application and only apply for the new one.
 
 **HTTP API / Websocket Server integration**
-The cli contains an integrated web server that gives access to the database over the web. This eliminates the need of an own api server and boosts productivity.
+The cli contains an integrated web server that gives access to the database over the web. 
+This eliminates the need of an own api server and boosts productivity.
 
 **Generate data diagramms**
 
@@ -26,10 +32,12 @@ The cli contains an integrated web server that gives access to the database over
 ### Advanced security
 
 ## Documentation and examples
-The Documentation and getting started guide is available [here](https://app.gitbook.com/@no0dles/s/daita/). Example projects are in the [packages/examples](./packages/examples) folder.
+The Documentation and getting started guide is available [here](https://app.gitbook.com/@no0dles/s/daita/). 
+Example projects are in the [packages/examples](./packages/examples) folder.
 
 ## Contributing
-As I use this for my own projects, I know this might not be the perfect approach for all the projects out there. If you have any ideas, just open an issue and tell me what you think.
+As I use this for my own projects, I know this might not be the perfect approach for all the projects out there. 
+If you have any ideas, just open an issue and tell me what you think.
 
 
 ## Open todos
