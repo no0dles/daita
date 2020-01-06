@@ -19,7 +19,7 @@ $ npm install -g @daita/cli
 $ dc COMMAND
 running command...
 $ dc (-v|--version|version)
-@daita/cli/0.1.0-alpha.0 darwin-x64 node-v13.3.0
+@daita/cli/0.1.1-alpha.0 darwin-x64 node-v13.3.0
 $ dc --help [COMMAND]
 USAGE
   $ dc COMMAND

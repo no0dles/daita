@@ -1,6 +1,6 @@
 {
   "name": "@daita/core",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.1-alpha.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,7 +26,7 @@
     "pg": "7.14.x"
   },
   "devDependencies": {
-    "@daita/tslint": "0.1.0-alpha.0",
+    "@daita/tslint": "^0.1.1-alpha.0",
     "@types/mongodb": "^3.3.7",
     "@types/pg": "^7.11.2",
     "@types/uuid": "^3.4.6",
