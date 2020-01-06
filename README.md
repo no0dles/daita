@@ -1,5 +1,4 @@
-# Daita
-Yet another O(R) mapper
+![alt text](./logo.png "Daita Logo")
 
 ## Motiviation
 The daita project aims to make the development and deployment of applications easier and faster without sacrifising security. These goals are archived by the key features of daita.
