@@ -1,0 +1,10 @@
+{
+  "daita": {
+    "context": {
+      "default": {
+        "type": "{{DATA_ADAPTER_TYPE}}",
+        "uri": "{{DATA_ADAPTER_URI}}"
+      }
+    }
+  }
+}

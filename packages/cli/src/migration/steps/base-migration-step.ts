@@ -3,4 +3,5 @@ import { BaseMigrationStep } from '@daita/core/dist/migration/steps/base-migrati
 
 export interface ExtendedMigrationStep extends BaseMigrationStep {
   toNode(): ts.NewExpression;
+  className: string;
 }

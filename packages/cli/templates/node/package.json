@@ -1,0 +1,28 @@
+{
+  "name": "{{NAME}}",
+  "version": "1.0.0",
+  "description": "A new daita project",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "mocha",
+    "build": "tsc"
+  },
+  "license": "{{LICENSE}}",
+  "dependencies": {
+    "@daita/core": "{{DAITA_VERSION}}",
+    "uuid": "^3.3.3",
+    {{DATA_ADAPTER_NPM}}
+  },
+  "devDependencies": {
+    "@daita/cli": "{{DAITA_VERSION}}",
+    "@types/chai": "^4.2.4",
+    "@types/mocha": "^5.2.7",
+    "@types/uuid": "^3.4.6",
+    "@types/node": "^12.12.17",
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "source-map-support": "^0.5.16",
+    "ts-node": "^8.4.1",
+    "typescript": "~3.6.4"
+  }
+}

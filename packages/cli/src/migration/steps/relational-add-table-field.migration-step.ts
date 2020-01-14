@@ -9,9 +9,12 @@ import {
 export class ExtendedRelationalAddTableFieldMigrationStep
   extends RelationalAddTableFieldMigrationStep
   implements ExtendedMigrationStep {
+  get className() {
+    return RelationalAddTableFieldMigrationStep.name;
+  }
   toNode(): ts.NewExpression {
     return ts.createNew(
-      ts.createIdentifier(RelationalAddTableFieldMigrationStep.name),
+      ts.createIdentifier(this.className),
       undefined,
       [
         ts.createStringLiteral(this.table),

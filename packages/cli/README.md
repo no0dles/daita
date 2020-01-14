@@ -34,6 +34,7 @@ USAGE
 * [`dc migration:add [NAME]`](#dc-migrationadd-name)
 * [`dc migration:apply`](#dc-migrationapply)
 * [`dc migration:undo [FILE]`](#dc-migrationundo-file)
+* [`dc new [NAME]`](#dc-new-name)
 * [`dc serve`](#dc-serve)
 
 ## `dc diagram`
@@ -110,6 +111,22 @@ USAGE
 
 OPTIONS
   -s, --schema=schema  name to print
+```
+
+## `dc new [NAME]`
+
+creates a new project
+
+```
+USAGE
+  $ dc new [NAME]
+
+OPTIONS
+  -d, --database=postgres|mysql|mongodb  database
+  -l, --license=license                  license of project
+  -p, --path=path                        path of project
+  --npm-client=yarn|npm                  [default: npm] npm client to install dependencies
+  --skip-install                         skip install of dependencies
 ```
 
 ## `dc serve`

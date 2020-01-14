@@ -10,7 +10,7 @@ import { getMigrationSchema } from '@daita/core/dist/schema/migration-schema-bui
 import {Debouncer, RelationalContext} from '@daita/core';
 
 export default class Serve extends Command {
-  static description = 'serve api';
+  static description = 'serve daita api';
 
   static flags = {
     schema: flags.string({

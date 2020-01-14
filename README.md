@@ -31,8 +31,12 @@ This eliminates the need of an own api server and boosts productivity.
 
 ### Advanced security
 
+## Usage
+
+
+
 ## Documentation and examples
-The Documentation and getting started guide is available [here](https://app.gitbook.com/@no0dles/s/daita/). 
+The Documentation and getting started guide is available [here](https://docs.daita.ch/). 
 Example projects are in the [packages/examples](./packages/examples) folder.
 
 ## Contributing
@@ -52,6 +56,8 @@ If you have any ideas, just open an issue and tell me what you think.
 - [ ] more tests
 - [ ] test field name with underscore
 - [ ] perf test for mapping of data
+- [ ] get extend fields from ast
+- [ ] allow constants in insert, update
 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://

@@ -1,0 +1,15 @@
+<svg width="309px" height="248px" viewBox="0 0 309 248" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" stroke="#979797" fill="#FFFFFF" x="-70.5" y="169.5" width="438" height="595"></rect>
+        <path d="M-71,183.558621 C13.7228265,197.007801 97.9670632,197.007801 181.73271,183.558621 C265.498357,170.109441 327.587453,171.790588 368,188.602063 L368,143 L-71,143 L-71,183.558621 Z" id="Path-2" fill="#88C0D0"></path>
+        <rect id="Rectangle" fill="#88C0D0" x="-71" y="-83" width="439" height="252"></rect>
+        <rect id="Rectangle" fill="#4C566A" x="0" y="0" width="309" height="248" rx="8"></rect>
+        <rect id="Rectangle" fill="#434C5E" x="0" y="23" width="309" height="225" rx="8"></rect>
+        <text id="npx-@daita/cli-new-f" font-family="Lato-Regular, Lato" font-size="18" font-weight="normal" fill="#FFFFFF">
+            <tspan x="19" y="57">npx @daita/cli new foo</tspan>
+        </text>
+        <circle id="Oval" fill="#BF616A" cx="13" cy="12" r="6"></circle>
+        <circle id="Oval" fill="#EBCB8B" cx="30" cy="12" r="6"></circle>
+        <circle id="Oval" fill="#A3BE8C" cx="49" cy="12" r="6"></circle>
+    </g>
+</svg>

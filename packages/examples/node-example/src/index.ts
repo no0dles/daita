@@ -5,6 +5,7 @@ import {PostgresDataAdapter} from "@daita/core/dist/postgres";
 const adapter = new PostgresDataAdapter("postgres://localhost/datam");
 const context = schema.context(adapter);
 
+//context.login('admin', 'admin');
 context.transaction(async(trx) => {
   await trx.insert(User).value({
     firstName:  'bar',
@@ -20,3 +21,4 @@ context.transaction(async(trx) => {
 
   console.log(users);
 });
+

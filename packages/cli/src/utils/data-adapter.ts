@@ -1,27 +1,29 @@
-import * as config from 'config';
 import { PostgresDataAdapter } from '@daita/core/dist/postgres';
 import { Command } from '@oclif/command';
 import { RelationalDataAdapter } from '@daita/core';
+
+export interface DaitaContextConfig {
+  type: string;
+  host?: string;
+  user?: string;
+  password?: string;
+  uri?: string;
+  port?: number;
+  database?: string;
+}
 
 export function getRelationalDataAdapter(
   flags: { context: string | undefined },
   cmd: Command,
 ): RelationalDataAdapter | null {
+  const config = require('config');
   const contextName = flags.context || 'default';
   if (!config.has(`daita.context.${contextName}`)) {
     cmd.error('Missing daita context configuration');
     return null;
   }
 
-  const contextConfig = config.get<{
-    type: string;
-    host?: string;
-    user?: string;
-    password?: string;
-    uri?: string;
-    port?: number;
-    database?: string;
-  }>(`daita.context.${contextName}`);
+  const contextConfig = config.get(`daita.context.${contextName}`) as DaitaContextConfig;
   if (contextConfig.type === 'pg') {
     if (contextConfig.uri) {
       return new PostgresDataAdapter(contextConfig.uri);

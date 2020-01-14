@@ -1,0 +1,15 @@
+version: '3.5'
+services:
+  database:
+    image: "postgres"
+    environment:
+      - POSTGRES_USER=daita
+      - POSTGRES_PASSWORD=daita
+      - POSTGRES_DB=daita
+    ports:
+      - "5432:5432"
+    volumes:
+      - database-data:/var/lib/postgresql/data
+
+volumes:
+  database-data:

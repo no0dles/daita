@@ -6,9 +6,12 @@ import { RelationalAddTableForeignKey } from '@daita/core';
 export class ExtendedRelationalAddTableForeignKey
   extends RelationalAddTableForeignKey
   implements ExtendedMigrationStep {
+  get className() {
+    return RelationalAddTableForeignKey.name;
+  }
   toNode(): ts.NewExpression {
     return ts.createNew(
-      ts.createIdentifier(RelationalAddTableForeignKey.name),
+      ts.createIdentifier(this.className),
       undefined,
       [
         ts.createStringLiteral(this.table),

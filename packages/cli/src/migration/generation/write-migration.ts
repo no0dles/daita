@@ -251,8 +251,8 @@ export function writeMigration(
 ): string {
   const imports: string[] = [];
   for (const step of steps) {
-    if (imports.indexOf(step.constructor.name) === -1) {
-      imports.push(step.constructor.name);
+    if (imports.indexOf(step.className) === -1) {
+      imports.push(step.className);
     }
   }
 

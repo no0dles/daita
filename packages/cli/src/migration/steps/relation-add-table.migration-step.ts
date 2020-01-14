@@ -6,9 +6,12 @@ import { RelationalAddTableMigrationStep } from '@daita/core';
 export class ExtendedRelationalAddTableMigrationStep
   extends RelationalAddTableMigrationStep
   implements ExtendedMigrationStep {
+  get className() {
+    return RelationalAddTableMigrationStep.name;
+  }
   toNode(): ts.NewExpression {
     return ts.createNew(
-      ts.createIdentifier('RelationalAddTableMigrationStep'),
+      ts.createIdentifier(this.className),
       undefined,
       [ts.createStringLiteral(this.table)],
     );

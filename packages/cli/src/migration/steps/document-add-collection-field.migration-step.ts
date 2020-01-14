@@ -6,9 +6,12 @@ import { AddCollectionFieldMigrationStep } from '@daita/core';
 export class ExtendedAddCollectionFieldMigrationStep
   extends AddCollectionFieldMigrationStep
   implements ExtendedMigrationStep {
+  get className() {
+    return AddCollectionFieldMigrationStep.name;
+  }
   toNode(): ts.NewExpression {
     return ts.createNew(
-      ts.createIdentifier('AddCollectionFieldMigrationStep'),
+      ts.createIdentifier(this.className),
       undefined,
       [
         ts.createStringLiteral(this.collection),
