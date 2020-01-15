@@ -56,7 +56,7 @@ schema.permission(User, {
   },
   select: {
     deniedFields: ['password'],
-    limit: {$eq: 12, $in: [10, 20, 30], required: true},
+    limit: {$eq: 12, $in: [10, 20, 30]},
     skip: {$gte: 12},
     where: {
       username: schema.constants.username,
