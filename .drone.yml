@@ -55,23 +55,32 @@ steps:
   image: node:12
   depends_on: [install, build:core, build:cli]
   commands:
-    - cd packages/example/node-example
+    - cd packages/examples/node-example
     - yarn build
 
 - name: build:example:angular
   image: node:12
   depends_on: [install, build:core, build:cli, build:web-client]
   commands:
-    - cd packages/example/angular-todo
+    - cd packages/examples/angular-todo
     - yarn build
 
 - name: test
   image: node:12
   depends_on: [install, build:core, build:cli, build:web, build:web-client]
+  environment:
+    POSTGRES_URI: postgres://postgres:postgres@localhost/daita-postgres-test
   commands:
     - cd packages/test
     - yarn coverage
 
+services:
+  - name: database
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
 trigger:
   branch:
     exclude:
