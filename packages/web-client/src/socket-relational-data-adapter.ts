@@ -36,7 +36,7 @@ export class SocketRelationalDataAdapter extends BaseSocketDataAdapter
     });
     this.socket.on('trxTimeout', (data: any) => {
       this.transactions[data.tid].reject(new Error('transaction timeout'));
-      delete this.transactions[data.cid];
+      delete this.transactions[data.tid];
     });
   }
 
@@ -65,7 +65,12 @@ export class SocketRelationalDataAdapter extends BaseSocketDataAdapter
         tid,
       });
     } catch (e) {
+      debug('daita:socket:adapter')(e.message);
       if (e.message === 'transaction timeout') {
+        throw e;
+      }
+
+      if (e.message === 'could not find transaction for ' + tid) {
         throw e;
       }
 

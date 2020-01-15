@@ -1,18 +1,22 @@
 export class Debouncer {
-  private timeout: NodeJS.Timeout | null = null;
+  private timeoutHandle: NodeJS.Timeout | null = null;
+  public timeout: number = 0;
 
-  constructor(private trigger: () => any, private wait: number) {}
+  constructor(private trigger: () => any, private wait: number) {
+    this.bounce();
+  }
 
   clear() {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-      this.timeout = null;
+    if (this.timeoutHandle) {
+      clearTimeout(this.timeoutHandle);
+      this.timeoutHandle = null;
     }
   }
 
   bounce() {
     this.clear();
-    this.timeout = setTimeout(() => this.flush(), this.wait);
+    this.timeout = new Date().getTime() + this.wait;
+    this.timeoutHandle = setTimeout(() => this.flush(), this.wait);
   }
 
   flush() {

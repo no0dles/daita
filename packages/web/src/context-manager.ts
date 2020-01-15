@@ -12,6 +12,7 @@ import {
   AppSchemaOptions,
 } from './app-options';
 import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
+import * as debug from 'debug';
 
 export class ContextManager {
   private readonly transactionTimeout: number;
@@ -80,30 +81,32 @@ export class ContextManager {
       throw new Error('transaction closed');
     }
 
-    const dataAdapter = await transactionDefer.promise;
-    const debouncer = new Debouncer(() => {
+    const timeoutTransaction = () => {
+      debug('daita:web:context-manager')(`timeout transaction ${transactionId}`);
       delete this.transactions[transactionId];
       commitDefer.reject(new Error('timeout'));
       if (this.timeoutEmitter) {
         this.timeoutEmitter.emit('trxTimeout', {tid: transactionId});
       }
-    }, this.transactionTimeout);
+    };
+
     this.transactions[transactionId] = {
-      adapter: dataAdapter,
+      adapter: await transactionDefer.promise,
       commitDefer,
       resultDefer,
-      debouncer,
+      debouncer: new Debouncer(timeoutTransaction, this.transactionTimeout),
     };
   }
 
   async commitTransaction(transactionId: string) {
     const transaction = this.transactions[transactionId];
-    if (transaction) {
-      delete this.transactions[transactionId];
-      transaction.commitDefer.resolve();
-      await transaction.resultDefer.promise;
+    if (!transaction) {
+      throw new Error('could not find transaction for ' + transactionId);
     }
-    throw new Error('could not find transaction for ' + transactionId);
+
+    delete this.transactions[transactionId];
+    transaction.commitDefer.resolve();
+    await transaction.resultDefer.promise;
   }
 
   async rollbackTransaction(transactionId: string) {
