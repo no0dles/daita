@@ -8,6 +8,7 @@
 	<div class="title">
 		<img src="terminal.svg" class="terminal">
 
+
 	</div>
 	<div class="section">
 		<h2>Getting data right</h2>
@@ -62,11 +63,17 @@
 		padding: 0 20px;
 		margin-bottom: 8px;
 		font-weight: 300;
+		max-width: 600px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 	.section p {
 		margin: 0;
 		padding: 0 20px;
 		font-weight: 100;
+		max-width: 600px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 	.spacer {
 		height: 60px;

@@ -1,5 +1,11 @@
 ![daita logo](./logo.png)
 
+<p align='center'>
+  <img alt='mit' src='https://img.shields.io/badge/License-MIT-blue.svg'>
+  <img alt='build' src='https://drone.bertschi.io/api/badges/no0dles/daita/status.svg'>
+  <img alt='npm' src='https://img.shields.io/npm/dm/@daita/core.svg'>
+</p>
+
 ## Motiviation
 The daita project aims to make the development and deployment of applications easier and faster without sacrifising security. 
 These goals are archived by the key features of daita.
@@ -59,6 +65,3 @@ If you have any ideas, just open an issue and tell me what you think.
 - [ ] get extend fields from ast
 - [ ] allow constants in insert, update
 
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://
-opensource.org/licenses/MIT)

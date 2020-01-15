@@ -1,0 +1,11 @@
+name: default
+
+kind: pipeline
+type: docker
+
+steps:
+- name: build
+  image: node:12
+  commands:
+  - yarn install
+  - yarn lerna run build
