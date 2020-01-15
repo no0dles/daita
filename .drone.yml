@@ -10,7 +10,13 @@ steps:
   - yarn install
   - yarn lerna run build
 
+trigger:
+  branch:
+    exclude:
+      - gh-pages
+
 ---
+
 name: pages
 
 kind: pipeline
@@ -23,7 +29,13 @@ steps:
   - cd packages/website
   - npm install
   - npm run build
+
 - name: publish
   image: plugins/gh-pages
   settings:
     pages_directory: packages/website/public/
+  commands: []
+
+trigger:
+  branch:
+    - master
