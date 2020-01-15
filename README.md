@@ -3,7 +3,7 @@
 </h1>
 
 <p align='center'>
-  <img alt='build' src='https://drone.bertschi.io/api/badges/no0dles/daita/status.svg'>
+  <a href="https://drone.bertschi.io/no0dles/daita"><img alt='build' src='https://drone.bertschi.io/api/badges/no0dles/daita/status.svg'></a>
   <img alt='npm' src='https://img.shields.io/npm/dm/@daita/core.svg'>
   <img alt='mit' src='https://img.shields.io/badge/License-MIT-blue.svg'>
 </p>
