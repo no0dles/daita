@@ -69,7 +69,7 @@ steps:
   image: node:12
   depends_on: [install, build:core, build:cli, build:web, build:web-client]
   environment:
-    POSTGRES_URI: postgres://postgres:postgres@postgres/daita-postgres-test
+    POSTGRES_URI: postgres://postgres:postgres@postgres
   commands:
     - cd packages/test
     - yarn coverage

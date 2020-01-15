@@ -63,8 +63,6 @@ export class SecondMigration implements MigrationDescription {
   ];
 }
 
-export const testConnectionString =
-  'postgres://postgres:postgres@localhost/daita-test';
 export const testSchema = new RelationalSchema();
 
 testSchema.table(User);
