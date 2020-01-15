@@ -4,11 +4,73 @@ kind: pipeline
 type: docker
 
 steps:
-- name: build
+- name: install
   image: node:12
   commands:
   - yarn install
-  - yarn lerna run build
+
+- name: build:core
+  image: node:12
+  depends_on: [install]
+  commands:
+    - cd packages/core
+    - yarn build
+
+- name: build:website
+  image: node:12
+  depends_on: [install]
+  commands:
+    - cd packages/website
+    - yarn build
+
+- name: build:tslint
+  image: node:12
+  depends_on: [install]
+  commands:
+    - cd packages/tslint
+    - yarn build
+
+- name: build:web-client
+  image: node:12
+  depends_on: [install, build:core]
+  commands:
+    - cd packages/web-client
+    - yarn build
+
+- name: build:web
+  image: node:12
+  depends_on: [install, build:core]
+  commands:
+    - cd packages/web
+    - yarn build
+
+- name: build:cli
+  image: node:12
+  depends_on: [install, build:core, build:web]
+  commands:
+    - cd packages/cli
+    - yarn build
+
+- name: build:example:node
+  image: node:12
+  depends_on: [install, build:core, build:cli]
+  commands:
+    - cd packages/example/node-example
+    - yarn build
+
+- name: build:example:angular
+  image: node:12
+  depends_on: [install, build:core, build:cli, build:web-client]
+  commands:
+    - cd packages/example/angular-todo
+    - yarn build
+
+- name: test
+  image: node:12
+  depends_on: [install, build:core, build:cli, build:web, build:web-client]
+  commands:
+    - cd packages/test
+    - yarn coverage
 
 trigger:
   branch:
@@ -37,5 +99,7 @@ steps:
   commands: []
 
 trigger:
+  event:
+    - push
   branch:
     - master
