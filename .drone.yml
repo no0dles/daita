@@ -69,18 +69,19 @@ steps:
   image: node:12
   depends_on: [install, build:core, build:cli, build:web, build:web-client]
   environment:
-    POSTGRES_URI: postgres://postgres:postgres@localhost/daita-postgres-test
+    POSTGRES_URI: postgres://postgres:postgres@postgres/daita-postgres-test
   commands:
     - cd packages/test
     - yarn coverage
 
 services:
-  - name: database
+  - name: postgres
     image: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+
 trigger:
   branch:
     exclude:
