@@ -1,9 +1,11 @@
-![daita logo](./logo.png)
+<h1 align="center">
+  <a href="https://daita.ch"><img src="logo.png" alt="daita"></a>
+</h1>
 
 <p align='center'>
-  <img alt='mit' src='https://img.shields.io/badge/License-MIT-blue.svg'>
   <img alt='build' src='https://drone.bertschi.io/api/badges/no0dles/daita/status.svg'>
   <img alt='npm' src='https://img.shields.io/npm/dm/@daita/core.svg'>
+  <img alt='mit' src='https://img.shields.io/badge/License-MIT-blue.svg'>
 </p>
 
 ## Motiviation
