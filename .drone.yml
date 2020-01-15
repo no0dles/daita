@@ -9,3 +9,20 @@ steps:
   commands:
   - yarn install
   - yarn lerna run build
+
+---
+name: pages
+
+kind: pipeline
+type: docker
+
+steps:
+- name: build
+  image: node:12
+  commands:
+  - cd packages/website
+  - npm run build
+- name: publish
+  image: plugins/gh-pages
+  settings:
+    pages_directory: packages/website/public/
