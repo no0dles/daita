@@ -21,6 +21,7 @@ steps:
   image: node:12
   commands:
   - cd packages/website
+  - npm install
   - npm run build
 - name: publish
   image: plugins/gh-pages
