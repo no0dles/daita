@@ -31,7 +31,7 @@ export class ApiRelationalDataAdapter extends BaseApiDataAdapter
     await this.send(`trx/${tid}`);
 
     try {
-      const execution = action(new ApiRelationalTransactionDataAdapter(this.baseUrl, tid, this.handleResponse));
+      const execution = action(new ApiRelationalTransactionDataAdapter(this.baseUrl, tid, res => this.handleResponse(res)));
       await Promise.race([execution, timeoutDefer.promise]);
       if (timeoutDefer.isRejected) {
         throw timeoutDefer.rejectedError;

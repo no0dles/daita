@@ -92,9 +92,11 @@ export class ContextManager {
     const timeoutTransaction = () => {
       debug('daita:web:context-manager')(`timeout transaction ${transactionId}`);
       delete this.transactions[transactionId];
-      commitDefer.reject(new Error('timeout'));
-      if (this.timeoutEmitter) {
-        this.timeoutEmitter.emit('trxTimeout', {tid: transactionId});
+      if (!commitDefer.isRejected) {
+        commitDefer.reject(new Error('timeout'));
+        if (this.timeoutEmitter) {
+          this.timeoutEmitter.emit('trxTimeout', {tid: transactionId});
+        }
       }
     };
 

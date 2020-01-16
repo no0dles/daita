@@ -24,7 +24,7 @@ export abstract class BaseApiDataAdapter {
       this.handleResponse(result);
       return result.data;
     } catch (e) {
-      if (e.response.status === 500) {
+      if (e.response && e.response.status === 500) {
         throw new Error(e.response.data.message);
       }
       throw e;
