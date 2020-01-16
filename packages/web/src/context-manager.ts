@@ -35,6 +35,14 @@ export class ContextManager {
     }
   }
 
+  getTransactionTimeout(transactionId: string) {
+    const transaction = this.transactions[transactionId];
+    if (transaction) {
+      return transaction.debouncer.timeout;
+    }
+    return 0;
+  }
+
   getDataAdapter(
     transactionId?: string,
   ): RelationalTransactionDataAdapter | RelationalDataAdapter {

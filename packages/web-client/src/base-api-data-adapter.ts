@@ -4,12 +4,15 @@ import {AndRootFilter, OrRootFilter, RelationalSelectQuery} from '@daita/core';
 import {IdGenerator} from './id-generator';
 import * as debug from 'debug';
 
-export class BaseApiDataAdapter {
+export abstract class BaseApiDataAdapter {
   protected idGenerator: IdGenerator;
 
-  constructor(protected baseUrl: string, private globalQuery: {}) {
+  constructor(protected baseUrl: string,
+              private globalQuery: {}) {
     this.idGenerator = new IdGenerator();
   }
+
+  protected abstract handleResponse(response: AxiosResponse<any>): void;
 
   protected async send<T>(url: string, data?: any, query?: { [key: string]: string }) {
     try {
@@ -18,6 +21,7 @@ export class BaseApiDataAdapter {
       const reqUrl = `${this.baseUrl}/api/table/${url}${qs.length > 0 ? '?' + qs : ''}`;
       debug('daita:api:adapter')('send post request to ' + reqUrl);
       const result = await axios.post(reqUrl, data, {});
+      this.handleResponse(result);
       return result.data;
     } catch (e) {
       if (e.response.status === 500) {

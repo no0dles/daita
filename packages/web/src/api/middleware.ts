@@ -22,6 +22,10 @@ export function relationalMiddleware(options: AppOptions): express.Router {
   router.post('/raw', async (req, res, next) => {
     try {
       const result = await raw(manager.getDataAdapter(req.query.tid), req.body);
+      if (req.query.tid) {
+        res.setHeader('X-Transaction', req.query.tid);
+        res.setHeader('X-Transaction-Timeout', manager.getTransactionTimeout(req.query.tid));
+      }
       res.status(200).json(result);
     } catch (e) {
       next(e);
@@ -31,6 +35,8 @@ export function relationalMiddleware(options: AppOptions): express.Router {
   router.post('/trx/:tid', async (req, res, next) => {
     try {
       await manager.beginTransaction(req.params.tid);
+      res.setHeader('X-Transaction-Timeout', manager.getTransactionTimeout(req.params.tid));
+      res.setHeader('X-Transaction', req.params.tid);
       res.status(200).send();
     } catch (e) {
       next(e);
@@ -60,6 +66,10 @@ export function relationalMiddleware(options: AppOptions): express.Router {
       const context = manager.getContext(req.params.migration, req.query.tid);
       const type = getTable(req.params.table);
       await insert(type, context, req.body);
+      if (req.query.tid) {
+        res.setHeader('X-Transaction', req.query.tid);
+        res.setHeader('X-Transaction-Timeout', manager.getTransactionTimeout(req.query.tid));
+      }
       res.status(201).end();
     } catch (e) {
       next(e);
@@ -71,6 +81,10 @@ export function relationalMiddleware(options: AppOptions): express.Router {
       const context = manager.getContext(req.params.migration, req.query.tid);
       const type = getTable(req.params.table);
       const result = await select(type, context, req.body);
+      if (req.query.tid) {
+        res.setHeader('X-Transaction', req.query.tid);
+        res.setHeader('X-Transaction-Timeout', manager.getTransactionTimeout(req.query.tid));
+      }
       res.status(200).json(result);
     } catch (e) {
       next(e);
@@ -82,6 +96,10 @@ export function relationalMiddleware(options: AppOptions): express.Router {
       const context = manager.getContext(req.params.migration, req.query.tid);
       const type = getTable(req.params.table);
       const result = await count(type, context, req.body);
+      if (req.query.tid) {
+        res.setHeader('X-Transaction', req.query.tid);
+        res.setHeader('X-Transaction-Timeout', manager.getTransactionTimeout(req.query.tid));
+      }
       res.status(200).json(result);
     } catch (e) {
       next(e);
@@ -93,6 +111,10 @@ export function relationalMiddleware(options: AppOptions): express.Router {
       const context = manager.getContext(req.params.migration, req.query.tid);
       const type = getTable(req.params.table);
       const result = await remove(type, context, req.body);
+      if (req.query.tid) {
+        res.setHeader('X-Transaction', req.query.tid);
+        res.setHeader('X-Transaction-Timeout', manager.getTransactionTimeout(req.query.tid));
+      }
       res.status(200).json(result);
     } catch (e) {
       next(e);
@@ -104,6 +126,10 @@ export function relationalMiddleware(options: AppOptions): express.Router {
       const context = manager.getContext(req.params.migration, req.query.tid);
       const type = getTable(req.params.table);
       const result = await update(type, context, req.body);
+      if (req.query.tid) {
+        res.setHeader('X-Transaction', req.query.tid);
+        res.setHeader('X-Transaction-Timeout', manager.getTransactionTimeout(req.query.tid));
+      }
       res.status(200).json(result);
     } catch (e) {
       next(e);

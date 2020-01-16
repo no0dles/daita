@@ -5,10 +5,11 @@ import {
 import {RelationalSqlBuilder} from '@daita/core/dist/adapter/relational-sql-builder';
 import {BaseApiDataAdapter} from './base-api-data-adapter';
 import {ApiRelationalTransactionDataAdapter} from './api-relational-transaction-data-adapter';
+import {AxiosResponse} from 'axios';
 
 export class ApiRelationalDataAdapter extends BaseApiDataAdapter
   implements RelationalDataAdapter {
-  private transactions: { [key: string]: Defer<void> } = {};
+  private transactions: { [key: string]: { timeoutDefer: Defer<void>, timeoutCountdown: Countdown } } = {};
 
   kind: 'dataAdapter' = 'dataAdapter';
 
@@ -23,12 +24,14 @@ export class ApiRelationalDataAdapter extends BaseApiDataAdapter
 
   async transaction(action: (adapter: RelationalTransactionDataAdapter) => Promise<any>): Promise<void> {
     const tid = this.idGenerator.next();
+    const timeoutDefer = new Defer<void>();
+    const timeoutCountdown = new Countdown(() => timeoutDefer.reject(new Error('transaction timeout')));
+    this.transactions[tid] = {timeoutDefer, timeoutCountdown};
+
     await this.send(`trx/${tid}`);
 
     try {
-      const timeoutDefer = new Defer<void>();
-      this.transactions[tid] = timeoutDefer;
-      const execution = action(new ApiRelationalTransactionDataAdapter(this.baseUrl, tid));
+      const execution = action(new ApiRelationalTransactionDataAdapter(this.baseUrl, tid, this.handleResponse));
       await Promise.race([execution, timeoutDefer.promise]);
       if (timeoutDefer.isRejected) {
         throw timeoutDefer.rejectedError;
@@ -45,5 +48,34 @@ export class ApiRelationalDataAdapter extends BaseApiDataAdapter
       delete this.transactions[tid];
     }
   }
+
+  protected handleResponse(response: AxiosResponse<any>): void {
+    const transactionId = response.headers['x-transaction'];
+    const timeout = response.headers['x-transaction-timeout'];
+    if (transactionId && timeout && timeout > 0) {
+      const transaction = this.transactions[transactionId];
+      if (transaction) {
+        transaction.timeoutCountdown.setExpire(timeout);
+      }
+    }
+  }
 }
 
+class Countdown {
+  private timeoutHandle: number | null = null;
+
+  constructor(private trigger: () => any) {
+  }
+
+  setExpire(time: number) {
+    if (this.timeoutHandle) {
+      clearTimeout(this.timeoutHandle);
+    }
+    const now = new Date().getTime();
+    if (time > now) {
+      this.timeoutHandle = setTimeout(() => this.trigger(), time - now);
+    } else {
+      this.trigger();
+    }
+  }
+}

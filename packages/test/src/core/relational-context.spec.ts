@@ -12,8 +12,10 @@ import {
 } from '@daita/core';
 import { expect } from 'chai';
 
+const postgresUri = process.env.POSTGRES_URI || 'postgres://postgres:postgres@localhost';
+
 describe('relational-context', () => {
-  const connectionString = 'postgres://postgres:postgres@localhost/daita-test';
+  const connectionString = `${postgresUri}/daita-test`;
   let dataAdapter: PostgresDataAdapter;
 
   beforeEach(async () => {
