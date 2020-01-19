@@ -77,7 +77,7 @@ steps:
   image: node:12
   depends_on: [test]
   commands:
-    - npm install codacy-coverage
+    - yarn add codacy-coverage -g
     - cat coverage/lcov.info | codacy-coverage
   environment:
     CODACY_PROJECT_TOKEN:
