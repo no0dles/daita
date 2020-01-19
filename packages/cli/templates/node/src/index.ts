@@ -29,7 +29,7 @@ context.transaction(async (trx) => {
     .exec();
 }).then(async () => {
   const mountains = await context.select(Mountain)
-    .include(Canton)
+    .include(m => m.canton)
     .orderBy(m => m.height)
     .limit(10)
     .exec();

@@ -1,12 +1,12 @@
-import { Command, flags } from '@oclif/command';
-import { getSchemaInformation, getSchemaLocation } from '../utils/path';
-import { getRelationalDataAdapter } from '../utils/data-adapter';
+import {Command, flags} from '@oclif/command';
+import {getSchemaInformation, getSchemaLocation} from '../utils/path';
+import {getRelationalDataAdapter} from '../utils/data-adapter';
 import * as fs from 'fs';
 import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as http from 'http';
-import { getApp } from '@daita/web';
-import { getMigrationSchema } from '@daita/core/dist/schema/migration-schema-builder';
+import {getApp} from '@daita/web';
+import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
 import {Debouncer, RelationalContext} from '@daita/core';
 
 export default class Serve extends Command {
@@ -18,12 +18,13 @@ export default class Serve extends Command {
       description: 'path to schema',
       default: 'src/schema.ts',
     }),
-    migration: flags.string({ char: 'm', description: 'migration id' }),
+    migration: flags.string({char: 'm', description: 'migration id'}),
     context: flags.string({
       char: 'c',
       description: 'name of context',
       default: 'default',
     }),
+    port: flags.integer({char: 'p', description: 'application port', default: 8765}),
     watch: flags.boolean({
       char: 'w',
       description: 'watch for reload',
@@ -32,7 +33,7 @@ export default class Serve extends Command {
   };
 
   async run() {
-    const { flags } = this.parse(Serve);
+    const {flags} = this.parse(Serve);
     const schemaLocation = await getSchemaLocation(flags, this);
 
     const dataAdapter = getRelationalDataAdapter(flags, this);
@@ -83,8 +84,10 @@ export default class Serve extends Command {
         dataAdapter,
         migrationTree: schemaInfo.migrationTree,
       });
-      server = app.listen(8765, () => {
-        this.debug('listening on port 8765');
+
+      const port = flags.port || 8765;
+      server = app.listen(port, () => {
+        this.log(`listening on http://localhost:${port}`);
       });
     }, 200);
 

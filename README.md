@@ -46,8 +46,9 @@ This helps others getting into the project faster.
 npx @daita/cli new getting-started
 cd getting-started
 docker-compuse up -d
-npx @daita/cli migrate:apply
-npx @daita/cli serve
+npx dc migration:add init
+npx dc migration:apply
+npm start
 ```
 
 

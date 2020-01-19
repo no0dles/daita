@@ -50,7 +50,10 @@
     "bin": "dc",
     "plugins": [
       "@oclif/plugin-help"
-    ]
+    ],
+    "topics": {
+      "migration": { "description": "manage migrations" }
+    }
   },
   "scripts": {
     "build": "tsc",

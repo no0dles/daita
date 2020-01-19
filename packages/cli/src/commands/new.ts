@@ -118,10 +118,10 @@ export default class New extends Command {
     await tasks.run();
 
     this.log('cd foo');
-    this.log('npx dc migration:add init');
     this.log('docker-compose up -d');
+    this.log('npx dc migration:add init');
     this.log('npx dc migration:apply');
-    this.log('npx ts-node src/index.ts');
+    this.log('npm start');
   }
 }
 
