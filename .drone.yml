@@ -77,11 +77,11 @@ steps:
   image: node:12
   depends_on: [test]
   commands:
-    - yarn add codacy-coverage -W
+    - yarn add codecov -W
     - yarn upload-coverage
   environment:
-    CODACY_PROJECT_TOKEN:
-      from_secret: codacy_api_token
+    CODECOV_TOKEN:
+      from_secret: codecov_token
 
 services:
   - name: postgres
