@@ -38,9 +38,10 @@ class MockedPool {
   }
 }
 
+const sourceMigration: MigrationDescription = { id: 'init', steps: [] };
+
 class MockedSchema extends MigrationSchema {
   constructor() {
-    const sourceMigration: MigrationDescription = { id: 'init', steps: [] };
     super(
       'init',
       {},

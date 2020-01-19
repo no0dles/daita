@@ -1,17 +1,18 @@
 {
   "extension": [".ts"],
   "include": [
-    "**/node_modules/@daita/**",
-    "node_modules/@daita/**",
-    "../../packages/**",
-    "../../node_modules/@daita/**"
+    "packages/**"
   ],
-  "excludeNodeModules": false,
   "exclude": [
     "**/*.d.ts",
     "**/*.spec.ts",
     "coverage/**",
-    "node_modules/@daita/**/node_modules/**"
+    "node_modules/**",
+    "packages/cli/templates",
+    "packages/examples",
+    "packages/tslint",
+    "packages/test",
+    "packages/website"
   ],
   "reporter": [
     "json",

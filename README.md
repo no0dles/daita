@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://daita.ch"><img src="logo.png" alt="daita" width="250"></a>
+  <a href="https://daita.ch"><img src="docs/logo.png" alt="daita" width="250"></a>
 </h1>
 
 <p align='center'>
