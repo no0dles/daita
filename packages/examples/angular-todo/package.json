@@ -1,6 +1,6 @@
 {
   "name": "angular-todo",
-  "version": "0.1.1-alpha.0",
+  "version": "0.1.1-alpha.1",
   "scripts": {
     "ng": "node_modules/.bin/ng",
     "start": "node_modules/.bin/ng serve",
@@ -19,8 +19,8 @@
     "@angular/platform-browser": "~8.2.14",
     "@angular/platform-browser-dynamic": "~8.2.14",
     "@angular/router": "~8.2.14",
-    "@daita/core": "^0.1.1-alpha.0",
-    "@daita/web-client": "^0.1.1-alpha.0",
+    "@daita/core": "^0.1.1-alpha.1",
+    "@daita/web-client": "^0.1.1-alpha.1",
     "rxjs": "~6.4.0",
     "tslib": "^1.10.0",
     "uuid": "^3.3.3",
@@ -31,7 +31,7 @@
     "@angular/cli": "~8.3.21",
     "@angular/compiler-cli": "~8.2.14",
     "@angular/language-service": "~8.2.14",
-    "@daita/cli": "^0.1.1-alpha.0",
+    "@daita/cli": "^0.1.1-alpha.1",
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",

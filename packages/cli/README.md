@@ -19,7 +19,7 @@ $ npm install -g @daita/cli
 $ dc COMMAND
 running command...
 $ dc (-v|--version|version)
-@daita/cli/0.1.1-alpha.0 darwin-x64 node-v13.3.0
+@daita/cli/0.1.1-alpha.1 darwin-x64 node-v13.3.0
 $ dc --help [COMMAND]
 USAGE
   $ dc COMMAND
@@ -44,11 +44,14 @@ create diagram for schema
 ```
 USAGE
   $ dc diagram
+
+OPTIONS
+  -s, --schema=schema  path to schema
 ```
 
 ## `dc doc`
 
-open documentation
+open documentation website
 
 ```
 USAGE
@@ -131,7 +134,7 @@ OPTIONS
 
 ## `dc serve`
 
-serve api
+serve daita api
 
 ```
 USAGE

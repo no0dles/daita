@@ -1,6 +1,6 @@
 {
   "name": "@daita/cli",
-  "version": "0.1.1-alpha.0",
+  "version": "0.1.1-alpha.1",
   "author": "Pascal Bertschi @no0dles",
   "bin": {
     "dc": "./bin/run"
@@ -10,8 +10,8 @@
   },
   "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
-    "@daita/core": "^0.1.1-alpha.0",
-    "@daita/web": "^0.1.1-alpha.0",
+    "@daita/core": "^0.1.1-alpha.1",
+    "@daita/web": "^0.1.1-alpha.1",
     "chokidar": "^3.3.1",
     "cli-ux": "^5.4.1",
     "config": "^3.2.4",
