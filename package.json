@@ -12,6 +12,7 @@
     "lint": "lerna run lint",
     "test": "lerna run test --scope=@daita/test",
     "coverage": "nyc npm test",
+    "upload-coverage": "cat coverage/lcov.info | codacy-coverage",
     "clean": "npm run clean:dist && npm run clean:tsbuildinfo && npm run clean:node_modules && npm run clean:coverage && npm run clean:nyc_output",
     "clean:tsbuildinfo": "find . -name \"tsconfig.tsbuildinfo\" -prune -exec rm '{}' +",
     "clean:dist": "find . -name \"dist\" -type d -prune -exec rm -rf '{}' +",

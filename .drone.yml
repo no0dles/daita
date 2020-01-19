@@ -77,7 +77,8 @@ steps:
   image: node:12
   depends_on: [test]
   commands:
-    - cat coverage/lcov.info | npx codacy-coverage
+    - yarn add codacy-coverage
+    - yarn upload-coverage
   environment:
     CODACY_PROJECT_TOKEN:
       from_secret: codacy_api_token
