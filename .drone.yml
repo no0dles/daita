@@ -75,6 +75,7 @@ steps:
 
 - name: coverage
   image: plugins/codecov
+  depends_on: [test]
   settings:
     paths:
       - coverage
