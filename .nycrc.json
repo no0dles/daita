@@ -17,8 +17,7 @@
   "reporter": [
     "json",
     "html",
-    "text-summary",
-    "lcov"
+    "text-summary"
   ],
   "all": true
 }

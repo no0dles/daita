@@ -73,14 +73,12 @@ steps:
   commands:
     - yarn coverage
 
-- name: codacy
-  image: node:12
-  depends_on: [test]
-  commands:
-    - yarn add codecov -W
-    - yarn upload-coverage
-  environment:
-    CODECOV_TOKEN:
+- name: coverage
+  image: plugins/codecov
+  settings:
+    paths:
+      - coverage
+    token:
       from_secret: codecov_token
 
 services:
