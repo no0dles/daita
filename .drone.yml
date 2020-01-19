@@ -71,8 +71,17 @@ steps:
   environment:
     POSTGRES_URI: postgres://postgres:postgres@postgres
   commands:
-    - cd packages/test
     - yarn coverage
+
+- name: codacy
+  image: node:12
+  depends_on: [test]
+  commands:
+    - npm install codacy-coverage
+    - cat coverage/lcov.info | codacy-coverage
+  environment:
+    CODACY_PROJECT_TOKEN:
+      from_secret: codacy_api_token
 
 services:
   - name: postgres
