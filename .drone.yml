@@ -77,7 +77,7 @@ steps:
   image: node:12
   depends_on: [test]
   commands:
-    - yarn add codacy-coverage
+    - yarn add codacy-coverage -W
     - yarn upload-coverage
   environment:
     CODACY_PROJECT_TOKEN:
