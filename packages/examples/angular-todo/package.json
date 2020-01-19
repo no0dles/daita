@@ -1,6 +1,6 @@
 {
   "name": "angular-todo",
-  "version": "0.1.1-alpha.1",
+  "version": "0.1.1-alpha.2",
   "scripts": {
     "ng": "node_modules/.bin/ng",
     "start": "node_modules/.bin/ng serve",
@@ -31,7 +31,7 @@
     "@angular/cli": "~8.3.21",
     "@angular/compiler-cli": "~8.2.14",
     "@angular/language-service": "~8.2.14",
-    "@daita/cli": "^0.1.1-alpha.1",
+    "@daita/cli": "^0.1.1-alpha.2",
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",

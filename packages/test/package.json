@@ -1,11 +1,11 @@
 {
   "name": "@daita/test",
-  "version": "0.1.1-alpha.1",
+  "version": "0.1.1-alpha.2",
   "author": "Pascal Bertschi @no0dles",
   "private": true,
   "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
-    "@daita/cli": "^0.1.1-alpha.1",
+    "@daita/cli": "^0.1.1-alpha.2",
     "@daita/core": "^0.1.1-alpha.1",
     "@daita/web": "^0.1.1-alpha.1",
     "@daita/web-client": "^0.1.1-alpha.1"

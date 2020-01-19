@@ -19,7 +19,7 @@ $ npm install -g @daita/cli
 $ dc COMMAND
 running command...
 $ dc (-v|--version|version)
-@daita/cli/0.1.1-alpha.1 darwin-x64 node-v13.3.0
+@daita/cli/0.1.1-alpha.2 darwin-x64 node-v13.3.0
 $ dc --help [COMMAND]
 USAGE
   $ dc COMMAND
@@ -143,6 +143,7 @@ USAGE
 OPTIONS
   -c, --context=context      [default: default] name of context
   -m, --migration=migration  migration id
+  -p, --port=port            [default: 8765] application port
   -s, --schema=schema        [default: src/schema.ts] path to schema
   -w, --watch                watch for reload
 ```

@@ -1,6 +1,6 @@
 {
   "name": "@daita/cli",
-  "version": "0.1.1-alpha.1",
+  "version": "0.1.1-alpha.2",
   "author": "Pascal Bertschi @no0dles",
   "bin": {
     "dc": "./bin/run"
@@ -52,7 +52,9 @@
       "@oclif/plugin-help"
     ],
     "topics": {
-      "migration": { "description": "manage migrations" }
+      "migration": {
+        "description": "manage migrations"
+      }
     }
   },
   "scripts": {
