@@ -31,8 +31,9 @@ Adding new required or renaming existing fields will not impact the previous ver
 The cli contains an integrated web server that gives access to the database over the web. 
 This eliminates the need of an own api server and boosts productivity.
 
-**Generate data diagramms**
-
+**Generate Diagrams**
+An integrated diagram generator helps to keep the documentation always up to date. 
+This helps others getting into the project faster. 
 
 ### Strongly typed
 
@@ -41,6 +42,13 @@ This eliminates the need of an own api server and boosts productivity.
 
 ## Usage
 
+```
+npx @daita/cli new getting-started
+cd getting-started
+docker-compuse up -d
+npx @daita/cli migrate:apply
+npx @daita/cli serve
+```
 
 
 ## Documentation and examples
