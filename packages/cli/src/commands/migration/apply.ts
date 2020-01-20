@@ -14,6 +14,7 @@ export default class Apply extends Command {
       default: 'src/schema.ts',
     }),
     migration: flags.string({ char: 'm', description: 'migration id' }),
+    cwd: flags.string({ description: 'working directory', default: '.' }),
     context: flags.string({
       char: 'c',
       description: 'name of context',
@@ -24,7 +25,7 @@ export default class Apply extends Command {
   static args = [];
 
   async run() {
-    const { args, flags } = this.parse(Apply);
+    const { flags } = this.parse(Apply);
     const schemaLocation = await getSchemaLocation(flags, this);
     const schemaInfo = await getSchemaInformation(schemaLocation, this);
     if (!schemaInfo) {

@@ -18,6 +18,7 @@ export default class Serve extends Command {
       description: 'path to schema',
       default: 'src/schema.ts',
     }),
+    cwd: flags.string({ description: 'working directory', default: '.' }),
     migration: flags.string({char: 'm', description: 'migration id'}),
     context: flags.string({
       char: 'c',
@@ -42,8 +43,8 @@ export default class Serve extends Command {
     }
     const watchPaths = [schemaLocation.sourceDirectory];
 
-    let currentPath = process.cwd();
-    const pathParts = path.dirname(process.cwd()).split(path.sep);
+    let currentPath = flags.cwd ? path.resolve(flags.cwd) : process.cwd();
+    const pathParts = path.dirname(currentPath).split(path.sep);
     for (let i = 0; i < pathParts.length + 1; i++) {
       const nodePath = path.join(currentPath, 'node_modules');
       if (fs.existsSync(nodePath)) {

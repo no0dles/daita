@@ -16,12 +16,13 @@ export default class Undo extends Command {
 
   static flags = {
     schema: flags.string({ char: 's', description: 'name to print' }),
+    cwd: flags.string({ description: 'working directory', default: '.' }),
   };
 
-  static args = [{ name: 'file' }];
+  static args = [];
 
   async run() {
-    const { args, flags } = this.parse(Undo);
+    const { flags } = this.parse(Undo);
     const schemaLocation = await getSchemaLocation(flags, this);
     const schemaInfo = await getSchemaInformation(schemaLocation, this);
     if (!schemaInfo) {

@@ -2,16 +2,16 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as ts from 'typescript';
 import cli from 'cli-ux';
-import { Command } from '@oclif/command';
+import {Command} from '@oclif/command';
 import * as inquirer from 'inquirer';
-import { MigrationTree } from '@daita/core';
-import { DatabaseSchema } from '@daita/core/dist/schema/database-schema';
+import {MigrationTree} from '@daita/core';
+import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
 import {
   getSchemas,
   parseModelSchema,
   parseSchemaMigrations,
 } from '../migration/generation';
-import { parseSourceFile } from '../migration/generation/utils';
+import {parseSourceFile} from '../migration/generation/utils';
 
 export function getMigrationRelativePath(
   schemaFilePath: string,
@@ -29,16 +29,17 @@ export interface SchemaLocation {
 }
 
 export async function getSchemaLocation(
-  flags: { schema: string | undefined },
+  flags: { schema: string | undefined, cwd: string | undefined },
   cmd: Command,
 ): Promise<SchemaLocation> {
-  let sourceDirectory = path.join(process.cwd(), 'src');
-  const tsconfigFileName = path.join(process.cwd(), 'tsconfig.json');
+  const cwd = flags.cwd ? path.resolve(flags.cwd) : process.cwd();
+  let sourceDirectory = path.join(cwd, 'src');
+  const tsconfigFileName = path.join(cwd, 'tsconfig.json');
   if (fs.existsSync(tsconfigFileName)) {
     const tsconfig = JSON.parse(fs.readFileSync(tsconfigFileName).toString());
     if (tsconfig.compilerOptions && tsconfig.compilerOptions.rootDir) {
       sourceDirectory = path.join(
-        process.cwd(),
+        cwd,
         tsconfig.compilerOptions.rootDir,
       );
     }
@@ -47,7 +48,7 @@ export async function getSchemaLocation(
   const migrationDirectory = path.join(sourceDirectory, 'migrations');
 
   if (flags.schema) {
-    const fileName = path.join(process.cwd(), flags.schema);
+    const fileName = path.join(cwd, flags.schema);
 
     if (fs.existsSync(fileName)) {
       return resolveSchemaLocation(
@@ -70,20 +71,20 @@ export async function getSchemaLocation(
   }
 
   let fileName = path.relative(
-    process.cwd(),
+    cwd,
     path.join(sourceDirectory, 'schema.ts'),
   );
   while (true) {
     fileName = await cli.prompt('Where is your schema file?', {
       default: fileName,
     });
-    if (!fs.existsSync(path.join(process.cwd(), fileName))) {
+    if (!fs.existsSync(path.join(cwd, fileName))) {
       cmd.warn(`schema not found at ${fileName}`);
       continue;
     }
 
     return resolveSchemaLocation(
-      path.join(process.cwd(), fileName),
+      path.join(cwd, fileName),
       sourceDirectory,
       migrationDirectory,
     );
@@ -129,7 +130,7 @@ export async function getSchemaInformation(
   }
 
   const modelSchema = parseModelSchema(sourceFile, schema.name);
-  const { migrationTree, migrationFiles } = parseSchemaMigrations(
+  const {migrationTree, migrationFiles} = parseSchemaMigrations(
     sourceFile,
     schema.name,
   );

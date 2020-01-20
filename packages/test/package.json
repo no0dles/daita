@@ -12,8 +12,10 @@
   },
   "devDependencies": {
     "@daita/tslint": "^0.1.1-alpha.0",
+    "@oclif/test": "^1.2.5",
     "@types/chai": "^4.2.4",
     "@types/mocha": "^5.2.7",
+    "@types/node": "^13.1.8",
     "@types/socket.io-client": "^1.4.32",
     "chai": "^4.2.0",
     "mocha": "^6.2.2",

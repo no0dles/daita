@@ -6,6 +6,13 @@
   "dependencies": {
     "lerna": "^3.16.5"
   },
+  "devDependencies": {
+    "mocha": "^6.2.2",
+    "nyc": "^14.1.1",
+    "source-map-support": "^0.5.16",
+    "ts-node": "^8.4.1",
+    "@istanbuljs/nyc-config-typescript": "^1.0.1"
+  },
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",

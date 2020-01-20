@@ -24,6 +24,7 @@ export default class Add extends Command {
 
   static flags = {
     schema: flags.string({ char: 's', description: 'path to schema' }),
+    cwd: flags.string({ description: 'working directory', default: '.' }),
   };
 
   static args = [{ name: 'name' }];
@@ -80,7 +81,7 @@ export default class Add extends Command {
           );
           const date = new Date();
           if (!fs.existsSync(schemaLocation.migrationDirectory)) {
-            fs.mkdirSync(schemaLocation.migrationDirectory);
+            fs.mkdirSync(schemaLocation.migrationDirectory, {recursive: true});
           }
 
           const migrationName = getMigrationName(name);

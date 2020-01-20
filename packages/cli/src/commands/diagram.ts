@@ -8,6 +8,8 @@ export default class Diagram extends Command {
 
   static flags = {
     schema: flags.string({char: 's', description: 'path to schema'}),
+    filename: flags.string({char: 'f', description: 'output svg filename', default: 'docs/schema.svg'}),
+    cwd: flags.string({description: 'working directory', default: '.'}),
   };
 
   async run() {
@@ -48,7 +50,12 @@ export default class Diagram extends Command {
 
     const svg = nomnoml.renderSvg(content);
     //const svg = await (<any>yuml2svg)(content, { isDark: true, type:  'class', dir: 'LR' });
-    const svgFile = path.join(process.cwd(), `${schemaInfo.variableName}.svg`);
+    const cwd = flags.cwd ? path.resolve(flags.cwd) : process.cwd();
+    const svgFile = path.join(cwd, flags.filename || 'docs/schema.svg');
+    const svgDirectory = path.dirname(svgFile);
+    if (!fs.existsSync(svgDirectory)) {
+      fs.mkdirSync(svgDirectory, {recursive: true});
+    }
     this.log(`Writing diagram to "${svgFile}"`);
     await fs.promises.writeFile(svgFile, svg);
   }
