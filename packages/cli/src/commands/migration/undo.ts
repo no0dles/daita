@@ -53,7 +53,7 @@ export default class Undo extends Command {
     );
 
     if (successImport && successRegistration) {
-      this.debug('delete migration ' + file.sourceFile.fileName);
+      this.log('delete migration ' + file.sourceFile.fileName);
       fs.unlinkSync(file.sourceFile.fileName);
     }
   }

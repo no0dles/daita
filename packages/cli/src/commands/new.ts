@@ -20,10 +20,7 @@ export default class New extends Command {
       char: 'l',
       description: 'license of project',
     }),
-    path: flags.string({
-      char: 'p',
-      description: 'path of project',
-    }),
+    cwd: flags.string({description: 'working directory', default: '.'}),
     'npm-client': flags.string({
       description: 'npm client to install dependencies',
       options: ['yarn', 'npm'],
@@ -50,7 +47,7 @@ export default class New extends Command {
       name = await cli.prompt('Whats your project name?', {default: ''});
     }
 
-    const projectPath = flags.path || path.join(process.cwd(), name);
+    const projectPath = path.join(flags.cwd || process.cwd(), name);
     if (fs.existsSync(projectPath)) {
       this.error(`Directory "${projectPath}" already exists, needs to be empty`);
       this.exit(1);
@@ -110,6 +107,7 @@ export default class New extends Command {
       },
       {
         title: 'Install dependencies',
+        skip: ctx => flags['skip-install'],
         task: async (ctx) => {
           await installDependencies(flags['npm-client'], projectPath);
         },
@@ -118,6 +116,9 @@ export default class New extends Command {
     await tasks.run();
 
     this.log('cd foo');
+    if (flags['skip-install']) {
+      this.log(`${flags['npm-client']} install`);
+    }
     this.log('docker-compose up -d');
     this.log('npx dc migration:add init');
     this.log('npx dc migration:apply');

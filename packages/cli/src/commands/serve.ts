@@ -10,6 +10,8 @@ import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-build
 import {Debouncer, RelationalContext} from '@daita/core';
 
 export default class Serve extends Command {
+  private server: http.Server | null = null;
+
   static description = 'serve daita api';
 
   static flags = {
@@ -53,10 +55,9 @@ export default class Serve extends Command {
       currentPath = path.resolve(currentPath, '..');
     }
 
-    let server: http.Server | null = null;
     const debouncer = new Debouncer(async () => {
-      if (server) {
-        server.close();
+      if (this.server) {
+        this.server.close();
       }
 
       const schemaInfo = await getSchemaInformation(schemaLocation, this);
@@ -87,7 +88,7 @@ export default class Serve extends Command {
       });
 
       const port = flags.port || 8765;
-      server = app.listen(port, () => {
+      this.server = app.listen(port, () => {
         this.log(`listening on http://localhost:${port}`);
       });
     }, 200);

@@ -1,21 +1,9 @@
-import * as cli from '@daita/cli';
+import {setupEnv} from './utils';
 
-const schemaPath = './src/schema.ts';
-
-describe('migration:add', () => {
-  // it('add', () => {
-  //   Add.run(['init'], {
-  //
-  //   });
-  // });
-
-  it('should create initial migration', async() => {
-    await cli.run(['migration:add', 'foo', '-s', schemaPath, '--cwd', './test/schema']);
-  });
-  // test
-  //   .loadConfig({root})
-  //   .stdout()
-  //   .command(['migration:add', 'foo', '-s', schemaPath, '--cwd', './test/schema'])
-  //   .do(output => expect(output.stdout).to.equal('hello world!\n'))
-  //   .it()
+describe('cli migration:add', () => {
+  it(`should add migration`, setupEnv('add-migration', async (ctx) => {
+    await ctx.run('migration:add init');
+    await ctx.exists('src/migrations');
+    await ctx.exists('src/migrations', /[0-9]+\-init.ts/);
+  }, {schema: 'auth-schema'}));
 });
