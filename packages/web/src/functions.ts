@@ -17,6 +17,7 @@ import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-build
 import {SocketDeleteEvent} from './socket/events/socket-delete-event';
 import {SocketCountEvent} from './socket/events/socket-count-event';
 import {RelationalSelectContextOrdered} from '@daita/core/dist/context/relational-select-context';
+import {ContextUser} from '@daita/core/dist/auth';
 
 export const insert = async (
   type: TableInformation<any>,
@@ -112,11 +113,4 @@ export const select = async (
   }
 
   return await query.exec();
-};
-
-export const raw = (
-  dataAdapter: RelationalTransactionDataAdapter | RelationalDataAdapter,
-  body: SocketRawEvent,
-) => {
-  return dataAdapter.raw(body.sql, body.values);
 };

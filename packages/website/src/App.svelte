@@ -1,12 +1,11 @@
 <script>
-	export let name;
 </script>
 
 <main>
 	<div class="header">
 	</div>
 	<div class="title">
-		<img src="terminal.svg" class="terminal">
+		<img src="terminal.svg" alt="terminal" class="terminal">
 
 
 	</div>

@@ -1,6 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import { getMigrationSchema } from '@daita/core/dist/schema/migration-schema-builder';
-import { RelationalContext, RelationalDataAdapter } from '@daita/core';
+import { RelationalContext } from '@daita/core';
 import { getSchemaInformation, getSchemaLocation } from '../../utils/path';
 import { getRelationalDataAdapter } from '../../utils/data-adapter';
 
@@ -53,6 +53,7 @@ export default class Apply extends Command {
       migrationSchema,
       schemaInfo.migrationTree,
       dataAdapter,
+      null,
     );
     await context.migration().apply();
   }

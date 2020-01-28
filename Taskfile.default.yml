@@ -1,0 +1,47 @@
+version: '2'
+
+tasks:
+  build:angular:
+    dir: "{{.DIR}}"
+    generates:
+      - dist/**
+    sources:
+      - src/**
+      - angular.json
+      - tsconfig.app.json
+      - tsconfig.json
+    method: checksum
+    cmds:
+      - yarn build
+
+  build:svelte:
+    dir: "{{.DIR}}"
+    generates:
+      - public/**
+    sources:
+      - rollup.config.js
+      - src/**
+    method: checksum
+    cmds:
+      - yarn build
+
+  build:
+    dir: "{{.DIR}}"
+    generates:
+      - dist/**
+    sources:
+      - tsconfig.json
+      - src/**
+    method: checksum
+    cmds:
+      - yarn build
+
+  clean:
+    dir: "{{.DIR}}"
+    cmds:
+      - rm -rf tsconfig.tsbuildinfo
+      #- rm -rf node_modules
+      - rm -rf dist
+      - rm -rf .task
+      - rm -rf coverage
+      - rm -rf .nyc_output

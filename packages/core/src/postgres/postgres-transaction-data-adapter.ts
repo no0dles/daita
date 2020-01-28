@@ -65,7 +65,7 @@ export class PostgresTransactionDataAdapter
   }
 
   private mapSourceTable(table: MigrationSchemaTable) {
-    return `${table.sourceMigration.id}_${table.name}`;
+    return `${table.name}_${table.sourceMigration.id}`;
   }
 
   private getSourceField(table: MigrationSchemaTable, fieldName: string) {
@@ -75,7 +75,7 @@ export class PostgresTransactionDataAdapter
         `Could not find field ${fieldName} in table ${table.name}`,
       );
     }
-    return `${field.sourceMigration.id}_${field.sourceFieldName}`;
+    return `${field.sourceFieldName}_${field.sourceMigration.id}`;
   }
 
   private getSchemaTable(schema: MigrationSchema, tableName: string) {

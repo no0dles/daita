@@ -36,6 +36,7 @@ export class SocketAdapterTest implements AdapterTest {
     await this.backendSetup.before();
     await new Promise<any>(resolve => {
       this.server = createSocketApp(new http.Server(express()), {
+        type: 'schema',
         dataAdapter: this.backendSetup.dataAdapter,
         schema: this.schema,
         transactionTimeout: 1000,

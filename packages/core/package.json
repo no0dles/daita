@@ -8,8 +8,7 @@
     "access": "public"
   },
   "scripts": {
-    "prepack": "npm run build",
-    "build": "rm -rf dist || true && rm -f tsconfig.tsbuildinfo && tsc",
+    "build": "tsc",
     "lint": "tslint src/**/*.ts",
     "prettier": "prettier 'src/**/*.ts' --write"
   },

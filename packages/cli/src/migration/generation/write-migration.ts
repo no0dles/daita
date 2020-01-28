@@ -4,7 +4,6 @@ import { isKind, parseSourceFile } from './utils';
 import * as fs from 'fs';
 import { getIdentifier } from './parse-migration';
 import { capitalize } from '@daita/core/dist/schema/source-code-schema-builder';
-import { MigrationStep } from '@daita/core';
 import { ExtendedMigrationStep } from '../steps/base-migration-step';
 
 export function addMigrationImport(

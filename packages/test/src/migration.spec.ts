@@ -40,7 +40,7 @@ describe('migration', () => {
         ],
       };
       testMigrations([], migration, [
-        'CREATE TABLE "test_foo" ("test_bar" varchar);',
+        'CREATE TABLE "foo_test" ("bar_test" varchar);',
       ]);
     });
 
@@ -71,7 +71,7 @@ describe('migration', () => {
         ],
       };
       testMigrations(migrationBefore, migration, [
-        'ALTER TABLE "test_foo" ADD COLUMN "test2_foo" integer;',
+        'ALTER TABLE "foo_test" ADD COLUMN "foo_test2" integer;',
       ]);
     });
 
@@ -94,7 +94,7 @@ describe('migration', () => {
         id: 'test2',
         steps: [new RelationalDropTableMigrationStep('foo')],
       };
-      testMigrations(migrationBefore, migration, ['DROP TABLE "test_foo";']);
+      testMigrations(migrationBefore, migration, ['DROP TABLE "foo_test";']);
     });
   });
 });

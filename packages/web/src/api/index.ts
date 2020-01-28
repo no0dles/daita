@@ -1,2 +1,2 @@
 export { createApiApp } from './app';
-export { relationalMiddleware } from './middleware';
+export { relationalApi } from './middleware';

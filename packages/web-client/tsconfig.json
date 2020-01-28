@@ -11,7 +11,7 @@
     "lib": ["dom", "es2016"],
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
     "types" : ["chai", "mocha"]
   },
   "exclude": [

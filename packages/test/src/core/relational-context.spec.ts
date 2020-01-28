@@ -31,7 +31,7 @@ describe('relational-context', () => {
 
   it('migration apply empty schema', async () => {
     await applyMigrations(dataAdapter, []);
-    await expectTables(dataAdapter, 'public', { migrations: ['id'] });
+    await expectTables(dataAdapter, 'daita', { migrations: ['id'] });
   });
 
   it('migration apply schema with table create', async () => {
@@ -45,9 +45,11 @@ describe('relational-context', () => {
     }
 
     await applyMigrations(dataAdapter, [Migration]);
-    await expectTables(dataAdapter, 'public', {
+    await expectTables(dataAdapter, 'daita', {
       migrations: ['id'],
-      test_foo: ['test_bar'],
+    });
+    await expectTables(dataAdapter, 'public', {
+      foo_test: ['bar_test'],
     });
   });
 
@@ -71,10 +73,12 @@ describe('relational-context', () => {
     }
 
     await applyMigrations(dataAdapter, [FirstMigration, SecondMigration]);
-    await expectTables(dataAdapter, 'public', {
+    await expectTables(dataAdapter, 'daita', {
       migrations: ['id'],
-      test_foo: ['test_bar'],
-      test2_bar: ['test2_foo'],
+    });
+    await expectTables(dataAdapter, 'public', {
+      foo_test: ['bar_test'],
+      bar_test2: ['foo_test2'],
     });
   });
 
@@ -96,10 +100,12 @@ describe('relational-context', () => {
     }
 
     await applyMigrations(dataAdapter, [FirstMigration]);
-    await expectTables(dataAdapter, 'public', {
+    await expectTables(dataAdapter, 'daita', {
       migrations: ['id'],
-      test_role: ['test_id'],
-      test_user: ['test_name', 'test_roleId'],
+    });
+    await expectTables(dataAdapter, 'public', {
+      role_test: ['id_test'],
+      user_test: ['name_test', 'roleId_test'],
     });
   });
 
@@ -128,10 +134,12 @@ describe('relational-context', () => {
     }
 
     await applyMigrations(dataAdapter, [FirstMigration, SecondMigration]);
-    await expectTables(dataAdapter, 'public', {
+    await expectTables(dataAdapter, 'daita', {
       migrations: ['id'],
-      test_role: ['test_id'],
-      test_user: ['test_name', 'test_roleId'],
+    });
+    await expectTables(dataAdapter, 'public', {
+      role_test: ['id_test'],
+      user_test: ['name_test', 'roleId_test'],
     });
   });
 
@@ -159,10 +167,12 @@ describe('relational-context', () => {
     }
 
     await applyMigrations(dataAdapter, [FirstMigration, SecondMigration]);
-    await expectTables(dataAdapter, 'public', {
+    await expectTables(dataAdapter, 'daita', {
       migrations: ['id'],
-      test_role: ['test_id'],
-      test_user: ['test_name', 'test2_roleId'],
+    });
+    await expectTables(dataAdapter, 'public', {
+      role_test: ['id_test'],
+      user_test: ['name_test', 'roleId_test2'],
     });
   });
 });

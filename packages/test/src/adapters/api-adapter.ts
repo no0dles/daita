@@ -32,12 +32,12 @@ export class ApiAdapterTest implements AdapterTest {
     await this.backendSetup.before();
     await new Promise<any>(resolve => {
       const app = createApiApp({
+        type: 'schema',
         dataAdapter: this.backendSetup.dataAdapter,
         schema: this.schema,
         transactionTimeout: 1000,
       });
       this.server = app.listen(this.port, () => {
-        console.log('listens')
         resolve();
       });
     });

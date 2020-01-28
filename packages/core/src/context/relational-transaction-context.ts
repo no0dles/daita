@@ -1,17 +1,20 @@
-import { RelationalTransactionDataAdapter } from '../adapter';
-import { MigrationSchema } from '../schema/migration-schema';
-import { RelationalDeleteContext } from './relational-delete-context';
-import { RelationalInsertContext } from './relational-insert-context';
-import { RelationalSelectContext } from './relational-select-context';
-import { RelationalUpdateContext } from './relational-update-context';
-import { TableInformation } from './table-information';
-import { DefaultConstructable } from '../constructable';
+import {RelationalTransactionDataAdapter} from '../adapter';
+import {MigrationSchema} from '../schema/migration-schema';
+import {RelationalDeleteContext} from './relational-delete-context';
+import {RelationalInsertContext} from './relational-insert-context';
+import {RelationalSelectContext} from './relational-select-context';
+import {RelationalUpdateContext} from './relational-update-context';
+import {TableInformation} from './table-information';
+import {DefaultConstructable} from '../constructable';
+import {ContextUser} from '../auth';
 
 export class RelationalTransactionContext {
   constructor(
     protected schema: MigrationSchema,
     protected dataAdapter: RelationalTransactionDataAdapter,
-  ) {}
+    protected user: ContextUser | null,
+  ) {
+  }
 
   insert<T>(type: TableInformation<T>): RelationalInsertContext<T> {
     return new RelationalInsertContext<T>(
@@ -21,6 +24,7 @@ export class RelationalTransactionContext {
       [],
     );
   }
+
   select<T>(type: DefaultConstructable<T>): RelationalSelectContext<T> {
     return new RelationalSelectContext<T>(this.dataAdapter, this.schema, type, {
       orderBy: [],
@@ -30,6 +34,7 @@ export class RelationalTransactionContext {
       skip: null,
     });
   }
+
   update<T>(type: TableInformation<T>): RelationalUpdateContext<T> {
     return new RelationalUpdateContext<T>(
       this.dataAdapter,
@@ -39,6 +44,7 @@ export class RelationalTransactionContext {
       null,
     );
   }
+
   delete<T>(type: TableInformation<T>): RelationalDeleteContext<T> {
     return new RelationalDeleteContext<T>(
       this.dataAdapter,
@@ -46,5 +52,9 @@ export class RelationalTransactionContext {
       type,
       null,
     );
+  }
+
+  raw(query: string, values?: any[]) {
+    return this.dataAdapter.raw(query, values || []);
   }
 }

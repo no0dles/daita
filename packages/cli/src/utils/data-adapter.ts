@@ -17,10 +17,6 @@ export function getRelationalDataAdapter(
   flags: { context: string | undefined, cwd: string | undefined },
   cmd: Command,
 ): RelationalDataAdapter | null {
-  process.env['SUPPRESS_NO_CONFIG_WARNING'] = 'true';
-  if (flags.cwd) {
-    process.env['NODE_CONFIG_DIR'] = path.join(flags.cwd, 'config');
-  }
 
   const config = require('config');
   const contextName = flags.context || 'default';

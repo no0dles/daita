@@ -1,6 +1,6 @@
 import {
   Debouncer,
-  Defer,
+  Defer, MigrationTree,
   RelationalContext,
   RelationalDataAdapter,
   RelationalTransactionContext,
@@ -9,24 +9,34 @@ import {
 import {
   AppMigrationTreeOptions,
   AppOptions,
-  AppSchemaOptions,
 } from './app-options';
-import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
 import * as debug from 'debug';
+import {ContextUser} from '@daita/core/dist/auth';
+
+interface ContextTransaction {
+  adapter: RelationalTransactionDataAdapter;
+  commitDefer: Defer<void>;
+  resultDefer: Defer<void>;
+  debouncer: Debouncer;
+}
+
+export interface ContextTransactionTimeoutEmitter {
+  emit: (name: string, data: any) => void;
+}
 
 export class ContextManager {
+  private readonly migrationTree: MigrationTree;
   private readonly transactionTimeout: number;
-  private readonly transactions: {
-    [key: string]: {
-      adapter: RelationalTransactionDataAdapter;
-      commitDefer: Defer<void>;
-      resultDefer: Defer<void>;
-      debouncer: Debouncer;
-    };
-  } = {};
+  private readonly transactions: { [key: string]: ContextTransaction } = {};
 
-  constructor(private appOptions: AppOptions, private timeoutEmitter?: { emit: (name: string, data: any) => void }) {
+  constructor(private appOptions: AppOptions,
+              private timeoutEmitter?: ContextTransactionTimeoutEmitter) {
     this.transactionTimeout = appOptions.transactionTimeout || 5000;
+    if (appOptions.type === 'schema') {
+      this.migrationTree = (<any>appOptions.schema).migrationTree;
+    } else {
+      this.migrationTree = (<any>this.appOptions).migrationTree;
+    }
   }
 
   close() {
@@ -58,7 +68,7 @@ export class ContextManager {
     }
   }
 
-  async beginTransaction(transactionId: string) {
+  async beginTransaction(transactionId: string, user: ContextUser | null) {
     const transactionDefer = new Defer<RelationalTransactionDataAdapter>();
     const commitDefer = new Defer<void>();
     const resultDefer = new Defer<void>();
@@ -92,7 +102,7 @@ export class ContextManager {
     const timeoutTransaction = () => {
       debug('daita:web:context-manager')(`timeout transaction ${transactionId}`);
       delete this.transactions[transactionId];
-      if (!commitDefer.isRejected) {
+      if (!commitDefer.isRejected && !commitDefer.isResolved) {
         commitDefer.reject(new Error('timeout'));
         if (this.timeoutEmitter) {
           this.timeoutEmitter.emit('trxTimeout', {tid: transactionId});
@@ -128,39 +138,23 @@ export class ContextManager {
     }
   }
 
-  getContext(migrationId: string, transactionId?: string) {
-    if ((<AppSchemaOptions>this.appOptions).schema) {
-      const dataAdapter = this.getDataAdapter(transactionId);
-      if (dataAdapter.kind === 'dataAdapter') {
-        return (<AppSchemaOptions>this.appOptions).schema.context(
-          dataAdapter,
-          migrationId,
-        );
-      } else {
-        return (<AppSchemaOptions>this.appOptions).schema.context(
-          dataAdapter,
-          migrationId,
-        );
-      }
-    }
-
-    if ((<AppMigrationTreeOptions>this.appOptions).migrationTree) {
-      const migrationTree = (<AppMigrationTreeOptions>this.appOptions)
-        .migrationTree;
-      const path = migrationTree.path(migrationId);
-      const dataAdapter = this.getDataAdapter(transactionId);
-      if (dataAdapter.kind === 'dataAdapter') {
-        return new RelationalContext(
-          getMigrationSchema(path),
-          (<AppMigrationTreeOptions>this.appOptions).migrationTree,
-          dataAdapter,
-        );
-      } else {
-        return new RelationalTransactionContext(
-          getMigrationSchema(path),
-          dataAdapter,
-        );
-      }
+  getContext(options: { migrationId?: string, user?: ContextUser | null, transactionId?: string }) {
+    const schema = this.migrationTree.defaultSchema(options.migrationId);
+    const user = (options.user ? options.user : null) || null;
+    const dataAdapter = this.getDataAdapter(options.transactionId);
+    if (dataAdapter.kind === 'dataAdapter') {
+      return new RelationalContext(
+        schema,
+        this.migrationTree,
+        dataAdapter,
+        user,
+      );
+    } else {
+      return new RelationalTransactionContext(
+        schema,
+        dataAdapter,
+        user,
+      );
     }
 
     throw new Error('Could not create context');

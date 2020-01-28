@@ -1,0 +1,132 @@
+version: '2'
+
+tasks:
+  install:
+    cmds:
+      - yarn
+
+  clean:
+    cmds:
+      - task: default:clean
+        vars: {DIR: .}
+      - task: default:clean
+        vars: {DIR: packages/cli}
+      - task: default:clean
+        vars: {DIR: packages/web}
+      - task: default:clean
+        vars: {DIR: packages/test}
+      - task: default:clean
+        vars: {DIR: packages/tslint}
+      - task: default:clean
+        vars: {DIR: packages/web-client}
+      - task: default:clean
+        vars: {DIR: packages/website}
+      - task: default:clean
+        vars: {DIR: packages/core}
+
+  test:
+    dir: packages/test
+    deps:
+      - task: core:build
+      - task: cli:build
+      - task: web:build
+      - task: web-client:build
+      - task: website:build
+    cmds:
+      - yarn test
+
+  coverage:
+    dir: packages/test
+    deps:
+      - task: core:build
+      - task: cli:build
+      - task: web:build
+      - task: web-client:build
+      - task: website:build
+    cmds:
+      - yarn coverage
+
+  build:
+    cmds:
+      - task: core:build
+      - task: cli:build
+      - task: test:build
+      - task: examples:build
+      - task: tslint:build
+      - task: web:build
+      - task: web-client:build
+      - task: website:build
+
+  core:build:
+    cmds:
+      - task: default:build
+        vars: {DIR: packages/core}
+
+  test:build:
+    deps:
+      - core:build
+      - cli:build
+      - web:build
+      - web-client:build
+    cmds:
+      - task: default:build
+        vars: {DIR: packages/test}
+
+  cli:build:
+    deps:
+      - core:build
+      - web:build
+    cmds:
+      - task: default:build
+        vars: {DIR: packages/cli}
+
+  website:build:
+    cmds:
+      - task: default:build:svelte
+        vars: {DIR: packages/website}
+
+  tslint:build:
+    cmds:
+      - task: default:build
+        vars: {DIR: packages/tslint}
+
+  examples:build:
+    deps:
+      - examples:node-example:build
+      - examples:angular-todo:build
+
+  examples:node-example:build:
+    deps:
+      - core:build
+      - cli:build
+    cmds:
+      - task: default:build
+        vars: {DIR: packages/examples/node-example}
+
+  examples:angular-todo:build:
+    deps:
+      - core:build
+      - web-client:build
+      - cli:build
+    cmds:
+      - task: default:build:angular
+        vars: {DIR: packages/examples/angular-todo}
+
+  web:build:
+    deps:
+      - core:build
+      - tslint:build
+    cmds:
+      - task: default:build
+        vars: {DIR: packages/web}
+
+  web-client:build:
+    deps:
+      - core:build
+      - tslint:build
+    cmds:
+      - task: default:build
+        vars: {DIR: packages/web-client}
+
+includes:
+  default: ./Taskfile.default.yml

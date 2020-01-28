@@ -10,7 +10,7 @@
     "target": "es2017",
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
     "types" : ["chai", "mocha", "node"]
   },
   "exclude": [

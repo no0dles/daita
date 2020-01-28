@@ -7,7 +7,7 @@
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
     "types" : ["chai", "@daita/core", "node"]
   },
   "exclude": [

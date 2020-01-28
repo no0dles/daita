@@ -12,14 +12,18 @@ import * as debug from 'debug';
 export class MigrationExecution {
   async init(dataAdapter: RelationalDataAdapter) {
     await dataAdapter.raw(
-      `CREATE TABLE IF NOT EXISTS "migrations" (id varchar NOT NULL PRIMARY KEY)`,
+      `CREATE SCHEMA IF NOT EXISTS "daita";`,
+      [],
+    );
+    await dataAdapter.raw(
+      `CREATE TABLE IF NOT EXISTS "daita"."migrations" (id varchar NOT NULL PRIMARY KEY)`,
       [],
     );
   }
 
   async exists(id: string, dataAdapter: RelationalDataAdapter) {
     const result = await dataAdapter.raw(
-      'SELECT "id" FROM "migrations" WHERE "id" = $1 LIMIT 1',
+      'SELECT "id" FROM "daita"."migrations" WHERE "id" = $1 LIMIT 1',
       [id],
     );
     return result.rowCount > 0;
@@ -36,14 +40,14 @@ export class MigrationExecution {
     for (const step of migration.steps) {
       if (step instanceof RelationalAddTableMigrationStep) {
         tables[step.table] = {
-          tableName: `${migration.id}_${step.table}`,
+          tableName: `${step.table}_${migration.id}`,
           fields: {},
           primaryKeys: [],
           foreignKeys: [],
         };
       } else if (step instanceof RelationalAddTableFieldMigrationStep) {
         if (tables[step.table]) {
-          tables[step.table].fields[`${migration.id}_${step.fieldName}`] = {
+          tables[step.table].fields[`${step.fieldName}_${migration.id}`] = {
             type: step.type,
             required: step.required,
             defaultValue: step.defaultValue,
@@ -54,11 +58,11 @@ export class MigrationExecution {
             throw new Error(`did not find table ${step.table}`);
           }
           sqls.push(
-            `ALTER TABLE "${table.sourceMigration.id}_${
+            `ALTER TABLE "${
               step.table
-            }" ADD COLUMN "${migration.id}_${
+            }_${table.sourceMigration.id}" ADD COLUMN "${
               step.fieldName
-            }" ${dataAdapter.sqlBuilder.getType(step.type)};`,
+            }_${migration.id}" ${dataAdapter.sqlBuilder.getType(step.type)};`,
           );
         }
       } else if (step instanceof RelationalDropTableMigrationStep) {
@@ -66,11 +70,11 @@ export class MigrationExecution {
         if (!table) {
           throw new Error(`did not find table ${step.table}`);
         }
-        sqls.push(`DROP TABLE "${table.sourceMigration.id}_${step.table}";`);
+        sqls.push(`DROP TABLE "${step.table}_${table.sourceMigration.id}";`);
       } else if (step instanceof RelationalAddTablePrimaryKey) {
         if (tables[step.table]) {
           tables[step.table].primaryKeys = step.fieldNames.map(
-            field => `"${migration.id}_${field}"`,
+            field => `"${field}_${migration.id}"`,
           );
         } else {
           throw new Error(`can not modify primary key for ${step.table}`);
@@ -80,18 +84,18 @@ export class MigrationExecution {
           const foreignTable = schema.table(step.foreignTable);
           if (foreignTable) {
             tables[step.table].foreignKeys.push({
-              table: `"${foreignTable.sourceMigration.id}_${step.foreignTable}"`,
-              keys: step.fieldNames.map(field => `"${migration.id}_${field}"`),
+              table: `"${step.foreignTable}_${foreignTable.sourceMigration.id}"`,
+              keys: step.fieldNames.map(field => `"${field}_${migration.id}"`),
               foreignKeys: step.foreignFieldNames.map(
-                field => `"${foreignTable.sourceMigration.id}_${field}"`,
+                field => `"${field}_${foreignTable.sourceMigration.id}"`,
               ),
             });
           } else {
             tables[step.table].foreignKeys.push({
-              table: `"${migration.id}_${step.foreignTable}"`,
-              keys: step.fieldNames.map(field => `"${migration.id}_${field}"`),
+              table: `"${step.foreignTable}_${migration.id}"`,
+              keys: step.fieldNames.map(field => `"${field}_${migration.id}"`),
               foreignKeys: step.foreignFieldNames.map(
-                field => `"${migration.id}_${field}"`,
+                field => `"${field}_${migration.id}"`,
               ),
             });
           }
@@ -115,11 +119,11 @@ export class MigrationExecution {
             foreignFields.push(`"${migrationField.baseFieldName}"`);
           }
           sqls.push(
-            `ALTER TABLE "${table.sourceMigration.id}_${
+            `ALTER TABLE "${
               step.table
-            }" ADD FOREIGN KEY (${fields.join(', ')}) REFERENCES "${
+            }_${table.sourceMigration.id}" ADD FOREIGN KEY (${fields.join(', ')}) REFERENCES "${foreignTable.name}_${
               foreignTable.sourceMigration.id
-            }_${foreignTable.name}" (${foreignFields.join(', ')});`,
+            }" (${foreignFields.join(', ')});`,
           );
         }
       }
@@ -169,8 +173,8 @@ export class MigrationExecution {
     const sqls = this.plan(migration, schema, dataAdapter);
 
     await dataAdapter.transaction(async client => {
-      await client.raw(`LOCK TABLE "migrations"`, []);
-      await client.raw('INSERT INTO "migrations" ("id") VALUES ($1)', [
+      await client.raw(`LOCK TABLE "daita"."migrations"`, []);
+      await client.raw('INSERT INTO "daita"."migrations" ("id") VALUES ($1)', [
         migration.id,
       ]);
 

@@ -14,6 +14,6 @@ export class MigrationSchemaCollectionField
   ) {}
 
   get baseFieldName() {
-    return `${this.sourceMigration.id}_${this.sourceFieldName}`;
+    return `${this.sourceFieldName}_${this.sourceMigration.id}`;
   }
 }

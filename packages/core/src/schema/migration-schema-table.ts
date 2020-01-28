@@ -26,7 +26,7 @@ export class MigrationSchemaTable
   add(field: MigrationSchemaTableField) {
     this.fieldMap[field.name] = field;
     this.sourceFieldMap[
-      `${field.sourceMigration.id}_${field.sourceFieldName}`
+      `${field.sourceFieldName}_${field.sourceMigration.id}`
     ] = field;
   }
 

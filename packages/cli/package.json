@@ -60,7 +60,7 @@
   "scripts": {
     "build": "tsc",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "rm -rf lib && rm -f tsconfig.tsbuildinfo && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
     "version": "oclif-dev readme && git add README.md",
     "lint": "tslint src/**/*.ts",
     "prettier": "prettier 'src/**/*.ts' --write"

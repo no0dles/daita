@@ -3,7 +3,6 @@ import {TableInformation} from '@daita/core/dist/context/table-information';
 import {
   count,
   insert,
-  raw,
   remove,
   select,
   update,
@@ -15,13 +14,19 @@ const getTable = (name: string): TableInformation<any> => {
   return {name: name};
 };
 
-export function relationalMiddleware(options: AppOptions): express.Router {
+export function relationalApi(options: AppOptions): express.Router {
   const router = express.Router();
   const manager = new ContextManager(options);
 
   router.post('/raw', async (req, res, next) => {
     try {
-      const result = await raw(manager.getDataAdapter(req.query.tid), req.body);
+      const context = manager.getContext({
+        migrationId: undefined,
+        user: req.user,
+        transactionId: req.query.tid,
+      });
+      const result = await context.raw(req.body.sql, req.body.values || []);
+
       if (req.query.tid) {
         res.setHeader('X-Transaction', req.query.tid);
         res.setHeader('X-Transaction-Timeout', manager.getTransactionTimeout(req.query.tid));
@@ -34,7 +39,7 @@ export function relationalMiddleware(options: AppOptions): express.Router {
 
   router.post('/trx/:tid', async (req, res, next) => {
     try {
-      await manager.beginTransaction(req.params.tid);
+      await manager.beginTransaction(req.params.tid, req.user || null);
       res.setHeader('X-Transaction-Timeout', manager.getTransactionTimeout(req.params.tid));
       res.setHeader('X-Transaction', req.params.tid);
       res.status(200).send();
@@ -63,7 +68,11 @@ export function relationalMiddleware(options: AppOptions): express.Router {
 
   router.post('/:migration/insert/:table', async (req, res, next) => {
     try {
-      const context = manager.getContext(req.params.migration, req.query.tid);
+      const context = manager.getContext({
+        migrationId: req.params.migration,
+        user: req.user,
+        transactionId: req.query.tid,
+      });
       const type = getTable(req.params.table);
       await insert(type, context, req.body);
       if (req.query.tid) {
@@ -78,7 +87,11 @@ export function relationalMiddleware(options: AppOptions): express.Router {
 
   router.post('/:migration/select/:table', async (req, res, next) => {
     try {
-      const context = manager.getContext(req.params.migration, req.query.tid);
+      const context = manager.getContext({
+        migrationId: req.params.migration,
+        user: req.user,
+        transactionId: req.query.tid,
+      });
       const type = getTable(req.params.table);
       const result = await select(type, context, req.body);
       if (req.query.tid) {
@@ -93,7 +106,11 @@ export function relationalMiddleware(options: AppOptions): express.Router {
 
   router.post('/:migration/count/:table', async (req, res, next) => {
     try {
-      const context = manager.getContext(req.params.migration, req.query.tid);
+      const context = manager.getContext({
+        migrationId: req.params.migration,
+        user: req.user,
+        transactionId: req.query.tid,
+      });
       const type = getTable(req.params.table);
       const result = await count(type, context, req.body);
       if (req.query.tid) {
@@ -108,7 +125,11 @@ export function relationalMiddleware(options: AppOptions): express.Router {
 
   router.post('/:migration/delete/:table', async (req, res, next) => {
     try {
-      const context = manager.getContext(req.params.migration, req.query.tid);
+      const context = manager.getContext({
+        migrationId: req.params.migration,
+        user: req.user,
+        transactionId: req.query.tid,
+      });
       const type = getTable(req.params.table);
       const result = await remove(type, context, req.body);
       if (req.query.tid) {
@@ -123,7 +144,11 @@ export function relationalMiddleware(options: AppOptions): express.Router {
 
   router.post('/:migration/update/:table', async (req, res, next) => {
     try {
-      const context = manager.getContext(req.params.migration, req.query.tid);
+      const context = manager.getContext({
+        migrationId: req.params.migration,
+        user: req.user,
+        transactionId: req.query.tid,
+      });
       const type = getTable(req.params.table);
       const result = await update(type, context, req.body);
       if (req.query.tid) {

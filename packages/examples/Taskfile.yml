@@ -1,0 +1,16 @@
+version: '2'
+
+tasks:
+  build:
+    deps:
+      - angular-todo:build
+      - node-example:build
+
+  clean:
+    deps:
+      - angular-todo:clean
+      - node-example:clean
+
+includes:
+  angular-todo: ./angular-todo
+  node-example: ./node-example

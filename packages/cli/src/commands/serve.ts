@@ -6,8 +6,9 @@ import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as http from 'http';
 import {getApp} from '@daita/web';
-import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
 import {Debouncer, RelationalContext} from '@daita/core';
+import {getTokenProvider} from '../utils/token-provider';
+import {AccessToken} from '@daita/web/dist/auth/token-provider';
 
 export default class Serve extends Command {
   private server: http.Server | null = null;
@@ -20,7 +21,7 @@ export default class Serve extends Command {
       description: 'path to schema',
       default: 'src/schema.ts',
     }),
-    cwd: flags.string({ description: 'working directory', default: '.' }),
+    cwd: flags.string({description: 'working directory', default: '.'}),
     migration: flags.string({char: 'm', description: 'migration id'}),
     context: flags.string({
       char: 'c',
@@ -39,10 +40,19 @@ export default class Serve extends Command {
     const {flags} = this.parse(Serve);
     const schemaLocation = await getSchemaLocation(flags, this);
 
+
+    process.env['SUPPRESS_NO_CONFIG_WARNING'] = 'true';
+    if (flags.cwd) {
+      process.env['NODE_CONFIG_DIR'] = path.join(flags.cwd, 'config');
+    }
+
     const dataAdapter = getRelationalDataAdapter(flags, this);
     if (!dataAdapter) {
       throw new Error('no relational adapter');
     }
+
+    const tokenProvider = getTokenProvider(flags, this);
+
     const watchPaths = [schemaLocation.sourceDirectory];
 
     let currentPath = flags.cwd ? path.resolve(flags.cwd) : process.cwd();
@@ -66,25 +76,28 @@ export default class Serve extends Command {
         return;
       }
 
-      const lastMigrations = schemaInfo.migrationTree.last();
-      if (lastMigrations.length > 1) {
-        throw new Error('multiple migrations');
-      } else if (lastMigrations.length === 0) {
-        throw new Error('no migrations');
-      }
-      const schema = getMigrationSchema(
-        schemaInfo.migrationTree.path(lastMigrations[0].id),
-      );
+      const schema = schemaInfo.migrationTree.defaultSchema();
       const context = new RelationalContext(
         schema,
         schemaInfo.migrationTree,
         dataAdapter,
+        null,
       );
       await context.migration().apply();
+      const userProvider = {
+        get: async(token: AccessToken) => {
+          throw new Error('not found');
+        },
+      };
 
       const app = getApp({
+        type: 'migrationTree',
         dataAdapter,
         migrationTree: schemaInfo.migrationTree,
+        auth: tokenProvider ? {
+          tokenProvider,
+          userProvider,
+        } : undefined,
       });
 
       const port = flags.port || 8765;

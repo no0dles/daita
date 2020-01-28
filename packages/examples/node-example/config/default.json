@@ -8,6 +8,13 @@
         "password": "postgres",
         "database": "daita"
       }
+    },
+    "auth": {
+      "default": {
+        "type": "openid",
+        "url": "https://bertschi.eu.auth0.com",
+        "client_id": "62bmaH1BoU5HDOiiXlMOFdzZ9XsnJ2mz"
+      }
     }
   }
 }

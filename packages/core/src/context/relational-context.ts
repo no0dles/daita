@@ -4,21 +4,23 @@ import { getMigrationSchema } from '../schema/migration-schema-builder';
 import { RelationalTransactionContext } from './relational-transaction-context';
 import { MigrationTree } from '../migration/migration-tree';
 import { MigrationExecution } from '../migration';
+import {ContextUser} from '../auth';
 
 export class RelationalContext extends RelationalTransactionContext {
   constructor(
     schema: MigrationSchema,
     private migrationTree: MigrationTree,
     private rootDataAdapter: RelationalDataAdapter,
+    user: ContextUser | null,
   ) {
-    super(schema, rootDataAdapter as any);
+    super(schema, rootDataAdapter as any, user);
   }
 
   async transaction(
     action: (trx: RelationalTransactionContext) => Promise<any>,
   ) {
     await this.rootDataAdapter.transaction(async adapter => {
-      await action(new RelationalTransactionContext(this.schema, adapter));
+      await action(new RelationalTransactionContext(this.schema, adapter, this.user));
     });
   }
 

@@ -81,6 +81,25 @@ export class MigrationTree {
     return getMigrationSchema(this.path(id));
   }
 
+  defaultPath(id?: string) {
+    if(id) {
+      return this.path(id);
+    }
+
+    const lastMigrations = this.last();
+    if(lastMigrations.length === 1) {
+      return this.path(lastMigrations[0].id);
+    } else if(lastMigrations.length === 0) {
+      return [];
+    } else {
+      throw new Error('more than 1 migration');
+    }
+  }
+
+  defaultSchema(id?: string) {
+    return getMigrationSchema(this.defaultPath(id));
+  }
+
   path(id: string) {
     const targetMigration = this.migrationMap[id];
     const migrations: MigrationDescription[] = [targetMigration];

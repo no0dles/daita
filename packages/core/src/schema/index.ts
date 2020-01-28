@@ -8,3 +8,5 @@ export { RelationalTableSchemaTableField } from './relational-table-schema-table
 export { RelationalTableSchemaTableFieldType } from './relational-table-schema-table-field-type';
 export { getSourceCodeSchema } from './source-code-schema-builder';
 export * from './schema';
+export * from './document-schema';
+export * from './relational-schema';
