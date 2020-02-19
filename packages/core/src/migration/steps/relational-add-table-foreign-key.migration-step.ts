@@ -1,13 +1,8 @@
-import { BaseMigrationStep } from './base-migration-step';
-
-export class RelationalAddTableForeignKey implements BaseMigrationStep {
-  kind = 'add_table_foreign_key';
-
-  constructor(
-    public table: string,
-    public name: string,
-    public fieldNames: string[],
-    public foreignTable: string,
-    public foreignFieldNames: string[],
-  ) {}
+export interface RelationalAddTableForeignKey {
+  kind: 'add_table_foreign_key';
+  table: string;
+  name: string;
+  fieldNames: string[];
+  foreignTable: string;
+  foreignFieldNames: string[];
 }

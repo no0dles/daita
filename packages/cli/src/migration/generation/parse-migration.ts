@@ -1,19 +1,10 @@
-import * as path from 'path';
 import * as ts from 'typescript';
-import { SyntaxKind } from 'typescript';
-import {
-  getChildNodes,
-  getFirstChildNode,
-  isKind,
-  parseSourceFile,
-} from './utils';
 import {
   getSourceCodeSchema,
   MigrationDescription,
   MigrationStep,
-  MigrationTree,
+  MigrationTree, Permission,
   SourceCodeModel,
-  SourceCodeModelProperty,
   SourceCodeModelPropertyType,
 } from '@daita/core';
 import {
@@ -28,53 +19,18 @@ import {
   ExtendedRelationalAddTablePrimaryKey,
   ExtendedRenameCollectionFieldMigrationStep,
 } from '../steps';
-import { SourceCodeModelUnionPropertyType } from '@daita/core/dist/model/source-code-model-union-property-type';
-import { SourceCodeModelPrimitivePropertyType } from '@daita/core/dist/model/source-code-model-primitive-property-type';
-import { SourceCodeModelReferencePropertyType } from '@daita/core/dist/model/source-code-model-reference-property-type';
-import { SourceCodeModelArrayPropertyType } from '@daita/core/dist/model/source-code-model-array-property-type';
+import {SourceCodeModelUnionPropertyType} from '@daita/core/dist/model/source-code-model-union-property-type';
+import {SourceCodeModelPrimitivePropertyType} from '@daita/core/dist/model/source-code-model-primitive-property-type';
+import {SourceCodeModelReferencePropertyType} from '@daita/core/dist/model/source-code-model-reference-property-type';
+import {SourceCodeModelArrayPropertyType} from '@daita/core/dist/model/source-code-model-array-property-type';
+import {AstSourceFile} from '../../ast/ast-source-file';
+import {AstVariable} from '../../ast/ast-variable';
+import {AstClassDeclaration} from '../../ast/ast-class-declaration';
+import {AstNewConstructor} from '../../ast/ast-new-constructor';
 
-class ParseContext {
-  private modelDeclarations: {
-    [filename: string]: { [className: string]: SourceCodeModel };
-  } = {};
-  private migrationDeclarations: {
-    [filename: string]: { [className: string]: MigrationDescription };
-  } = {};
-
-  containsSourceFile(sourceFile: ts.SourceFile) {
-    if (this.modelDeclarations[sourceFile.fileName]) {
-      return true;
-    }
-
-    if (this.migrationDeclarations[sourceFile.fileName]) {
-      return true;
-    }
-
-    return false;
-  }
-
-  getModel(sourceFile: ts.SourceFile, name: string): SourceCodeModel | null {
-    if (!this.modelDeclarations[sourceFile.fileName]) {
-      importClasses(this, sourceFile);
-    }
-    if (!this.modelDeclarations[sourceFile.fileName]) {
-      return null;
-    }
-    return this.modelDeclarations[sourceFile.fileName][name] || null;
-  }
-
-  addModel(sourceFile: ts.SourceFile, sourceCodeModel: SourceCodeModel) {
-    if (!this.modelDeclarations[sourceFile.fileName]) {
-      this.modelDeclarations[sourceFile.fileName] = {};
-    }
-    this.modelDeclarations[sourceFile.fileName][
-      sourceCodeModel.name
-    ] = sourceCodeModel;
-  }
-}
 
 function parseMigrationSteps(
-  arrayLiteral: ts.ArrayLiteralExpression,
+  migrationSteps: AstNewConstructor[],
 ): MigrationStep[] {
   const steps = new Array<MigrationStep>();
 
@@ -91,25 +47,13 @@ function parseMigrationSteps(
     ExtendedRelationalAddTablePrimaryKey,
   ];
 
-  for (const element of arrayLiteral.elements) {
-    const newExpression = isKind(element, ts.SyntaxKind.NewExpression);
-    if (!newExpression) {
-      continue;
-    }
-
-    const expressionArgs = newExpression.arguments || [];
-    if (!expressionArgs) {
-      break;
-    }
-
-    const migrationType = getIdentifier(newExpression.expression);
-
+  for (const migrationStep of migrationSteps) {
     for (const stepType of stepTypes) {
-      if (stepType.name !== 'Extended' + migrationType) {
+      if (stepType.name !== 'Extended' + migrationStep.typeName) {
         continue;
       }
 
-      const step = stepType.parse(expressionArgs.filter(e => !!e));
+      const step = stepType.parse(migrationStep.arguments);
       if (step) {
         steps.push(step);
       }
@@ -121,447 +65,220 @@ function parseMigrationSteps(
 }
 
 function parseMigration(
-  fileName: string,
-  sourceFile: ts.SourceFile,
-): (MigrationDescription & { className: string }) | null {
-  let id: string | null = null;
+  astClassDeclaration: AstClassDeclaration,
+): MigrationDescription {
+  const idProp = astClassDeclaration.getProperty('id');
+  const afterProp = astClassDeclaration.getProperty('after');
+  const resolveProp = astClassDeclaration.getProperty('resolve');
+  const stepsProp = astClassDeclaration.getProperty('steps');
+
   let after: string | null = null;
   let resolve: string | null = null;
   const steps: MigrationStep[] = [];
 
-  const classDeclaration = getFirstChildNode(
-    sourceFile,
-    ts.SyntaxKind.ClassDeclaration,
-  );
-  if (!classDeclaration) {
-    return null;
+  if (!idProp || !idProp.initializer || !idProp.initializer.stringValue) {
+    throw new Error('missing id prop in migration');
   }
 
-  const classNameIdentifier = isKind(
-    classDeclaration.name,
-    ts.SyntaxKind.Identifier,
-  );
-  if (!classNameIdentifier) {
-    return null;
+  if (afterProp && afterProp.initializer && afterProp.initializer.stringValue) {
+    after = afterProp.initializer.stringValue;
   }
 
-  const properties = getChildNodes(
-    classDeclaration,
-    ts.SyntaxKind.PropertyDeclaration,
-  );
-  for (const property of properties) {
-    const propertyName = getIdentifier(property.name as ts.Identifier);
-    if (!property.initializer) {
-      continue;
-    }
-
-    switch (propertyName) {
-      case 'after':
-        after = getIdentifier(property.initializer as ts.StringLiteral);
-        break;
-      case 'resolve':
-        resolve = getIdentifier(property.initializer as ts.StringLiteral);
-        break;
-      case 'id':
-        id = getIdentifier(property.initializer as ts.StringLiteral);
-        break;
-      case 'steps':
-        if (
-          property.initializer.kind === ts.SyntaxKind.ArrayLiteralExpression
-        ) {
-          steps.push(
-            ...parseMigrationSteps(
-              property.initializer as ts.ArrayLiteralExpression,
-            ),
-          );
-        }
-        break;
-    }
+  if (resolveProp && resolveProp.initializer && resolveProp.initializer.stringValue) {
+    resolve = resolveProp.initializer.stringValue;
   }
 
-  if (id !== null && steps.length > 0) {
-    return {
-      id,
-      steps,
-      after: after || undefined,
-      resolve: resolve || undefined,
-      className: classNameIdentifier.text,
-    };
+  if (stepsProp && stepsProp.initializer && stepsProp.initializer.arrayValue) {
+    //TODO parse steps
   }
 
-  return null;
-}
-
-export function parseModelSchema(
-  sourceFile: ts.SourceFile,
-  schemaName: string,
-) {
-  const collections = parseSchemaCollections(sourceFile, schemaName);
-  const tables = parseSchemaTables(sourceFile, schemaName);
-  return getSourceCodeSchema(collections, tables);
+  return {
+    id: idProp.initializer.stringValue,
+    after: after || undefined,
+    resolve: resolve || undefined,
+    steps,
+  };
 }
 
 export interface SchemaDeclaration {
-  name: string;
+  variable: AstVariable;
   type: 'relational' | 'document';
 }
 
-export function getSchemas(sourceFile: ts.SourceFile): SchemaDeclaration[] {
-  const variableStatements = getChildNodes(
-    sourceFile,
-    ts.SyntaxKind.VariableStatement,
-  );
+export function getSchemas(sourceFile: AstSourceFile): SchemaDeclaration[] {
   const schemas: SchemaDeclaration[] = [];
-  for (const variableStatement of variableStatements) {
-    for (const declaration of variableStatement.declarationList.declarations) {
-      const newExpression = isKind(
-        declaration.initializer,
-        ts.SyntaxKind.NewExpression,
-      );
-      if (!newExpression) {
-        continue;
-      }
-
-      const classNameIdentifier = isKind(
-        newExpression.expression,
-        SyntaxKind.Identifier,
-      );
-      if (!classNameIdentifier) {
-        continue;
-      }
-
-      const name = getIdentifier(declaration.name);
-      if (!name) {
-        continue;
-      }
-
-      if (classNameIdentifier.text === 'RelationalSchema') {
-        schemas.push({
-          name,
-          type: 'relational',
-        });
-      } else if (classNameIdentifier.text === 'DocumentSchema') {
-        schemas.push({
-          name,
-          type: 'document',
-        });
-      }
+  const relationalSchemaVariables = sourceFile.getVariables();
+  for (const relationalSchemaVariable of relationalSchemaVariables) {
+    const initializer = relationalSchemaVariable.initializer;
+    if (initializer && initializer.newConstructor && initializer.newConstructor.typeName === 'RelationalSchema') {
+      schemas.push({
+        variable: relationalSchemaVariable,
+        type: 'relational',
+      });
+    }
+  }
+  const documentSchemaVariables = sourceFile.getVariables();
+  for (const documentSchemaVariable of documentSchemaVariables) {
+    const initializer = documentSchemaVariable.initializer;
+    if (initializer && initializer.newConstructor && initializer.newConstructor.typeName === 'RelationalSchema') {
+      schemas.push({
+        variable: documentSchemaVariable,
+        type: 'document',
+      });
     }
   }
   return schemas;
 }
 
-export interface ParsedMigrations {
-  migrationTree: MigrationTree;
-  migrationFiles: {
-    [key: string]: { sourceFile: ts.SourceFile; name: string; id: string };
-  };
-}
+export function parseSchemaPermissions(schemaVariable: AstVariable) {
+  const permissions: { [key: string]: Permission<any>[] } = {};
 
-export function parseSchemaMigrations(
-  sourceFile: ts.SourceFile,
-  variableName: string,
-): ParsedMigrations {
-  const migrationTree = new MigrationTree();
-  const migrationFiles: {
-    [key: string]: { sourceFile: ts.SourceFile; name: string; id: string };
-  } = {};
+  for (const permissionCalls of schemaVariable.getCalls({name: 'permission'})) {
+    const builderArgument = permissionCalls.argument(0);
 
-  const migrationCalls = getMethodCalls(sourceFile, variableName, [
-    'migration',
-  ]);
-  const imports = getImports(sourceFile);
+    if (!builderArgument) {
+      console.log(builderArgument)
+      throw new Error('invalid permission call');
+    }
 
-  for (const migrationCall of migrationCalls) {
-    const arg = migrationCall.args[0];
-    const importFile = imports[arg];
-    const migrationFile = parseSourceFile(importFile);
-    const migration = parseMigration(importFile, migrationFile);
-    if (migration) {
-      migrationFiles[migration.id] = {
-        sourceFile: migrationFile,
-        name: migration.className,
-        id: migration.id,
-      };
-      migrationTree.add(migration);
+    const variable = builderArgument.variable;
+    if (!variable) {
+      throw new Error('invalid variable');
+    }
+
+    const pushCalls = variable.getCalls({name: 'push'});
+    for (const pushCall of pushCalls) {
+      const clsArg = pushCall.argument(0);
+      const objArg = pushCall.argument(1);
+      if (!clsArg || !objArg) {
+        throw new Error('invalid push call');
+      }
+
+      const objVal = objArg.objectValue;
+      if (!objVal) {
+        throw new Error('invalid obj');
+      }
+
+      const type = objVal.property('type');
+      if (type) {
+        type.stringValue
+      }
     }
   }
 
-  return { migrationTree, migrationFiles };
+  return permissions;
+}
+
+export function parseSchemaMigrations(
+  schemaVariable: AstVariable,
+): MigrationTree {
+  const migrationTree = new MigrationTree();
+
+  const migrationCalls = schemaVariable.getCalls({name: 'migration'});
+  for (const migrationCall of migrationCalls) {
+    const migrationClassArg = migrationCall.argument(0);
+    if (!migrationClassArg) {
+      throw new Error('missing first arg in migration');
+    }
+    const classDeclaration = migrationClassArg.classDeclaration;
+    if (!classDeclaration) {
+      throw new Error('first arg is no class declaration');
+    }
+    const migration = parseMigration(classDeclaration);
+    migrationTree.add(migration);
+  }
+
+  return migrationTree;
 }
 
 export function parseSchemaTables(
-  sourceFile: ts.SourceFile,
-  variableName: string,
+  schemaVariable: AstVariable,
 ) {
-  const tables: SourceCodeModel[] = [];
+  const tables: AstClassDeclaration[] = [];
 
-  const parseContext = new ParseContext();
-  const calls = getMethodCalls(sourceFile, variableName, ['table']);
-  const imports = getImports(sourceFile);
-
+  const calls = schemaVariable.getCalls({name: 'table'});
   for (const call of calls) {
-    {
-      const arg = call.args[0];
-      const importFile = imports[arg];
-      const modelFile = parseSourceFile(importFile);
+    const classArgument = call.argument(0);
+    const optionsArgument = call.argument(1);
 
-      const argClass = parseContext.getModel(modelFile, arg);
-      if (!argClass) {
-        continue;
-      }
-
-      const primaryKeys = call.args[1] || ['id'];
-      argClass.setPrimaryKeys(primaryKeys);
-      tables.push(argClass);
+    if (!classArgument) {
+      throw new Error('invalid table argument without class');
     }
+    const classDeclaration = classArgument.classDeclaration;
+    if (!classDeclaration) {
+      throw new Error('first arg is no class');
+    }
+
+    const argClass = parseContext.getModel(modelFile, arg);
+    if (!argClass) {
+      continue;
+    }
+
+    const primaryKeys = call.args[1] || ['id'];
+    argClass.setPrimaryKeys(primaryKeys);
+    tables.push(argClass);
   }
 
   return tables;
 }
 
 export function parseSchemaCollections(
-  sourceFile: ts.SourceFile,
-  variableName: string,
-) {
-  const collections: SourceCodeModel[] = [];
+  schemaVariable: AstVariable,
+): AstClassDeclaration[] {
+  const classDeclarations = new Array<AstClassDeclaration>();
 
-  const parseContext = new ParseContext();
-  const calls = getMethodCalls(sourceFile, variableName, ['collection']);
-  const imports = getImports(sourceFile);
-
+  const calls = schemaVariable.getCalls({name: 'collection'});
   for (const call of calls) {
-    {
-      const arg = call.args[0];
-      const importFile = imports[arg];
-      const modelFile = parseSourceFile(importFile);
-
-      const argClass = parseContext.getModel(modelFile, arg);
-      if (!argClass) {
-        continue;
-      }
-
-      collections.push(argClass);
+    const classArgument = call.argument(0);
+    if (!classArgument) {
+      throw new Error('missing class arugment');
     }
+    const classDeclaration = classArgument.classDeclaration;
+    if (!classDeclaration) {
+      throw new Error('first arg is not class arg');
+    }
+    classDeclarations.push(classDeclaration);
   }
 
-  return collections;
+  return classDeclarations;
 }
 
-function importClasses(parseContext: ParseContext, sourceFile: ts.SourceFile) {
-  if (parseContext.containsSourceFile(sourceFile)) {
-    return;
-  }
+// if (arg.kind === ts.SyntaxKind.ObjectLiteralExpression) {
+//   const objectLiteral = <ts.ObjectLiteralExpression>arg;
+//   for (const prop of objectLiteral.properties) {
+//     if (prop.kind === ts.SyntaxKind.PropertyAssignment) {
+//       const propAssign = <ts.PropertyAssignment>prop;
+//       const name = getIdentifier(propAssign.name as ts.Expression);
+//       if (name !== 'key') {
+//         continue;
+//       }
+//
+//       const primaryKeys = [];
+//       if (
+//         propAssign.initializer.kind ===
+//         ts.SyntaxKind.ArrayLiteralExpression
+//       ) {
+//         const arrayElm = <ts.ArrayLiteralExpression>(
+//           propAssign.initializer
+//         );
+//         for (const elm of arrayElm.elements) {
+//           if (elm.kind === ts.SyntaxKind.StringLiteral) {
+//             const textElm = <ts.StringLiteral>elm;
+//             primaryKeys.push(textElm.text);
+//           }
+//         }
+//       } else if (
+//         propAssign.initializer.kind === ts.SyntaxKind.StringLiteral
+//       ) {
+//         const textElm = <ts.StringLiteral>propAssign.initializer;
+//         primaryKeys.push(textElm.text);
+//       }
+//
+//       call.args.push(primaryKeys);
+//     }
+//   }
+// }
 
-  const models = new Array<{
-    model: SourceCodeModel;
-    classDeclaration: ts.ClassDeclaration;
-  }>();
-
-  const classDeclarations = getChildNodes(
-    sourceFile,
-    ts.SyntaxKind.ClassDeclaration,
-  );
-  for (const classDeclaration of classDeclarations) {
-    const identifier = getFirstChildNode(
-      classDeclaration,
-      ts.SyntaxKind.Identifier,
-    );
-    if (!identifier) {
-      throw new Error(`missing class name in file ${sourceFile.fileName}`);
-    }
-    const name = identifier.text;
-
-    const model = new SourceCodeModel(name);
-    models.push({ model, classDeclaration });
-    parseContext.addModel(sourceFile, model);
-  }
-
-  for (const model of models) {
-    const properties = getChildNodes(
-      model.classDeclaration,
-      ts.SyntaxKind.PropertyDeclaration,
-    );
-    for (const property of properties) {
-      model.model.addProperty(
-        parseProperty(parseContext, sourceFile, property),
-      );
-    }
-  }
-}
-
-function getMethodCalls(
-  sourceFile: ts.SourceFile,
-  variableName: string,
-  methods: string[],
-) {
-  const calls: { method: string; args: any[] }[] = [];
-  const expressionStatements = getChildNodes(
-    sourceFile,
-    ts.SyntaxKind.ExpressionStatement,
-  );
-
-  for (const expressionStatement of expressionStatements) {
-    const callExpression = isKind(
-      expressionStatement.expression,
-      ts.SyntaxKind.CallExpression,
-    );
-    if (!callExpression) {
-      continue;
-    }
-
-    const propertyAccessExpr = isKind(
-      callExpression.expression,
-      ts.SyntaxKind.PropertyAccessExpression,
-    );
-    if (!propertyAccessExpr) {
-      continue;
-    }
-
-    const variableExpression = isKind(
-      propertyAccessExpr.expression,
-      ts.SyntaxKind.Identifier,
-    );
-    if (!variableExpression) {
-      continue;
-    }
-
-    if (variableExpression.text !== variableName) {
-      continue;
-    }
-
-    if (methods.indexOf(propertyAccessExpr.name.text) === -1) {
-      continue;
-    }
-
-    const call: { method: string; args: any[] } = {
-      method: propertyAccessExpr.name.escapedText.toString(),
-      args: [],
-    };
-
-    for (const arg of callExpression.arguments) {
-      const name = getIdentifier(arg);
-      if (name) {
-        call.args.push(name);
-      } else {
-        if (arg.kind === ts.SyntaxKind.ObjectLiteralExpression) {
-          const objectLiteral = <ts.ObjectLiteralExpression>arg;
-          for (const prop of objectLiteral.properties) {
-            if (prop.kind === ts.SyntaxKind.PropertyAssignment) {
-              const propAssign = <ts.PropertyAssignment>prop;
-              const name = getIdentifier(propAssign.name as ts.Expression);
-              if (name !== 'key') {
-                continue;
-              }
-
-              const primaryKeys = [];
-              if (
-                propAssign.initializer.kind ===
-                ts.SyntaxKind.ArrayLiteralExpression
-              ) {
-                const arrayElm = <ts.ArrayLiteralExpression>(
-                  propAssign.initializer
-                );
-                for (const elm of arrayElm.elements) {
-                  if (elm.kind === ts.SyntaxKind.StringLiteral) {
-                    const textElm = <ts.StringLiteral>elm;
-                    primaryKeys.push(textElm.text);
-                  }
-                }
-              } else if (
-                propAssign.initializer.kind === ts.SyntaxKind.StringLiteral
-              ) {
-                const textElm = <ts.StringLiteral>propAssign.initializer;
-                primaryKeys.push(textElm.text);
-              }
-
-              call.args.push(primaryKeys);
-            }
-          }
-        }
-      }
-    }
-
-    calls.push(call);
-  }
-
-  return calls;
-}
-
-export function getIdentifier(
-  expression: ts.Expression | ts.Identifier | ts.BindingName,
-) {
-  if (expression.kind === ts.SyntaxKind.Identifier) {
-    const identfier = <ts.Identifier>expression;
-    return identfier.text;
-  }
-
-  if (expression.kind === ts.SyntaxKind.StringLiteral) {
-    const stringLiteral = <ts.StringLiteral>expression;
-    return stringLiteral.text;
-  }
-
-  return null;
-}
-
-function getImports(sourceFile: ts.SourceFile) {
-  const result: { [indentifier: string]: string } = {};
-  const importDeclarations = getChildNodes(
-    sourceFile,
-    ts.SyntaxKind.ImportDeclaration,
-  );
-
-  for (const importDeclaration of importDeclarations) {
-    if (!importDeclaration.importClause) {
-      continue;
-    }
-
-    if (!importDeclaration.importClause.namedBindings) {
-      continue;
-    }
-
-    const namedImport = isKind(
-      importDeclaration.importClause.namedBindings,
-      ts.SyntaxKind.NamedImports,
-    );
-    if (!namedImport) {
-      continue;
-    }
-
-    const file = getIdentifier(importDeclaration.moduleSpecifier);
-    if (!file) {
-      continue;
-    }
-
-    const fileName = path.join(path.dirname(sourceFile.fileName), file + '.ts');
-    for (const element of namedImport.elements) {
-      result[element.name.text] = fileName;
-    }
-  }
-
-  return result;
-}
-
-function parseProperty(
-  parsedSources: ParseContext,
-  sourceFile: ts.SourceFile,
-  node: ts.PropertyDeclaration,
-): SourceCodeModelProperty {
-  const name = getIdentifier(node.name as ts.Identifier);
-
-  if (!node.type) {
-    throw new Error(`missing type on class ... property ${name}`);
-  }
-
-  if (!name) {
-    throw new Error('missing name');
-  }
-
-  return new SourceCodeModelProperty(
-    name,
-    parseType(parsedSources, sourceFile, node.type),
-  );
-}
 
 function parseType(
   parsedSources: ParseContext,

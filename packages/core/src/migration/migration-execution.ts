@@ -1,7 +1,7 @@
 import { MigrationDescription } from './migration-description';
 import { MigrationSchema } from '../schema/migration-schema';
 import { RelationalDataAdapter } from '../adapter';
-import { RelationalAddTableMigrationStep } from './steps/relation-add-table.migration-step';
+import { RelationalAddTableMigrationStep } from './steps/relational-add-table.migration-step';
 import { RelationalAddTableFieldMigrationStep } from './steps/relational-add-table-field.migration-step';
 import { RelationalDropTableMigrationStep } from './steps/relational-drop-table.migration-step';
 import { RelationalAddTablePrimaryKey } from './steps/relational-add-table-primary-key.migration-step';
@@ -38,14 +38,14 @@ export class MigrationExecution {
     const tables: { [key: string]: Table } = {};
 
     for (const step of migration.steps) {
-      if (step instanceof RelationalAddTableMigrationStep) {
+      if (step.kind === 'add_table') {
         tables[step.table] = {
           tableName: `${step.table}_${migration.id}`,
           fields: {},
           primaryKeys: [],
           foreignKeys: [],
         };
-      } else if (step instanceof RelationalAddTableFieldMigrationStep) {
+      } else if (step.kind === 'add_table_field') {
         if (tables[step.table]) {
           tables[step.table].fields[`${step.fieldName}_${migration.id}`] = {
             type: step.type,
@@ -65,13 +65,13 @@ export class MigrationExecution {
             }_${migration.id}" ${dataAdapter.sqlBuilder.getType(step.type)};`,
           );
         }
-      } else if (step instanceof RelationalDropTableMigrationStep) {
+      } else if (step.kind === 'drop_table') {
         const table = schema.table(step.table);
         if (!table) {
           throw new Error(`did not find table ${step.table}`);
         }
         sqls.push(`DROP TABLE "${step.table}_${table.sourceMigration.id}";`);
-      } else if (step instanceof RelationalAddTablePrimaryKey) {
+      } else if (step.kind === 'add_table_primary_key') {
         if (tables[step.table]) {
           tables[step.table].primaryKeys = step.fieldNames.map(
             field => `"${field}_${migration.id}"`,
@@ -79,7 +79,7 @@ export class MigrationExecution {
         } else {
           throw new Error(`can not modify primary key for ${step.table}`);
         }
-      } else if (step instanceof RelationalAddTableForeignKey) {
+      } else if (step.kind === 'add_table_foreign_key') {
         if (tables[step.table]) {
           const foreignTable = schema.table(step.foreignTable);
           if (foreignTable) {

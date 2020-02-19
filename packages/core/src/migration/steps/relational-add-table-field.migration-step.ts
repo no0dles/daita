@@ -1,14 +1,10 @@
-import { RelationalTableSchemaTableFieldType } from '../../schema';
-import { BaseMigrationStep } from './base-migration-step';
+import {RelationalTableSchemaTableFieldType} from '../../schema';
 
-export class RelationalAddTableFieldMigrationStep implements BaseMigrationStep {
-  kind = 'add_table_field';
-
-  constructor(
-    public table: string,
-    public fieldName: string,
-    public type: RelationalTableSchemaTableFieldType,
-    public required: boolean = false,
-    public defaultValue: any = null,
-  ) {}
+export interface RelationalAddTableFieldMigrationStep {
+  kind: 'add_table_field';
+  table: string;
+  fieldName: string;
+  type: RelationalTableSchemaTableFieldType;
+  required: boolean;
+  defaultValue?: any;
 }

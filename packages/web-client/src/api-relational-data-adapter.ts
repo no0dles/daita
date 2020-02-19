@@ -62,7 +62,7 @@ export class ApiRelationalDataAdapter extends BaseApiDataAdapter
 }
 
 class Countdown {
-  private timeoutHandle: number | null = null;
+  private timeoutHandle: any | null = null;
 
   constructor(private trigger: () => any) {
   }

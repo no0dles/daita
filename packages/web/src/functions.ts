@@ -1,23 +1,13 @@
 import {TableInformation} from '@daita/core/dist/context/table-information';
 import {
-  RelationalContext,
-  RelationalDataAdapter,
-  RelationalTransactionContext, RelationalTransactionDataAdapter,
+  RelationalTransactionContext,
 } from '@daita/core';
 import {SocketUpdateEvent} from './socket/events/socket-update-event';
 import {SocketInsertEvent} from './socket/events/socket-insert-event';
 import {SocketSelectEvent} from './socket/events/socket-select-event';
-import {SocketRawEvent} from './socket/events/socket-raw-event';
-import {
-  AppMigrationTreeOptions,
-  AppOptions,
-  AppSchemaOptions,
-} from './app-options';
-import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
 import {SocketDeleteEvent} from './socket/events/socket-delete-event';
 import {SocketCountEvent} from './socket/events/socket-count-event';
 import {RelationalSelectContextOrdered} from '@daita/core/dist/context/relational-select-context';
-import {ContextUser} from '@daita/core/dist/auth';
 
 export const insert = async (
   type: TableInformation<any>,
@@ -108,6 +98,7 @@ export const select = async (
           ...body.orderBy,
         ],
       },
+      (<any>query).user,
     );
     return await orderedQuery.exec();
   }

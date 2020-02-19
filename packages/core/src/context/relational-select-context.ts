@@ -3,6 +3,7 @@ import { RootFilter } from '../query/root-filter';
 import { MigrationSchema } from '../schema/migration-schema';
 import { TableInformation } from './table-information';
 import { ExcludePrimitive } from './types/exclude-primitive';
+import {ContextUser} from '../auth';
 
 interface RelationalSelectState {
   skip: number | null;
@@ -20,6 +21,7 @@ abstract class BaseRelationalSelectContext<T, C> {
     protected schema: MigrationSchema,
     protected type: TableInformation<T>,
     protected state: RelationalSelectState,
+    protected user: ContextUser | null,
   ) {
     this.shouldMapResult = this.isConstructor(this.type);
   }
@@ -77,6 +79,7 @@ abstract class BaseRelationalSelectContext<T, C> {
   }
 
   async exec(): Promise<T[]> {
+    this.validatePermission();
     const results = await this.dataAdapter.select(
       this.schema,
       this.type.name,
@@ -112,6 +115,7 @@ abstract class BaseRelationalSelectContext<T, C> {
   }
 
   async execFirst(): Promise<T | null> {
+    this.validatePermission();
     const results = await this.dataAdapter.select(this.schema, this.type.name, {
       filter: this.state.filter,
       limit: 1,
@@ -131,7 +135,33 @@ abstract class BaseRelationalSelectContext<T, C> {
     return item;
   }
 
+  protected validatePermission() {
+    const permissions = this.schema.tablePermissions(this.type.name);
+    for(const permission of permissions) {
+      if(!permission.select) {
+        continue
+      }
+
+      if(permission.select === true) {
+        return true;
+      }
+      if(permission.select.skip !== null && permission.select.skip !== undefined) {
+        if(typeof permission.select.skip === 'number') {
+          if(permission.select.skip !== this.state.skip) {
+            throw new Error(`not authorized, skip`); //TODO
+          }
+        } else {
+          throw new Error('not impl');
+        }
+      }
+      //TODO
+    }
+
+    //throw new Error('not authorized, no rule matches');
+  }
+
   execCount(): Promise<number> {
+    this.validatePermission();
     return this.dataAdapter.count(this.schema, this.type.name, {
       filter: this.state.filter,
       orderBy: this.state.orderBy,
@@ -175,6 +205,7 @@ abstract class BaseRelationalSelectContext<T, C> {
           { path: selectorResult.path, direction: direction || 'asc' },
         ],
       },
+      this.user,
     );
   }
 
@@ -197,6 +228,7 @@ export class RelationalSelectContextOrdered<
       this.schema,
       this.type,
       state,
+      this.user,
     );
   }
 }
@@ -220,6 +252,7 @@ export class RelationalSelectContext<T> extends BaseRelationalSelectContext<
       this.schema,
       this.type,
       state,
+      this.user,
     );
   }
 }

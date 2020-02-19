@@ -3,7 +3,6 @@
     "packages/examples/**",
     "packages/cli",
     "packages/core",
-    "packages/test",
     "packages/tslint",
     "packages/web",
     "packages/web-client",

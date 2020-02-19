@@ -7,18 +7,14 @@
     "lerna": "^3.16.5"
   },
   "devDependencies": {
-    "mocha": "^6.2.2",
-    "nyc": "^14.1.1",
-    "source-map-support": "^0.5.16",
-    "ts-node": "^8.4.1",
-    "@istanbuljs/nyc-config-typescript": "^1.0.1"
+    "ts-node": "^8.4.1"
   },
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
     "lint": "lerna run lint",
-    "test": "lerna run test --scope=@daita/test",
-    "coverage": "nyc npm test",
+    "test": "jest --silent",
+    "coverage": "jest",
     "upload-coverage": "codecov"
   },
   "workspaces": {
@@ -26,7 +22,6 @@
       "packages/examples/**",
       "packages/cli",
       "packages/core",
-      "packages/test",
       "packages/tslint",
       "packages/web",
       "packages/web-client",

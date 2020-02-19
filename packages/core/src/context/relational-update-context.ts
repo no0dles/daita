@@ -3,6 +3,7 @@ import { RootFilter } from '../query/root-filter';
 import { MigrationSchema } from '../schema/migration-schema';
 import { PrimitivePartial } from './types/primitive-partial';
 import { TableInformation } from './table-information';
+import {ContextUser} from '../auth';
 
 export class RelationalUpdateContext<T> {
   constructor(
@@ -11,6 +12,7 @@ export class RelationalUpdateContext<T> {
     private type: TableInformation<T>,
     private data: PrimitivePartial<T>,
     private filter: RootFilter<T> | null,
+    private user: ContextUser | null,
   ) {}
 
   set(data: PrimitivePartial<T>): RelationalUpdateContext<T> {
@@ -20,6 +22,7 @@ export class RelationalUpdateContext<T> {
       this.type,
       { ...this.data, ...data },
       this.filter,
+      this.user,
     );
   }
 
@@ -33,6 +36,7 @@ export class RelationalUpdateContext<T> {
         {
           $and: [this.filter, filter],
         },
+        this.user,
       );
     }
 
@@ -42,6 +46,7 @@ export class RelationalUpdateContext<T> {
       this.type,
       this.data,
       filter,
+      this.user,
     );
   }
 

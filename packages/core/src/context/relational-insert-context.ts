@@ -3,6 +3,7 @@ import { MigrationSchema } from '../schema/migration-schema';
 import { ExcludeNonPrimitive } from './types/exclude-non-primitive';
 import { TableInformation } from './table-information';
 import { MigrationSchemaTable } from '../schema/migration-schema-table';
+import {ContextUser} from '../auth';
 
 export class RelationalInsertContext<T> {
   private table: MigrationSchemaTable;
@@ -12,6 +13,7 @@ export class RelationalInsertContext<T> {
     private schema: MigrationSchema,
     private type: TableInformation<T>,
     private rows: any[],
+    private user: ContextUser | null,
   ) {
     const table = this.schema.table(this.type.name);
     if (!table) {
@@ -85,6 +87,7 @@ export class RelationalInsertContext<T> {
       this.schema,
       this.type,
       [...this.rows, object],
+      this.user,
     );
   }
 
@@ -95,6 +98,7 @@ export class RelationalInsertContext<T> {
       this.schema,
       this.type,
       [...this.rows, ...objects],
+      this.user,
     );
   }
 

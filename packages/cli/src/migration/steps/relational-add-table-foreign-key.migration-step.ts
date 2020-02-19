@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { ExtendedMigrationStep } from './base-migration-step';
-import { isKind } from '../generation/utils';
+import { isKind } from '../../ast/utils';
 import { RelationalAddTableForeignKey } from '@daita/core';
 
 export class ExtendedRelationalAddTableForeignKey

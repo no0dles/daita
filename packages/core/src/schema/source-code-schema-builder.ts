@@ -14,6 +14,7 @@ import { DocumentCollectionSchemaCollectionField } from './document-collection-s
 import { RelationalTableSchemaTableField } from './relational-table-schema-table-field';
 import { RelationalTableSchemaTableFieldType } from './relational-table-schema-table-field-type';
 import { RelationalTableSchemaTableReferenceKey } from './relational-table-schema-table-reference-key';
+import {Permission} from '../permission';
 
 export function capitalize(word: string) {
   if (!word) {
@@ -28,6 +29,7 @@ export function getSourceCodeSchema(
 ) {
   const collectionMap: { [key: string]: DatabaseSchemaCollection } = {};
   const tableMap: { [key: string]: DatabaseSchemaTable } = {};
+  const permissionMap: { [key: string]: Permission<any>[] } = {}; //TODO
 
   for (const model of collections) {
     const fieldsMap: {
@@ -68,7 +70,7 @@ export function getSourceCodeSchema(
     ); //TODO
   }
 
-  return new DatabaseSchema(collectionMap, tableMap);
+  return new DatabaseSchema(collectionMap, tableMap, permissionMap);
 }
 
 export function getSourceCodeProperty(

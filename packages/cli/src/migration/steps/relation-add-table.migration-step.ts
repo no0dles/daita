@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { ExtendedMigrationStep } from './base-migration-step';
-import { getBooleanValue, isKind } from '../generation/utils';
+import { getBooleanValue, isKind } from '../../ast/utils';
 import { RelationalAddTableMigrationStep } from '@daita/core';
 
 export class ExtendedRelationalAddTableMigrationStep

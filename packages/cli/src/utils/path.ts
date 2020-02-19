@@ -1,17 +1,13 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import * as ts from 'typescript';
 import cli from 'cli-ux';
 import {Command} from '@oclif/command';
 import * as inquirer from 'inquirer';
-import {MigrationTree} from '@daita/core';
-import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
 import {
   getSchemas,
-  parseModelSchema,
-  parseSchemaMigrations,
+  SchemaDeclaration,
 } from '../migration/generation';
-import {parseSourceFile} from '../migration/generation/utils';
+import {AstSourceFile} from '../ast/ast-source-file';
 
 export function getMigrationRelativePath(
   schemaFilePath: string,
@@ -108,7 +104,7 @@ export async function getSchemaInformation(
   location: SchemaLocation,
   cmd: Command,
 ): Promise<SchemaInformation | null> {
-  const sourceFile = parseSourceFile(location.fileName);
+  const sourceFile = AstSourceFile.fromFile(location.fileName);
   const schemas = getSchemas(sourceFile);
 
   if (schemas.length === 0) {
@@ -123,31 +119,17 @@ export async function getSchemaInformation(
         name: 'schema',
         message: 'select a schema',
         type: 'list',
-        choices: schemas.map(s => s.name),
+        choices: schemas.map(s => s.variable.name),
       },
     ]);
-    schema = schemas.filter(s => s.name === response.schema)[0];
+    schema = schemas.filter(s => s.variable.name === response.schema)[0];
   }
 
-  const modelSchema = parseModelSchema(sourceFile, schema.name);
-  const {migrationTree, migrationFiles} = parseSchemaMigrations(
-    sourceFile,
-    schema.name,
-  );
-
-  return {
-    migrationFiles,
-    migrationTree,
-    modelSchema,
-    variableName: schema.name,
-  };
+  return new SchemaInformation(schema);
 }
 
-export interface SchemaInformation {
-  variableName: string;
-  migrationTree: MigrationTree;
-  modelSchema: DatabaseSchema;
-  migrationFiles: {
-    [key: string]: { sourceFile: ts.SourceFile; name: string; id: string };
-  };
+export class SchemaInformation {
+  constructor(private schemaDeclaration: SchemaDeclaration) {
+    this
+  }
 }

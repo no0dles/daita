@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "types" : ["chai", "mocha"]
+    "types" : ["chai", "jest"]
   },
   "exclude": [
     "node_modules",

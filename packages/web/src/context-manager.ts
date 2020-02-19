@@ -124,6 +124,7 @@ export class ContextManager {
       throw new Error('could not find transaction for ' + transactionId);
     }
 
+    transaction.debouncer.clear();
     delete this.transactions[transactionId];
     transaction.commitDefer.resolve();
     await transaction.resultDefer.promise;
@@ -132,6 +133,7 @@ export class ContextManager {
   async rollbackTransaction(transactionId: string) {
     const transaction = this.transactions[transactionId];
     if (transaction) {
+      transaction.debouncer.clear();
       delete this.transactions[transactionId];
       transaction.commitDefer.reject(new Error('canceled'));
       await transaction.resultDefer.promise;

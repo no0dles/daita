@@ -5,11 +5,13 @@ import {RelationalDataAdapter, RelationalTransactionDataAdapter} from '../adapte
 import {ContextUser} from '../auth';
 import {RelationalContext, RelationalTransactionContext} from '../context';
 import {MigrationSchema} from './migration-schema';
-import {RelationalSchemaConstants, TablePermission, TableRule} from './schema';
+import {RelationalSchemaConstants, TableRule} from './schema';
+import {PermissionBuilder} from '../permission';
 
 export class RelationalSchema {
   private migrationTree = new MigrationTree();
   private tables: Constructable<any>[] = [];
+  private permissions = new PermissionBuilder();
 
   constants: RelationalSchemaConstants = {
     username: {kind: 'username'},
@@ -28,8 +30,7 @@ export class RelationalSchema {
     this.tables.push(model);
   }
 
-  migration(migrationType: DefaultConstructable<MigrationDescription>) {
-    const migration = new migrationType();
+  migration(migration: MigrationDescription) {
     this.migrationTree.add(migration);
   }
 
@@ -37,9 +38,9 @@ export class RelationalSchema {
 
   }
 
-  permission<T>(model: DefaultConstructable<T>, permission: TablePermission<T>) {
-
-  };
+  permission(permissionBuilder: PermissionBuilder) {
+    this.permissions.extend(permissionBuilder);
+  }
 
   include(name: string, schema: RelationalSchema) {
 
@@ -47,15 +48,15 @@ export class RelationalSchema {
 
   context(
     dataAdapter: RelationalDataAdapter,
-    options?: {migrationId?: string, user?: ContextUser},
+    options?: { migrationId?: string, user?: ContextUser },
   ): RelationalContext;
   context(
     dataAdapter: RelationalTransactionDataAdapter,
-    options?: {migrationId?: string, user?: ContextUser},
+    options?: { migrationId?: string, user?: ContextUser },
   ): RelationalTransactionContext;
   context(
     dataAdapter: RelationalDataAdapter | RelationalTransactionDataAdapter,
-    options?: {migrationId?: string, user?: ContextUser},
+    options?: { migrationId?: string, user?: ContextUser },
   ): RelationalContext | RelationalTransactionContext {
     const user = (options ? options.user : null) || null;
     const schema = this.migrationTree.defaultSchema(options ? options.migrationId : undefined);

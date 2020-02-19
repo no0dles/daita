@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "test": "jest",
     "lint": "tslint src/**/*.ts",
     "prettier": "prettier 'src/**/*.ts' --write"
   },
@@ -32,7 +33,10 @@
     "mongodb": "^3.3.3",
     "pg": "^7.14.0",
     "tslint": "^5.20.1",
-    "typescript": "~3.6.4"
+    "typescript": "~3.7.5",
+    "@types/jest": "^25.1.1",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.1.0"
   },
   "gitHead": "2fcc782cbb64197462c122bf6277034ed37292a2"
 }

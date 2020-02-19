@@ -57,25 +57,6 @@ export interface TableRule<T> {
   update?: ValueCondition<T>;
 }
 
-export interface TablePermission<T> {
-  anonymous?: boolean;
-  authorized?: boolean;
-  roles?: string[];
-  users?: string[];
-  select?: SelectPermission<T> | true;
-  update?: UpdatePermission<T> | true;
-  insert?: InsertPermission<T> | true;
-  delete?: DeletePermission<T> | true;
-}
-
-export interface SelectPermission<T> {
-  where?: Condition<T>;
-  skip?: ConditionFilter<number>;
-  limit?: ConditionFilter<number>;
-  deniedFields?: (keyof T)[];
-  allowedFields?: (keyof T)[];
-}
-
 export interface InsertPermission<T> {
   deniedFields?: (keyof T)[];
   allowedFields?: (keyof T)[];

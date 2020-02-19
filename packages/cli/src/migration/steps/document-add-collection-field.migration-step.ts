@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { ExtendedMigrationStep } from './base-migration-step';
-import { isKind, getBooleanValue } from '../generation/utils';
+import { isKind, getBooleanValue } from '../../ast/utils';
 import { AddCollectionFieldMigrationStep } from '@daita/core';
 
 export class ExtendedAddCollectionFieldMigrationStep

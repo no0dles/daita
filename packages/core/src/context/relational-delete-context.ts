@@ -2,6 +2,7 @@ import { RelationalTransactionDataAdapter } from '../adapter';
 import { RootFilter } from '../query/root-filter';
 import { MigrationSchema } from '../schema/migration-schema';
 import { TableInformation } from './table-information';
+import {ContextUser} from '../auth';
 
 export class RelationalDeleteContext<T> {
   constructor(
@@ -9,6 +10,7 @@ export class RelationalDeleteContext<T> {
     private schema: MigrationSchema,
     private type: TableInformation<T>,
     private filter: RootFilter<T> | null,
+    private user: ContextUser | null,
   ) {}
 
   where(data: RootFilter<T>): RelationalDeleteContext<T> {
@@ -20,6 +22,7 @@ export class RelationalDeleteContext<T> {
         {
           $and: [this.filter, data],
         },
+        this.user,
       );
     }
 
@@ -28,6 +31,7 @@ export class RelationalDeleteContext<T> {
       this.schema,
       this.type,
       data,
+      this.user,
     );
   }
 

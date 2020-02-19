@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
 import { ScriptKind, ScriptTarget } from 'typescript';
-import { isKind, parseSourceFile } from './utils';
+import {isKind, parseSourceFile} from '../../ast/utils';
 import * as fs from 'fs';
 import { getIdentifier } from './parse-migration';
 import { capitalize } from '@daita/core/dist/schema/source-code-schema-builder';

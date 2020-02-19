@@ -22,6 +22,7 @@ export class RelationalTransactionContext {
       this.schema,
       type,
       [],
+      this.user,
     );
   }
 
@@ -32,7 +33,7 @@ export class RelationalTransactionContext {
       limit: null,
       include: [],
       skip: null,
-    });
+    }, this.user);
   }
 
   update<T>(type: TableInformation<T>): RelationalUpdateContext<T> {
@@ -42,6 +43,7 @@ export class RelationalTransactionContext {
       type,
       {},
       null,
+      this.user,
     );
   }
 
@@ -51,6 +53,7 @@ export class RelationalTransactionContext {
       this.schema,
       type,
       null,
+      this.user,
     );
   }
 

@@ -1,7 +1,8 @@
 import * as ts from 'typescript';
 import {ExtendedMigrationStep} from './base-migration-step';
-import {isKind} from '../generation/utils';
+import {isKind} from '../../ast/utils';
 import {AddCollectionMigrationStep} from '@daita/core';
+import {AstVariableInitializer} from '../../ast/ast-variable-initializer';
 
 export class ExtendedAddCollectionMigrationStep
   extends AddCollectionMigrationStep
@@ -18,7 +19,7 @@ export class ExtendedAddCollectionMigrationStep
     );
   }
 
-  static parse(args: ts.Expression[]): AddCollectionMigrationStep | null {
+  static parse(args: AstVariableInitializer[]): AddCollectionMigrationStep | null {
     const name = isKind(args[0], ts.SyntaxKind.StringLiteral);
     if (!name) {
       return null;
