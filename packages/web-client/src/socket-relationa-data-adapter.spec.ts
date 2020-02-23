@@ -54,8 +54,6 @@ export class SocketAdapterTest implements AdapterTest {
 }
 
 describe('socket-relational-data-adapter', () => {
-  const postgresUri = process.env.POSTGRES_URI || 'postgres://postgres:postgres@localhost';
-
   relationalDataAdapterTest(
-    new SocketAdapterTest(3002, new PostgresAdapterTest(`${postgresUri}/socket-test`, testSchema), testSchema));
+    new SocketAdapterTest(3002, new PostgresAdapterTest(testSchema), testSchema));
 });

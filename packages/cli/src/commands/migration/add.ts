@@ -1,7 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import cli from 'cli-ux';
 import * as Listr from 'listr';
-import { DatabaseSchema } from '@daita/core/dist/schema/database-schema';
 import * as fs from 'fs';
 import {
   getMigrationRelativePath,
@@ -9,13 +8,14 @@ import {
   getSchemaLocation,
   SchemaLocation,
 } from '../../utils/path';
+import {AstContext} from '../../ast/ast-context';
 import {
   addMigrationImport,
   addMigrationRegistration,
-  getMigrationName,
   writeMigration,
-} from '../../migration/generation/write-migration';
-import { getRelationalMigrationSteps } from '../../migration/generation';
+} from '../../migration/writing/write-migration';
+import {generateRelationalMigrationSteps} from '../../migration/generation/generate-relational-migration-steps';
+import {getMigrationName} from '../../migration/utils';
 
 export default class Add extends Command {
   static description = 'adds a new migration';
@@ -42,26 +42,25 @@ export default class Add extends Command {
   }
 
   async addMigration(schemaLocation: SchemaLocation, name: string) {
-    const schemaInfo = await getSchemaInformation(schemaLocation, this);
+    const astContext = new AstContext();
+    const schemaInfo = await getSchemaInformation(astContext, schemaLocation, this);
     if (!schemaInfo) {
       this.warn('could not load schema');
       return;
     }
 
-    const lastMigration = schemaInfo.migrationTree.last()[0];
-    const currentSchema = lastMigration
-      ? schemaInfo.migrationTree.schema(lastMigration.id)
-      : new DatabaseSchema();
+    const migrationTree = schemaInfo.getMigrationTree();
+    const currentSchema = migrationTree.defaultSchema();
 
     const tasks = new Listr([
       {
         title: 'Calculate steps',
         task: (ctx, task) => {
-          const steps = getRelationalMigrationSteps(
+          const steps = generateRelationalMigrationSteps(
             currentSchema,
-            schemaInfo.modelSchema,
+            schemaInfo.getRelationalSchema(),
           );
-          const existing = schemaInfo.migrationTree.get(name);
+          const existing = migrationTree.get(name);
           if (existing) {
             throw new Error('name already taken');
           }
@@ -75,7 +74,7 @@ export default class Add extends Command {
         task: ctx => {
           const sourceFile = writeMigration(
             name,
-            lastMigration ? lastMigration.id : undefined,
+            currentSchema.migrationId ? currentSchema.migrationId : undefined,
             undefined,
             ctx.steps,
           );

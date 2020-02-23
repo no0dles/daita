@@ -1,9 +1,9 @@
-import {getIdentifierName, isKind} from '../migration/generation/utils';
 import * as ts from 'typescript';
 import {AstClassDeclaration} from './ast-class-declaration';
 import {AstSourceFile} from './ast-source-file';
 import {AstObjectValue} from './ast-object-value';
 import {AstVariable} from './ast-variable';
+import {getIdentifierName, isKind} from './utils';
 
 export class AstVariableCallArgument {
 
@@ -19,7 +19,7 @@ export class AstVariableCallArgument {
       ts.SyntaxKind.ObjectLiteralExpression,
     );
     if (objectLiteral) {
-      return new AstObjectValue(this.sourceFile, objectLiteral);
+      return new AstObjectValue(objectLiteral);
     }
     return null;
   }
@@ -37,13 +37,21 @@ export class AstVariableCallArgument {
     return null;
   }
 
-  get classDeclaration(): AstClassDeclaration | null {
+  get className(): string | null {
     const classIdentifier = isKind(
       this.expression,
       ts.SyntaxKind.Identifier,
     );
     if (classIdentifier) {
-      return this.sourceFile.getClassDeclaration(classIdentifier.text, {includeImport: true});
+      return classIdentifier.text;
+    }
+    return null;
+  }
+
+  get classDeclaration(): AstClassDeclaration | null {
+    const className = this.className;
+    if (className) {
+      return this.sourceFile.getClassDeclaration(className, {includeImport: true});
     }
 
     return null;

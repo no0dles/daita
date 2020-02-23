@@ -16,6 +16,7 @@ export const FirstMigration: MigrationDescription = {
       fieldNames: ['parentId'],
       foreignTable: 'User',
       foreignFieldNames: ['id'],
+      required: true,
     },
   ],
 };
@@ -37,6 +38,7 @@ export const SecondMigration: MigrationDescription = {
       fieldNames: ['userId'],
       foreignTable: 'User',
       foreignFieldNames: ['id'],
+      required: true,
     },
   ],
 };

@@ -7,5 +7,10 @@ module.exports = {
         "^.+\\.ts$": "ts-jest"
     },
     testEnvironment: "node",
-    "testRegex": "src/.*.spec.ts"
+    "testRegex": "src/.*.spec.ts",
+    globals: {
+        'ts-jest': {
+            diagnostics: false
+        }
+    }
 };

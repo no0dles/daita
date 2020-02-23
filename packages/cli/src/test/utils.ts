@@ -1,8 +1,13 @@
 import * as fs from 'fs';
-import {assert} from 'chai';
+import {assert, expect} from 'chai';
 import * as path from 'path';
 import * as cli from '../index';
 import {Defer} from '@daita/core';
+
+export function isNotNull<T>(value: T): asserts value is NonNullable<T> {
+  expect(value).to.not.be.undefined;
+  expect(value).to.not.be.null;
+}
 
 function compareDirectory(expectedRoot: string, expectedDir: string, actualRoot: string, actualDir: string) {
   const expectedExists = fs.existsSync(expectedDir);

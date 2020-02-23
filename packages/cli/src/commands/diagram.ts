@@ -2,6 +2,7 @@ import {Command, flags} from '@oclif/command';
 import * as fs from 'fs';
 import * as path from 'path';
 import {getSchemaInformation, getSchemaLocation} from '../utils/path';
+import {AstContext} from '../ast/ast-context';
 
 export default class Diagram extends Command {
   static description = 'create diagram for schema';
@@ -15,8 +16,8 @@ export default class Diagram extends Command {
   async run() {
     const {flags} = this.parse(Diagram);
     const schemaLocation = await getSchemaLocation(flags, this);
-
-    const schemaInfo = await getSchemaInformation(schemaLocation, this);
+    const astContext = new AstContext();
+    const schemaInfo = await getSchemaInformation(astContext, schemaLocation, this);
     if (!schemaInfo) {
       this.warn('could not load schema');
       return;
@@ -33,7 +34,8 @@ export default class Diagram extends Command {
       '#spacing: 90\n' +
       '#arrowSize: 0.5\n';
 
-    for (const table of schemaInfo.modelSchema.tables) {
+    const relationalSchema = schemaInfo.getRelationalSchema();
+    for (const table of relationalSchema.tables) {
       content += `[${table.name}|${table.fields.map(f => `${f.name}${f.required ? '!' : ''}:${f.type}`).join(';')}]\n`;
       for (const foreignKey of table.foreignKeys) {
         let required = true;

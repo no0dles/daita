@@ -3,11 +3,13 @@ import * as fs from 'fs';
 import cli from 'cli-ux';
 import {Command} from '@oclif/command';
 import * as inquirer from 'inquirer';
-import {
-  getSchemas,
-  SchemaDeclaration,
-} from '../migration/generation';
-import {AstSourceFile} from '../ast/ast-source-file';
+import {RelationalTableSchema} from '@daita/core';
+import {AstContext} from '../ast/ast-context';
+import {parseSchemas} from '../migration/parsing/parse-schemas';
+import {SchemaDeclaration} from '../migration/parsing/schema-declaration';
+import {parseSchemaMigrations} from '../migration/parsing/parse-schema-migrations';
+import {parseRelationalSchema} from '../migration/parsing/parse-relational-schema';
+import {parseSchemaMigrationVariables} from '../migration/parsing/parse-schema-migration-variables';
 
 export function getMigrationRelativePath(
   schemaFilePath: string,
@@ -101,11 +103,16 @@ function resolveSchemaLocation(
 }
 
 export async function getSchemaInformation(
+  astContext: AstContext,
   location: SchemaLocation,
   cmd: Command,
 ): Promise<SchemaInformation | null> {
-  const sourceFile = AstSourceFile.fromFile(location.fileName);
-  const schemas = getSchemas(sourceFile);
+  const sourceFile = astContext.get(location.fileName);
+  if (!sourceFile) {
+    throw new Error(`source file ${location.fileName} not found`);
+  }
+
+  const schemas = parseSchemas(sourceFile);
 
   if (schemas.length === 0) {
     cmd.warn(`No schema found in ${location.fileName}`);
@@ -130,6 +137,22 @@ export async function getSchemaInformation(
 
 export class SchemaInformation {
   constructor(private schemaDeclaration: SchemaDeclaration) {
-    this
+
+  }
+
+  get variableName() {
+    return this.schemaDeclaration.variable.name;
+  }
+
+  getMigrationTree() {
+    return parseSchemaMigrations(this.schemaDeclaration.variable);
+  }
+
+  getRelationalSchema(): RelationalTableSchema {
+    return parseRelationalSchema(this.schemaDeclaration.variable);
+  }
+
+  getMigrationVariables() {
+    return parseSchemaMigrationVariables(this.schemaDeclaration.variable);
   }
 }

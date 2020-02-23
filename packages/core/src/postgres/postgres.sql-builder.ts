@@ -16,8 +16,6 @@ export class PostgresSqlBuilder implements RelationalSqlBuilder {
         return 'varchar[]';
       case 'date[]':
         return 'date[]';
-      case 'invalid':
-        return '';
       case 'boolean':
         return 'bool';
       case 'boolean[]':

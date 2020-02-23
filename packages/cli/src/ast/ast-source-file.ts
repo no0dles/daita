@@ -1,21 +1,19 @@
-import {getChildNodes, getIdentifierName, parseSourceFile} from './utils';
-import * as path from "path";
+import {getChildNodes, getIdentifierName} from './utils';
+import * as path from 'path';
 import * as ts from 'typescript';
 import {AstClassDeclaration} from './ast-class-declaration';
 import {AstImport} from './ast-import';
 import {AstVariable} from './ast-variable';
 import {AstExport} from './ast-export';
+import {AstContext} from './ast-context';
 
 export class AstSourceFile {
-  constructor(private sourceFile: ts.SourceFile) {
+  constructor(private context: AstContext,
+              private sourceFile: ts.SourceFile) {
   }
 
   get fileName() {
     return this.sourceFile.fileName;
-  }
-
-  static fromFile(fileName: string) {
-    return new AstSourceFile(parseSourceFile(fileName));
   }
 
   getVariable(name: string, options?: { includeImported?: boolean }): AstVariable | null {
@@ -38,7 +36,7 @@ export class AstSourceFile {
 
     for (const variableStatement of variableStatements) {
       for (const declaration of variableStatement.declarationList.declarations) {
-        const variable = new AstVariable(this, this.sourceFile, declaration);
+        const variable = new AstVariable(this, this.sourceFile, variableStatement, declaration);
         astVariables.push(variable)
       }
     }
@@ -63,7 +61,7 @@ export class AstSourceFile {
     const importDeclarations = getChildNodes(this.sourceFile, ts.SyntaxKind.ImportDeclaration);
     const astImports = new Array<AstImport>();
     for (const importDeclaration of importDeclarations) {
-      astImports.push(new AstImport(this, importDeclaration));
+      astImports.push(new AstImport(this.context, this, importDeclaration));
     }
     return astImports;
   }
@@ -83,12 +81,10 @@ export class AstSourceFile {
     }
 
     if (!options || !options.excludeVariables) {
-      const variables = this.getVariables({includeImported: true}).filter(v => v.exported);
+      const variables = this.getVariables({includeImported: true})
+        .filter(v => v.exported);
       for (const variable of variables) {
-        const name = variable.name;
-        if (name) {
-          astExports.push(new AstExport(this, name));
-        }
+        astExports.push(new AstExport(this, variable.name));
       }
       //TODO perf use variables
     }
@@ -104,7 +100,10 @@ export class AstSourceFile {
       }
 
       const exportFileName = path.join(path.dirname(this.sourceFile.fileName), exportFile);
-      const exportSourceFile = AstSourceFile.fromFile(exportFileName);
+      const exportSourceFile = this.context.get(exportFileName);
+      if (!exportSourceFile) {
+        throw new Error('unable to locate export source');
+      }
 
       if (exportDeclaration.exportClause) {
         for (const element of exportDeclaration.exportClause.elements) {
@@ -120,7 +119,7 @@ export class AstSourceFile {
     }
 
     const defaultExport = this.getDefaultExport();
-    if(defaultExport) {
+    if (defaultExport) {
       astExports.push(defaultExport);
     }
 

@@ -1,5 +1,5 @@
-import { Pool } from 'pg';
-import { expect } from 'chai';
+import {Pool} from 'pg';
+import {expect} from 'chai';
 import {MigrationSchemaTable} from '../schema/migration-schema-table';
 import {PostgresDataAdapter} from './postgres.data-adapter';
 import {MigrationSchemaTableField} from '../schema/migration-schema-table-field';
@@ -37,14 +37,15 @@ class MockedPool {
 
             return this.expectedResult;
           },
-          release: () => {},
+          release: () => {
+          },
         };
       },
     };
   }
 }
 
-const sourceMigration: MigrationDescription = { id: 'init', steps: [] };
+const sourceMigration: MigrationDescription = {id: 'init', steps: []};
 
 class MockedSchema extends MigrationSchema {
   constructor() {
@@ -77,13 +78,15 @@ class MockedSchema extends MigrationSchema {
 
 
 export class PostgresAdapterTest implements AdapterTest {
+  private connectionString: string;
+
   context!: RelationalContext;
   dataAdapter!: PostgresDataAdapter;
   name = 'postgres-data-adapter';
   isRemote = false;
 
-  constructor(private connectionString: string, private schema: RelationalSchema) {
-
+  constructor(private schema: RelationalSchema) {
+    this.connectionString = (process.env.POSTGRES_URI || 'postgres://postgres:postgres@localhost') + '/test-' + Math.random().toString(36).substring(2, 15);
   }
 
   async after() {
@@ -100,11 +103,10 @@ export class PostgresAdapterTest implements AdapterTest {
   }
 }
 
-const postgresUri = process.env.POSTGRES_URI || 'postgres://postgres:postgres@localhost';
 
 describe('postgres.data-adapter', () => {
 
-  relationalDataAdapterTest(new PostgresAdapterTest(`${postgresUri}/postgres-test`, testSchema));
+  relationalDataAdapterTest(new PostgresAdapterTest(testSchema));
 
   const mockedPool = new MockedPool();
   const mockedSchema = new MockedSchema();
@@ -113,22 +115,22 @@ describe('postgres.data-adapter', () => {
     mockedPool.expect(
       'SELECT "base"."name_init" "base.name", "base"."test_init" "base.test" FROM "author_init" "base" WHERE "name_init" = $1',
       ['foo'],
-      { rows: [{ 'base.name': 'foo' }] },
+      {rows: [{'base.name': 'foo'}]},
     );
     const adapter = new PostgresDataAdapter(mockedPool.pool());
     const result = await adapter.select(mockedSchema, 'author', {
-      filter: { name: 'foo' },
+      filter: {name: 'foo'},
       orderBy: [],
       include: [],
       limit: null,
       skip: null,
     });
-    expect(result).deep.eq([{ name: 'foo' }]);
+    expect(result).deep.eq([{name: 'foo'}]);
   });
 
   it('select * from author', async () => {
     mockedPool.expect('SELECT "base"."name_init" "base.name", "base"."test_init" "base.test" FROM "author_init" "base"', [], {
-      rows: [{ 'base.name': 'foo' }],
+      rows: [{'base.name': 'foo'}],
     });
     const adapter = new PostgresDataAdapter(mockedPool.pool());
     const result = await adapter.select(mockedSchema, 'author', {
@@ -138,14 +140,14 @@ describe('postgres.data-adapter', () => {
       limit: null,
       skip: null,
     });
-    expect(result).deep.eq([{ name: 'foo' }]);
+    expect(result).deep.eq([{name: 'foo'}]);
   });
 
   it('delete from author where name = foo', async () => {
     mockedPool.expect(
       'DELETE FROM "author_init" WHERE "name_init" = $1',
       ['foo'],
-      { rowCount: 1 },
+      {rowCount: 1},
     );
     const adapter = new PostgresDataAdapter(mockedPool.pool());
     const result = await adapter.delete(mockedSchema, 'author', {
@@ -158,11 +160,11 @@ describe('postgres.data-adapter', () => {
     mockedPool.expect(
       'DELETE FROM "author_init" WHERE "name_init" = $1',
       ['foo'],
-      { rowCount: 1 },
+      {rowCount: 1},
     );
     const adapter = new PostgresDataAdapter(mockedPool.pool());
     const result = await adapter.delete(mockedSchema, 'author', {
-      name: { $eq: 'foo' },
+      name: {$eq: 'foo'},
     });
     expect(result.affectedRows).be.eq(1);
   });
@@ -171,7 +173,7 @@ describe('postgres.data-adapter', () => {
     mockedPool.expect(
       'UPDATE "author_init" SET "test_init" = $1 WHERE "name_init" = $2',
       ['bar', 'foo'],
-      { rowCount: 1 },
+      {rowCount: 1},
     );
     const adapter = new PostgresDataAdapter(mockedPool.pool());
     const result = await adapter.update(
@@ -181,7 +183,7 @@ describe('postgres.data-adapter', () => {
         test: 'bar',
       },
       {
-        name: { $eq: 'foo' },
+        name: {$eq: 'foo'},
       },
     );
     expect(result.affectedRows).be.eq(1);
@@ -191,12 +193,12 @@ describe('postgres.data-adapter', () => {
     mockedPool.expect(
       'INSERT INTO "author_init" ("name_init") VALUES ($1), ($2)',
       ['bar', 'foo'],
-      { rowCount: 1 },
+      {rowCount: 1},
     );
     const adapter = new PostgresDataAdapter(mockedPool.pool());
     const result = await adapter.insert(mockedSchema, 'author', [
-      { name: 'bar' },
-      { name: 'foo' },
+      {name: 'bar'},
+      {name: 'foo'},
     ]);
   });
 
@@ -204,12 +206,12 @@ describe('postgres.data-adapter', () => {
     mockedPool.expect(
       'INSERT INTO "author_init" ("name_init", "test_init") VALUES ($1, $2), ($3, $4)',
       ['bar', null, null, 'foo'],
-      { rowCount: 1 },
+      {rowCount: 1},
     );
     const adapter = new PostgresDataAdapter(mockedPool.pool());
     const result = await adapter.insert(mockedSchema, 'author', [
-      { name: 'bar' },
-      { test: 'foo' },
+      {name: 'bar'},
+      {test: 'foo'},
     ]);
   });
 });

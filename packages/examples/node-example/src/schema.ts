@@ -5,8 +5,8 @@ import {UserPermission} from './models/user-permission';
 import {UserRole} from './models/user-role';
 import {RelationalSchema} from '@daita/core';
 import {Permission} from './models/permission';
-import {InitMigration} from './migrations/2019114103938-init';
 import * as permissions from './permissions';
+import {InitialMigration} from './migrations/20201519810-initial';
 
 const schema = new RelationalSchema();
 
@@ -18,7 +18,6 @@ schema.table(RolePermission, {key: ['roleName', 'permissionName']});
 schema.table(Permission, {key: 'name'});
 
 schema.permission(permissions);
-
-schema.migration(InitMigration);
+schema.migration(InitialMigration);
 
 export = schema;

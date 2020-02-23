@@ -93,6 +93,7 @@ describe('relational-context', () => {
           fieldNames: ['roleId'],
           foreignTable: 'role',
           foreignFieldNames: ['id'],
+          required: true,
         },
       ],
     };
@@ -131,6 +132,7 @@ describe('relational-context', () => {
           fieldNames: ['roleId'],
           foreignTable: 'role',
           foreignFieldNames: ['id'],
+          required: true,
         },
       ],
       after: 'test',
@@ -171,6 +173,7 @@ describe('relational-context', () => {
           fieldNames: ['roleId'],
           foreignTable: 'role',
           foreignFieldNames: ['id'],
+          required: true,
         },
       ],
       after: 'test',

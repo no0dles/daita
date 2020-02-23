@@ -1,4 +1,5 @@
 import { Configuration, Linter, Replacement } from "tslint";
+import * as path from 'path';
 
 export const helper = ({ src, rule, fileName }: { src; rule; fileName? }) => {
   const linter = new Linter({ fix: false });
@@ -9,7 +10,7 @@ export const helper = ({ src, rule, fileName }: { src; rule; fileName? }) => {
       rules: {
         [rule.name || rule]: [true, ...(rule.options ? rule.options : [])]
       },
-      rulesDirectory: "src/rules"
+      rulesDirectory: path.join(__dirname, '..', "src/rules")
     })
   );
   return linter.getResult();

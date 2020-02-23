@@ -2,7 +2,7 @@ import {RelationalSchema} from '@daita/core';
 import { User } from "./models/user";
 import {Permission, RolePermission} from './models/permission';
 import {Role, UserRole} from './models/role';
-import {InitMigration} from './migrations/202005104737-init';
+import {InitMigration} from './migrations/202016152817-init';
 
 const schema = new RelationalSchema();
 

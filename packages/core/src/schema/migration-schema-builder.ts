@@ -4,6 +4,7 @@ import {MigrationSchemaCollectionField} from './migration-schema-collection-fiel
 import {MigrationSchemaTable} from './migration-schema-table';
 import {MigrationDescription} from '../migration';
 import {Permission} from '../permission';
+import {MigrationSchemaTableField} from './migration-schema-table-field';
 
 export function getMigrationSchema(migrationPath: MigrationDescription[]) {
   const collectionMap: { [key: string]: MigrationSchemaCollection } = {};
@@ -48,7 +49,7 @@ export function getMigrationSchema(migrationPath: MigrationDescription[]) {
         tableMap[step.table] = new MigrationSchemaTable(step.table, migration);
       } else if (step.kind === 'add_table_field') {
         tableMap[step.table].add(
-          new MigrationSchemaCollectionField(
+          new MigrationSchemaTableField(
             step.fieldName,
             step.type,
             step.required || false,
@@ -67,6 +68,7 @@ export function getMigrationSchema(migrationPath: MigrationDescription[]) {
           table: step.foreignTable,
           keys: step.fieldNames,
           foreignKeys: step.foreignFieldNames,
+          required: step.required,
         });
       }
     }

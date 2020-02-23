@@ -6,5 +6,10 @@ module.exports = {
     "transform": {
         "^.+\\.ts$": "ts-jest"
     },
-    "testRegex": "src/.*.spec.ts"
+    "testRegex": "src/.*.spec.ts",
+    globals: {
+        'ts-jest': {
+            diagnostics: false
+        }
+    }
 };

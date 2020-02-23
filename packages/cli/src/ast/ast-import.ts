@@ -1,11 +1,13 @@
 import {getIdentifierName, isKind} from './utils';
-import * as path from "path";
+import * as path from 'path';
 import * as ts from 'typescript';
 import {AstSourceFile} from './ast-source-file';
 import {AstExport} from './ast-export';
+import {AstContext} from './ast-context';
 
 export class AstImport {
-  constructor(private sourceFile: AstSourceFile,
+  constructor(private context: AstContext,
+              private sourceFile: AstSourceFile,
               private importDeclaration: ts.ImportDeclaration) {
   }
 
@@ -20,7 +22,10 @@ export class AstImport {
     }
 
     const importFileName = path.join(path.dirname(this.sourceFile.fileName), importPath);
-    const importSourceFile = AstSourceFile.fromFile(importFileName);
+    const importSourceFile = this.context.get(importFileName);
+    if(!importSourceFile) {
+      throw new Error('unable to locate import');
+    }
 
 
     if (this.importDeclaration.importClause.namedBindings) {

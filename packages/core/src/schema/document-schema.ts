@@ -12,8 +12,7 @@ export class DocumentSchema {
     this.collections.push(model);
   }
 
-  migration(migrationType: DefaultConstructable<MigrationDescription>) {
-    const migration = new migrationType();
+  migration(migration: MigrationDescription) {
     this.migrationTree.add(migration);
   }
 

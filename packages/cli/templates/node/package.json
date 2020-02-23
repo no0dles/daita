@@ -11,8 +11,7 @@
   "license": "{{LICENSE}}",
   "dependencies": {
     "@daita/core": "{{DAITA_VERSION}}",
-    "uuid": "^3.3.3",
-    {{DATA_ADAPTER_NPM}}
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@daita/cli": "{{DAITA_VERSION}}",

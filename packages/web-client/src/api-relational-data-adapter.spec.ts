@@ -53,8 +53,6 @@ export class ApiAdapterTest implements AdapterTest {
 }
 
 describe('api-relational-data-adapter', () => {
-  const postgresUri = process.env.POSTGRES_URI || 'postgres://postgres:postgres@localhost';
-
   relationalDataAdapterTest(
-    new ApiAdapterTest(3003, new PostgresAdapterTest(`${postgresUri}/api-test`, testSchema), testSchema));
+    new ApiAdapterTest(3003, new PostgresAdapterTest(testSchema), testSchema));
 });

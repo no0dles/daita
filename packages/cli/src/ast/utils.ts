@@ -90,6 +90,26 @@ export function getChildNodes(node: ts.Node, kind: ts.SyntaxKind): ts.Node[] {
 
 export function isKind(
   node: ts.Node | undefined,
+  kind: ts.SyntaxKind.TypeLiteral,
+): ts.TypeLiteralNode | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.PropertySignature,
+): ts.PropertySignature | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.TypeReference,
+): ts.TypeReferenceNode | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.ArrayType,
+): ts.ArrayTypeNode | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.UnionType,
+): ts.UnionTypeNode | null;
+export function isKind(
+  node: ts.Node | undefined,
   kind: ts.SyntaxKind.NewExpression,
 ): ts.NewExpression | null;
 export function isKind(
@@ -172,7 +192,7 @@ export function getBooleanValue(literal: ts.BooleanLiteral): boolean {
   throw new Error('not a bool');
 }
 
-export function getIdentifierName(identifier: ts.BindingName | ts.StringLiteral | ts.NumericLiteral | ts.ComputedPropertyName | ts.Expression) {
+export function getIdentifierName(identifier: ts.BindingName | ts.StringLiteral | ts.NumericLiteral | ts.ComputedPropertyName | ts.Expression | ts.QualifiedName) {
   if (identifier.kind === ts.SyntaxKind.Identifier) {
     const identfier = <ts.Identifier>identifier;
     return identfier.text;

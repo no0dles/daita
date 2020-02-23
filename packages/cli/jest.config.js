@@ -1,4 +1,5 @@
 module.exports = {
+    "setupFilesAfterEnv": ["jest-extended"],
     "moduleFileExtensions": [
         "ts",
         "js"
@@ -8,7 +9,6 @@ module.exports = {
     },
     "testRegex": "src/.*.spec.ts",
     testEnvironment: "node",
-    maxConcurrency: 1,
     globals: {
         'ts-jest': {
             diagnostics: false

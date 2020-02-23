@@ -1,9 +1,3 @@
-import {
-  RelationalAddTableFieldMigrationStep,
-  RelationalAddTableForeignKey, RelationalAddTableMigrationStep,
-  RelationalAddTablePrimaryKey,
-} from '../../../src/migration/steps';
-
 export class InitMigration {
   id = 'init';
   steps = [

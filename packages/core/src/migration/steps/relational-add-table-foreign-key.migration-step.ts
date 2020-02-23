@@ -5,4 +5,5 @@ export interface RelationalAddTableForeignKey {
   fieldNames: string[];
   foreignTable: string;
   foreignFieldNames: string[];
+  required: boolean;
 }

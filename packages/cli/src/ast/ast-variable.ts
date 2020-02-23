@@ -2,15 +2,25 @@ import {getChildNodes, getIdentifierName, isKind} from './utils';
 import * as ts from 'typescript';
 import {AstSourceFile} from './ast-source-file';
 import {AstVariableCall} from './ast-variable-call';
-import {AstVariableInitializer} from './ast-variable-initializer';
+import {AstObjectValue} from './ast-object-value';
 
 export class AstVariable {
-  constructor(private sourceFile: AstSourceFile, private parentNode: ts.Node, private variableDeclaration: ts.VariableDeclaration) {
+  initializer: AstObjectValue | null = null;
+  name: string;
+
+  constructor(public sourceFile: AstSourceFile,
+              private parentNode: ts.Node,
+              private variableStatement: ts.VariableStatement,
+              private variableDeclaration: ts.VariableDeclaration) {
+    if (this.variableDeclaration.initializer) {
+      this.initializer = new AstObjectValue(this.variableDeclaration.initializer);
+    }
+    this.name = getIdentifierName(this.variableDeclaration.name);
   }
 
   get exported() {
-    if (this.variableDeclaration.modifiers) {
-      for (const modifier of this.variableDeclaration.modifiers) {
+    if (this.variableStatement.modifiers) {
+      for (const modifier of this.variableStatement.modifiers) {
         if (modifier.kind === ts.SyntaxKind.ExportKeyword) {
           return true;
         }
@@ -18,21 +28,6 @@ export class AstVariable {
     }
     return false;
   }
-
-  get initializer(): AstVariableInitializer | null {
-    if (this.variableDeclaration.initializer) {
-      return new AstVariableInitializer(this.variableDeclaration.initializer);
-    }
-    return null;
-  }
-
-  get name() {
-    return getIdentifierName(this.variableDeclaration.name);
-  }
-
-  // get objectValue(): AstObjectValue | null {
-  //
-  // }
 
   getCalls(options?: { name: string }): AstVariableCall[] {
     const variableCalls = new Array<AstVariableCall>();

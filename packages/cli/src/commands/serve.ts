@@ -9,6 +9,7 @@ import {getApp} from '@daita/web';
 import {Debouncer, RelationalContext} from '@daita/core';
 import {getTokenProvider} from '../utils/token-provider';
 import {AccessToken} from '@daita/web/dist/auth/token-provider';
+import {AstContext} from '../ast/ast-context';
 
 export default class Serve extends Command {
   private server: http.Server | null = null;
@@ -70,22 +71,24 @@ export default class Serve extends Command {
         this.server.close();
       }
 
-      const schemaInfo = await getSchemaInformation(schemaLocation, this);
+      const astContext = new AstContext();
+      const schemaInfo = await getSchemaInformation(astContext, schemaLocation, this);
       if (!schemaInfo) {
         this.warn(`could not load schema`);
         return;
       }
 
-      const schema = schemaInfo.migrationTree.defaultSchema();
+      const migrationTree = schemaInfo.getMigrationTree();
+      const schema = migrationTree.defaultSchema();
       const context = new RelationalContext(
         schema,
-        schemaInfo.migrationTree,
+        migrationTree,
         dataAdapter,
         null,
       );
       await context.migration().apply();
       const userProvider = {
-        get: async(token: AccessToken) => {
+        get: async (token: AccessToken) => {
           throw new Error('not found');
         },
       };
@@ -93,7 +96,7 @@ export default class Serve extends Command {
       const app = getApp({
         type: 'migrationTree',
         dataAdapter,
-        migrationTree: schemaInfo.migrationTree,
+        migrationTree: migrationTree,
         auth: tokenProvider ? {
           tokenProvider,
           userProvider,
