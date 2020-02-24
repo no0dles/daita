@@ -29,54 +29,11 @@ module.exports = {
         "@daita/node-example": "<rootDir>/packages/examples/node-example/src",
     },
     projects: [
-        {
-            displayName: 'core',
-            testMatch: ["<rootDir>/packages/core/src/**/*.spec.ts"],
-            testEnvironment: 'node',
-            "transform": {
-                "^.+\\.ts$": "ts-jest"
-            }
-        },
-        {
-            displayName: 'web',
-            testMatch: ["<rootDir>/packages/web/src/**/*.spec.ts"],
-            testEnvironment: 'node',
-            "transform": {
-                "^.+\\.ts$": "ts-jest"
-            }
-        },
-        {
-            displayName: 'cli',
-            setupFilesAfterEnv: ["jest-extended"],
-            testMatch: ["<rootDir>/packages/cli/src/**/*.spec.ts"],
-            testEnvironment: 'node',
-            "transform": {
-                "^.+\\.ts$": "ts-jest"
-            }
-        },
-        {
-            displayName: 'web-client',
-            testMatch: ["<rootDir>/packages/web-client/src/**/*.spec.ts"],
-            testEnvironment: 'jsdom',
-            "transform": {
-                "^.+\\.ts$": "ts-jest"
-            }
-        },
-        {
-            displayName: 'tslint',
-            testMatch: ["<rootDir>/packages/tslint/src/**/*.spec.ts"],
-            testEnvironment: 'node',
-            "transform": {
-                "^.+\\.ts$": "ts-jest"
-            }
-        },
-        {
-            displayName: 'node-example',
-            testMatch: ["<rootDir>/packages/node-example/src/**/*.spec.ts"],
-            testEnvironment: 'node',
-            "transform": {
-                "^.+\\.ts$": "ts-jest"
-            }
-        }
+        '<rootDir>/packages/core',
+        '<rootDir>/packages/web',
+        '<rootDir>/packages/cli',
+        '<rootDir>/packages/tslint',
+        '<rootDir>/packages/examples/node-example',
+        '<rootDir>/packages/web-client',
     ],
 };
