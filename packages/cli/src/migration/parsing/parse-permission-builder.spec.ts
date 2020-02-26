@@ -1,8 +1,8 @@
 import {MockAstContext} from '../../ast/ast-context';
 import {isNotNull} from '../../test/utils';
-import {parseSchemaPermissions} from './parse-schema-permissions';
+import {parsePermissionBuilder} from './parse-permission-builder';
 
-describe('parse-schema-permissions', () => {
+describe('parse-permission-builder', () => {
   it('should parse permission', () => {
     const context = new MockAstContext();
     context.mock('user.ts', `
@@ -11,25 +11,17 @@ describe('parse-schema-permissions', () => {
         username: string;
       }
     `);
-    context.mock('schema.ts', `
-      import {User} from './user';
-      import * as permissions from './permissions';
-      const schema = new RelationalSchema();
-      schema.table(User);
-      schema.permission(permissions);
-      export = permissions;
-    `);
     context.mock('permissions.ts', `
       import {User} from './user';
       const permissions = new PermissionBuilder();
       permissions.push(User, {type: 'role', role: 'admin', select: true});
       export = permissions;
     `);
-    const sourceFile = context.get('schema.ts');
+    const sourceFile = context.get('permissions.ts');
     isNotNull(sourceFile);
-    const schemaVariable = sourceFile.getVariable('schema');
-    isNotNull(schemaVariable);
-    const permissions = parseSchemaPermissions(schemaVariable);
+    const permissionVariable = sourceFile.getVariable('permissions');
+    isNotNull(permissionVariable);
+    const permissions = parsePermissionBuilder(permissionVariable);
 
     expect(permissions).toContainAllKeys(['User']);
     expect(permissions['User']).toEqual([

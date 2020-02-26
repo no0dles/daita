@@ -1,8 +1,9 @@
 import {AstVariable} from '../../ast/ast-variable';
 import {Permission} from '@daita/core';
+import {parsePermissionBuilder} from './parse-permission-builder';
 
 export function parseSchemaPermissions(schemaVariable: AstVariable) {
-  const permissions: { [key: string]: Permission<any>[] } = {};
+  const result: { [key: string]: Permission<any>[] } = {};
 
   for (const permissionCalls of schemaVariable.getCalls({name: 'permission'})) {
     const builderArgument = permissionCalls.argument(0);
@@ -16,25 +17,14 @@ export function parseSchemaPermissions(schemaVariable: AstVariable) {
       throw new Error('invalid variable');
     }
 
-    const pushCalls = variable.getCalls({name: 'push'});
-    for (const pushCall of pushCalls) {
-      const clsArg = pushCall.argument(0);
-      const objArg = pushCall.argument(1);
-      if (!clsArg || !objArg) {
-        throw new Error('invalid push call');
+    const permissions = parsePermissionBuilder(variable)
+    for (const key of Object.keys(permissions)) {
+      if (!result[key]) {
+        result[key] = [];
       }
-
-      const objVal = objArg.objectValue;
-      if (!objVal) {
-        throw new Error('invalid obj');
-      }
-
-      const type = objVal.property('type');
-      if (type) {
-        type.stringValue
-      }
+      result[key].push(...permissions[key]);
     }
   }
 
-  return permissions;
+  return result;
 }
