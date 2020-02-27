@@ -30,18 +30,18 @@ steps:
     - cd packages/tslint
     - yarn build
 
-- name: build:web-client
-  image: node:12
-  depends_on: [install, build:core, build:web]
-  commands:
-    - cd packages/web-client
-    - yarn build
-
 - name: build:web
   image: node:12
   depends_on: [install, build:core]
   commands:
     - cd packages/web
+    - yarn build
+
+- name: build:web-client
+  image: node:12
+  depends_on: [install, build:core, build:web]
+  commands:
+    - cd packages/web-client
     - yarn build
 
 - name: build:cli
