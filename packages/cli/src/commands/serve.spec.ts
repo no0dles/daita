@@ -1,7 +1,4 @@
 import {setupEnv} from '../test/utils';
-import {ApiRelationalDataAdapter} from '@daita/web-client';
-import {expect} from 'chai';
-import {Defer} from '@daita/core';
 
 describe('cli serve', () => {
   it(`should serve auth`, setupEnv('serve-auth', async (ctx) => {
