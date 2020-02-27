@@ -32,7 +32,7 @@ steps:
 
 - name: build:web-client
   image: node:12
-  depends_on: [install, build:core]
+  depends_on: [install, build:core, build:web]
   commands:
     - cd packages/web-client
     - yarn build
