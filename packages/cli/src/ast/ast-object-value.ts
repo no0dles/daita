@@ -4,6 +4,7 @@ import {AstNewConstructor} from './ast-new-constructor';
 
 export class AstObjectValue {
   stringValue: string | null = null;
+  numericValue: number | null = null;
   booleanValue: boolean | null = null;
   arrayValue: AstObjectValue[] | null = null;
   newConstructor: AstNewConstructor | null = null;
@@ -11,6 +12,7 @@ export class AstObjectValue {
 
   constructor(private expression: ts.Expression) {
     const stringLiteral = isKind(this.expression, ts.SyntaxKind.StringLiteral);
+    const numericLiteral = isKind(this.expression, ts.SyntaxKind.NumericLiteral);
     const arrayLiteral = isKind(this.expression, ts.SyntaxKind.ArrayLiteralExpression);
     const objectLiteral = isKind(this.expression, ts.SyntaxKind.ObjectLiteralExpression);
     const newExpression = isKind(this.expression, ts.SyntaxKind.NewExpression);
@@ -18,6 +20,9 @@ export class AstObjectValue {
     if (stringLiteral) {
       this.stringValue = stringLiteral.text;
       this.anyValue = stringLiteral.text;
+    } else if (numericLiteral) {
+      this.numericValue = parseFloat(numericLiteral.text);
+      this.anyValue = this.numericValue;
     } else if (arrayLiteral) {
       this.arrayValue = arrayLiteral.elements.map(elm => new AstObjectValue(elm));
       this.anyValue = this.arrayValue.map(v => v.anyValue);

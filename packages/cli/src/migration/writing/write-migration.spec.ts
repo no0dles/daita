@@ -4,7 +4,7 @@ import {
   addMigrationImport,
   addMigrationRegistration,
   removeMigrationImport,
-  removeMigrationRegistration,
+  removeMigrationRegistration, writeMigration,
 } from './write-migration';
 
 describe('write-migration', () => {
@@ -67,5 +67,36 @@ describe('write-migration', () => {
     const expectedContent = fs.readFileSync(schemaSourceFilePath).toString();
     const actualContent = fs.readFileSync(schemaResultFilePath).toString();
     assert.equal(actualContent, expectedContent);
+  });
+
+  it('should write add table', () => {
+    const migration = writeMigration('init', undefined, undefined, [
+      {kind: 'add_table', table: 'User'}
+    ]);
+    expect(migration).toEqual(
+      'import { MigrationDescription } from "@daita/core";\n' +
+      '\n' +
+      'export const InitMigration: MigrationDescription = {\n' +
+      '    id: "init",\n' +
+      '    steps: [\n' +
+      '        { kind: "add_table", table: "User" }\n' +
+      '    ]\n' +
+      '};')
+  });
+
+  it('should write drop table', () => {
+    const migration = writeMigration('init', 'first', undefined, [
+      {kind: 'drop_table', table: 'User'}
+    ]);
+    expect(migration).toEqual(
+      'import { MigrationDescription } from "@daita/core";\n' +
+      '\n' +
+      'export const InitMigration: MigrationDescription = {\n' +
+      '    id: "init",\n' +
+      '    after: "first",\n' +
+      '    steps: [\n' +
+      '        { kind: "drop_table", table: "User" }\n' +
+      '    ]\n' +
+      '};')
   });
 });

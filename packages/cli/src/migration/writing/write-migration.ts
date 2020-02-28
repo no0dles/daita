@@ -262,13 +262,6 @@ export function writeMigration(
       ts.createIdentifier('id'),
       ts.createStringLiteral(name),
     ),
-    ts.createPropertyAssignment(
-      ts.createIdentifier('steps'),
-      ts.createArrayLiteral(
-        steps.map(step => writeMigrationStep(step)),
-        true,
-      ),
-    ),
   ];
 
   if (after) {
@@ -288,6 +281,15 @@ export function writeMigration(
       ),
     );
   }
+
+  properties.push(
+    ts.createPropertyAssignment(
+      ts.createIdentifier('steps'),
+      ts.createArrayLiteral(
+        steps.map(step => writeMigrationStep(step)),
+        true,
+      ),
+    ));
 
   const exportStmt = ts.createVariableStatement(
     [ts.createModifier(ts.SyntaxKind.ExportKeyword)],
@@ -326,19 +328,5 @@ export function writeMigration(
     exportStmt,
     sourceFile,
   );
-  return `${part1}\r\n\r\n${part2}`;
-}
-
-export function printSourceFile(sourceFile: ts.SourceFile) {
-  const printer = ts.createPrinter({
-    newLine: ts.NewLineKind.LineFeed,
-  });
-
-  const parts: string[] = [];
-  for (const statement of sourceFile.statements) {
-    parts.push(
-      printer.printNode(ts.EmitHint.Unspecified, statement, sourceFile),
-    );
-  }
-  return parts.join('\n');
+  return `${part1}\n\n${part2}`;
 }

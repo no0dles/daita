@@ -1,8 +1,7 @@
 import {Permission} from '../../permission';
 
 export interface RelationalAddPermissionMigrationStep {
-  kind: 'add_relational_permission';
+  kind: 'add_table_permission';
   table: string;
-  identifier: string;
   permission: Permission<any>;
 }

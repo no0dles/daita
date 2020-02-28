@@ -1,4 +1,4 @@
-import {MigrationStep, RelationalTableSchema} from '@daita/core';
+import {MigrationStep, Permission, RelationalTableSchema} from '@daita/core';
 import {generateRelationalTableMigrationSteps} from './generate-relational-table-migration-steps';
 import {mergeList} from '../utils';
 
@@ -37,14 +37,42 @@ export function generateRelationalMigrationSteps(
           required: foreignKey.required,
         });
       }
+
+      const permissions = newSchema.tablePermissions(table.name);
+      for (const permission of permissions) {
+        steps.push({kind: 'add_table_permission', table: table.name, permission});
+      }
     },
     remove: table => {
       steps.push({kind: 'drop_table', table: table.name});
     },
     merge: (currentTable, newTable) => {
       steps.push(...generateRelationalTableMigrationSteps(currentTable, newTable));
+
+      const currentPermissions = currentSchema.tablePermissions(currentTable.name);
+      const newPermissions = newSchema.tablePermissions(currentTable.name);
+
+      mergeList(currentPermissions, newPermissions, {
+        compare: (first, second) => getPermissionId(first) === getPermissionId(second),
+        remove: permission => {
+          steps.push({kind: 'drop_table_permission', table: currentTable.name, permission});
+        },
+        merge: (currentItem, newItem) => {
+        },
+        add: permission => {
+          steps.push({
+            kind: 'add_table_permission',
+            table: currentTable.name,
+            permission,
+          });
+        },
+      });
     },
   });
 
   return steps;
+}
+
+function getPermissionId(permission: Permission<any>) {
+  return JSON.stringify(permission);
 }

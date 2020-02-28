@@ -95,9 +95,48 @@ export function writeMigrationStep(migrationStep: MigrationStep): ts.ObjectLiter
       ts.createPropertyAssignment('table', ts.createStringLiteral(migrationStep.table)),
       ts.createPropertyAssignment('fieldName', ts.createStringLiteral(migrationStep.fieldName)),
     ]);
+  } else if (migrationStep.kind === 'drop_table_permission') {
+    return ts.createObjectLiteral([
+      ts.createPropertyAssignment('kind', ts.createStringLiteral(migrationStep.kind)),
+      ts.createPropertyAssignment('table', ts.createStringLiteral(migrationStep.table)),
+      ts.createPropertyAssignment('permission', createObject(migrationStep.permission)),
+    ]);
+  } else if (migrationStep.kind === 'add_table_permission') {
+    return ts.createObjectLiteral([
+      ts.createPropertyAssignment('kind', ts.createStringLiteral(migrationStep.kind)),
+      ts.createPropertyAssignment('table', ts.createStringLiteral(migrationStep.table)),
+      ts.createPropertyAssignment('permission', createObject(migrationStep.permission)),
+    ]);
   }
 
   return fail(migrationStep, `Unknown migration step ${JSON.stringify(migrationStep)}`);
+}
+
+function createObject(object: any) {
+  const keys = Object.keys(object);
+  const properties = new Array<ts.ObjectLiteralElementLike>();
+  for (const key of keys) {
+    properties.push(ts.createPropertyAssignment(key, createValue(object[key])));
+  }
+  return ts.createObjectLiteral(properties);
+}
+
+function createValue(value: any): ts.Expression {
+  if (typeof value === 'string') {
+    return ts.createStringLiteral(value);
+  } else if (typeof value === 'number') {
+    return ts.createNumericLiteral(value.toString());
+  } else if (typeof value === 'boolean') {
+    return value ? ts.createTrue() : ts.createFalse();
+  } else if (typeof value === 'object') {
+    if (Array.isArray(value)) {
+      return ts.createArrayLiteral(value.map(item => createValue(item)));
+    } else {
+      return createObject(value);
+    }
+  } else {
+    throw new Error('unknown type ' + typeof value);
+  }
 }
 
 function fail(value: never, message: string): never {

@@ -2,7 +2,7 @@ import {MockAstContext} from '../../ast/ast-context';
 import {parseRelationalSchema} from './parse-relational-schema';
 import {isNotNull} from '../../test/utils';
 import 'jest-extended';
-import {RelationalTableSchema} from '@daita/core';
+import {Permission, RelationalTableSchema, RolePermission} from '@daita/core';
 import {RelationalTableSchemaTableReferenceKey} from '@daita/core/dist/schema/relational-table-schema-table-reference-key';
 
 describe('parse-relational-schema', () => {
@@ -13,13 +13,22 @@ describe('parse-relational-schema', () => {
       import {Permission} from './permission';
       import {UserRole} from './user-role';
       import {RolePermission} from './role-permission';
+      import * as permissions from './permissions';
       const schema = new RelationalSchema();
       schema.table(User);
       schema.table(Role, {key: 'name'});
       schema.table(Permission, {key: ['name']});
       schema.table(UserRole, {key: ['roleName', 'userId']});
       schema.table(RolePermission, {key: ['roleName', 'permissionName']});
+      schema.permission(permissions);
     `);
+  context.mock('permissions.ts', `
+    import {User} from './user';
+    const permissions = new PermissionBuilder();
+    permissions.push(User, {type: 'role', role: 'admin', select: true });
+    permissions.push(User, {type: 'role', role: 'member', select: {limit: 25, fields: ['username', 'id', 'admin']}});
+    export = permissions;
+  `);
   context.mock('base.ts', `
       export class BaseTable {
         createdDate: Date;
@@ -85,14 +94,6 @@ describe('parse-relational-schema', () => {
     expect(relationalSchema.tableNames).toIncludeAllMembers(['UserRole', 'Role', 'RolePermission', 'User', 'Permission']);
   });
 
-  it('should parse user table', () => {
-    const userTable = relationalSchema.table('User');
-    isNotNull(userTable);
-    expect(userTable.primaryKeys).toIncludeAllMembers(['id']);
-    expect(userTable.foreignKeys).toEqual([]);
-    expect(userTable.fieldNames).toIncludeAllMembers(['id', 'username', 'password', 'lastLogin', 'createdDate', 'modifiedDate']);
-  });
-
   const baseFields: ExpectedTableField[] = [
     {
       required: true,
@@ -145,6 +146,10 @@ describe('parse-relational-schema', () => {
       },
       ...baseFields,
     ],
+    permissions: [
+      {type: 'role', role: 'admin', select: true},
+      {type: 'role', role: 'member', select: {limit: 25, fields: ['username', 'id', 'admin']}}
+    ],
   });
 
   shouldHaveTable(relationalSchema, {
@@ -174,6 +179,7 @@ describe('parse-relational-schema', () => {
       },
       ...baseFields,
     ],
+    permissions: [],
   });
 
   shouldHaveTable(relationalSchema, {
@@ -189,6 +195,7 @@ describe('parse-relational-schema', () => {
       },
       ...baseFields,
     ],
+    permissions: [],
   });
 
   shouldHaveTable(relationalSchema, {
@@ -213,6 +220,7 @@ describe('parse-relational-schema', () => {
       },
       ...baseFields,
     ],
+    permissions: [],
   });
 
   shouldHaveTable(relationalSchema, {
@@ -237,6 +245,7 @@ describe('parse-relational-schema', () => {
       },
       ...baseFields,
     ],
+    permissions: [],
   });
 });
 
@@ -274,6 +283,11 @@ function shouldHaveTable(relationalSchema: RelationalTableSchema, options: Expec
     it('should not contain more fields', () => {
       expect(roleTable.fieldNames).toIncludeAllMembers(options.fields.map(field => field.name));
     });
+
+    it('should parse permissions', () => {
+      const permissions = relationalSchema.tablePermissions(options.name);
+      expect(permissions).toEqual(options.permissions);
+    })
   });
 }
 
@@ -281,7 +295,8 @@ interface ExpectedTable {
   name: string,
   primaryKeys: string[],
   foreignKeys: RelationalTableSchemaTableReferenceKey[],
-  fields: ExpectedTableField[]
+  fields: ExpectedTableField[],
+  permissions: Permission<any>[];
 }
 
 interface ExpectedTableField {

@@ -80,6 +80,18 @@ export function parseSchemaMigrationStep(step: AstObjectValue): MigrationStep {
       newFieldName: getStringValue(step, 'newFieldName'),
       oldFieldName: getStringValue(step, 'oldFieldName'),
     }
+  } else if(migrationStep.kind === 'add_table_permission') {
+    return {
+      kind: 'add_table_permission',
+      table: getStringValue(step, 'table'),
+      permission: getAnyValue(step, 'permission'),
+    }
+  } else if(migrationStep.kind === 'drop_table_permission') {
+    return {
+      kind: 'drop_table_permission',
+      table: getStringValue(step, 'table'),
+      permission: getAnyValue(step, 'permission'),
+    }
   }
 
   return fail(migrationStep, `Unknown migration step ${JSON.stringify(migrationStep)}`);

@@ -10,6 +10,7 @@ import {RelationalDropTableMigrationStep} from './steps/relational-drop-table.mi
 import {RelationalAddTablePrimaryKey} from './steps/relational-add-table-primary-key.migration-step';
 import {RelationalAddTableForeignKey} from './steps/relational-add-table-foreign-key.migration-step';
 import {RelationalDropTableFieldMigrationStep} from './steps/relational-drop-table-field.migration-step';
+import {RelationalAddPermissionMigrationStep, RelationalDropPermissionMigrationStep} from './steps';
 
 export type MigrationStep =
   | AddCollectionFieldMigrationStep
@@ -23,4 +24,6 @@ export type MigrationStep =
   | RelationalDropTableMigrationStep
   | RelationalAddTablePrimaryKey
   | RelationalAddTableForeignKey
-  | RelationalDropTableFieldMigrationStep;
+  | RelationalDropTableFieldMigrationStep
+  | RelationalAddPermissionMigrationStep
+  | RelationalDropPermissionMigrationStep;

@@ -94,6 +94,10 @@ export function isKind(
 ): ts.TypeLiteralNode | null;
 export function isKind(
   node: ts.Node | undefined,
+  kind: ts.SyntaxKind.NumericLiteral,
+): ts.NumericLiteral | null;
+export function isKind(
+  node: ts.Node | undefined,
   kind: ts.SyntaxKind.PropertySignature,
 ): ts.PropertySignature | null;
 export function isKind(
