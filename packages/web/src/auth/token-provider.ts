@@ -3,7 +3,7 @@ export interface TokenProvider {
 }
 
 export interface AccessToken {
-  aud: string;
+  iss: string;
   sub: string;
   exp?: number;
   nbf?: number;

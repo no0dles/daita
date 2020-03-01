@@ -1,16 +1,13 @@
 import {Pool} from 'pg';
-import {expect} from 'chai';
-import {MigrationSchemaTable} from '../schema/migration-schema-table';
 import {PostgresDataAdapter} from './postgres.data-adapter';
-import {MigrationSchemaTableField} from '../schema/migration-schema-table-field';
-import {MigrationDescription} from '../migration';
-import {MigrationSchema} from '../schema/migration-schema';
-import {relationalDataAdapterTest} from '../adapter/relational-data-adapter.test';
 import {dropDatabase} from './postgres.util';
-import {RelationalSchema} from '../schema';
-import {RelationalContext} from '../context';
-import {AdapterTest} from '../test/test-utils';
-import testSchema = require('../test/schema');
+import {MigrationDescription} from '@daita/core';
+import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
+import {MigrationSchemaTable} from '@daita/core/dist/schema/migration-schema-table';
+import {MigrationSchemaTableField} from '@daita/core/dist/schema/migration-schema-table-field';
+import {RelationalDataAdapterFactory} from '@daita/core/dist/test/test-utils';
+import {relationalDataAdapterTest} from '@daita/core/dist/adapter/relational-data-adapter.test';
+import {relationalContextTest} from '@daita/core/dist/context/relational-context.test';
 
 class MockedPool {
   private expectedQuery: string = '';
@@ -32,8 +29,8 @@ class MockedPool {
       connect: async () => {
         return {
           query: (query: string, values: any[]) => {
-            expect(query).be.eq(this.expectedQuery);
-            expect(values).be.deep.eq(this.expectedValues);
+            expect(query).toEqual(this.expectedQuery);
+            expect(values).toEqual(this.expectedValues);
 
             return this.expectedResult;
           },
@@ -76,37 +73,27 @@ class MockedSchema extends MigrationSchema {
   }
 }
 
+export class PostgresDataAdapterFactory implements RelationalDataAdapterFactory<PostgresDataAdapter> {
+  async create() {
+    const connectionString = (process.env.POSTGRES_URI || 'postgres://postgres:postgres@localhost') + '/test-' + Math.random().toString(36).substring(2, 15);
+    await dropDatabase(connectionString);
 
-export class PostgresAdapterTest implements AdapterTest {
-  private connectionString: string;
-
-  context!: RelationalContext;
-  dataAdapter!: PostgresDataAdapter;
-  name = 'postgres-data-adapter';
-  isRemote = false;
-
-  constructor(private schema: RelationalSchema) {
-    this.connectionString = (process.env.POSTGRES_URI || 'postgres://postgres:postgres@localhost') + '/test-' + Math.random().toString(36).substring(2, 15);
-  }
-
-  async after() {
-    if (this.dataAdapter) {
-      await this.dataAdapter.close();
+    const dataAdapter = new PostgresDataAdapter(connectionString);
+    return {
+      close: async() => {
+        await dataAdapter.close();
+        await dropDatabase(connectionString);
+      },
+      dataAdapter,
     }
-  }
-
-  async before() {
-    await dropDatabase(this.connectionString);
-    this.dataAdapter = new PostgresDataAdapter(this.connectionString);
-    this.context = this.schema.context(this.dataAdapter);
-    await this.context.migration().apply();
   }
 }
 
 
 describe('postgres.data-adapter', () => {
 
-  relationalDataAdapterTest(new PostgresAdapterTest(testSchema));
+  relationalDataAdapterTest(new PostgresDataAdapterFactory());
+  relationalContextTest(new PostgresDataAdapterFactory());
 
   const mockedPool = new MockedPool();
   const mockedSchema = new MockedSchema();
@@ -125,7 +112,7 @@ describe('postgres.data-adapter', () => {
       limit: null,
       skip: null,
     });
-    expect(result).deep.eq([{name: 'foo'}]);
+    expect(result).toEqual([{name: 'foo'}]);
   });
 
   it('select * from author', async () => {
@@ -140,7 +127,7 @@ describe('postgres.data-adapter', () => {
       limit: null,
       skip: null,
     });
-    expect(result).deep.eq([{name: 'foo'}]);
+    expect(result).toEqual([{name: 'foo'}]);
   });
 
   it('delete from author where name = foo', async () => {
@@ -153,7 +140,7 @@ describe('postgres.data-adapter', () => {
     const result = await adapter.delete(mockedSchema, 'author', {
       name: 'foo',
     });
-    expect(result.affectedRows).be.eq(1);
+    expect(result.affectedRows).toBe(1);
   });
 
   it('delete from author where name $eq foo', async () => {
@@ -166,7 +153,7 @@ describe('postgres.data-adapter', () => {
     const result = await adapter.delete(mockedSchema, 'author', {
       name: {$eq: 'foo'},
     });
-    expect(result.affectedRows).be.eq(1);
+    expect(result.affectedRows).toBe(1);
   });
 
   it('update author set test=bar where name $eq foo', async () => {
@@ -186,7 +173,7 @@ describe('postgres.data-adapter', () => {
         name: {$eq: 'foo'},
       },
     );
-    expect(result.affectedRows).be.eq(1);
+    expect(result.affectedRows).toBe(1);
   });
 
   it('insert into author values (name=bar), (name=foo)', async () => {

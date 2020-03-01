@@ -28,7 +28,7 @@ export interface SchemaLocation {
 
 export async function getSchemaLocation(
   flags: { schema: string | undefined, cwd: string | undefined },
-  cmd: Command,
+  cmd: Command | null,
 ): Promise<SchemaLocation> {
   const cwd = flags.cwd ? path.resolve(flags.cwd) : process.cwd();
   let sourceDirectory = path.join(cwd, 'src');
@@ -54,7 +54,7 @@ export async function getSchemaLocation(
         sourceDirectory,
         migrationDirectory,
       );
-    } else {
+    } else if (cmd) {
       cmd.warn(`schema not found at ${fileName}`);
     }
   } else {
@@ -77,7 +77,9 @@ export async function getSchemaLocation(
       default: fileName,
     });
     if (!fs.existsSync(path.join(cwd, fileName))) {
-      cmd.warn(`schema not found at ${fileName}`);
+      if (cmd) {
+        cmd.warn(`schema not found at ${fileName}`);
+      }
       continue;
     }
 

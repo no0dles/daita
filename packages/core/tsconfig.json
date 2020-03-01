@@ -7,7 +7,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
-    "types" : ["chai", "jest", "node", "uuid", "mongodb", "pg"]
+    "types" : ["jest", "node", "uuid"]
   },
   "exclude": [
     "node_modules",

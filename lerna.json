@@ -1,10 +1,11 @@
 {
   "packages": [
-    "packages/examples/**",
+    "packages/examples/node-example",
     "packages/cli",
     "packages/core",
     "packages/tslint",
     "packages/web",
+    "packages/pg",
     "packages/web-client",
     "packages/website"
   ],

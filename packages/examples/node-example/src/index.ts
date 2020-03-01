@@ -1,6 +1,6 @@
 import {User} from './models/user';
 import * as schema from './schema';
-import {PostgresDataAdapter} from "@daita/core/dist/postgres";
+import {PostgresDataAdapter} from '@daita/pg';
 
 const adapter = new PostgresDataAdapter("postgres://localhost/datam");
 const context = schema.context(adapter);

@@ -2,7 +2,7 @@ import {MockAstContext} from '../../ast/ast-context';
 import {parseRelationalSchema} from './parse-relational-schema';
 import {isNotNull} from '../../test/utils';
 import 'jest-extended';
-import {Permission, RelationalTableSchema, RolePermission} from '@daita/core';
+import {Permission, RelationalTableSchema} from '@daita/core';
 import {RelationalTableSchemaTableReferenceKey} from '@daita/core/dist/schema/relational-table-schema-table-reference-key';
 
 describe('parse-relational-schema', () => {

@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import { assert } from 'chai';
 import {
   addMigrationImport,
   addMigrationRegistration,
@@ -20,58 +19,52 @@ describe('write-migration', () => {
   });
 
   it('should add import and registration', () => {
-    assert.equal(
+    expect(
       addMigrationImport(
         schemaResultFilePath,
         './migrations/init.migration',
         'InitMigration',
       ),
-      true,
-    );
-    assert.equal(
+    ).toBeTruthy();
+    expect(
       addMigrationRegistration(schemaResultFilePath, 'schema', 'InitMigration'),
-      true,
-    );
+    ).toBeTruthy();
 
     const expectedContent = fs.readFileSync(schemaExceptedFilePath).toString();
     const actualContent = fs.readFileSync(schemaResultFilePath).toString();
-    assert.equal(expectedContent, actualContent);
+    expect(expectedContent).toEqual(actualContent);
   });
 
   it('should add import, registration and undo', () => {
-    assert.equal(
+    expect(
       addMigrationImport(
         schemaResultFilePath,
         './migrations/init.migration',
         'InitMigration',
-      ),
-      true,
-    );
-    assert.equal(
-      addMigrationRegistration(schemaResultFilePath, 'schema', 'InitMigration'),
-      true,
-    );
-    assert.equal(
+      )
+    ).toBeTruthy();
+    expect(
+      addMigrationRegistration(schemaResultFilePath, 'schema', 'InitMigration')
+    ).toBeTruthy();
+    expect(
       removeMigrationImport(
         schemaResultFilePath,
         './migrations/init.migration',
         'InitMigration',
-      ),
-      true,
-    );
-    assert.equal(
-      removeMigrationRegistration(schemaResultFilePath, 'InitMigration'),
-      true,
-    );
+      )
+    ).toBeTruthy();
+    expect(
+      removeMigrationRegistration(schemaResultFilePath, 'InitMigration')
+    ).toBeTruthy();
 
     const expectedContent = fs.readFileSync(schemaSourceFilePath).toString();
     const actualContent = fs.readFileSync(schemaResultFilePath).toString();
-    assert.equal(actualContent, expectedContent);
+    expect(actualContent).toEqual(expectedContent);
   });
 
   it('should write add table', () => {
     const migration = writeMigration('init', undefined, undefined, [
-      {kind: 'add_table', table: 'User'}
+      {kind: 'add_table', table: 'User'},
     ]);
     expect(migration).toEqual(
       'import { MigrationDescription } from "@daita/core";\n' +
@@ -86,7 +79,7 @@ describe('write-migration', () => {
 
   it('should write drop table', () => {
     const migration = writeMigration('init', 'first', undefined, [
-      {kind: 'drop_table', table: 'User'}
+      {kind: 'drop_table', table: 'User'},
     ]);
     expect(migration).toEqual(
       'import { MigrationDescription } from "@daita/core";\n' +

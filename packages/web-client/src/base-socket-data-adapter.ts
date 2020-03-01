@@ -4,9 +4,11 @@ import * as debug from 'debug';
 import {IdGenerator} from './id-generator';
 
 export class BaseSocketDataAdapter {
-  protected idGenerator: IdGenerator
+  protected idGenerator: IdGenerator;
 
-  constructor(protected defers: { [key: string]: Defer<any> }, protected socket: any, private globalEmitValue: any) {
+  constructor(protected defers: { [key: string]: Defer<any> },
+              protected socket: any,
+              private globalEmitValue: any) {
     this.idGenerator = new IdGenerator();
   }
 
@@ -18,7 +20,6 @@ export class BaseSocketDataAdapter {
     this.socket.emit(event, {...data, cid: cid, ...this.globalEmitValue});
     return defer.promise;
   }
-
 
   count(
     schema: MigrationSchema,

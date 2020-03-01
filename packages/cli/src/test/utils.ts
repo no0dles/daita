@@ -1,68 +1,11 @@
 import * as fs from 'fs';
-import {assert, expect} from 'chai';
 import * as path from 'path';
 import * as cli from '../index';
 import {Defer} from '@daita/core';
 
 export function isNotNull<T>(value: T): asserts value is NonNullable<T> {
-  expect(value).to.not.be.undefined;
-  expect(value).to.not.be.null;
-}
-
-function compareDirectory(expectedRoot: string, expectedDir: string, actualRoot: string, actualDir: string) {
-  const expectedExists = fs.existsSync(expectedDir);
-  const actualExists = fs.existsSync(actualDir);
-
-  if (expectedExists !== actualExists) {
-    if (expectedExists) {
-      assert.fail(null, path.relative(expectedRoot, expectedDir), `expected directory exists`);
-    } else {
-      assert.fail(path.relative(actualRoot, actualDir), null, `unexpected directory exists`);
-    }
-    return;
-  }
-
-  const expectedFiles = fs.readdirSync(expectedDir, {withFileTypes: true});
-  const actualFiles = fs.readdirSync(actualDir, {withFileTypes: true});
-
-  for (const expectedFile of expectedFiles) {
-    if (expectedFile.isDirectory()) {
-      compareDirectory(expectedRoot, path.join(expectedDir, expectedFile.name), actualRoot, path.join(actualDir, expectedFile.name));
-    } else {
-      const regex = new RegExp(expectedFile.name);
-      const matchingFiles = actualFiles.filter(f => regex.test(f.name) && !f.isDirectory());
-      if (matchingFiles.length === 0) {
-        assert.fail(null, expectedFile.name, `missing file ${expectedFile.name} in directory ${path.relative(expectedRoot, expectedDir)}`);
-      } else if (matchingFiles.length > 1) {
-        assert.fail(matchingFiles.map(f => f.name), [expectedFile.name], `multiple matching files for ${expectedFile.name} in directory ${path.relative(expectedRoot, expectedDir)}`);
-      }
-
-      const actualFile = matchingFiles[0];
-      const index = actualFiles.indexOf(actualFile);
-      actualFiles.splice(index, 1);
-
-      compareContent(path.join(expectedDir, expectedFile.name), path.join(actualDir, actualFile.name));
-    }
-  }
-}
-
-function compareContent(expectedFile: string, actualFile: string) {
-  const expectedContent = fs.readFileSync(expectedFile).toString();
-  const actualContent = fs.readFileSync(actualFile).toString();
-
-  const expectedLines = expectedContent.split(/\r?\n/);
-  const actualLines = actualContent.split(/\r?\n/);
-
-  for (let i = 0; i < expectedLines.length; i++) {
-    const regex = new RegExp(expectedLines[i]);
-    if (!regex.test(actualLines[i])) {
-      assert.fail(actualLines[i], expectedLines[i], `file content is not equal`);
-    }
-  }
-
-  if (expectedLines.length < actualLines.length) {
-    assert.equal(actualContent, expectedContent, `file ${actualFile} is not as expected`);
-  }
+  expect(value).not.toBeUndefined();
+  expect(value).not.toBeNull();
 }
 
 function cloneDirectory(sourceDir: string, targetDir: string) {
@@ -158,10 +101,11 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
         return new Promise<void>(resolve => {
           fs.readdir(path.join(resultPath, dir), {withFileTypes: true}, (e, listedFiles) => {
             if (e) {
-              assert.fail(`could not list files in ${path.join(resultPath, dir)}`);
+              expect(e).toBeUndefined();
+              //.fail(`could not list files in ${path.join(resultPath, dir)}`);
             } else {
               const actualFiles = listedFiles.map(f => f.name);
-              assert.deepEqual(actualFiles.sort(), expectedFiles.sort());
+              expect(actualFiles.sort()).toEqual(expectedFiles.sort());
               resolve();
             }
           });
@@ -171,11 +115,13 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
         return new Promise<void>(resolve => {
           fs.stat(path.join(resultPath, dir), (err, stats) => {
             if (err) {
-              assert.fail(null, dir, `expected path ${dir} to exist`);
+              expect(err).toBeUndefined();
+              //assert.fail(null, dir, `expected path ${dir} to exist`);
             } else if (file) {
               fs.readdir(path.join(resultPath, dir), {withFileTypes: true}, (e, listedFiles) => {
                 if (e) {
-                  assert.fail(`could not list files in ${path.join(resultPath, dir)}`);
+                  expect(e).toBeUndefined();
+                  //assert.fail(`could not list files in ${path.join(resultPath, dir)}`);
                 } else {
                   for (const listedFile of listedFiles) {
                     if (!listedFile.isDirectory()) {
@@ -185,7 +131,8 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
                       }
                     }
                   }
-                  assert.fail(`could not find matching file for ${file}`);
+                  expect('').toBe(`could not find matching file for ${file}`);
+                  //assert.fail(`could not find matching file for ${file}`);
                 }
               });
             } else {

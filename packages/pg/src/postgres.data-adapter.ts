@@ -1,14 +1,9 @@
-import { Pool, PoolClient } from 'pg';
-import {
-  RelationalDataAdapter,
-  RelationalSelectQuery,
-  RelationalTransactionDataAdapter,
-} from '../adapter';
-import { RootFilter } from '../query';
-import { PostgresTransactionDataAdapter } from './postgres-transaction-data-adapter';
-import { PostgresSqlBuilder } from './postgres.sql-builder';
-import { ensureDatabaseExists } from './postgres.util';
-import { MigrationSchema } from '../schema/migration-schema';
+import {Pool, PoolClient} from 'pg';
+import {PostgresTransactionDataAdapter} from './postgres-transaction-data-adapter';
+import {PostgresSqlBuilder} from './postgres.sql-builder';
+import {ensureDatabaseExists} from './postgres.util';
+import {RelationalDataAdapter, RelationalSelectQuery, RelationalTransactionDataAdapter, RootFilter} from '@daita/core';
+import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
 
 export class PostgresDataAdapter implements RelationalDataAdapter {
   kind: 'dataAdapter' = 'dataAdapter';

@@ -9,13 +9,6 @@ steps:
   commands:
   - yarn install
 
-- name: build:core
-  image: node:12
-  depends_on: [install]
-  commands:
-    - cd packages/core
-    - yarn build
-
 - name: build:website
   image: node:12
   depends_on: [install]
@@ -23,11 +16,32 @@ steps:
     - cd packages/website
     - yarn build
 
+- name: build:core
+  image: node:12
+  depends_on: [install]
+  commands:
+    - cd packages/core
+    - yarn build
+
 - name: build:tslint
   image: node:12
   depends_on: [install]
   commands:
     - cd packages/tslint
+    - yarn build
+
+- name: build:pg
+  image: node:12
+  depends_on: [install, build:core]
+  commands:
+    - cd packages/pg
+    - yarn build
+
+- name: build:mongodb
+  image: node:12
+  depends_on: [install, build:core]
+  commands:
+    - cd packages/mongodb
     - yarn build
 
 - name: build:web

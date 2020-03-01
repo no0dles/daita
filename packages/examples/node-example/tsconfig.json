@@ -9,7 +9,7 @@
     "noImplicitThis": true,
     "lib": ["dom"],
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
-    "types" : ["chai", "@daita/core", "node"]
+    "types" : ["jest", "@daita/core", "node"]
   },
   "exclude": [
     "node_modules",

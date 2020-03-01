@@ -16,9 +16,7 @@
   },
   "devDependencies": {
     "@daita/cli": "^0.1.1-alpha.2",
-    "@types/chai": "^4.2.4",
     "@types/node": "^12.12.17",
-    "chai": "^4.2.0",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.4.1",
     "typescript": "~3.7.5",

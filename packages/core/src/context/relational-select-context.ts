@@ -1,8 +1,8 @@
-import { RelationalTransactionDataAdapter } from '../adapter';
-import { RootFilter } from '../query/root-filter';
-import { MigrationSchema } from '../schema/migration-schema';
-import { TableInformation } from './table-information';
-import { ExcludePrimitive } from './types/exclude-primitive';
+import {RelationalTransactionDataAdapter} from '../adapter';
+import {RootFilter} from '../query/root-filter';
+import {MigrationSchema} from '../schema/migration-schema';
+import {TableInformation} from './table-information';
+import {ExcludePrimitive} from './types/exclude-primitive';
 import {ContextUser} from '../auth';
 
 interface RelationalSelectState {
@@ -31,7 +31,7 @@ abstract class BaseRelationalSelectContext<T, C> {
       get: (obj: any, prop: any) => {
         //const table = this.schema.table(tableName);
         //const field = table?.field(prop);
-        return { path: [prop] };
+        return {path: [prop]};
       },
     };
 
@@ -61,7 +61,7 @@ abstract class BaseRelationalSelectContext<T, C> {
   where(filter: RootFilter<T>) {
     if (this.state.filter) {
       return this.newContext({
-        filter: { $and: [this.state.filter, filter] },
+        filter: {$and: [this.state.filter, filter]},
         limit: this.state.limit,
         include: this.state.include,
         skip: this.state.skip,
@@ -137,17 +137,28 @@ abstract class BaseRelationalSelectContext<T, C> {
 
   protected validatePermission() {
     const permissions = this.schema.tablePermissions(this.type.name);
-    for(const permission of permissions) {
-      if(!permission.select) {
+    for (const permission of permissions) {
+      if (permission.type === 'role') {
+        if (!this.user || this.user.roles.indexOf(permission.role) === -1) {
+          continue;
+        }
+      } else if (permission.type === 'authorized') {
+        if (!this.user) {
+          continue;
+        }
+      }
+
+      if (!permission.select) {
         continue
       }
 
-      if(permission.select === true) {
+      if (permission.select === true) {
         return true;
       }
-      if(permission.select.skip !== null && permission.select.skip !== undefined) {
-        if(typeof permission.select.skip === 'number') {
-          if(permission.select.skip !== this.state.skip) {
+
+      if (permission.select.skip !== null && permission.select.skip !== undefined) {
+        if (typeof permission.select.skip === 'number') {
+          if (permission.select.skip !== this.state.skip) {
             throw new Error(`not authorized, skip`); //TODO
           }
         } else {
@@ -157,7 +168,7 @@ abstract class BaseRelationalSelectContext<T, C> {
       //TODO
     }
 
-    //throw new Error('not authorized, no rule matches');
+    throw new Error('not authorized, no rule matches');
   }
 
   execCount(): Promise<number> {
@@ -180,7 +191,7 @@ abstract class BaseRelationalSelectContext<T, C> {
       limit: this.state.limit,
       skip: this.state.skip,
       orderBy: this.state.orderBy,
-      include: [...this.state.include, { path: selectorResult.path }],
+      include: [...this.state.include, {path: selectorResult.path}],
     });
   }
 
@@ -202,7 +213,7 @@ abstract class BaseRelationalSelectContext<T, C> {
         include: this.state.include,
         orderBy: [
           ...this.state.orderBy,
-          { path: selectorResult.path, direction: direction || 'asc' },
+          {path: selectorResult.path, direction: direction || 'asc'},
         ],
       },
       this.user,
@@ -212,9 +223,7 @@ abstract class BaseRelationalSelectContext<T, C> {
   protected abstract newContext(state: RelationalSelectState): C;
 }
 
-export class RelationalSelectContextOrdered<
-  T
-> extends BaseRelationalSelectContext<T, RelationalSelectContextOrdered<T>> {
+export class RelationalSelectContextOrdered<T> extends BaseRelationalSelectContext<T, RelationalSelectContextOrdered<T>> {
   orderThenBy(
     selector: (table: T) => any,
     direction?: 'asc' | 'desc',
@@ -233,10 +242,8 @@ export class RelationalSelectContextOrdered<
   }
 }
 
-export class RelationalSelectContext<T> extends BaseRelationalSelectContext<
-  T,
-  RelationalSelectContext<T>
-> {
+export class RelationalSelectContext<T> extends BaseRelationalSelectContext<T,
+  RelationalSelectContext<T>> {
   orderBy(
     selector: (table: T) => any,
     direction?: 'asc' | 'desc',

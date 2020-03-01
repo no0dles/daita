@@ -70,6 +70,23 @@ export function getMigrationSchema(migrationPath: MigrationDescription[]) {
           foreignKeys: step.foreignFieldNames,
           required: step.required,
         });
+      } else if (step.kind === 'add_table_permission') {
+        if (!permissionMap[step.table]) {
+          permissionMap[step.table] = [];
+        }
+        permissionMap[step.table].push(step.permission);
+      } else if (step.kind === 'drop_table_permission') {
+        const permissions = permissionMap[step.table];
+        for (let i = 0; permissions.length; i++) {
+          if (JSON.stringify(permissions[i]) === JSON.stringify(step.permission)) {
+            permissions.splice(i, 1);
+            break;
+          }
+        }
+      } else if (step.kind === 'drop_table_field') {
+        tableMap[step.table].drop(step.fieldName);
+      } else {
+        fail(step, `Unknown migration step ${step}`);
       }
     }
   }
@@ -79,4 +96,8 @@ export function getMigrationSchema(migrationPath: MigrationDescription[]) {
       ? migrationPath[migrationPath.length - 1].id
       : null;
   return new MigrationSchema(migrationId, collectionMap, tableMap, permissionMap);
+}
+
+function fail(value: never, message: string): never {
+  throw new Error(message);
 }

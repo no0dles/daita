@@ -1,10 +1,6 @@
-import {expect} from 'chai';
-import {
-  MigrationDescription,
-  MigrationExecution,
-} from '../migration';
 import {PostgresDataAdapter} from './postgres.data-adapter';
-import {getMigrationSchema} from '../schema/migration-schema-builder';
+import {MigrationDescription, MigrationExecution} from '@daita/core';
+import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
 
 function testMigrations(
   migrationBefore: MigrationDescription[],
@@ -18,7 +14,7 @@ function testMigrations(
     migrationSchema,
     new PostgresDataAdapter('postgres://localhost'),
   );
-  expect(sql).be.deep.equal(expectedSqls);
+  expect(sql).toEqual(expectedSqls);
 }
 
 describe('migration', () => {

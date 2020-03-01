@@ -1,5 +1,4 @@
 import {AstType} from '../../ast/ast-type';
-import {expect} from 'chai';
 import {parseRelationalType} from './parse-relational-type';
 import {DocumentCollectionSchemaCollectionFieldType} from '@daita/core';
 import {AstObjectValue} from '../../ast/ast-object-value';
@@ -11,7 +10,7 @@ function testCollectionPropertyType(
   result: DocumentCollectionSchemaCollectionFieldType,
 ) {
   const relationalType = parseRelationalType({type, initializer} as any);
-  expect(relationalType).to.be.eq(result);
+  expect(relationalType).toEqual(result);
 }
 
 describe('parse-relational-type', () => {
@@ -93,7 +92,7 @@ describe('parse-relational-type', () => {
         'string',
       );
     } catch (e) {
-      expect(e.message).to.be.eq('unsupported type')
+      expect(e.message).toEqual('unsupported type')
     }
   });
   it('should parse type number[]', () => {

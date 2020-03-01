@@ -12,6 +12,8 @@
   "dependencies": {
     "@daita/core": "^0.1.1-alpha.1",
     "@daita/web": "^0.1.1-alpha.1",
+    "@daita/pg": "^0.1.1-alpha.1",
+    "@daita/mognodb": "^0.1.1-alpha.1",
     "@oclif/config": "^1.14.0",
     "@oclif/plugin-help": "^2.2.3",
     "chokidar": "^3.3.1",

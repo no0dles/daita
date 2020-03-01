@@ -1,5 +1,4 @@
 import {MockAstContext} from './ast-context';
-import {expect} from 'chai';
 import {isNotNull} from '../test/utils';
 
 describe('ast-class-declaration', () => {
@@ -34,14 +33,14 @@ describe('ast-class-declaration', () => {
     isNotNull(sourceFile);
     const classDeclaration = sourceFile.getClassDeclaration('User');
     isNotNull(classDeclaration);
-    expect(classDeclaration.exported).to.be.eq(true);
+    expect(classDeclaration.exported).toEqual(true);
     const property = classDeclaration.getProperty('foo');
     isNotNull(property);
-    expect(property.name).to.be.eq('foo');
+    expect(property.name).toEqual('foo');
     isNotNull(property.type);
 
-    expect(property.type.kind).to.be.deep.eq('string');
-    expect(property.type.allowUndefined).to.be.eq(false);
+    expect(property.type.kind).toEqual('string');
+    expect(property.type.allowUndefined).toEqual(false);
   });
 
   it('should return extended properties', () => {
@@ -49,14 +48,14 @@ describe('ast-class-declaration', () => {
     isNotNull(sourceFile);
     const classDeclaration = sourceFile.getClassDeclaration('User');
     isNotNull(classDeclaration);
-    expect(classDeclaration.exported).to.be.eq(true);
+    expect(classDeclaration.exported).toEqual(true);
     const property = classDeclaration.getProperty('modifiedDate', {includedInherited: true});
     isNotNull(property);
-    expect(property.name).to.be.eq('modifiedDate');
+    expect(property.name).toEqual('modifiedDate');
     isNotNull(property.type);
 
-    expect(property.type.kind).to.be.deep.eq('reference');
-    expect(property.type.allowUndefined).to.be.eq(false);
+    expect(property.type.kind).toEqual('reference');
+    expect(property.type.allowUndefined).toEqual(false);
   });
 
   it('should not be exported', () => {
@@ -64,6 +63,6 @@ describe('ast-class-declaration', () => {
     isNotNull(sourceFile);
     const classDeclaration = sourceFile.getClassDeclaration('InternalCls');
     isNotNull(classDeclaration);
-    expect(classDeclaration.exported).to.be.eq(false);
+    expect(classDeclaration.exported).toEqual(false);
   })
 });

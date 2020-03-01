@@ -1,6 +1,6 @@
-import {PostgresDataAdapter} from '@daita/core/dist/postgres';
 import {Command} from '@oclif/command';
 import {RelationalDataAdapter} from '@daita/core';
+import {PostgresDataAdapter} from '@daita/pg';
 
 export interface DaitaContextConfig {
   type: string;

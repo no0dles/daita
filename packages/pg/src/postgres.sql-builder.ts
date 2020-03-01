@@ -1,5 +1,5 @@
-import { RelationalSqlBuilder } from '../adapter/relational-sql-builder';
-import { RelationalTableSchemaTableFieldType } from '../schema';
+import {RelationalSqlBuilder} from '@daita/core/dist/adapter/relational-sql-builder';
+import {RelationalTableSchemaTableFieldType} from '@daita/core';
 
 export class PostgresSqlBuilder implements RelationalSqlBuilder {
   getType(type: RelationalTableSchemaTableFieldType): string {

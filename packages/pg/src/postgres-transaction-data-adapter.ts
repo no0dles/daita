@@ -1,13 +1,9 @@
-import { PoolClient } from 'pg';
-import {
-  RelationalSelectQuery,
-  RelationalTransactionDataAdapter,
-} from '../adapter';
-import { RootFilter } from '../query';
-import { MigrationSchema } from '../schema/migration-schema';
-import { MigrationSchemaTable } from '../schema/migration-schema-table';
-import { RelationalTableSchemaTableReferenceKey } from '../schema/relational-table-schema-table-reference-key';
+import {PoolClient} from 'pg';
 import * as debug from 'debug';
+import {RelationalSelectQuery, RelationalTransactionDataAdapter, RootFilter} from '@daita/core';
+import {MigrationSchemaTable} from '@daita/core/dist/schema/migration-schema-table';
+import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
+import {RelationalTableSchemaTableReferenceKey} from '@daita/core/dist/schema/relational-table-schema-table-reference-key';
 
 export interface SelectSql {
   select: { tableAlias: string; field: string; alias: string }[];
@@ -20,12 +16,13 @@ export class PostgresTransactionDataAdapter
   implements RelationalTransactionDataAdapter {
   kind: 'transactionDataAdapter' = 'transactionDataAdapter';
 
-  constructor(private client: PoolClient) {}
+  constructor(private client: PoolClient) {
+  }
 
   private buildMapper(key: string) {
     const [alias, fieldName] = key.split('.');
     if (alias === 'base') {
-      return { set: (row: any, val: any) => (row[fieldName] = val) };
+      return {set: (row: any, val: any) => (row[fieldName] = val)};
     } else {
       const aliasPath = alias.substr('base_'.length).split('_');
       return {
@@ -99,7 +96,7 @@ export class PostgresTransactionDataAdapter
     }`.trim();
 
     const result = await this.runQuery(sql, values);
-    return { affectedRows: result.rowCount };
+    return {affectedRows: result.rowCount};
   }
 
   async insert(
@@ -209,7 +206,7 @@ export class PostgresTransactionDataAdapter
     const conditions = this.parseFilter(table, query.filter, values);
 
     const includedTables: { table: MigrationSchemaTable; alias: string }[] = [
-      { table, alias: 'base' },
+      {table, alias: 'base'},
     ];
 
     let sql = `FROM "${this.mapSourceTable(table)}" "base" ${
@@ -244,7 +241,7 @@ export class PostgresTransactionDataAdapter
         );
         baseAlias = `${baseAlias}_${pathPart}`;
         baseTable = foreignTable;
-        includedTables.push({ table: foreignTable, alias: baseAlias });
+        includedTables.push({table: foreignTable, alias: baseAlias});
       }
     }
 
@@ -305,7 +302,7 @@ export class PostgresTransactionDataAdapter
     )} ${conditions.length > 0 ? 'WHERE ' + conditions : ''}`;
 
     const result = await this.runQuery(sql, values);
-    return { affectedRows: result.rowCount };
+    return {affectedRows: result.rowCount};
   }
 
   async raw(

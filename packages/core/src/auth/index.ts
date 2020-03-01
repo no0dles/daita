@@ -1,8 +1,6 @@
-import {TableInformation} from '../context/table-information';
-
 export interface ContextUser {
   id: string;
-  username: string;
+  username: string | null;
   roles: string[]
   claims: string[];
 }

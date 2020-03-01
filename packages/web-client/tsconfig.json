@@ -12,7 +12,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
-    "types" : ["chai", "jest", "socket.io-client"]
+    "types" : ["jest", "socket.io-client"]
   },
   "exclude": [
     "node_modules",

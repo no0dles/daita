@@ -1,52 +1,53 @@
-import {expect} from 'chai';
-import {AdapterTest, setupAdapters} from '../test/test-utils';
-import {User} from '../test/user';
+import {RelationalDataAdapterFactory, SchemaTest} from '../test/test-utils';
+import {RelationalContext} from './relational-context';
+import {blogSchema} from '../test/schemas/blog/schema';
+import {blogAdminUser} from '../test/schemas/blog/users';
+import {User} from '../test/schemas/blog/models/user';
 
-export function relationalInsertContextTest(adapterTest: AdapterTest) {
-
+export function relationalInsertContextTest(adapterFactory: RelationalDataAdapterFactory) {
   describe('relational-insert-context', () => {
-    setupAdapters(adapterTest, {
-      cleanup: async (setup) => {
-        await setup.context.delete(User).exec();
-      },
+    let schema: SchemaTest;
+    let adminContext: RelationalContext;
+
+    beforeEach(async () => {
+      schema = new SchemaTest(blogSchema, adapterFactory);
+      adminContext = await schema.getContext({user: blogAdminUser});
+      await adminContext.migration().apply();
     });
 
-    it('should execute insert(User).value(id: a, name: foo, count: 2, admin: true)', async() => {
-      await testInsert(adapterTest, {id: 'a', name: 'foo', count: 2, admin: true});
+    afterEach(async () => {
+      await schema.close();
     });
 
-    it('should execute insert(User).value(id: a, name: foo, count: null, admin: true)', async() => {
-      await testInsert(adapterTest, {id: 'a', name: 'foo', count: null, admin: true});
+    it('should execute insert(User).value(id: a, name: foo, count: 2, admin: true)', async () => {
+      await testInsert({id: 'a', name: 'foo', count: 2, admin: true});
     });
 
-    it('should not execute insert(User).value(id: a, name: null, count: null, admin: false)', async() => {
-      await testFailInsert(adapterTest,
+    it('should execute insert(User).value(id: a, name: foo, count: null, admin: true)', async () => {
+      await testInsert({id: 'a', name: 'foo', count: null, admin: true});
+    });
+
+    it('should not execute insert(User).value(id: a, name: null, count: null, admin: false)', async () => {
+      await testFailInsert(
         {
           id: 'a',
           name: null,
           count: null,
           admin: false,
         },
-        Error,
         'name is required',
       );
     });
 
-    async function testInsert(adapterTest: AdapterTest, user: any) {
-      await adapterTest.context
+    async function testInsert(user: any) {
+      await adminContext
         .insert(User)
         .value(user)
         .exec();
     }
 
-    async function testFailInsert(adapterTest: AdapterTest, user: any, err: any, message: string) {
-      try {
-        await testInsert(adapterTest, user);
-        expect.fail('expecting error');
-      } catch (e) {
-        expect(e).to.be.instanceof(err);
-        expect(e.message).to.be.eq(message);
-      }
+    async function testFailInsert(user: any, message: string) {
+      await expect(testInsert(user)).rejects.toThrow(message);
     }
   });
 }

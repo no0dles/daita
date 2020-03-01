@@ -1,6 +1,8 @@
-import {expect} from 'chai';
-import {AdapterTest, setupAdapters} from '../test/test-utils';
-import {User} from '../test/user';
+import {RelationalDataAdapterFactory, SchemaTest} from '../test/test-utils';
+import {RelationalContext} from './relational-context';
+import {blogSchema} from '../test/schemas/blog/schema';
+import {blogAdminUser} from '../test/schemas/blog/users';
+import {User} from '../test/schemas/blog/models/user';
 
 const userA = {
   id: 'a',
@@ -23,58 +25,90 @@ function sleep(timeout: number) {
   });
 }
 
-export function relationalTransactionTest(adapterTest: AdapterTest) {
+export function relationalTransactionRemoteTest(adapterFactory: RelationalDataAdapterFactory) {
 
   describe('relational-transaction', () => {
-    setupAdapters(adapterTest,{
-      seed: async (setup) => {
-        await setup.context
-          .insert(User)
-          .value(userA)
-          .exec();
-        await setup.context
-          .insert(User)
-          .value(userB)
-          .exec();
-      },
-      cleanup: async (setup) => {
-        await setup.context.delete(User).exec();
-      },
+    let schema: SchemaTest;
+    let adminContext: RelationalContext;
+
+    beforeEach(async () => {
+      schema = new SchemaTest(blogSchema, adapterFactory);
+      adminContext = await schema.getContext({user: blogAdminUser});
+
+      await adminContext.migration().apply();
+      await adminContext
+        .insert(User)
+        .value(userA)
+        .exec();
+      await adminContext
+        .insert(User)
+        .value(userB)
+        .exec();
     });
 
-    if (adapterTest.isRemote) {
-      it('should timeout trx', async () => {
-        try {
-          await adapterTest.context
-            .transaction(async (trx) => {
-              await trx.delete(User)
-                .where({id: 'b'})
-                .exec();
+    afterEach(async () => {
+      await schema.close();
+    });
 
-              await sleep(1300);
-
-              throw new Error('should be canceled by timeout');
-            });
-        } catch (e) {
-          expect(e.message).to.be.eq('transaction timeout');
-        }
-
-        const afterUsers = await adapterTest.context.select(User).orderBy(u => u.id).exec();
-        expect(afterUsers).to.be.deep.eq([userA, userB]);
-      });
-    }
-
-    it('should not get mixed up with parallel calls outside of trx', async () => {
-      let promise: Promise<any> | null = null;
-
+    it('should timeout trx', async () => {
       try {
-        await adapterTest.context
+        await adminContext
           .transaction(async (trx) => {
             await trx.delete(User)
               .where({id: 'b'})
               .exec();
 
-            promise = adapterTest.context.delete(User)
+            await sleep(1300);
+
+            throw new Error('should be canceled by timeout');
+          });
+      } catch (e) {
+        expect(e.message).toEqual('transaction timeout');
+      }
+
+      const afterUsers = await adminContext.select(User).orderBy(u => u.id).exec();
+      expect(afterUsers).toEqual([userA, userB]);
+    });
+
+  });
+}
+
+export function relationalTransactionTest(adapterFactory: RelationalDataAdapterFactory) {
+
+  describe('relational-transaction', () => {
+    let schema: SchemaTest;
+    let adminContext: RelationalContext;
+
+    beforeEach(async () => {
+      schema = new SchemaTest(blogSchema, adapterFactory);
+      adminContext = await schema.getContext({user: blogAdminUser});
+
+      await adminContext.migration().apply();
+      await adminContext
+        .insert(User)
+        .value(userA)
+        .exec();
+      await adminContext
+        .insert(User)
+        .value(userB)
+        .exec();
+    });
+
+    afterEach(async () => {
+      await schema.close();
+    });
+
+    it('should not get mixed up with parallel calls outside of trx', async () => {
+      let promise: Promise<any> | null = null;
+
+      try {
+        await adminContext
+          .transaction(async (trx) => {
+            await trx.delete(User)
+              .where({id: 'b'})
+              .exec();
+
+            promise = adminContext.delete(User)
               .where({id: 'a'})
               .exec();
 
@@ -82,38 +116,38 @@ export function relationalTransactionTest(adapterTest: AdapterTest) {
           });
         throw new Error('should have been canceled');
       } catch (e) {
-        expect(e.message).to.be.eq('cancel');
+        expect(e.message).toEqual('cancel');
       }
 
       if (promise) {
         await promise;
       }
 
-      const afterUsers = await adapterTest.context.select(User).orderBy(u => u.id).exec();
-      expect(afterUsers).to.be.deep.eq([userB]);
+      const afterUsers = await adminContext.select(User).orderBy(u => u.id).exec();
+      expect(afterUsers).toEqual([userB]);
     });
 
     it('should not be visible outside of trx', async () => {
-      await adapterTest.context
+      await adminContext
         .transaction(async (trx) => {
           await trx.delete(User)
             .where({id: 'b'})
             .exec();
 
           const insideUsers = await trx.select(User).orderBy(u => u.id).exec();
-          expect(insideUsers).to.be.deep.eq([userA]);
+          expect(insideUsers).toEqual([userA]);
 
-          const outsideUsers = await adapterTest.context.select(User).orderBy(u => u.id).exec();
-          expect(outsideUsers).to.be.deep.eq([userA, userB]);
+          const outsideUsers = await adminContext.select(User).orderBy(u => u.id).exec();
+          expect(outsideUsers).toEqual([userA, userB]);
         });
 
-      const afterUsers = await adapterTest.context.select(User).orderBy(u => u.id).exec();
-      expect(afterUsers).to.be.deep.eq([userA]);
+      const afterUsers = await adminContext.select(User).orderBy(u => u.id).exec();
+      expect(afterUsers).toEqual([userA]);
     });
 
     it('should rollback trx', async () => {
       try {
-        await adapterTest.context
+        await adminContext
           .transaction(async (trx) => {
             await trx.delete(User)
               .where({id: 'b'})
@@ -121,23 +155,23 @@ export function relationalTransactionTest(adapterTest: AdapterTest) {
             throw new Error('custom err');
           });
       } catch (e) {
-        expect(e.message).to.be.eq('custom err');
+        expect(e.message).toEqual('custom err');
       }
 
-      const users = await adapterTest.context.select(User).orderBy(u => u.id).exec();
-      expect(users).to.be.deep.eq([userA, userB]);
+      const users = await adminContext.select(User).orderBy(u => u.id).exec();
+      expect(users).toEqual([userA, userB]);
     });
 
     it('should commit trx', async () => {
-      await adapterTest.context
+      await adminContext
         .transaction(async (trx) => {
           await trx.delete(User)
             .where({id: 'b'})
             .exec();
         });
 
-      const users = await adapterTest.context.select(User).orderBy(u => u.id).exec();
-      expect(users).to.be.deep.eq([userA]);
+      const users = await adminContext.select(User).orderBy(u => u.id).exec();
+      expect(users).toEqual([userA]);
     });
   });
 }

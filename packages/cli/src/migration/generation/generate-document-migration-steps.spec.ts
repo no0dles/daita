@@ -1,7 +1,6 @@
 import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
 import {DatabaseSchemaCollection} from '@daita/core/dist/schema/database-schema-collection';
 import {generateDocumentMigrationSteps} from './generate-document-migration-steps';
-import {assert} from "chai";
 
 describe('generate-document-migration-steps', () => {
   it('steps for empty schema', () => {
@@ -22,7 +21,7 @@ describe('generate-document-migration-steps', () => {
 
     const steps = generateDocumentMigrationSteps(oldSchema, newSchema);
 
-    assert.deepEqual(steps, [
+    expect(steps).toEqual([
       {kind: 'add_collection', collection: 'user'},
       {
         kind: 'add_collection_field',
@@ -50,6 +49,6 @@ describe('generate-document-migration-steps', () => {
       {},
     );
     const steps = generateDocumentMigrationSteps(schema, schema);
-    assert.deepEqual(steps, []);
+    expect(steps).toEqual([]);
   });
 });

@@ -1,47 +1,123 @@
-import {RelationalContext, RelationalDataAdapter} from '../index';
+import {RelationalDataAdapter, RelationalSchema} from '../index';
+import {ContextUser} from '../auth';
 
-export interface AdapterTest {
-  name: string;
-  context: RelationalContext;
-  dataAdapter: RelationalDataAdapter;
-  isRemote: boolean;
-
-  before(): Promise<any>;
-
-  after(): Promise<any>;
+export interface RelationalDataAdapterFactoryResult<T extends RelationalDataAdapter> {
+  dataAdapter: T,
+  close: () => Promise<void>;
 }
 
-export interface SetupAdapterOptions {
-  seed?: (testAdapter: AdapterTest) => Promise<any>;
-  cleanup?: (testAdapter: AdapterTest) => Promise<any>
-  seedOnce?: (testAdapter: AdapterTest) => Promise<any>;
-  cleanupOnce?: (testAdapter: AdapterTest) => Promise<any>
+export interface RelationalDataAdapterFactory<T extends RelationalDataAdapter = RelationalDataAdapter> {
+  create(schema: RelationalSchema): Promise<RelationalDataAdapterFactoryResult<T>>;
 }
 
-export function setupAdapters(adapterTest: AdapterTest, options: SetupAdapterOptions = {}) {
-  beforeAll(async () => {
-    await adapterTest.before();
-    if (options.seedOnce) {
-      await options.seedOnce(adapterTest);
-    }
-  });
+export class SchemaTest {
+  private dataAdapter: RelationalDataAdapter | null = null;
+  private result: RelationalDataAdapterFactoryResult<RelationalDataAdapter> | null = null;
 
-  beforeEach(async () => {
-    if (options.seed) {
-      await options.seed(adapterTest);
-    }
-  });
+  constructor(private schema: RelationalSchema,
+              private factory: RelationalDataAdapterFactory) {
+  }
 
-  afterEach(async () => {
-    if (options.cleanup) {
-      await options.cleanup(adapterTest);
+  async getDataAdapter() {
+    if (!this.dataAdapter) {
+      this.result = await this.factory.create(this.schema);
+      this.dataAdapter = this.result.dataAdapter;
     }
-  });
+    return this.dataAdapter;
+  }
 
-  afterAll(async () => {
-    await adapterTest.after();
-    if (options.cleanupOnce) {
-      await options.cleanupOnce(adapterTest);
+  async getContext(options?: { migrationId?: string, user?: ContextUser }) {
+    return this.schema.context(await this.getDataAdapter(), options);
+  }
+
+  async close() {
+    if (this.result) {
+      await this.result.close();
     }
-  });
+  }
 }
+
+// export class TestRunner {
+//   private environments: TestRunnerEnvironment[] = [];
+//
+//   newEnvironment(): TestRunnerEnvironment {
+//     const env = new TestRunnerEnvironment();
+//     this.environments.push(env);
+//     return env;
+//   }
+//
+//   async close(): Promise<any> {
+//     for (const env of this.environments) {
+//       await env.close();
+//     }
+//   }
+// }
+//
+// export class TestRunnerEnvironment {
+//   private readonly directory: string;
+//   private readonly astContext = new AstContext();
+//
+//   constructor(public relationalDataAdapter: RelationalDataAdapter) {
+//     this.directory = path.join(process.cwd(), 'tmp', Math.random().toString(36).substring(2, 15));
+//   }
+//
+//   addFile(file: string, content: string) {
+//     fs.writeFileSync(path.join(this.directory, file), content);
+//   }
+//
+//   removeFile(file: string) {
+//     fs.unlinkSync(path.join(this.directory, file));
+//   }
+//
+//   async getRelationalContext(options: { schema?: string, user?: ContextUser }) {
+//     const schemaLocation = await getSchemaLocation({
+//       schema: options ? options.schema : undefined,
+//       cwd: this.directory,
+//     }, null);
+//     const sourceFile = this.astContext.get(schemaLocation.fileName);
+//     if (!sourceFile) {
+//       throw new Error(`source file ${schemaLocation.fileName} not found`);
+//     }
+//
+//     const schemas = parseSchemas(sourceFile);
+//     if (schemas.length === 0) {
+//       throw new Error('schema not found');
+//     } else if (schemas.length > 1) {
+//       throw new Error('multiple schemas found');
+//     }
+//     const schemaInfo = new SchemaInformation(schemas[0]);
+//
+//     const migrationTree = schemaInfo.getMigrationTree();
+//     const schema = migrationTree.defaultSchema();
+//     if (!schema) {
+//       throw new Error('no default schema');
+//     }
+//
+//     return new RelationalContext(
+//       schema,
+//       migrationTree,
+//       this.relationalDataAdapter,
+//       options ? options.user : null,
+//     );
+//   }
+//
+//   runCommand(command: string, options: { timeout?: number }) {
+//     const ps = child_process.spawn(command, {cwd: this.directory, timeout: options ? options.timeout : undefined});
+//     const statusCodeDefer = new Defer<number>();
+//
+//     ps.on('close', (code) => {
+//       statusCodeDefer.resolve(code);
+//     });
+//
+//     return {
+//       statusCode: statusCodeDefer.promise,
+//       cancel: () => {
+//         ps.kill();
+//       },
+//     };
+//   }
+//
+//   close() {
+//
+//   }
+// }
