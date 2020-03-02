@@ -36,8 +36,9 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b tsconfig.build.json",
     "lint": "tslint src/**/*.ts",
+    "clean": "rm -rf ./dist",
     "prettier": "prettier 'src/**/*.ts' --write"
   },
   "types": "dist/index.d.ts"

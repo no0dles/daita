@@ -22,6 +22,7 @@
       "packages/tslint",
       "packages/web",
       "packages/pg",
+      "packages/mongodb",
       "packages/web-client",
       "packages/website"
     ]

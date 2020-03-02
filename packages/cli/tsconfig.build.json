@@ -1,0 +1,33 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "types": [
+      "node",
+      "jest",
+      "cli-ux"
+    ]
+  },
+  "references": [
+    {
+      "path": "../core/tsconfig.build.json"
+    },
+    {
+      "path": "../web/tsconfig.build.json"
+    },
+    {
+      "path": "../pg/tsconfig.build.json"
+    },
+    {
+      "path": "../mongodb/tsconfig.build.json"
+    }
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test",
+    "templates"
+  ]
+}

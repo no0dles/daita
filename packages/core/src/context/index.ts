@@ -1,4 +1,5 @@
 export { DocumentContext } from './document-context';
+export { Doc } from './types/document';
 export { DocumentCreateContext } from './document-create-context';
 export { DocumentFindContext } from './document-find-context';
 export { DocumentRemoveContext } from './document-remove-context';

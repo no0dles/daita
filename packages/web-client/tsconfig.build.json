@@ -1,0 +1,21 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "lib": ["dom", "es2016"],
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "types" : ["jest", "socket.io-client"]
+  },
+  "references": [{
+    "path": "../core/tsconfig.build.json"
+  }, {
+    "path": "../pg/tsconfig.build.json"
+  }, {
+    "path": "../web/tsconfig.build.json"
+  }],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

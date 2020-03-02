@@ -1,12 +1,6 @@
 {
-  "extends": "../../tsconfig.build.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
-    "types" : ["jest"]
-  },
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+    "types" : ["jest", "mongodb"]
+  }
 }

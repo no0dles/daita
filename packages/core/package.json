@@ -8,9 +8,10 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "test": "jest",
     "lint": "tslint src/**/*.ts",
+    "clean": "rm -rf ./dist",
     "prettier": "prettier 'src/**/*.ts' --write"
   },
   "author": "",

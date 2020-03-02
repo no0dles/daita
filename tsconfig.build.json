@@ -9,6 +9,9 @@
     "incremental": true,
     "sourceMap": true,
     "composite": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "removeComments": true

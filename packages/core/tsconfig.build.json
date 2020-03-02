@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.build.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "types" : ["jest", "node", "uuid"]
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test"
+  ]
+}

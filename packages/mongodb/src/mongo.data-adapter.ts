@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb';
 import * as uuid from 'uuid';
 import { MongoDataDocument } from './mongo-data-document';
-import {DocumentDataAdapter} from '@daita/core';
+import {DocumentDataAdapter, Doc} from '@daita/core';
 
 export class MongoDataAdapter implements DocumentDataAdapter {
   client: MongoClient;

@@ -1,22 +1,19 @@
-import { Configuration, Linter, Replacement } from "tslint";
+import {Configuration, Linter, Replacement} from 'tslint';
 import * as path from 'path';
 
-export const helper = ({ src, rule, fileName }: { src; rule; fileName? }) => {
-  const linter = new Linter({ fix: false });
+export const helper = ({src, rule, fileName}: { src: string; rule: string | { name: string, options: any }; fileName?: string }) => {
+  const linter = new Linter({fix: false});
   linter.lint(
-    fileName || "",
+    fileName || '',
     src,
     Configuration.parseConfigFile({
-      rules: {
-        [rule.name || rule]: [true, ...(rule.options ? rule.options : [])]
+      rules: typeof rule === 'string' ? {
+        [rule]: [true],
+      } : {
+        [rule.name]: [true, ...(rule.options ? rule.options : [])],
       },
-      rulesDirectory: path.join(__dirname, '..', "src/rules")
-    })
+      rulesDirectory: path.join(__dirname, '..', 'src/rules'),
+    }),
   );
   return linter.getResult();
-};
-
-export const getFixedResult = ({ src, rule }) => {
-  const result = helper({ src, rule });
-  return Replacement.applyFixes(src, [result.failures[0].getFix()]);
 };

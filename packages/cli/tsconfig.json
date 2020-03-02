@@ -1,16 +1,6 @@
 {
-  "extends": "../../tsconfig.build.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "declaration": true,
-    "importHelpers": true,
-    "module": "commonjs",
-    "outDir": "dist",
-    "rootDir": "src",
-    "strict": true,
-    "target": "es2017",
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
     "types" : ["node", "jest", "cli-ux"]
   },
   "exclude": [
