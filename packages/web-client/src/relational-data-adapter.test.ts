@@ -35,7 +35,8 @@ export class WebDataAdapterFactory<T extends RelationalDataAdapter> implements R
       },
     });
 
-    const clientTokenProvider = new PasswordGrantTokenProvider('http://localhost:8080/auth/realms/master/protocol/openid-connect/token', 'daita', 'admin', 'admin');
+    const keycloakUri = process.env.KEYCLOAK_URI || 'http://localhost:8080';
+    const clientTokenProvider = new PasswordGrantTokenProvider(`${keycloakUri}/auth/realms/master/protocol/openid-connect/token`, 'daita', 'admin', 'admin');
     const adminToken = await clientTokenProvider.getToken();
     if (!adminToken) {
       throw new Error('unable to get admin token');

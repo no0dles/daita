@@ -84,6 +84,7 @@ steps:
   depends_on: [install, build:core, build:cli, build:web, build:web-client]
   environment:
     POSTGRES_URI: postgres://postgres:postgres@postgres
+    KEYCLOAK_URI: http://keycloak
   commands:
     - yarn coverage
 
@@ -103,6 +104,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+  - name: keycloak
+    image: jboss/keycloak
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
 
 trigger:
   branch:
