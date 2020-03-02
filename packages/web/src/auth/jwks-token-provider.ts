@@ -1,5 +1,5 @@
 import * as JwksClient from 'jwks-rsa';
-import * as jwt from 'jsonwebtoken';
+import * as jws from 'jws';
 import {AccessToken, TokenProvider} from './token-provider';
 import {Defer} from '@daita/core';
 
@@ -14,25 +14,40 @@ export function jwksTokenProvider(options: AuthJwksProviderOptions): TokenProvid
     jwksUri: options.jwksUri,
   });
 
+  const keyDefer = new Defer<JwksClient.SigningKey[]>();
+  client.getSigningKeys((err, keys) => {
+    if (err) {
+      keyDefer.reject(err);
+    } else {
+      keyDefer.resolve(keys);
+    }
+  });
+
   return {
-    verify(token: string): Promise<AccessToken> {
+    async verify(token: string): Promise<AccessToken> {
       const defer = new Defer<AccessToken>();
-      client.getSigningKeys((err, keys) => {
-        if (err) {
-          defer.reject(err);
-        } else {
-          console.log(keys, token);
-          //todo use kid
-          jwt.verify(token, keys[0].getPublicKey(), {}, (verifyErr, decoded) => {
-            if (verifyErr) {
-              defer.reject(verifyErr);
-            } else {
-              defer.resolve(decoded as any);
-            }
-          });
-        }
-      });
+      const keys = await keyDefer.promise;
+
+      const payload = jws.decode(token);
+      let key: JwksClient.SigningKey | null = null;
+
+      if (payload.header.kid) {
+        key = keys.filter(k => k.kid === payload.header.kid)[0];
+      } else {
+        key = keys[0];
+      }
+
+      if (!key) {
+        throw new Error('no key found');
+      }
+
+      if (jws.verify(payload.signature, payload.header.alg, key.getPublicKey())) {
+        defer.resolve(payload.payload);
+      } else {
+        defer.reject(new Error('invalid signature'));
+      }
+
       return defer.promise;
     },
-  }
+  };
 }
