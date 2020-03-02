@@ -18,8 +18,9 @@ export class WebDataAdapterFactory<T extends RelationalDataAdapter> implements R
   async create(schema: RelationalSchema) {
     const backendResult = await this.relationalDataAdapterFactory.create(schema);
     const userProvider = new RelationalUserProvider(backendResult.dataAdapter);
+    const keycloakUri = (process.env.KEYCLOAK_URI || 'http://localhost') + ':8080';
     const tokenProvider = openIdTokenProvider({
-      uri: 'http://localhost:8080/auth/realms/master',
+      uri: `${keycloakUri}/auth/realms/master`,
       clientId: 'daita',
       clientSecret: '',
     });
@@ -35,7 +36,6 @@ export class WebDataAdapterFactory<T extends RelationalDataAdapter> implements R
       },
     });
 
-    const keycloakUri = process.env.KEYCLOAK_URI || 'http://localhost:8080';
     const clientTokenProvider = new PasswordGrantTokenProvider(`${keycloakUri}/auth/realms/master/protocol/openid-connect/token`, 'daita', 'admin', 'admin');
     const adminToken = await clientTokenProvider.getToken();
     if (!adminToken) {
