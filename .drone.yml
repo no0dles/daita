@@ -85,6 +85,7 @@ steps:
   environment:
     POSTGRES_URI: postgres://postgres:postgres@postgres
     KEYCLOAK_URI: http://keycloak
+    CI: true
   commands:
     - yarn coverage
 
