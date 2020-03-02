@@ -10,15 +10,15 @@ export interface RelationalDataAdapterFactory<T extends RelationalDataAdapter = 
   create(schema: RelationalSchema): Promise<RelationalDataAdapterFactoryResult<T>>;
 }
 
-export class SchemaTest {
-  private dataAdapter: RelationalDataAdapter | null = null;
-  private result: RelationalDataAdapterFactoryResult<RelationalDataAdapter> | null = null;
+export class SchemaTest<TAdapter extends RelationalDataAdapter> {
+  private dataAdapter: TAdapter | null = null;
+  private result: RelationalDataAdapterFactoryResult<TAdapter> | null = null;
 
   constructor(private schema: RelationalSchema,
-              private factory: RelationalDataAdapterFactory) {
+              private factory: RelationalDataAdapterFactory<TAdapter>) {
   }
 
-  async getDataAdapter() {
+  async getDataAdapter(): Promise<TAdapter> {
     if (!this.dataAdapter) {
       this.result = await this.factory.create(this.schema);
       this.dataAdapter = this.result.dataAdapter;

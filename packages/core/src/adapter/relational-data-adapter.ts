@@ -1,11 +1,9 @@
-import { RelationalSqlBuilder } from './relational-sql-builder';
-import { RelationalTransactionDataAdapter } from './relational-transaction-data-adapter';
 import { MigrationSchema } from '../schema/migration-schema';
 import { RootFilter } from '../query';
 import { RelationalSelectQuery } from './relational-select-query';
+import {RelationalAdapter} from './relational-adapter';
 
-export interface RelationalDataAdapter {
-  kind: 'dataAdapter';
+export interface RelationalDataAdapter extends RelationalAdapter {
   insert(schema: MigrationSchema, table: string, data: any[]): Promise<void>;
   update(
     schema: MigrationSchema,
@@ -29,8 +27,4 @@ export interface RelationalDataAdapter {
     query: RelationalSelectQuery,
   ): Promise<number>;
   raw(sql: string, values: any[]): Promise<{ rowCount: number; rows: any[] }>;
-  transaction(
-    action: (adapter: RelationalTransactionDataAdapter) => Promise<any>,
-  ): Promise<void>;
-  sqlBuilder: RelationalSqlBuilder;
 }

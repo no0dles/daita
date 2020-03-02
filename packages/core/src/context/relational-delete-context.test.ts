@@ -1,8 +1,5 @@
-import {RelationalDataAdapterFactory, SchemaTest} from '../test/test-utils';
-import {RelationalContext} from './relational-context';
-import {blogSchema} from '../test/schemas/blog/schema';
-import {blogAdminUser} from '../test/schemas/blog/users';
 import {User} from '../test/schemas/blog/models/user';
+import {RelationalDataContext} from './relational-data-context';
 
 const userA = {
   id: 'a',
@@ -19,36 +16,28 @@ const userB = {
   parentId: 'a',
 };
 
-export function relationalDeleteContextTest(adapterFactory: RelationalDataAdapterFactory) {
+export function relationalDeleteContextTest(ctx: {adminContext: RelationalDataContext}) {
   describe('relational-delete-context', () => {
-    let schema: SchemaTest;
-    let adminContext: RelationalContext;
 
     beforeEach(async () => {
-      schema = new SchemaTest(blogSchema, adapterFactory);
-      adminContext = await schema.getContext({user: blogAdminUser});
-      await adminContext.migration().apply();
-      await adminContext
+      await ctx.adminContext.delete(User).exec();
+      await ctx.adminContext
         .insert(User)
         .value(userA)
         .exec();
-      await adminContext
+      await ctx.adminContext
         .insert(User)
         .value(userB)
         .exec();
     });
 
-    afterEach(async () => {
-      await schema.close();
-    });
-
-    it('should execute delete(User).where(id: b)', async() => {
-      const result = await adminContext
+    it('should execute delete(User).where(id: b)', async () => {
+      const result = await ctx.adminContext
         .delete(User)
         .where({id: 'b'})
         .exec();
       expect(result).toEqual({affectedRows: 1});
-      const serverUsers = await adminContext.select(User).exec();
+      const serverUsers = await ctx.adminContext.select(User).exec();
       expect(serverUsers).toEqual([userA]);
     });
   });

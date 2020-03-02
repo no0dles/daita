@@ -1,4 +1,4 @@
-import {RelationalTransactionDataAdapter} from '../adapter';
+import {RelationalDataAdapter, RelationalTransactionAdapter} from '../adapter';
 import {RootFilter} from '../query/root-filter';
 import {MigrationSchema} from '../schema/migration-schema';
 import {TableInformation} from './table-information';
@@ -17,7 +17,7 @@ abstract class BaseRelationalSelectContext<T, C> {
   protected shouldMapResult: boolean;
 
   constructor(
-    protected dataAdapter: RelationalTransactionDataAdapter,
+    protected dataAdapter: RelationalDataAdapter,
     protected schema: MigrationSchema,
     protected type: TableInformation<T>,
     protected state: RelationalSelectState,

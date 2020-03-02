@@ -29,7 +29,7 @@ export function jwksTokenProvider(options: AuthJwksProviderOptions): TokenProvid
             } else {
               defer.resolve(decoded as any);
             }
-          })
+          });
         }
       });
       return defer.promise;

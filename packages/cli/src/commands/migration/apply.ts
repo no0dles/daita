@@ -43,11 +43,11 @@ export default class Apply extends Command {
     }
 
     const context = new RelationalContext(
+      dataAdapter,
       currentSchema,
       migrationTree,
-      dataAdapter,
       null,
     );
-    await context.migration().apply();
+    await context.applyMigrations();
   }
 }

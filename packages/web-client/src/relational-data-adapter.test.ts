@@ -1,31 +1,62 @@
 import {RelationalDataAdapterFactory} from '@daita/core/dist/test/test-utils';
 import {Defer, RelationalDataAdapter, RelationalSchema} from '@daita/core';
-import {createSocketApp} from '@daita/web/dist/socket';
-import * as http from "http";
-import * as express from 'express';
-import {ApiRelationalDataAdapter} from './api-relational-data-adapter';
-import {SocketRelationalDataAdapter} from './socket-relational-data-adapter';
+import {RelationalMigrationAdapter} from '@daita/core/dist/adapter/relational-migration-adapter';
+import {SocketRelationalAdapter} from './socket/socket-relational-adapter';
+import {ApiRelationalAdapter} from './api/api-relational-adapter';
+import {openIdTokenProvider} from '@daita/web/dist/auth/openid-token-provider';
+import {RelationalUserProvider} from '@daita/web/dist/auth/relational-user-provider';
+import {PasswordGrantTokenProvider} from './auth/password-grant-token-provider';
+import {getApp} from '@daita/web';
+import {AuthProvider} from './auth/auth-provider';
 
 
 export class WebDataAdapterFactory<T extends RelationalDataAdapter> implements RelationalDataAdapterFactory<T> {
-  constructor(private relationalDataAdapterFactory: RelationalDataAdapterFactory, private webAdapterFactory: (port: number) => T) {
+  constructor(private relationalDataAdapterFactory: RelationalDataAdapterFactory<RelationalMigrationAdapter>,
+              private webAdapterFactory: (port: number, auth: AuthProvider) => T) {
   }
 
   async create(schema: RelationalSchema) {
     const backendResult = await this.relationalDataAdapterFactory.create(schema);
-    const server = createSocketApp(new http.Server(express()), {
+    const userProvider = new RelationalUserProvider(backendResult.dataAdapter);
+    const tokenProvider = openIdTokenProvider({
+      uri: 'http://localhost:8080/auth/realms/master',
+      clientId: 'daita',
+      clientSecret: '',
+    });
+
+    const server = getApp({
       type: 'schema',
       dataAdapter: backendResult.dataAdapter,
       schema: schema,
       transactionTimeout: 1000,
+      auth: {
+        tokenProvider,
+        userProvider,
+      },
     });
+
+    const clientTokenProvider = new PasswordGrantTokenProvider('http://localhost:8080/auth/realms/master/protocol/openid-connect/token', 'daita', 'admin', 'admin');
+    const adminToken = await clientTokenProvider.getToken();
+    if (!adminToken) {
+      throw new Error('unable to get admin token');
+    }
+    const adminPayload = await tokenProvider.verify(adminToken);
+    const adminUser = await userProvider.get(adminPayload);
+    console.log(adminUser);
+    await userProvider.addRole('provider');
+    await userProvider.addUserRole(adminUser.id, 'provider');
+
+    if (backendResult.dataAdapter.isKind('migration')) {
+      const backendContext = schema.context(backendResult.dataAdapter as RelationalMigrationAdapter);
+      await backendContext.applyMigrations();
+    }
 
     const port = 3000 + Math.round(Math.random() * 1000);
     const defer = new Defer();
-    server.listen(port, defer.resolve);
+    server.listen(port, () => defer.resolve());
     await defer.promise;
 
-    const dataAdapter = this.webAdapterFactory(port);
+    const dataAdapter = this.webAdapterFactory(port, clientTokenProvider);
 
     return {
       dataAdapter,
@@ -36,18 +67,20 @@ export class WebDataAdapterFactory<T extends RelationalDataAdapter> implements R
 
         await backendResult.close();
       },
-    }
+    };
   }
 }
 
-export class SocketDataAdapterFactory extends WebDataAdapterFactory<SocketRelationalDataAdapter> {
-  constructor(relationalDataAdapterFactory: RelationalDataAdapterFactory) {
-    super(relationalDataAdapterFactory, port => new SocketRelationalDataAdapter(`http://localhost:${port}`));
+export class SocketDataAdapterFactory extends WebDataAdapterFactory<SocketRelationalAdapter> {
+  constructor(relationalDataAdapterFactory: RelationalDataAdapterFactory<RelationalMigrationAdapter>) {
+    super(relationalDataAdapterFactory, port => new SocketRelationalAdapter(`http://localhost:${port}`));
   }
 }
 
-export class ApiDataAdapterFactory extends WebDataAdapterFactory<ApiRelationalDataAdapter> {
-  constructor(relationalDataAdapterFactory: RelationalDataAdapterFactory) {
-    super(relationalDataAdapterFactory, port => new ApiRelationalDataAdapter(`http://localhost:${port}`));
+export class ApiDataAdapterFactory extends WebDataAdapterFactory<ApiRelationalAdapter> {
+  constructor(relationalDataAdapterFactory: RelationalDataAdapterFactory<RelationalMigrationAdapter>) {
+    super(relationalDataAdapterFactory, (port, auth) => new ApiRelationalAdapter(`http://localhost:${port}`, {
+      auth: auth,
+    }));
   }
 }

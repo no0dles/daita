@@ -1,4 +1,4 @@
-import { RelationalTransactionDataAdapter } from '../adapter';
+import {RelationalDataAdapter, RelationalTransactionAdapter} from '../adapter';
 import { RootFilter } from '../query/root-filter';
 import { MigrationSchema } from '../schema/migration-schema';
 import { TableInformation } from './table-information';
@@ -6,7 +6,7 @@ import {ContextUser} from '../auth';
 
 export class RelationalDeleteContext<T> {
   constructor(
-    private dataAdapter: RelationalTransactionDataAdapter,
+    private dataAdapter: RelationalDataAdapter,
     private schema: MigrationSchema,
     private type: TableInformation<T>,
     private filter: RootFilter<T> | null,

@@ -1,6 +1,6 @@
 import {PoolClient} from 'pg';
 import * as debug from 'debug';
-import {RelationalSelectQuery, RelationalTransactionDataAdapter, RootFilter} from '@daita/core';
+import {RelationalDataAdapter, RelationalSelectQuery, RootFilter} from '@daita/core';
 import {MigrationSchemaTable} from '@daita/core/dist/schema/migration-schema-table';
 import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
 import {RelationalTableSchemaTableReferenceKey} from '@daita/core/dist/schema/relational-table-schema-table-reference-key';
@@ -12,11 +12,14 @@ export interface SelectSql {
   orderBy: { tableAlias: string; field: string; direction: string }[];
 }
 
-export class PostgresTransactionDataAdapter
-  implements RelationalTransactionDataAdapter {
-  kind: 'transactionDataAdapter' = 'transactionDataAdapter';
+export class PostgresDataAdapter
+  implements RelationalDataAdapter {
 
   constructor(private client: PoolClient) {
+  }
+
+  isKind(kind: 'data' | 'migration' | 'transaction'): boolean {
+    return kind === 'data';
   }
 
   private buildMapper(key: string) {
@@ -90,7 +93,9 @@ export class PostgresTransactionDataAdapter
   ): Promise<{ affectedRows: number }> {
     const table = this.getSchemaTable(schema, tableName);
     const values: any[] = [];
-    const conditions = this.parseFilter(table, filter, values);
+    const conditions = this.parseFilter(schema, '', table, filter, values, tbl => {
+      throw new Error('can not use joins');
+    });
     const sql = `DELETE FROM "${this.mapSourceTable(table)}" ${
       conditions.length > 0 ? 'WHERE ' + conditions : ''
     }`.trim();
@@ -162,7 +167,9 @@ export class PostgresTransactionDataAdapter
   ): Promise<number> {
     const table = this.getSchemaTable(schema, tableName);
     const values: any[] = [];
-    const conditions = this.parseFilter(table, query.filter, values);
+    const conditions = this.parseFilter(schema, '', table, query.filter, values, tbl => {
+      throw new Error('can not use joins');
+    });
 
     const sql = `SELECT count(*) count FROM "${this.mapSourceTable(table)}" ${
       conditions.length > 0 ? 'WHERE ' + conditions : ''
@@ -203,11 +210,16 @@ export class PostgresTransactionDataAdapter
     const table = this.getSchemaTable(schema, tableName);
     const fields: string[] = [];
     const values: any[] = [];
-    const conditions = this.parseFilter(table, query.filter, values);
-
     const includedTables: { table: MigrationSchemaTable; alias: string }[] = [
       {table, alias: 'base'},
     ];
+
+    const conditions = this.parseFilter(schema, 'base', table, query.filter, values, tbl => {
+      //TODO implement for more than 1 level
+      includedTables.push({table: tbl, alias: tbl.name});
+      return tbl.name;
+    });
+
 
     let sql = `FROM "${this.mapSourceTable(table)}" "base" ${
       conditions.length > 0 ? 'WHERE ' + conditions : ''
@@ -296,7 +308,9 @@ export class PostgresTransactionDataAdapter
       values.push(data[key]);
       fields.push(`"${this.getSourceField(table, key)}" = $${values.length}`);
     }
-    const conditions = this.parseFilter(table, filter, values);
+    const conditions = this.parseFilter(schema, '', table, filter, values, tbl => {
+      throw new Error('can not use joins');
+    });
     const sql = `UPDATE "${this.mapSourceTable(table)}" SET ${fields.join(
       ', ',
     )} ${conditions.length > 0 ? 'WHERE ' + conditions : ''}`;
@@ -316,23 +330,23 @@ export class PostgresTransactionDataAdapter
     };
   }
 
-  private parseFilter(table: MigrationSchemaTable, filter: any, values: any[]) {
+  private parseFilter(schema: MigrationSchema, alias: string, table: MigrationSchemaTable, filter: any, values: any[], includeFn: (table: MigrationSchemaTable) => string) {
     if (filter === null) {
       return '';
     }
 
     if (filter.$and) {
       return `(${filter.$and
-        .map((and: any) => this.parseFilter(table, and, values))
+        .map((and: any) => this.parseFilter(schema, alias, table, and, values, includeFn))
         .join(' AND ')})`;
     } else if (filter.$or) {
       return `(${filter.$or
-        .map((or: any) => this.parseFilter(table, or, values))
+        .map((or: any) => this.parseFilter(schema, alias, table, or, values, includeFn))
         .join(' OR ')})`;
     } else {
       const conditions: string[] = [];
-      for (const key of Object.keys(filter)) {
-        const value = filter[key];
+      for (const filterKey of Object.keys(filter)) {
+        const value = filter[filterKey];
         if (
           value instanceof Date ||
           typeof value === 'number' ||
@@ -341,68 +355,77 @@ export class PostgresTransactionDataAdapter
         ) {
           values.push(value);
           conditions.push(
-            `"${this.getSourceField(table, key)}" = $${values.length}`,
+            `"${this.getSourceField(table, filterKey)}" = $${values.length}`,
           );
         } else if (typeof value === 'object') {
-          if (value.$eq) {
-            values.push(value.$eq);
-            conditions.push(
-              `"${this.getSourceField(table, key)}" = $${values.length}`,
-            );
-          } else if (value.$like) {
-            values.push(value.$like);
-            conditions.push(
-              `"${this.getSourceField(table, key)}" like $${values.length}`,
-            );
-          } else if (value.$in) {
-            const params = [];
-            for (const inValue of value.$in) {
-              values.push(inValue);
-              params.push(`$${values.length}`);
-            }
+          for (const key of Object.keys(value)) {
+            const objectValue = value[key];
+            if (key === '$eq') {
+              values.push(objectValue);
+              conditions.push(
+                `"${this.getSourceField(table, key)}" = $${values.length}`,
+              );
+            } else if (key === '$like') {
+              values.push(objectValue);
+              conditions.push(
+                `"${this.getSourceField(table, key)}" like $${values.length}`,
+              );
+            } else if (key === '$in') {
+              const params = [];
+              for (const inValue of objectValue) {
+                values.push(inValue);
+                params.push(`$${values.length}`);
+              }
 
-            conditions.push(
-              `"${this.getSourceField(table, key)}" in (${params.join(', ')})`,
-            );
-          } else if (value.$nin) {
-            const params = [];
-            for (const inValue of value.$nin) {
-              values.push(inValue);
-              params.push(`$${values.length}`);
-            }
+              conditions.push(
+                `"${this.getSourceField(table, key)}" in (${params.join(', ')})`,
+              );
+            } else if (key === '$nin') {
+              const params = [];
+              for (const inValue of objectValue) {
+                values.push(inValue);
+                params.push(`$${values.length}`);
+              }
 
-            conditions.push(
-              `"${this.getSourceField(table, key)}" not in (${params.join(
-                ', ',
-              )})`,
-            );
-          } else if (value.$ne) {
-            values.push(value.$ne);
-            conditions.push(
-              `"${this.getSourceField(table, key)}" != $${values.length}`,
-            );
-          } else if (value.$lt) {
-            values.push(value.$lt);
-            conditions.push(
-              `"${this.getSourceField(table, key)}" < $${values.length}`,
-            );
-          } else if (value.$lte) {
-            values.push(value.$lte);
-            conditions.push(
-              `"${this.getSourceField(table, key)}" <= $${values.length}`,
-            );
-          } else if (value.$gt) {
-            values.push(value.$gt);
-            conditions.push(
-              `"${this.getSourceField(table, key)}" > $${values.length}`,
-            );
-          } else if (value.$gte) {
-            values.push(value.$gte);
-            conditions.push(
-              `"${this.getSourceField(table, key)}" >= $${values.length}`,
-            );
-          } else {
-            throw new Error(`unknown filter ${JSON.stringify(value)}`);
+              conditions.push(
+                `"${this.getSourceField(table, key)}" not in (${params.join(
+                  ', ',
+                )})`,
+              );
+            } else if (key === '$ne') {
+              values.push(objectValue);
+              conditions.push(
+                `"${this.getSourceField(table, key)}" != $${values.length}`,
+              );
+            } else if (key === '$lt') {
+              values.push(objectValue);
+              conditions.push(
+                `"${this.getSourceField(table, key)}" < $${values.length}`,
+              );
+            } else if (key === '$lte') {
+              values.push(objectValue);
+              conditions.push(
+                `"${this.getSourceField(table, key)}" <= $${values.length}`,
+              );
+            } else if (key === '$gt') {
+              values.push(objectValue);
+              conditions.push(
+                `"${this.getSourceField(table, key)}" > $${values.length}`,
+              );
+            } else if (key === '$gte') {
+              values.push(objectValue);
+              conditions.push(
+                `"${this.getSourceField(table, key)}" >= $${values.length}`,
+              );
+            } else {
+              const foreignKey = table.foreignKeys.filter(fk => fk.name === filterKey)[0];
+              if (!foreignKey) {
+                throw new Error(`unknown filter ${key}`);
+              }
+              const foreignTable = this.getSchemaTable(schema, foreignKey.table);
+              const alias = includeFn(foreignTable);
+              conditions.push(...this.parseFilter(schema, alias, foreignTable, value, values, includeFn));
+            }
           }
         }
       }

@@ -1,13 +1,12 @@
 import {Pool} from 'pg';
-import {PostgresDataAdapter} from './postgres.data-adapter';
-import {dropDatabase} from './postgres.util';
+import {PostgresAdapter} from './postgres.adapter';
 import {MigrationDescription} from '@daita/core';
 import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
 import {MigrationSchemaTable} from '@daita/core/dist/schema/migration-schema-table';
 import {MigrationSchemaTableField} from '@daita/core/dist/schema/migration-schema-table-field';
-import {RelationalDataAdapterFactory} from '@daita/core/dist/test/test-utils';
 import {relationalDataAdapterTest} from '@daita/core/dist/adapter/relational-data-adapter.test';
 import {relationalContextTest} from '@daita/core/dist/context/relational-context.test';
+import {PostgresDataAdapterFactory} from './postgres-data-adapter-factory.test';
 
 class MockedPool {
   private expectedQuery: string = '';
@@ -73,27 +72,10 @@ class MockedSchema extends MigrationSchema {
   }
 }
 
-export class PostgresDataAdapterFactory implements RelationalDataAdapterFactory<PostgresDataAdapter> {
-  async create() {
-    const connectionString = (process.env.POSTGRES_URI || 'postgres://postgres:postgres@localhost') + '/test-' + Math.random().toString(36).substring(2, 15);
-    await dropDatabase(connectionString);
-
-    const dataAdapter = new PostgresDataAdapter(connectionString);
-    return {
-      close: async() => {
-        await dataAdapter.close();
-        await dropDatabase(connectionString);
-      },
-      dataAdapter,
-    }
-  }
-}
-
-
 describe('postgres.data-adapter', () => {
 
-  relationalDataAdapterTest(new PostgresDataAdapterFactory());
-  relationalContextTest(new PostgresDataAdapterFactory());
+  relationalDataAdapterTest(new PostgresDataAdapterFactory('test-pg'), {remote: false});
+  relationalContextTest(new PostgresDataAdapterFactory('test-pg2'));
 
   const mockedPool = new MockedPool();
   const mockedSchema = new MockedSchema();
@@ -104,7 +86,7 @@ describe('postgres.data-adapter', () => {
       ['foo'],
       {rows: [{'base.name': 'foo'}]},
     );
-    const adapter = new PostgresDataAdapter(mockedPool.pool());
+    const adapter = new PostgresAdapter(mockedPool.pool());
     const result = await adapter.select(mockedSchema, 'author', {
       filter: {name: 'foo'},
       orderBy: [],
@@ -119,7 +101,7 @@ describe('postgres.data-adapter', () => {
     mockedPool.expect('SELECT "base"."name_init" "base.name", "base"."test_init" "base.test" FROM "author_init" "base"', [], {
       rows: [{'base.name': 'foo'}],
     });
-    const adapter = new PostgresDataAdapter(mockedPool.pool());
+    const adapter = new PostgresAdapter(mockedPool.pool());
     const result = await adapter.select(mockedSchema, 'author', {
       filter: null,
       orderBy: [],
@@ -136,7 +118,7 @@ describe('postgres.data-adapter', () => {
       ['foo'],
       {rowCount: 1},
     );
-    const adapter = new PostgresDataAdapter(mockedPool.pool());
+    const adapter = new PostgresAdapter(mockedPool.pool());
     const result = await adapter.delete(mockedSchema, 'author', {
       name: 'foo',
     });
@@ -149,7 +131,7 @@ describe('postgres.data-adapter', () => {
       ['foo'],
       {rowCount: 1},
     );
-    const adapter = new PostgresDataAdapter(mockedPool.pool());
+    const adapter = new PostgresAdapter(mockedPool.pool());
     const result = await adapter.delete(mockedSchema, 'author', {
       name: {$eq: 'foo'},
     });
@@ -162,7 +144,7 @@ describe('postgres.data-adapter', () => {
       ['bar', 'foo'],
       {rowCount: 1},
     );
-    const adapter = new PostgresDataAdapter(mockedPool.pool());
+    const adapter = new PostgresAdapter(mockedPool.pool());
     const result = await adapter.update(
       mockedSchema,
       'author',
@@ -182,7 +164,7 @@ describe('postgres.data-adapter', () => {
       ['bar', 'foo'],
       {rowCount: 1},
     );
-    const adapter = new PostgresDataAdapter(mockedPool.pool());
+    const adapter = new PostgresAdapter(mockedPool.pool());
     const result = await adapter.insert(mockedSchema, 'author', [
       {name: 'bar'},
       {name: 'foo'},
@@ -195,7 +177,7 @@ describe('postgres.data-adapter', () => {
       ['bar', null, null, 'foo'],
       {rowCount: 1},
     );
-    const adapter = new PostgresDataAdapter(mockedPool.pool());
+    const adapter = new PostgresAdapter(mockedPool.pool());
     const result = await adapter.insert(mockedSchema, 'author', [
       {name: 'bar'},
       {test: 'foo'},

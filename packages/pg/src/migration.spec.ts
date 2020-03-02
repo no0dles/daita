@@ -1,4 +1,4 @@
-import {PostgresDataAdapter} from './postgres.data-adapter';
+import {PostgresAdapter} from './postgres.adapter';
 import {MigrationDescription, MigrationExecution} from '@daita/core';
 import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
 
@@ -12,7 +12,7 @@ function testMigrations(
   const sql = exec.plan(
     migration,
     migrationSchema,
-    new PostgresDataAdapter('postgres://localhost'),
+    new PostgresAdapter('postgres://localhost'),
   );
   expect(sql).toEqual(expectedSqls);
 }

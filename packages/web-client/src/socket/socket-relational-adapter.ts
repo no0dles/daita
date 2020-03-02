@@ -1,19 +1,14 @@
 import {
-  Defer, RelationalDataAdapter,
-  RelationalTransactionDataAdapter,
+  Defer, RelationalDataAdapter, RelationalTransactionAdapter,
 } from '@daita/core';
 import * as client from 'socket.io-client';
-import {RelationalSqlBuilder} from '@daita/core/dist/adapter/relational-sql-builder';
-import {BaseSocketDataAdapter} from './base-socket-data-adapter';
-import {SocketRelationalTransactionDataAdapter} from './socket-relational-transaction-data-adapter';
 import * as debug from 'debug';
+import {SocketRelationalDataAdapter} from './socket-relational-data-adapter';
 
-export class SocketRelationalDataAdapter extends BaseSocketDataAdapter
-  implements RelationalDataAdapter {
+export class SocketRelationalAdapter extends SocketRelationalDataAdapter
+  implements RelationalTransactionAdapter {
 
   private transactions: { [key: string]: Defer<void> } = {};
-
-  kind: 'dataAdapter' = 'dataAdapter';
 
   constructor(baseUrl: string) {
     super({}, client.connect(baseUrl), {});
@@ -40,15 +35,15 @@ export class SocketRelationalDataAdapter extends BaseSocketDataAdapter
     });
   }
 
-  get sqlBuilder(): RelationalSqlBuilder {
-    throw new Error('not implemented');
+  isKind(kind: 'data' | 'migration' | 'transaction'): boolean {
+    return kind === 'data' || kind === 'transaction';
   }
 
   close() {
     this.socket.close();
   }
 
-  async transaction(action: (adapter: RelationalTransactionDataAdapter) => Promise<any>): Promise<void> {
+  async transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
     const tid = this.idGenerator.next();
     await this.emit('beginTrx', {
       tid,
@@ -56,7 +51,7 @@ export class SocketRelationalDataAdapter extends BaseSocketDataAdapter
     try {
       const timeoutDefer = new Defer<void>();
       this.transactions[tid] = timeoutDefer;
-      const execution = action(new SocketRelationalTransactionDataAdapter(tid, this.defers, this.socket));
+      const execution = action(new SocketRelationalDataAdapter(this.defers, this.socket, {tid: tid}));
       await Promise.race([execution, timeoutDefer.promise]);
       if (timeoutDefer.isRejected) {
         throw timeoutDefer.rejectedError;
@@ -64,6 +59,7 @@ export class SocketRelationalDataAdapter extends BaseSocketDataAdapter
       await this.emit('commitTrx', {
         tid,
       });
+      return execution;
     } catch (e) {
       debug('daita:socket:adapter')(e.message);
       if (e.message === 'transaction timeout') {

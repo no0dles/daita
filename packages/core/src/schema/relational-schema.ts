@@ -1,22 +1,22 @@
 import {MigrationDescription, MigrationTree} from '../migration';
 import {Constructable, DefaultConstructable} from '../constructable';
 import {SchemaTableOptions} from './schema-table-options';
-import {RelationalDataAdapter, RelationalTransactionDataAdapter} from '../adapter';
-import {ContextUser} from '../auth';
+import {RelationalDataAdapter, RelationalTransactionAdapter} from '../adapter';
 import {RelationalContext, RelationalTransactionContext} from '../context';
-import {MigrationSchema} from './migration-schema';
-import {RelationalSchemaConstants, TableRule} from './schema';
 import {PermissionBuilder} from '../permission';
+import {RelationalSchemaOptions} from './relational-schema-options';
+import {RelationalSchemaContextOptions} from '../context/relational-schema-context-options';
+import {RelationalMigrationAdapter} from '../adapter/relational-migration-adapter';
+import {RelationalDataContext} from '../context/relational-data-context';
+import {RelationalMigrationContext} from '../context/relational-migration-context';
 
 export class RelationalSchema {
   private migrationTree = new MigrationTree();
   private tables: Constructable<any>[] = [];
   private permissions = new PermissionBuilder();
 
-  constants: RelationalSchemaConstants = {
-    username: {kind: 'username'},
-    now: {kind: 'now'},
-  };
+  constructor(private options?: RelationalSchemaOptions) {
+  }
 
   table<T extends { id: any }>(model: DefaultConstructable<T>): void;
   table<T>(
@@ -34,45 +34,32 @@ export class RelationalSchema {
     this.migrationTree.add(migration);
   }
 
-  rule<T>(model: DefaultConstructable<T>, condition: TableRule<T>) {
-
-  }
+  // rule<T>(model: DefaultConstructable<T>, condition: TableRule<T>) {
+  //
+  // }
 
   permission(permissionBuilder: PermissionBuilder) {
     this.permissions.extend(permissionBuilder);
   }
 
-  include(name: string, schema: RelationalSchema) {
-
-  }
-
   context(
-    dataAdapter: RelationalDataAdapter,
-    options?: { migrationId?: string, user?: ContextUser },
-  ): RelationalContext;
+    dataAdapter: RelationalMigrationAdapter,
+    options?: RelationalSchemaContextOptions,
+  ): RelationalMigrationContext;
   context(
-    dataAdapter: RelationalTransactionDataAdapter,
-    options?: { migrationId?: string, user?: ContextUser },
+    dataAdapter: RelationalTransactionAdapter,
+    options?: RelationalSchemaContextOptions,
   ): RelationalTransactionContext;
   context(
-    dataAdapter: RelationalDataAdapter | RelationalTransactionDataAdapter,
-    options?: { migrationId?: string, user?: ContextUser },
-  ): RelationalContext | RelationalTransactionContext {
+    dataAdapter: RelationalDataAdapter,
+    options?: RelationalSchemaContextOptions,
+  ): RelationalDataContext;
+  context(
+    dataAdapter: RelationalDataAdapter | RelationalTransactionAdapter | RelationalMigrationAdapter,
+    options?: RelationalSchemaContextOptions,
+  ): RelationalDataContext | RelationalTransactionContext | RelationalMigrationContext {
     const user = (options ? options.user : null) || null;
     const schema = this.migrationTree.defaultSchema(options ? options.migrationId : undefined);
-    return this.getContext(schema, this.migrationTree, dataAdapter, user);
-  }
-
-  private getContext(
-    schema: MigrationSchema,
-    migrationTree: MigrationTree,
-    dataAdapter: RelationalDataAdapter | RelationalTransactionDataAdapter,
-    user: ContextUser | null,
-  ) {
-    if (dataAdapter.kind === 'dataAdapter') {
-      return new RelationalContext(schema, migrationTree, dataAdapter, user);
-    } else {
-      return new RelationalTransactionContext(schema, dataAdapter, user);
-    }
+    return new RelationalContext(dataAdapter, schema, this.migrationTree, user);
   }
 }

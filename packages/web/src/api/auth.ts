@@ -12,21 +12,20 @@ declare global {
 }
 
 export function authMiddleware(options: { tokenProvider: TokenProvider, userProvider: UserProvider }): express.RequestHandler {
-  return (req, res, next) => {
+  return async (req, res, next) => {
     const authorization = req.header('authorization');
     if (!authorization || !authorization.startsWith('Bearer ')) {
       return next();
     }
-
-    const token = authorization.substr('Bearer '.length);
-    options.tokenProvider.verify(token)
-      .then(tokenPayload => options.userProvider.get(tokenPayload))
-      .then(user => {
-        req.user = user;
-        next();
-      })
-      .catch(err => {
-        next(err);
-      });
+    try {
+      const token = authorization.substr('Bearer '.length);
+      const tokenPayload = await options.tokenProvider.verify(token);
+      const user = await options.userProvider.get(tokenPayload);
+      console.log(user);
+      req.user = user;
+      next();
+    } catch (e) {
+      next(e);
+    }
   };
 }

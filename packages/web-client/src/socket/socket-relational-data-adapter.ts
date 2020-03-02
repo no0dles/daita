@@ -1,15 +1,19 @@
-import {AndRootFilter, Defer, OrRootFilter, RelationalSelectQuery} from '@daita/core';
+import {AndRootFilter, Defer, OrRootFilter, RelationalDataAdapter, RelationalSelectQuery} from '@daita/core';
 import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
 import * as debug from 'debug';
-import {IdGenerator} from './id-generator';
+import {IdGenerator} from '../id-generator';
 
-export class BaseSocketDataAdapter {
+export class SocketRelationalDataAdapter implements RelationalDataAdapter {
   protected idGenerator: IdGenerator;
 
   constructor(protected defers: { [key: string]: Defer<any> },
               protected socket: any,
               private globalEmitValue: any) {
     this.idGenerator = new IdGenerator();
+  }
+
+  isKind(kind: 'data' | 'migration' | 'transaction'): boolean {
+    return kind === 'data';
   }
 
   protected emit<T>(event: string, data: T) {

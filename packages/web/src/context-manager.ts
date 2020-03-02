@@ -2,19 +2,17 @@ import {
   Debouncer,
   Defer, MigrationTree,
   RelationalContext,
-  RelationalDataAdapter,
-  RelationalTransactionContext,
-  RelationalTransactionDataAdapter,
+  RelationalDataAdapter, RelationalTransactionAdapter,
 } from '@daita/core';
 import {
-  AppMigrationTreeOptions,
   AppOptions,
 } from './app-options';
 import * as debug from 'debug';
 import {ContextUser} from '@daita/core/dist/auth';
+import {RelationalMigrationAdapter} from '@daita/core/dist/adapter/relational-migration-adapter';
 
 interface ContextTransaction {
-  adapter: RelationalTransactionDataAdapter;
+  adapter: RelationalDataAdapter | RelationalTransactionAdapter | RelationalMigrationAdapter;
   commitDefer: Defer<void>;
   resultDefer: Defer<void>;
   debouncer: Debouncer;
@@ -55,7 +53,7 @@ export class ContextManager {
 
   getDataAdapter(
     transactionId?: string,
-  ): RelationalTransactionDataAdapter | RelationalDataAdapter {
+  ): RelationalTransactionAdapter | RelationalDataAdapter | RelationalMigrationAdapter {
     if (transactionId) {
       const transaction = this.transactions[transactionId];
       if (transaction) {
@@ -69,11 +67,17 @@ export class ContextManager {
   }
 
   async beginTransaction(transactionId: string, user: ContextUser | null) {
-    const transactionDefer = new Defer<RelationalTransactionDataAdapter>();
+    const transactionDefer = new Defer<RelationalDataAdapter>();
     const commitDefer = new Defer<void>();
     const resultDefer = new Defer<void>();
 
-    this.appOptions.dataAdapter
+    if(!this.appOptions.dataAdapter.isKind('transaction')) {
+      throw new Error('transaction not supported by the data adapter');
+    }
+
+    const transactionAdapter = this.appOptions.dataAdapter as RelationalTransactionAdapter;
+
+    transactionAdapter
       .transaction(async adapter => {
         transactionDefer.resolve(adapter);
         await commitDefer.promise;
@@ -144,21 +148,11 @@ export class ContextManager {
     const schema = this.migrationTree.defaultSchema(options.migrationId);
     const user = (options.user ? options.user : null) || null;
     const dataAdapter = this.getDataAdapter(options.transactionId);
-    if (dataAdapter.kind === 'dataAdapter') {
-      return new RelationalContext(
-        schema,
-        this.migrationTree,
-        dataAdapter,
-        user,
-      );
-    } else {
-      return new RelationalTransactionContext(
-        schema,
-        dataAdapter,
-        user,
-      );
-    }
-
-    throw new Error('Could not create context');
+    return new RelationalContext(
+      dataAdapter,
+      schema,
+      this.migrationTree,
+      user,
+    );
   }
 }

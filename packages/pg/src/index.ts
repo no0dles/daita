@@ -1,1 +1,1 @@
-export { PostgresDataAdapter } from './postgres.data-adapter';
+export { PostgresAdapter } from './postgres.adapter';

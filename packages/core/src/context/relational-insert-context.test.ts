@@ -1,22 +1,11 @@
-import {RelationalDataAdapterFactory, SchemaTest} from '../test/test-utils';
-import {RelationalContext} from './relational-context';
-import {blogSchema} from '../test/schemas/blog/schema';
-import {blogAdminUser} from '../test/schemas/blog/users';
 import {User} from '../test/schemas/blog/models/user';
+import {RelationalDataContext} from './relational-data-context';
 
-export function relationalInsertContextTest(adapterFactory: RelationalDataAdapterFactory) {
+export function relationalInsertContextTest(ctx: {adminContext: RelationalDataContext}) {
   describe('relational-insert-context', () => {
-    let schema: SchemaTest;
-    let adminContext: RelationalContext;
 
     beforeEach(async () => {
-      schema = new SchemaTest(blogSchema, adapterFactory);
-      adminContext = await schema.getContext({user: blogAdminUser});
-      await adminContext.migration().apply();
-    });
-
-    afterEach(async () => {
-      await schema.close();
+      await ctx.adminContext.delete(User).exec()
     });
 
     it('should execute insert(User).value(id: a, name: foo, count: 2, admin: true)', async () => {
@@ -40,7 +29,7 @@ export function relationalInsertContextTest(adapterFactory: RelationalDataAdapte
     });
 
     async function testInsert(user: any) {
-      await adminContext
+      await ctx.adminContext
         .insert(User)
         .value(user)
         .exec();

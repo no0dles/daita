@@ -9,7 +9,7 @@ import {MigrationSchemaTableField} from './migration-schema-table-field';
 export function getMigrationSchema(migrationPath: MigrationDescription[]) {
   const collectionMap: { [key: string]: MigrationSchemaCollection } = {};
   const tableMap: { [key: string]: MigrationSchemaTable } = {};
-  const permissionMap: { [key: string]: Permission<any>[] } = {}; //TODO
+  const permissionMap: { [key: string]: Permission<any>[] } = {};
 
   for (const migration of migrationPath) {
     for (const step of migration.steps) {

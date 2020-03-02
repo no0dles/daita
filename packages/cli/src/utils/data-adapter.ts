@@ -1,6 +1,6 @@
 import {Command} from '@oclif/command';
 import {RelationalDataAdapter} from '@daita/core';
-import {PostgresDataAdapter} from '@daita/pg';
+import {PostgresAdapter} from '@daita/pg';
 
 export interface DaitaContextConfig {
   type: string;
@@ -27,13 +27,13 @@ export function getRelationalDataAdapter(
   const contextConfig = config.get(`daita.context.${contextName}`) as DaitaContextConfig;
   if (contextConfig.type === 'pg') {
     if (process.env.POSTGRES_URI) {
-      return new PostgresDataAdapter(process.env.POSTGRES_URI);
+      return new PostgresAdapter(process.env.POSTGRES_URI);
     }
 
     if (contextConfig.uri) {
-      return new PostgresDataAdapter(contextConfig.uri);
+      return new PostgresAdapter(contextConfig.uri);
     } else {
-      return new PostgresDataAdapter(
+      return new PostgresAdapter(
         `postgres://${contextConfig.user}:${contextConfig.password}@${
           contextConfig.host
         }:${contextConfig.port || 5432}/${contextConfig.database}`,

@@ -1,4 +1,4 @@
-import { RelationalTransactionDataAdapter } from '../adapter';
+import {RelationalDataAdapter, RelationalTransactionAdapter} from '../adapter';
 import { MigrationSchema } from '../schema/migration-schema';
 import { ExcludeNonPrimitive } from './types/exclude-non-primitive';
 import { TableInformation } from './table-information';
@@ -9,7 +9,7 @@ export class RelationalInsertContext<T> {
   private table: MigrationSchemaTable;
 
   constructor(
-    private dataAdapter: RelationalTransactionDataAdapter,
+    private dataAdapter: RelationalDataAdapter,
     private schema: MigrationSchema,
     private type: TableInformation<T>,
     private rows: any[],

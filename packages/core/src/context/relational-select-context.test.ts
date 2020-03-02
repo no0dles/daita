@@ -1,11 +1,5 @@
-import {
-  RelationalDataAdapterFactory,
-  SchemaTest,
-} from '../test/test-utils';
-import {RelationalContext} from './relational-context';
 import {User} from '../test/schemas/blog/models/user';
-import {blogSchema} from '../test/schemas/blog/schema';
-import {blogAdminUser, blogViewUser} from '../test/schemas/blog/users';
+import {RelationalDataContext} from './relational-data-context';
 
 const userA = {
   id: 'a',
@@ -22,50 +16,38 @@ const userB = {
   parentId: 'a',
 };
 
-export function relationalSelectContext(adapterFactory: RelationalDataAdapterFactory) {
+export function relationalSelectContext(ctx: {adminContext: RelationalDataContext, viewerContext: RelationalDataContext}) {
 
   describe('relational-select-context', () => {
-    let schema: SchemaTest;
-    let adminContext: RelationalContext;
-    let viewerContext: RelationalContext;
-
     beforeAll(async () => {
-      schema = new SchemaTest(blogSchema, adapterFactory);
-      adminContext = await schema.getContext({user: blogAdminUser});
-      viewerContext = await schema.getContext({user: blogViewUser});
-
-      await adminContext.migration().apply();
-      await adminContext
+      await ctx.adminContext.delete(User).exec();
+      await ctx.adminContext
         .insert(User)
         .value(userA)
         .exec();
-      await adminContext
+      await ctx.adminContext
         .insert(User)
         .value(userB)
         .exec();
     });
 
-    afterAll(async() => {
-      await schema.close();
-    });
-
     it('should execute select(User)', async () => {
-      const users = await adminContext.select(User).exec();
+      const users = await ctx.adminContext.select(User).exec();
       expect(users).toEqual([userA, userB]);
     });
 
     it('should not execute select(User) without permission', async () => {
-      await expect(viewerContext.select(User).exec()).rejects.toThrow('');
+      await expect(ctx.viewerContext.select(User).exec()).rejects.toThrow('');
     });
 
     it('should execute first select(User)', async () => {
-      const user = await adminContext.select(User).execFirst();
+      const user = await ctx.adminContext.select(User).execFirst();
       expect(user).toBeInstanceOf(User);
       expect(user).toEqual(userA);
     });
 
     it('should execute select(User).where({name: foo})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({name: 'foo'})
         .exec();
@@ -73,7 +55,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({$or: [{name: foo}, {name: bar}])', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({$or: [{name: 'foo'}, {name: 'bar'}]})
         .exec();
@@ -81,7 +63,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({$and: [{name: foo}, {name: bar}])', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({$and: [{name: 'foo'}, {name: 'bar'}]})
         .exec();
@@ -89,7 +71,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({name: {$eq: foo}})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({name: {$eq: 'foo'}})
         .exec();
@@ -97,7 +79,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({name: {$like: fo%}})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({name: {$like: 'fo%'}})
         .exec();
@@ -105,7 +87,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({count: {$gt: 2}})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({count: {$gt: 2}})
         .exec();
@@ -113,7 +95,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({count: {$gte: 2}})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({count: {$gte: 2}})
         .exec();
@@ -121,7 +103,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({count: 2}).where({count: 14})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({count: 2})
         .where({count: 14})
@@ -130,7 +112,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).skip(1)', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .skip(1)
         .orderBy(u => u.name)
@@ -139,7 +121,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({count: 99}).execFirst()', async () => {
-      const user = await adminContext
+      const user = await ctx.adminContext
         .select(User)
         .where({count: 99})
         .execFirst();
@@ -147,7 +129,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({count: {$lt: 2}})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({count: {$lt: 2}})
         .exec();
@@ -155,7 +137,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({count: {$lte: 2}})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({count: {$lte: 2}})
         .exec();
@@ -163,7 +145,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({name: {$in: [foo, bar]}})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({name: {$in: ['foo', 'bar']}})
         .exec();
@@ -171,7 +153,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({name: {$nin: [foo, bar]}})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({name: {$nin: ['foo', 'bar']}})
         .exec();
@@ -179,7 +161,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).where({name: {$ne: foo}})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .where({name: {$ne: 'foo'}})
         .exec();
@@ -187,13 +169,13 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute count(User)', async () => {
-      const count = await adminContext.select(User).execCount();
+      const count = await ctx.adminContext.select(User).execCount();
       expect(count).toEqual(2);
     });
 
 
     it('should execute select(User)', async () => {
-      const result = await adminContext
+      const result = await ctx.adminContext
         .select(User)
         .where({count: 14})
         .execCount();
@@ -212,7 +194,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     // }));
 
     it('should execute select(User).orderBy(name).orderThenBy(count)', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .orderBy(u => u.name)
         .orderThenBy(u => u.count)
@@ -221,7 +203,7 @@ export function relationalSelectContext(adapterFactory: RelationalDataAdapterFac
     });
 
     it('should execute select(User).orderBy(name).orderThenBy(count).where({name: foobar})', async () => {
-      const users = await adminContext
+      const users = await ctx.adminContext
         .select(User)
         .orderBy(u => u.name)
         .orderThenBy(u => u.count)

@@ -1,11 +1,11 @@
 import { MigrationDescription } from './migration-description';
 import { MigrationSchema } from '../schema/migration-schema';
-import { RelationalDataAdapter } from '../adapter';
 import { Table } from './migration';
 import * as debug from 'debug';
+import {RelationalMigrationAdapter} from '../adapter/relational-migration-adapter';
 
 export class MigrationExecution {
-  async init(dataAdapter: RelationalDataAdapter) {
+  async init(dataAdapter: RelationalMigrationAdapter) {
     await dataAdapter.raw(
       `CREATE SCHEMA IF NOT EXISTS "daita";`,
       [],
@@ -16,7 +16,7 @@ export class MigrationExecution {
     );
   }
 
-  async exists(id: string, dataAdapter: RelationalDataAdapter) {
+  async exists(id: string, dataAdapter: RelationalMigrationAdapter) {
     const result = await dataAdapter.raw(
       'SELECT "id" FROM "daita"."migrations" WHERE "id" = $1 LIMIT 1',
       [id],
@@ -27,7 +27,7 @@ export class MigrationExecution {
   plan(
     migration: MigrationDescription,
     schema: MigrationSchema,
-    dataAdapter: RelationalDataAdapter,
+    dataAdapter: RelationalMigrationAdapter,
   ): string[] {
     const sqls: string[] = [];
     const tables: { [key: string]: Table } = {};
@@ -163,7 +163,7 @@ export class MigrationExecution {
   async apply(
     migration: MigrationDescription,
     schema: MigrationSchema,
-    dataAdapter: RelationalDataAdapter,
+    dataAdapter: RelationalMigrationAdapter,
   ) {
     const sqls = this.plan(migration, schema, dataAdapter);
 

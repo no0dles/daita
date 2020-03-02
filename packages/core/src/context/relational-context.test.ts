@@ -2,11 +2,12 @@ import {MigrationDescription} from '../migration';
 import {RelationalSchema} from '../schema';
 import {RelationalDataAdapter} from '../adapter';
 import {RelationalDataAdapterFactory, RelationalDataAdapterFactoryResult} from '../test/test-utils';
+import {RelationalMigrationAdapter} from '../adapter/relational-migration-adapter';
 
-export function relationalContextTest(adapterFactory: RelationalDataAdapterFactory) {
+export function relationalContextTest(adapterFactory: RelationalDataAdapterFactory<RelationalMigrationAdapter>) {
   describe('relational-context', () => {
     let result: RelationalDataAdapterFactoryResult<any>;
-    let dataAdapter: RelationalDataAdapter;
+    let dataAdapter: RelationalMigrationAdapter;
 
     beforeEach(async () => {
       result = await adapterFactory.create(new RelationalSchema());
@@ -189,7 +190,7 @@ export function relationalContextTest(adapterFactory: RelationalDataAdapterFacto
 }
 
 async function applyMigrations(
-  dataAdapter: RelationalDataAdapter,
+  dataAdapter: RelationalMigrationAdapter,
   migrations: MigrationDescription[],
 ) {
   const schema = new RelationalSchema();
@@ -197,7 +198,7 @@ async function applyMigrations(
     schema.migration(migration);
   }
   const context = schema.context(dataAdapter);
-  await context.migration().apply();
+  await context.applyMigrations();
 }
 
 async function getTables(dataAdapter: RelationalDataAdapter, schema: string) {

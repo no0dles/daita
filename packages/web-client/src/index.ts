@@ -1,2 +1,2 @@
-export { ApiRelationalDataAdapter } from './api-relational-data-adapter';
-export { SocketRelationalDataAdapter } from './socket-relational-data-adapter';
+export { ApiRelationalAdapter } from './api/api-relational-adapter';
+export { SocketRelationalAdapter } from './socket/socket-relational-adapter';

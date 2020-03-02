@@ -1,8 +1,6 @@
-import {RelationalDataAdapterFactory, SchemaTest} from '../test/test-utils';
-import {RelationalContext} from './relational-context';
-import {blogSchema} from '../test/schemas/blog/schema';
-import {blogAdminUser} from '../test/schemas/blog/users';
 import {User} from '../test/schemas/blog/models/user';
+import {RelationalTransactionContext} from './relational-transaction-context';
+import {RelationalDataContext} from './relational-data-context';
 
 const userA = {
   id: 'a',
@@ -25,34 +23,24 @@ function sleep(timeout: number) {
   });
 }
 
-export function relationalTransactionRemoteTest(adapterFactory: RelationalDataAdapterFactory) {
+export function relationalTransactionRemoteTest(ctx: {adminContext: RelationalTransactionContext}) {
 
   describe('relational-transaction', () => {
-    let schema: SchemaTest;
-    let adminContext: RelationalContext;
-
     beforeEach(async () => {
-      schema = new SchemaTest(blogSchema, adapterFactory);
-      adminContext = await schema.getContext({user: blogAdminUser});
-
-      await adminContext.migration().apply();
-      await adminContext
+      await ctx.adminContext.delete(User).exec();
+      await ctx.adminContext
         .insert(User)
         .value(userA)
         .exec();
-      await adminContext
+      await ctx.adminContext
         .insert(User)
         .value(userB)
         .exec();
     });
 
-    afterEach(async () => {
-      await schema.close();
-    });
-
     it('should timeout trx', async () => {
       try {
-        await adminContext
+        await ctx.adminContext
           .transaction(async (trx) => {
             await trx.delete(User)
               .where({id: 'b'})
@@ -66,49 +54,38 @@ export function relationalTransactionRemoteTest(adapterFactory: RelationalDataAd
         expect(e.message).toEqual('transaction timeout');
       }
 
-      const afterUsers = await adminContext.select(User).orderBy(u => u.id).exec();
+      const afterUsers = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
       expect(afterUsers).toEqual([userA, userB]);
     });
-
   });
 }
 
-export function relationalTransactionTest(adapterFactory: RelationalDataAdapterFactory) {
+export function relationalTransactionTest(ctx: {adminContext: RelationalTransactionContext}) {
 
   describe('relational-transaction', () => {
-    let schema: SchemaTest;
-    let adminContext: RelationalContext;
-
     beforeEach(async () => {
-      schema = new SchemaTest(blogSchema, adapterFactory);
-      adminContext = await schema.getContext({user: blogAdminUser});
-
-      await adminContext.migration().apply();
-      await adminContext
+      await ctx.adminContext.delete(User).exec();
+      await ctx.adminContext
         .insert(User)
         .value(userA)
         .exec();
-      await adminContext
+      await ctx.adminContext
         .insert(User)
         .value(userB)
         .exec();
-    });
-
-    afterEach(async () => {
-      await schema.close();
     });
 
     it('should not get mixed up with parallel calls outside of trx', async () => {
       let promise: Promise<any> | null = null;
 
       try {
-        await adminContext
+        await ctx.adminContext
           .transaction(async (trx) => {
             await trx.delete(User)
               .where({id: 'b'})
               .exec();
 
-            promise = adminContext.delete(User)
+            promise = ctx.adminContext.delete(User)
               .where({id: 'a'})
               .exec();
 
@@ -123,12 +100,12 @@ export function relationalTransactionTest(adapterFactory: RelationalDataAdapterF
         await promise;
       }
 
-      const afterUsers = await adminContext.select(User).orderBy(u => u.id).exec();
+      const afterUsers = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
       expect(afterUsers).toEqual([userB]);
     });
 
     it('should not be visible outside of trx', async () => {
-      await adminContext
+      await ctx.adminContext
         .transaction(async (trx) => {
           await trx.delete(User)
             .where({id: 'b'})
@@ -137,17 +114,17 @@ export function relationalTransactionTest(adapterFactory: RelationalDataAdapterF
           const insideUsers = await trx.select(User).orderBy(u => u.id).exec();
           expect(insideUsers).toEqual([userA]);
 
-          const outsideUsers = await adminContext.select(User).orderBy(u => u.id).exec();
+          const outsideUsers = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
           expect(outsideUsers).toEqual([userA, userB]);
         });
 
-      const afterUsers = await adminContext.select(User).orderBy(u => u.id).exec();
+      const afterUsers = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
       expect(afterUsers).toEqual([userA]);
     });
 
     it('should rollback trx', async () => {
       try {
-        await adminContext
+        await ctx.adminContext
           .transaction(async (trx) => {
             await trx.delete(User)
               .where({id: 'b'})
@@ -158,19 +135,19 @@ export function relationalTransactionTest(adapterFactory: RelationalDataAdapterF
         expect(e.message).toEqual('custom err');
       }
 
-      const users = await adminContext.select(User).orderBy(u => u.id).exec();
+      const users = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
       expect(users).toEqual([userA, userB]);
     });
 
     it('should commit trx', async () => {
-      await adminContext
+      await ctx.adminContext
         .transaction(async (trx) => {
           await trx.delete(User)
             .where({id: 'b'})
             .exec();
         });
 
-      const users = await adminContext.select(User).orderBy(u => u.id).exec();
+      const users = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
       expect(users).toEqual([userA]);
     });
   });

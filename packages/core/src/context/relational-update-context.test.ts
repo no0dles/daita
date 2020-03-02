@@ -1,8 +1,5 @@
-import {RelationalDataAdapterFactory, SchemaTest} from '../test/test-utils';
-import {RelationalContext} from './relational-context';
-import {blogSchema} from '../test/schemas/blog/schema';
-import {blogAdminUser} from '../test/schemas/blog/users';
 import {User} from '../test/schemas/blog/models/user';
+import {RelationalDataContext} from './relational-data-context';
 
 const userA = {
   id: 'a',
@@ -19,38 +16,28 @@ const userB = {
   parentId: 'a',
 };
 
-export function relationalUpdateContextTest(adapterFactory: RelationalDataAdapterFactory) {
+export function relationalUpdateContextTest(ctx: {adminContext: RelationalDataContext}) {
   describe('relational-update-context', () => {
-    let schema: SchemaTest;
-    let adminContext: RelationalContext;
-
     beforeEach(async () => {
-      schema = new SchemaTest(blogSchema, adapterFactory);
-      adminContext = await schema.getContext({user: blogAdminUser});
-
-      await adminContext.migration().apply();
-      await adminContext
+      await ctx.adminContext.delete(User).exec();
+      await ctx.adminContext
         .insert(User)
         .value(userA)
         .exec();
-      await adminContext
+      await ctx.adminContext
         .insert(User)
         .value(userB)
         .exec();
     });
 
-    afterEach(async () => {
-      await schema.close();
-    });
-
     it('should update(User).set(name: bar).where(id: a)', async () => {
-      const result = await adminContext
+      const result = await ctx.adminContext
         .update(User)
         .set({name: 'bar'})
         .where({id: 'a'})
         .exec();
       expect(result).toEqual({affectedRows: 1});
-      const serverUsers = await adminContext
+      const serverUsers = await ctx.adminContext
         .select(User)
         .orderBy(s => s.id)
         .exec();

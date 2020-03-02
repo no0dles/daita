@@ -81,12 +81,12 @@ export default class Serve extends Command {
       const migrationTree = schemaInfo.getMigrationTree();
       const schema = migrationTree.defaultSchema();
       const context = new RelationalContext(
+        dataAdapter,
         schema,
         migrationTree,
-        dataAdapter,
         null,
       );
-      await context.migration().apply();
+      await context.applyMigrations();
       const userProvider = {
         get: async (token: AccessToken) => {
           throw new Error('not found');

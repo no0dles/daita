@@ -1,11 +1,12 @@
 import {Pool, PoolClient} from 'pg';
-import {PostgresTransactionDataAdapter} from './postgres-transaction-data-adapter';
 import {PostgresSqlBuilder} from './postgres.sql-builder';
 import {ensureDatabaseExists} from './postgres.util';
-import {RelationalDataAdapter, RelationalSelectQuery, RelationalTransactionDataAdapter, RootFilter} from '@daita/core';
+import {RelationalDataAdapter, RelationalSelectQuery, RootFilter} from '@daita/core';
 import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
+import {RelationalMigrationAdapter} from '@daita/core/dist/adapter/relational-migration-adapter';
+import {PostgresDataAdapter} from './postgres-data-adapter';
 
-export class PostgresDataAdapter implements RelationalDataAdapter {
+export class PostgresAdapter implements RelationalMigrationAdapter {
   kind: 'dataAdapter' = 'dataAdapter';
 
   private readonly pool: Pool;
@@ -42,6 +43,10 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
     this.initalized = true;
   }
 
+  isKind(kind: 'data' | 'migration' | 'transaction'): boolean {
+    return kind === 'data' || kind === 'migration' || kind === 'transaction';
+  }
+
   private async run<T>(action: (client: PoolClient) => Promise<T>): Promise<T> {
     let client: PoolClient | null = null;
     try {
@@ -72,14 +77,14 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
     filter: RootFilter<any> | null,
   ): Promise<{ affectedRows: number }> {
     return this.run(async client => {
-      const adapter = new PostgresTransactionDataAdapter(client);
+      const adapter = new PostgresDataAdapter(client);
       return adapter.delete(schema, table, filter);
     });
   }
 
   insert(schema: MigrationSchema, table: string, data: any[]): Promise<void> {
     return this.run(async client => {
-      const adapter = new PostgresTransactionDataAdapter(client);
+      const adapter = new PostgresDataAdapter(client);
       return adapter.insert(schema, table, data);
     });
   }
@@ -90,7 +95,7 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
     query: RelationalSelectQuery,
   ): Promise<any[]> {
     return this.run(async client => {
-      const adapter = new PostgresTransactionDataAdapter(client);
+      const adapter = new PostgresDataAdapter(client);
       return adapter.select(schema, table, query);
     });
   }
@@ -102,20 +107,21 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
     filter: RootFilter<any> | null,
   ): Promise<{ affectedRows: number }> {
     return this.run(async client => {
-      const adapter = new PostgresTransactionDataAdapter(client);
+      const adapter = new PostgresDataAdapter(client);
       return adapter.update(schema, table, data, filter);
     });
   }
 
-  async transaction(
-    action: (adapter: RelationalTransactionDataAdapter) => Promise<any>,
-  ) {
-    await this.run(async client => {
+  async transaction<T>(
+    action: (adapter: RelationalDataAdapter) => Promise<T>,
+  ): Promise<T> {
+    return await this.run(async client => {
       try {
         await client.query('BEGIN');
-        const adapter = new PostgresTransactionDataAdapter(client);
-        await action(adapter);
+        const adapter = new PostgresDataAdapter(client);
+        const result = await action(adapter);
         await client.query('COMMIT');
+        return result;
       } catch (e) {
         await client.query('ROLLBACK');
         throw e;
@@ -125,7 +131,7 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
 
   raw(sql: string, values: any[]): Promise<{ rowCount: number; rows: any[] }> {
     return this.run(async client => {
-      const adapter = new PostgresTransactionDataAdapter(client);
+      const adapter = new PostgresDataAdapter(client);
       return adapter.raw(sql, values);
     });
   }
@@ -136,7 +142,7 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
     query: RelationalSelectQuery,
   ): Promise<number> {
     return this.run(async client => {
-      const adapter = new PostgresTransactionDataAdapter(client);
+      const adapter = new PostgresDataAdapter(client);
       return adapter.count(schema, table, query);
     });
   }
