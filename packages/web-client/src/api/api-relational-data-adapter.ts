@@ -1,9 +1,17 @@
 import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
-import {AndRootFilter, OrRootFilter, RelationalDataAdapter, RelationalSelectQuery} from '@daita/core';
+import {
+  AndRootFilter,
+  OrRootFilter,
+  RelationalDataAdapter,
+  RelationalSelectQuery,
+  SqlDmlQuery,
+  SqlQuery,
+} from '@daita/core';
 import * as debug from 'debug';
 import {AuthProvider} from '../auth/auth-provider';
 import {IdGenerator} from '../id-generator';
+import {RelationalRawResult} from '@daita/core/dist/adapter/relational-raw-result';
 
 export class ApiRelationalDataAdapter implements RelationalDataAdapter {
   protected idGenerator: IdGenerator;
@@ -83,9 +91,9 @@ export class ApiRelationalDataAdapter implements RelationalDataAdapter {
   }
 
   async raw(
-    sql: string,
-    values: any[],
-  ): Promise<{ rowCount: number; rows: any[] }> {
+    sql: string | SqlQuery | SqlDmlQuery,
+    values?: any[],
+  ): Promise<RelationalRawResult> {
     return this.send(`raw`, {sql, values});
   }
 

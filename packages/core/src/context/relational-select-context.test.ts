@@ -16,7 +16,7 @@ const userB = {
   parentId: 'a',
 };
 
-export function relationalSelectContext(ctx: {adminContext: RelationalDataContext, viewerContext: RelationalDataContext}) {
+export function relationalSelectContext(ctx: { adminContext: RelationalDataContext, viewerContext: RelationalDataContext }) {
 
   describe('relational-select-context', () => {
     beforeAll(async () => {
@@ -171,7 +171,14 @@ export function relationalSelectContext(ctx: {adminContext: RelationalDataContex
       const users = await ctx.adminContext
         .select(User)
         .include(u => u.parent);
-      expect(users).toEqual([userA, {...userB, parent: userA}]);
+      expect(users).toEqual([userA, {
+        ...userB, parent: {
+          id: 'a',
+          name: 'foo',
+          count: 2,
+          admin: true,
+        },
+      }]);
     });
 
     it('should execute select(User).orderBy(name).orderThenBy(count)', async () => {

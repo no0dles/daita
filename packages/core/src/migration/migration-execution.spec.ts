@@ -1,23 +1,23 @@
-import {PostgresAdapter} from './postgres.adapter';
-import {MigrationDescription, MigrationExecution} from '@daita/core';
-import {getMigrationSchema} from '@daita/core/dist/schema/migration-schema-builder';
+import {getMigrationSchema} from '../schema/migration-schema-builder';
+import {SqlDmlQuery} from '../sql';
+import {MigrationExecution} from './migration-execution';
+import {MigrationDescription} from './migration-description';
 
 function testMigrations(
   migrationBefore: MigrationDescription[],
   migration: MigrationDescription,
-  expectedSqls: string[],
+  expectedSqls: SqlDmlQuery[],
 ) {
   const exec = new MigrationExecution();
   const migrationSchema = getMigrationSchema(migrationBefore);
   const sql = exec.plan(
     migration,
-    migrationSchema,
-    new PostgresAdapter('postgres://localhost'),
+    migrationSchema
   );
   expect(sql).toEqual(expectedSqls);
 }
 
-describe('migration', () => {
+describe('migration-execution', () => {
   describe('plan', () => {
     it('should create table with varchar field', () => {
       const migration: MigrationDescription = {
@@ -28,7 +28,7 @@ describe('migration', () => {
         ],
       };
       testMigrations([], migration, [
-        'CREATE TABLE "foo_test" ("bar_test" varchar);',
+        {createTable: 'foo_test', fields: [{name: 'bar_test', type: 'string', primaryKey: false}]},
       ]);
     });
 
@@ -49,7 +49,7 @@ describe('migration', () => {
         ],
       };
       testMigrations(migrationBefore, migration, [
-        'ALTER TABLE "foo_test" ADD COLUMN "foo_test2" integer;',
+        {alterTable: 'foo_test', add: {column: 'foo_test2', type: 'number'}},
       ]);
     });
 
@@ -69,7 +69,9 @@ describe('migration', () => {
           {kind: 'drop_table', table: 'foo'},
         ],
       };
-      testMigrations(migrationBefore, migration, ['DROP TABLE "foo_test";']);
+      testMigrations(migrationBefore, migration, [
+        {dropTable: 'foo_test'},
+      ]);
     });
   });
 });

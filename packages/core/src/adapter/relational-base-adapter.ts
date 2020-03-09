@@ -161,7 +161,7 @@ export abstract class RelationalBaseAdapter implements RelationalDataAdapter {
 
     const sql: SqlSelect = {
       select: [{count: {all: true}}],
-      from: select,
+      from: { ...select, alias: 'cnt' },
     };
 
     const result = await this.runQuery(sql);
@@ -173,7 +173,7 @@ export abstract class RelationalBaseAdapter implements RelationalDataAdapter {
       select.select.push({
         table: tableAlias,
         field: field.baseFieldName,
-        alias: `${tableAlias}_${field.name}`,
+        alias: `${tableAlias}.${field.name}`,
       });
     }
   }
@@ -394,23 +394,23 @@ export abstract class RelationalBaseAdapter implements RelationalDataAdapter {
           for (const key of Object.keys(value)) {
             const objectValue = value[key];
             if (key === '$eq') {
-              conditions.push(map(table, key, path, '=', objectValue));
+              conditions.push(map(table, filterKey, path, '=', objectValue));
             } else if (key === '$like') {
-              conditions.push(map(table, key, path, 'like', objectValue));
+              conditions.push(map(table, filterKey, path, 'like', objectValue));
             } else if (key === '$in') {
-              conditions.push(map(table, key, path, 'in', objectValue));
+              conditions.push(map(table, filterKey, path, 'in', objectValue));
             } else if (key === '$nin') {
-              conditions.push(map(table, key, path, 'not in', objectValue));
+              conditions.push(map(table, filterKey, path, 'not in', objectValue));
             } else if (key === '$ne') {
-              conditions.push(map(table, key, path, '!=', objectValue));
+              conditions.push(map(table, filterKey, path, '!=', objectValue));
             } else if (key === '$lt') {
-              conditions.push(map(table, key, path, '<', objectValue));
+              conditions.push(map(table, filterKey, path, '<', objectValue));
             } else if (key === '$lte') {
-              conditions.push(map(table, key, path, '<=', objectValue));
+              conditions.push(map(table, filterKey, path, '<=', objectValue));
             } else if (key === '$gt') {
-              conditions.push(map(table, key, path, '>', objectValue));
+              conditions.push(map(table, filterKey, path, '>', objectValue));
             } else if (key === '$gte') {
-              conditions.push(map(table, key, path, '>=', objectValue));
+              conditions.push(map(table, filterKey, path, '>=', objectValue));
             } else {
               const foreignKey = table.foreignKeys.filter(fk => fk.name === filterKey)[0];
               if (!foreignKey) {

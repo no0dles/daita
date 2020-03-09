@@ -30,6 +30,9 @@ import {SqlSchemaTable} from './sql-schema-table';
 import {SqlBaseBuilder} from './sql-base-builder';
 import {SqlInExpression} from './sql-in-expression';
 import {SqlInOperand} from './sql-in-operand';
+import {SqlOrderDirection} from './sql-order-direction';
+import {SqlSelectOrderByField} from './sql-select-order-by-field';
+import {SqlSelectOrderByIndex} from './sql-select-order-by-index';
 
 export class SqlQueryBuilder extends SqlBaseBuilder {
   sql = '';
@@ -37,11 +40,12 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
 
   protected distinctKeyword = 'DISTINCT';
   protected groupByKeyword = 'GROUP BY';
+  protected orderByKeyword = 'ORDER BY';
   protected onKeyword = 'ON';
   protected selectKeyword = 'SELECT';
   protected fromKeyword = 'FROM';
   protected updateKeyword = 'UPDATE';
-  protected deleteKeyword = 'DELETE';
+  protected deleteKeyword = 'DELETE FROM';
   protected insertKeyword = 'INSERT INTO';
   protected valuesKeyword = 'VALUES';
   protected setKeyword = 'SET';
@@ -174,6 +178,20 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
       sql += ` ${this.groupByKeyword} ${groupBySql.join(', ')}`;
     }
 
+    if (select.orderBy && select.orderBy.length > 0) {
+      const orderBySql = select.orderBy.map(orderBy => {
+        if (typeof orderBy === 'number') {
+          return this.appendValue(orderBy);
+        }
+        const ord = orderBy as SqlSelectOrderByField & SqlSelectOrderByIndex;
+        if (ord.index) {
+          return `${this.appendValue(ord.index)} ${orderBy.direction ? this.escapeOrderDirection(orderBy.direction) : ''}`.trimRight();
+        }
+        return `${this.formatSchemaTableField(ord.schema, ord.table, ord.field)} ${orderBy.direction ? this.escapeOrderDirection(orderBy.direction) : ''}`.trimRight();
+      });
+      sql += ` ${this.orderByKeyword} ${orderBySql.join(', ')}`;
+    }
+
     if (select.having) {
       sql += ` ${this.havingKeyword} ${this.formatExpression(select.having, false)}`;
     }
@@ -261,7 +279,7 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
 
   protected formatValue(value: SqlValue): string | null {
     const val = value as SqlRawValue & SqlSelect & SqlAlias & SqlSchemaTableField & SqlFunction;
-    if (typeof val === 'string' || typeof val === 'boolean' || typeof val === 'number' || val instanceof Date) {
+    if (typeof val === 'string' || typeof val === 'boolean' || typeof val === 'number' || val instanceof Date || val === null || val === undefined) {
       return this.appendValue(val);
     }
 
@@ -311,6 +329,15 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
     }
 
     throw new Error('unknown select field');
+  }
+
+  protected escapeOrderDirection(direction: SqlOrderDirection): string {
+    switch (direction) {
+      case 'asc':
+        return 'ASC';
+      case 'desc':
+        return 'DESC';
+    }
   }
 
   protected escapeJoinType(joinType: SqlSelectJoinType): string {

@@ -1,7 +1,16 @@
-import {AndRootFilter, Defer, OrRootFilter, RelationalDataAdapter, RelationalSelectQuery} from '@daita/core';
+import {
+  AndRootFilter,
+  Defer,
+  OrRootFilter,
+  RelationalDataAdapter,
+  RelationalSelectQuery,
+  SqlDmlQuery,
+  SqlQuery,
+} from '@daita/core';
 import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
 import * as debug from 'debug';
 import {IdGenerator} from '../id-generator';
+import {RelationalRawResult} from '@daita/core/dist/adapter/relational-raw-result';
 
 export class SocketRelationalDataAdapter implements RelationalDataAdapter {
   protected idGenerator: IdGenerator;
@@ -57,7 +66,7 @@ export class SocketRelationalDataAdapter implements RelationalDataAdapter {
     });
   }
 
-  raw(sql: string, values: any[]): Promise<{ rowCount: number; rows: any[] }> {
+  raw(sql: string | SqlQuery | SqlDmlQuery, values?: any[]): Promise<RelationalRawResult> {
     return this.emit('raw', {
       sql,
       values,

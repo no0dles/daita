@@ -5,6 +5,7 @@ module.exports = {
         "<rootDir>/packages/*/src/**/*.ts",
         "**/node_modules/@daita/**",
         "src/**",
+        "!src/test/**/*.ts",
         "!src/**/*.test.ts",
         "!src/**/*.spec.ts"
     ],

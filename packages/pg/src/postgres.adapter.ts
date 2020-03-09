@@ -1,19 +1,11 @@
-import {Pool, PoolClient} from 'pg';
-import {PostgresSqlBuilder} from './postgres.sql-builder';
+import {Pool, PoolClient, types} from 'pg';
 import {ensureDatabaseExists} from './postgres.util';
 import {RelationalDataAdapter, RelationalSelectQuery, RootFilter, SqlQuery} from '@daita/core';
 import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
 import {RelationalMigrationAdapter} from '@daita/core/dist/adapter/relational-migration-adapter';
 import {PostgresDataAdapter} from './postgres-data-adapter';
 import {RelationalRawResult} from '@daita/core/dist/adapter/relational-raw-result';
-import {
-  SqlAlterTableAdd,
-  SqlAlterTableDrop,
-  SqlCreateTableQuery, SqlDmlQuery,
-  SqlDropTableQuery,
-} from '@daita/core/dist/sql/sql-dml-builder';
-import {SqlQueryBuilder} from '@daita/core/dist/sql/sql-query-builder';
-import * as debug from 'debug';
+import {SqlDmlQuery} from '@daita/core/dist/sql/sql-dml-builder';
 
 export class PostgresAdapter implements RelationalMigrationAdapter {
   kind: 'dataAdapter' = 'dataAdapter';
@@ -22,9 +14,9 @@ export class PostgresAdapter implements RelationalMigrationAdapter {
   private readonly connectionString: string | undefined;
   private initalized = false;
 
-  sqlBuilder = new PostgresSqlBuilder();
-
   constructor(private poolOrUrl: string | Pool) {
+    types.setTypeParser(1700, val => parseFloat(val));
+
     if (typeof poolOrUrl === 'string') {
       this.connectionString = poolOrUrl;
       this.pool = new Pool({

@@ -13,6 +13,7 @@ export class MigrationExecution {
     );
     await dataAdapter.raw({
       createTable: {schema: 'daita', table: 'migrations'},
+      ifNotExist: true,
       fields: [
         {name: 'id', type: 'string', notNull: true, primaryKey: true},
       ],
@@ -36,7 +37,6 @@ export class MigrationExecution {
   plan(
     migration: MigrationDescription,
     schema: MigrationSchema,
-    dataAdapter: RelationalMigrationAdapter,
   ): SqlDmlQuery[] {
     const sqls: SqlDmlQuery[] = [];
     const tables: { [key: string]: Table } = {};
@@ -80,7 +80,7 @@ export class MigrationExecution {
       } else if (step.kind === 'add_table_primary_key') {
         if (tables[step.table]) {
           tables[step.table].primaryKeys = step.fieldNames.map(
-            field => `"${field}_${migration.id}"`,
+            field => `${field}_${migration.id}`,
           );
         } else {
           throw new Error(`can not modify primary key for ${step.table}`);
@@ -90,18 +90,18 @@ export class MigrationExecution {
           const foreignTable = schema.table(step.foreignTable);
           if (foreignTable) {
             tables[step.table].foreignKeys.push({
-              table: `"${step.foreignTable}_${foreignTable.sourceMigration.id}"`,
-              keys: step.fieldNames.map(field => `"${field}_${migration.id}"`),
+              table: `${step.foreignTable}_${foreignTable.sourceMigration.id}`,
+              keys: step.fieldNames.map(field => `${field}_${migration.id}`),
               foreignKeys: step.foreignFieldNames.map(
-                field => `"${field}_${foreignTable.sourceMigration.id}"`,
+                field => `${field}_${foreignTable.sourceMigration.id}`,
               ),
             });
           } else {
             tables[step.table].foreignKeys.push({
-              table: `"${step.foreignTable}_${migration.id}"`,
-              keys: step.fieldNames.map(field => `"${field}_${migration.id}"`),
+              table: `${step.foreignTable}_${migration.id}`,
+              keys: step.fieldNames.map(field => `${field}_${migration.id}`),
               foreignKeys: step.foreignFieldNames.map(
-                field => `"${field}_${migration.id}"`,
+                field => `${field}_${migration.id}`,
               ),
             });
           }
@@ -117,12 +117,12 @@ export class MigrationExecution {
           const fields: string[] = [];
           for (const field of step.fieldNames) {
             const migrationField = table.field(field);
-            fields.push(`"${migrationField.baseFieldName}"`);
+            fields.push(migrationField.baseFieldName);
           }
           const foreignFields: string[] = [];
           for (const field of step.foreignFieldNames) {
             const migrationField = foreignTable.field(field);
-            foreignFields.push(`"${migrationField.baseFieldName}"`);
+            foreignFields.push(migrationField.baseFieldName);
           }
           sqls.push({
             alterTable: `${step.table}_${table.sourceMigration.id}`,
@@ -158,7 +158,7 @@ export class MigrationExecution {
       const table = tables[tableName];
       for (const foreignKey of table.foreignKeys) {
         sqls.push({
-          alterTable: tableName,
+          alterTable: table.tableName,
           add: {
             constraint: '',
             foreignKey: foreignKey.keys,
@@ -179,7 +179,7 @@ export class MigrationExecution {
     schema: MigrationSchema,
     dataAdapter: RelationalMigrationAdapter,
   ) {
-    const sqls = this.plan(migration, schema, dataAdapter);
+    const sqls = this.plan(migration, schema);
 
     await dataAdapter.transaction(async client => {
       await client.raw(`LOCK TABLE "daita"."migrations"`, []);
@@ -187,7 +187,7 @@ export class MigrationExecution {
 
       for (const sql of sqls) {
         debug('daita:core:migration')(sql);
-        //TODO await client.raw(sql);
+        await client.raw(sql as any); //TODO
       }
     });
   }
