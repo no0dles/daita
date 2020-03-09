@@ -1,11 +1,11 @@
-import {RelationalDataAdapter, RelationalTransactionAdapter} from '../adapter';
-import { MigrationSchema } from '../schema/migration-schema';
-import { ExcludeNonPrimitive } from './types/exclude-non-primitive';
-import { TableInformation } from './table-information';
-import { MigrationSchemaTable } from '../schema/migration-schema-table';
+import {RelationalDataAdapter} from '../adapter';
+import {MigrationSchema} from '../schema/migration-schema';
+import {ExcludeNonPrimitive} from './types/exclude-non-primitive';
+import {TableInformation} from './table-information';
+import {MigrationSchemaTable} from '../schema/migration-schema-table';
 import {ContextUser} from '../auth';
 
-export class RelationalInsertContext<T> {
+export class RelationalInsertContext<T> implements PromiseLike<void> {
   private table: MigrationSchemaTable;
 
   constructor(
@@ -102,7 +102,10 @@ export class RelationalInsertContext<T> {
     );
   }
 
-  async exec(): Promise<void> {
-    await this.dataAdapter.insert(this.schema, this.type.name, this.rows);
+  then<TResult1 = void, TResult2 = never>(onfulfilled?: ((value: void) => (PromiseLike<TResult1> | TResult1)) | undefined | null, onrejected?: ((reason: any) => (PromiseLike<TResult2> | TResult2)) | undefined | null): PromiseLike<TResult1 | TResult2> {
+    return this.dataAdapter
+      .insert(this.schema, this.type.name, this.rows)
+      .then(onfulfilled)
+      .catch(onrejected);
   }
 }

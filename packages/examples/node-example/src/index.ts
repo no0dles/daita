@@ -13,11 +13,10 @@ context.transaction(async(trx) => {
     email: 'test@test.com',
     lastName: null,
     password: '123',
-  }).exec();
+  });
 
   const users = await trx.select(User)
-    .where({ username: { $eq: 'pascal' }})
-    .exec();
+    .where({ username: { $eq: 'pascal' }});
 
   console.log(users);
 });

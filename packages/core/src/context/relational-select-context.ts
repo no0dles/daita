@@ -1,9 +1,10 @@
-import {RelationalDataAdapter, RelationalTransactionAdapter} from '../adapter';
+import {RelationalDataAdapter} from '../adapter';
 import {RootFilter} from '../query/root-filter';
 import {MigrationSchema} from '../schema/migration-schema';
 import {TableInformation} from './table-information';
 import {ExcludePrimitive} from './types/exclude-primitive';
 import {ContextUser} from '../auth';
+import {Full} from './types/full';
 
 interface RelationalSelectState {
   skip: number | null;
@@ -13,7 +14,7 @@ interface RelationalSelectState {
   filter: RootFilter<any> | null;
 }
 
-abstract class BaseRelationalSelectContext<T, C> {
+abstract class BaseRelationalSelectContext<T, C> implements PromiseLike<T[]> {
   protected shouldMapResult: boolean;
 
   constructor(
@@ -26,12 +27,32 @@ abstract class BaseRelationalSelectContext<T, C> {
     this.shouldMapResult = this.isConstructor(this.type);
   }
 
-  protected getSelectorPath(tableName: string) {
+  protected getSelectorPath(tableName: string, path?: string[]): any {
+    const table = this.schema.table(tableName);
+    if (!table) {
+      throw new Error('table does not exist');
+    }
+
     const handler = {
       get: (obj: any, prop: any) => {
-        //const table = this.schema.table(tableName);
-        //const field = table?.field(prop);
-        return {path: [prop]};
+        const field = table.field(prop);
+        if (field) {
+          return {_path: path ? [...path, prop] : [prop]};
+        }
+
+        const reference = table.foreignKeys.filter(fk => fk.name === prop)[0];
+        if (reference) {
+          if (!table) {
+            throw new Error('table does not exist');
+          }
+          return this.getSelectorPath(reference.table, path ? [...path, prop] : [prop]);
+        }
+
+        if (prop === '_path') {
+          return path;
+        }
+
+        throw new Error('unknown get of ' + prop);
       },
     };
 
@@ -78,19 +99,24 @@ abstract class BaseRelationalSelectContext<T, C> {
     });
   }
 
-  async exec(): Promise<T[]> {
+  private async exec(): Promise<T[]> {
     this.validatePermission();
     const results = await this.dataAdapter.select(
       this.schema,
       this.type.name,
       this.state,
     );
-
     if (this.shouldMapResult) {
       return results.map(result => this.mapResult(result));
     }
 
     return results;
+  }
+
+  then<TResult1 = T[], TResult2 = never>(onfulfilled?: ((value: T[]) => (PromiseLike<TResult1> | TResult1)) | undefined | null, onrejected?: ((reason: any) => (PromiseLike<TResult2> | TResult2)) | undefined | null): PromiseLike<TResult1 | TResult2> {
+    return this.exec()
+      .then(onfulfilled)
+      .catch(onrejected);
   }
 
   private isConstructor(value: any) {
@@ -114,7 +140,7 @@ abstract class BaseRelationalSelectContext<T, C> {
     return instance;
   }
 
-  async execFirst(): Promise<T | null> {
+  async first(): Promise<T | null> {
     this.validatePermission();
     const results = await this.dataAdapter.select(this.schema, this.type.name, {
       filter: this.state.filter,
@@ -149,7 +175,7 @@ abstract class BaseRelationalSelectContext<T, C> {
       }
 
       if (!permission.select) {
-        continue
+        continue;
       }
 
       if (permission.select === true) {
@@ -171,7 +197,7 @@ abstract class BaseRelationalSelectContext<T, C> {
     throw new Error('not authorized, no rule matches');
   }
 
-  execCount(): Promise<number> {
+  count(): Promise<number> {
     this.validatePermission();
     return this.dataAdapter.count(this.schema, this.type.name, {
       filter: this.state.filter,
@@ -191,12 +217,12 @@ abstract class BaseRelationalSelectContext<T, C> {
       limit: this.state.limit,
       skip: this.state.skip,
       orderBy: this.state.orderBy,
-      include: [...this.state.include, {path: selectorResult.path}],
+      include: [...this.state.include, {path: selectorResult._path}],
     });
   }
 
   protected addOrderBy(
-    selector: (table: T) => any,
+    selector: (table: Full<T>) => any,
     direction?: 'asc' | 'desc',
   ) {
     const selectorValue = this.getSelectorPath(this.type.name);
@@ -213,7 +239,7 @@ abstract class BaseRelationalSelectContext<T, C> {
         include: this.state.include,
         orderBy: [
           ...this.state.orderBy,
-          {path: selectorResult.path, direction: direction || 'asc'},
+          {path: selectorResult._path, direction: direction || 'asc'},
         ],
       },
       this.user,
@@ -225,7 +251,7 @@ abstract class BaseRelationalSelectContext<T, C> {
 
 export class RelationalSelectContextOrdered<T> extends BaseRelationalSelectContext<T, RelationalSelectContextOrdered<T>> {
   orderThenBy(
-    selector: (table: T) => any,
+    selector: (table: Full<T>) => any,
     direction?: 'asc' | 'desc',
   ): RelationalSelectContextOrdered<T> {
     return this.addOrderBy(selector, direction);
@@ -245,7 +271,7 @@ export class RelationalSelectContextOrdered<T> extends BaseRelationalSelectConte
 export class RelationalSelectContext<T> extends BaseRelationalSelectContext<T,
   RelationalSelectContext<T>> {
   orderBy(
-    selector: (table: T) => any,
+    selector: (table: Full<T>) => any,
     direction?: 'asc' | 'desc',
   ): RelationalSelectContextOrdered<T> {
     return this.addOrderBy(selector, direction);

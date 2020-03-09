@@ -41,7 +41,7 @@ export function jwksTokenProvider(options: AuthJwksProviderOptions): TokenProvid
         throw new Error('no key found');
       }
 
-      if (jws.verify(payload.signature, payload.header.alg, key.getPublicKey())) {
+      if (jws.verify(token, payload.header.alg, key.getPublicKey())) {
         defer.resolve(payload.payload);
       } else {
         defer.reject(new Error('invalid signature'));

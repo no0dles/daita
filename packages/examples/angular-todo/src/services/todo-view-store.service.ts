@@ -13,7 +13,7 @@ export class TodoViewStore {
 
   constructor() {
     this.context = schema.context(new SocketRelationalDataAdapter('http://localhost:8765'));
-    this.context.select(Todo).exec().then(persistedTodos => {
+    this.context.select(Todo).then(persistedTodos => {
       this.todos = persistedTodos.map(todo => new TodoViewModel(todo));
     });
   }
@@ -27,12 +27,12 @@ export class TodoViewStore {
   }
 
   async setAllTo(completed: boolean) {
-    await this.context.update(Todo).set({done: true}).exec();
+    await this.context.update(Todo).set({done: true});
     this.todos.forEach((t: TodoViewModel) => t.completed = completed);
   }
 
   async removeCompleted() {
-    await this.context.delete(Todo).where({done: true}).exec();
+    await this.context.delete(Todo).where({done: true});
     this.todos = this.getWithCompleted(false);
   }
 
@@ -45,12 +45,12 @@ export class TodoViewStore {
   }
 
   async toggleCompletion(todo: TodoViewModel) {
-    await this.context.update(Todo).set({done: !todo.completed}).where({id: todo.id}).exec();
+    await this.context.update(Todo).set({done: !todo.completed}).where({id: todo.id});
     todo.completed = !todo.completed;
   }
 
   async remove(todo: TodoViewModel) {
-    await this.context.delete(Todo).where({id: todo.id}).exec();
+    await this.context.delete(Todo).where({id: todo.id});
     this.todos.splice(this.todos.indexOf(todo), 1);
   }
 
@@ -59,7 +59,7 @@ export class TodoViewStore {
     todo.name = title;
     todo.id = uuid.v1();
     todo.done = false;
-    await this.context.insert(Todo).value(todo).exec();
+    await this.context.insert(Todo).value(todo);
     const viewModel = new TodoViewModel(todo);
     this.todos.push(viewModel);
   }

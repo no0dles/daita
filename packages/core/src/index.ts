@@ -8,4 +8,5 @@ export * from './debouncer';
 export * from './permission';
 export * from './constructable';
 export * from './defer';
+export * from './sql';
 export * from './debouncer';

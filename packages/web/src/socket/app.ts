@@ -19,7 +19,7 @@ import {ContextUser} from '@daita/core/dist/auth';
 function handle<T>(
   socket: socket.Socket,
   event: string,
-  action: (data: T) => Promise<any>,
+  action: (data: T) => PromiseLike<any>,
 ) {
   socket.on(event, async data => {
     debug('daita:web:socket')('received event ' + event, data);

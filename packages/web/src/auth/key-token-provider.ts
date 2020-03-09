@@ -12,7 +12,7 @@ export function keyTokenProvider(options: AuthKeyProviderOptions): TokenProvider
       const defer = new Defer<AccessToken>();
       const result = jws.decode(token);
 
-      if (jws.verify(result.signature, result.header.alg, options.key)) {
+      if (jws.verify(token, result.header.alg, options.key)) {
         defer.resolve(result.payload);
       } else {
         defer.reject(new Error('invalid signature'));

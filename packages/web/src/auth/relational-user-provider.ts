@@ -23,7 +23,7 @@ export class RelationalUserProvider implements UserProvider {
   async addRole(name: string) {
     await this.context.insert(Role).value({
       name,
-    }).exec();
+    });
   }
 
   async addUserRole(userId: string, roleName: string) {
@@ -35,7 +35,7 @@ export class RelationalUserProvider implements UserProvider {
         roleName: roleName,
         userIssuer: issuer,
         userSubject: subject,
-      }).exec();
+      });
   }
 
   async get(token: AccessToken): Promise<ContextUser> {
@@ -52,7 +52,7 @@ export class RelationalUserProvider implements UserProvider {
         issuer: token.iss,
         subject: token.sub,
       })
-      .execFirst();
+      .first();
 
     if (!user) {
       user = new User();
@@ -61,7 +61,7 @@ export class RelationalUserProvider implements UserProvider {
       user.email = (<any>token).email;
       user.firstName = (<any>token).given_name;
       user.lastName = (<any>token).family_name;
-      await this.context.insert(User).value(user).exec();
+      await this.context.insert(User).value(user);
     } else {
       const userRoles = await this.context
         .select(UserRole)
@@ -70,8 +70,7 @@ export class RelationalUserProvider implements UserProvider {
             issuer: token.iss,
             subject: token.sub,
           },
-        })
-        .exec();
+        });
       roles.push(...userRoles.map(ur => ur.roleName));
     }
 

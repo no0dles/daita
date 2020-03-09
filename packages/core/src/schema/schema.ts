@@ -10,7 +10,7 @@ import {
 export type Condition<T> = ValueCondition<T> | AndCondition<T> | OrCondition<T>;
 
 export type ValueCondition<T> = {
-  [P in keyof T]?: ConditionFilter<T[P]> | SchemaConstant<T[P]>;
+  [P in keyof T]?: ConditionFilter<T[P]>; //TODO | SchemaConstant<T[P]>;
 }
 
 export interface SchemaConstant<T> {

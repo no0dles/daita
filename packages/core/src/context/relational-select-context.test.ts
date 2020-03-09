@@ -20,28 +20,26 @@ export function relationalSelectContext(ctx: {adminContext: RelationalDataContex
 
   describe('relational-select-context', () => {
     beforeAll(async () => {
-      await ctx.adminContext.delete(User).exec();
+      await ctx.adminContext.delete(User);
       await ctx.adminContext
         .insert(User)
-        .value(userA)
-        .exec();
+        .value(userA);
       await ctx.adminContext
         .insert(User)
-        .value(userB)
-        .exec();
+        .value(userB);
     });
 
     it('should execute select(User)', async () => {
-      const users = await ctx.adminContext.select(User).exec();
+      const users = await ctx.adminContext.select(User);
       expect(users).toEqual([userA, userB]);
     });
 
     it('should not execute select(User) without permission', async () => {
-      await expect(ctx.viewerContext.select(User).exec()).rejects.toThrow('');
+      await expect(ctx.viewerContext.select(User)).rejects.toThrow('');
     });
 
     it('should execute first select(User)', async () => {
-      const user = await ctx.adminContext.select(User).execFirst();
+      const user = await ctx.adminContext.select(User).first();
       expect(user).toBeInstanceOf(User);
       expect(user).toEqual(userA);
     });
@@ -49,56 +47,49 @@ export function relationalSelectContext(ctx: {adminContext: RelationalDataContex
     it('should execute select(User).where({name: foo})', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({name: 'foo'})
-        .exec();
+        .where({name: 'foo'});
       expect(users).toEqual([userA]);
     });
 
     it('should execute select(User).where({$or: [{name: foo}, {name: bar}])', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({$or: [{name: 'foo'}, {name: 'bar'}]})
-        .exec();
+        .where({$or: [{name: 'foo'}, {name: 'bar'}]});
       expect(users).toEqual([userA, userB]);
     });
 
     it('should execute select(User).where({$and: [{name: foo}, {name: bar}])', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({$and: [{name: 'foo'}, {name: 'bar'}]})
-        .exec();
+        .where({$and: [{name: 'foo'}, {name: 'bar'}]});
       expect(users).toEqual([]);
     });
 
     it('should execute select(User).where({name: {$eq: foo}})', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({name: {$eq: 'foo'}})
-        .exec();
+        .where({name: {$eq: 'foo'}});
       expect(users).toEqual([userA]);
     });
 
     it('should execute select(User).where({name: {$like: fo%}})', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({name: {$like: 'fo%'}})
-        .exec();
+        .where({name: {$like: 'fo%'}});
       expect(users).toEqual([userA]);
     });
 
     it('should execute select(User).where({count: {$gt: 2}})', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({count: {$gt: 2}})
-        .exec();
+        .where({count: {$gt: 2}});
       expect(users).toEqual([userB]);
     });
 
     it('should execute select(User).where({count: {$gte: 2}})', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({count: {$gte: 2}})
-        .exec();
+        .where({count: {$gte: 2}});
       expect(users).toEqual([userA, userB]);
     });
 
@@ -106,8 +97,7 @@ export function relationalSelectContext(ctx: {adminContext: RelationalDataContex
       const users = await ctx.adminContext
         .select(User)
         .where({count: 2})
-        .where({count: 14})
-        .exec();
+        .where({count: 14});
       expect(users).toEqual([]);
     });
 
@@ -115,8 +105,7 @@ export function relationalSelectContext(ctx: {adminContext: RelationalDataContex
       const users = await ctx.adminContext
         .select(User)
         .skip(1)
-        .orderBy(u => u.name)
-        .exec();
+        .orderBy(u => u.name);
       expect(users).toEqual([userA]);
     });
 
@@ -124,52 +113,47 @@ export function relationalSelectContext(ctx: {adminContext: RelationalDataContex
       const user = await ctx.adminContext
         .select(User)
         .where({count: 99})
-        .execFirst();
+        .first();
       expect(user).toEqual(null);
     });
 
     it('should execute select(User).where({count: {$lt: 2}})', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({count: {$lt: 2}})
-        .exec();
+        .where({count: {$lt: 2}});
       expect(users).toEqual([]);
     });
 
     it('should execute select(User).where({count: {$lte: 2}})', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({count: {$lte: 2}})
-        .exec();
+        .where({count: {$lte: 2}});
       expect(users).toEqual([userA]);
     });
 
     it('should execute select(User).where({name: {$in: [foo, bar]}})', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({name: {$in: ['foo', 'bar']}})
-        .exec();
+        .where({name: {$in: ['foo', 'bar']}});
       expect(users).toEqual([userA, userB]);
     });
 
     it('should execute select(User).where({name: {$nin: [foo, bar]}})', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({name: {$nin: ['foo', 'bar']}})
-        .exec();
+        .where({name: {$nin: ['foo', 'bar']}});
       expect(users).toEqual([]);
     });
 
     it('should execute select(User).where({name: {$ne: foo}})', async () => {
       const users = await ctx.adminContext
         .select(User)
-        .where({name: {$ne: 'foo'}})
-        .exec();
+        .where({name: {$ne: 'foo'}});
       expect(users).toEqual([userB]);
     });
 
     it('should execute count(User)', async () => {
-      const count = await ctx.adminContext.select(User).execCount();
+      const count = await ctx.adminContext.select(User).count();
       expect(count).toEqual(2);
     });
 
@@ -178,27 +162,23 @@ export function relationalSelectContext(ctx: {adminContext: RelationalDataContex
       const result = await ctx.adminContext
         .select(User)
         .where({count: 14})
-        .execCount();
+        .count();
 
       expect(result).toEqual(1);
     });
 
-
-    //todo
-    // it('should execute select(User).include(parent)', () => testCase(async (setup) => {
-    //   const users = await adminContext
-    //     .select(User)
-    //     .include(u => u.parent)
-    //     .exec();
-    //   expect(users).to.be.deep.eq([userA, {...userB, parent: userA}]);
-    // }));
+    it('should execute select(User).include(parent)', async () => {
+      const users = await ctx.adminContext
+        .select(User)
+        .include(u => u.parent);
+      expect(users).toEqual([userA, {...userB, parent: userA}]);
+    });
 
     it('should execute select(User).orderBy(name).orderThenBy(count)', async () => {
       const users = await ctx.adminContext
         .select(User)
         .orderBy(u => u.name)
-        .orderThenBy(u => u.count)
-        .exec();
+        .orderThenBy(u => u.count);
       expect(users).toEqual([userB, userA]);
     });
 
@@ -207,8 +187,7 @@ export function relationalSelectContext(ctx: {adminContext: RelationalDataContex
         .select(User)
         .orderBy(u => u.name)
         .orderThenBy(u => u.count)
-        .where({name: 'foobar'})
-        .exec();
+        .where({name: 'foobar'});
       expect(users).toEqual([]);
     });
   });

@@ -17,13 +17,11 @@ export const insert = async (
   if (body.data instanceof Array) {
     await context
       .insert(type)
-      .values(...body.data)
-      .exec();
+      .values(...body.data);
   } else {
     await context
       .insert(type)
-      .value(body.data)
-      .exec();
+      .value(body.data);
   }
   return null;
 };
@@ -35,8 +33,7 @@ export const remove = (
 ) => {
   return context
     .delete(type)
-    .where(body.where)
-    .exec();
+    .where(body.where);
 };
 
 export const update = (
@@ -47,8 +44,7 @@ export const update = (
   return context
     .update(type)
     .where(body.where)
-    .set(body.set)
-    .exec();
+    .set(body.set);
 };
 
 export const count = async (
@@ -56,13 +52,13 @@ export const count = async (
   context: RelationalTransactionContext,
   body: SocketCountEvent,
 ) => {
-  let query = await context.select(type as any);
+  let query = context.select(type as any);
 
   if (body.where) {
     query = query.where(body.where);
   }
 
-  return await query.execCount();
+  return await query.count();
 };
 
 export const select = async (
@@ -70,7 +66,7 @@ export const select = async (
   context: RelationalTransactionContext,
   body: SocketSelectEvent,
 ) => {
-  let query = await context.select(type as any);
+  let query = context.select(type as any);
 
   if (body.where) {
     query = query.where(body.where);
@@ -100,8 +96,8 @@ export const select = async (
       },
       (<any>query).user,
     );
-    return await orderedQuery.exec();
+    return await orderedQuery;
   }
 
-  return await query.exec();
+  return await query;
 };

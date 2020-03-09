@@ -1,10 +1,19 @@
 import {Pool, PoolClient} from 'pg';
 import {PostgresSqlBuilder} from './postgres.sql-builder';
 import {ensureDatabaseExists} from './postgres.util';
-import {RelationalDataAdapter, RelationalSelectQuery, RootFilter} from '@daita/core';
+import {RelationalDataAdapter, RelationalSelectQuery, RootFilter, SqlQuery} from '@daita/core';
 import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
 import {RelationalMigrationAdapter} from '@daita/core/dist/adapter/relational-migration-adapter';
 import {PostgresDataAdapter} from './postgres-data-adapter';
+import {RelationalRawResult} from '@daita/core/dist/adapter/relational-raw-result';
+import {
+  SqlAlterTableAdd,
+  SqlAlterTableDrop,
+  SqlCreateTableQuery, SqlDmlQuery,
+  SqlDropTableQuery,
+} from '@daita/core/dist/sql/sql-dml-builder';
+import {SqlQueryBuilder} from '@daita/core/dist/sql/sql-query-builder';
+import * as debug from 'debug';
 
 export class PostgresAdapter implements RelationalMigrationAdapter {
   kind: 'dataAdapter' = 'dataAdapter';
@@ -129,13 +138,6 @@ export class PostgresAdapter implements RelationalMigrationAdapter {
     });
   }
 
-  raw(sql: string, values: any[]): Promise<{ rowCount: number; rows: any[] }> {
-    return this.run(async client => {
-      const adapter = new PostgresDataAdapter(client);
-      return adapter.raw(sql, values);
-    });
-  }
-
   count(
     schema: MigrationSchema,
     table: string,
@@ -144,6 +146,16 @@ export class PostgresAdapter implements RelationalMigrationAdapter {
     return this.run(async client => {
       const adapter = new PostgresDataAdapter(client);
       return adapter.count(schema, table, query);
+    });
+  }
+
+  raw(sql: string, values: any[]): Promise<RelationalRawResult>;
+  raw(sql: SqlQuery): Promise<RelationalRawResult>;
+  raw(sql: SqlDmlQuery): Promise<RelationalRawResult>;
+  raw(sql: string | SqlQuery | SqlDmlQuery, values?: any[]): Promise<RelationalRawResult> {
+    return this.run(async client => {
+      const adapter = new PostgresDataAdapter(client);
+      return adapter.raw(sql as any, values || []);
     });
   }
 }

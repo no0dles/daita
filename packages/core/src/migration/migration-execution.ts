@@ -1,8 +1,9 @@
-import { MigrationDescription } from './migration-description';
-import { MigrationSchema } from '../schema/migration-schema';
-import { Table } from './migration';
+import {MigrationDescription} from './migration-description';
+import {MigrationSchema} from '../schema/migration-schema';
+import {Table} from './migration';
 import * as debug from 'debug';
 import {RelationalMigrationAdapter} from '../adapter/relational-migration-adapter';
+import {SqlDmlQuery} from '../sql/sql-dml-builder';
 
 export class MigrationExecution {
   async init(dataAdapter: RelationalMigrationAdapter) {
@@ -10,17 +11,25 @@ export class MigrationExecution {
       `CREATE SCHEMA IF NOT EXISTS "daita";`,
       [],
     );
-    await dataAdapter.raw(
-      `CREATE TABLE IF NOT EXISTS "daita"."migrations" (id varchar NOT NULL PRIMARY KEY)`,
-      [],
-    );
+    await dataAdapter.raw({
+      createTable: {schema: 'daita', table: 'migrations'},
+      fields: [
+        {name: 'id', type: 'string', notNull: true, primaryKey: true},
+      ],
+    });
   }
 
   async exists(id: string, dataAdapter: RelationalMigrationAdapter) {
-    const result = await dataAdapter.raw(
-      'SELECT "id" FROM "daita"."migrations" WHERE "id" = $1 LIMIT 1',
-      [id],
-    );
+    const result = await dataAdapter.raw({
+      select: ['id'],
+      from: {schema: 'daita', table: 'migrations'},
+      where: {
+        left: {field: 'id'},
+        operand: '=',
+        right: id,
+      },
+      limit: 1,
+    });
     return result.rowCount > 0;
   }
 
@@ -28,8 +37,8 @@ export class MigrationExecution {
     migration: MigrationDescription,
     schema: MigrationSchema,
     dataAdapter: RelationalMigrationAdapter,
-  ): string[] {
-    const sqls: string[] = [];
+  ): SqlDmlQuery[] {
+    const sqls: SqlDmlQuery[] = [];
     const tables: { [key: string]: Table } = {};
 
     for (const step of migration.steps) {
@@ -52,20 +61,22 @@ export class MigrationExecution {
           if (!table) {
             throw new Error(`did not find table ${step.table}`);
           }
-          sqls.push(
-            `ALTER TABLE "${
-              step.table
-            }_${table.sourceMigration.id}" ADD COLUMN "${
-              step.fieldName
-            }_${migration.id}" ${dataAdapter.sqlBuilder.getType(step.type)};`,
-          );
+          sqls.push({
+            alterTable: `${step.table}_${table.sourceMigration.id}`,
+            add: {
+              column: `${step.fieldName}_${migration.id}`,
+              type: step.type,
+            },
+          });
         }
       } else if (step.kind === 'drop_table') {
         const table = schema.table(step.table);
         if (!table) {
           throw new Error(`did not find table ${step.table}`);
         }
-        sqls.push(`DROP TABLE "${step.table}_${table.sourceMigration.id}";`);
+        sqls.push({
+          dropTable: `${step.table}_${table.sourceMigration.id}`,
+        });
       } else if (step.kind === 'add_table_primary_key') {
         if (tables[step.table]) {
           tables[step.table].primaryKeys = step.fieldNames.map(
@@ -113,47 +124,50 @@ export class MigrationExecution {
             const migrationField = foreignTable.field(field);
             foreignFields.push(`"${migrationField.baseFieldName}"`);
           }
-          sqls.push(
-            `ALTER TABLE "${
-              step.table
-            }_${table.sourceMigration.id}" ADD FOREIGN KEY (${fields.join(', ')}) REFERENCES "${foreignTable.name}_${
-              foreignTable.sourceMigration.id
-            }" (${foreignFields.join(', ')});`,
-          );
+          sqls.push({
+            alterTable: `${step.table}_${table.sourceMigration.id}`,
+            add: {
+              foreignKey: fields,
+              references: {
+                table: `${foreignTable.name}_${foreignTable.sourceMigration.id}`,
+                primaryKeys: foreignFields,
+              },
+            },
+          });
         }
       }
     }
 
     for (const tableName of Object.keys(tables)) {
       const table = tables[tableName];
-      const fields = Object.keys(table.fields).map(fieldName => {
-        const field = table.fields[fieldName];
-        return `"${fieldName}" ${dataAdapter.sqlBuilder.getType(
-          field.type,
-        )}`.trim();
-      });
-      const primaryKeys =
-        table.primaryKeys.length > 0
-          ? [`PRIMARY KEY (${table.primaryKeys.join(', ')})`]
-          : [];
 
-      sqls.push(
-        `CREATE TABLE "${table.tableName}" (${[...fields, ...primaryKeys].join(
-          ', ',
-        )});`,
-      );
+      sqls.push({
+        createTable: table.tableName,
+        fields: Object.keys(table.fields).map(fieldName => {
+          const field = table.fields[fieldName];
+          return {
+            name: fieldName,
+            type: field.type,
+            primaryKey: table.primaryKeys.indexOf(fieldName) >= 0,
+          };
+        }),
+      });
     }
 
     for (const tableName of Object.keys(tables)) {
       const table = tables[tableName];
-      const foreignKeys = table.foreignKeys.map(
-        key =>
-          `FOREIGN KEY (${key.keys.join(', ')}) REFERENCES ${
-            key.table
-          } (${key.foreignKeys.join(', ')})`,
-      );
-      for (const foreignKey of foreignKeys) {
-        sqls.push(`ALTER TABLE "${table.tableName}" ADD ${foreignKey};`);
+      for (const foreignKey of table.foreignKeys) {
+        sqls.push({
+          alterTable: tableName,
+          add: {
+            constraint: '',
+            foreignKey: foreignKey.keys,
+            references: {
+              table: foreignKey.table,
+              primaryKeys: foreignKey.foreignKeys,
+            },
+          },
+        });
       }
     }
 
@@ -169,13 +183,11 @@ export class MigrationExecution {
 
     await dataAdapter.transaction(async client => {
       await client.raw(`LOCK TABLE "daita"."migrations"`, []);
-      await client.raw('INSERT INTO "daita"."migrations" ("id") VALUES ($1)', [
-        migration.id,
-      ]);
+      await client.raw({insert: {schema: 'daita', table: 'migrations'}, into: ['id'], values: [migration.id]});
 
       for (const sql of sqls) {
         debug('daita:core:migration')(sql);
-        await client.raw(sql, []);
+        //TODO await client.raw(sql);
       }
     });
   }

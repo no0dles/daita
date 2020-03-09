@@ -5,7 +5,7 @@ export function relationalInsertContextTest(ctx: {adminContext: RelationalDataCo
   describe('relational-insert-context', () => {
 
     beforeEach(async () => {
-      await ctx.adminContext.delete(User).exec()
+      await ctx.adminContext.delete(User);
     });
 
     it('should execute insert(User).value(id: a, name: foo, count: 2, admin: true)', async () => {
@@ -31,8 +31,7 @@ export function relationalInsertContextTest(ctx: {adminContext: RelationalDataCo
     async function testInsert(user: any) {
       await ctx.adminContext
         .insert(User)
-        .value(user)
-        .exec();
+        .value(user);
     }
 
     async function testFailInsert(user: any, message: string) {

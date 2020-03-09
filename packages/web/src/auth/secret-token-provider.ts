@@ -11,7 +11,7 @@ export function secretTokenProvider(options: AuthSecretProviderOptions): TokenPr
     verify(token: string): Promise<AccessToken> {
       const defer = new Defer<AccessToken>();
       const result = jws.decode(token);
-      if (jws.verify(result.signature, result.header.alg, options.secret)) {
+      if (jws.verify(token, result.header.alg, options.secret)) {
         defer.resolve(result.payload);
       } else {
         defer.reject(new Error('invalid signature'));

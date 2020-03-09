@@ -20,24 +20,21 @@ export function relationalDeleteContextTest(ctx: {adminContext: RelationalDataCo
   describe('relational-delete-context', () => {
 
     beforeEach(async () => {
-      await ctx.adminContext.delete(User).exec();
+      await ctx.adminContext.delete(User);
       await ctx.adminContext
         .insert(User)
-        .value(userA)
-        .exec();
+        .value(userA);
       await ctx.adminContext
         .insert(User)
-        .value(userB)
-        .exec();
+        .value(userB);
     });
 
     it('should execute delete(User).where(id: b)', async () => {
       const result = await ctx.adminContext
         .delete(User)
-        .where({id: 'b'})
-        .exec();
+        .where({id: 'b'});
       expect(result).toEqual({affectedRows: 1});
-      const serverUsers = await ctx.adminContext.select(User).exec();
+      const serverUsers = await ctx.adminContext.select(User);
       expect(serverUsers).toEqual([userA]);
     });
   });

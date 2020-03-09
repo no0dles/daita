@@ -165,7 +165,7 @@ describe('postgres.data-adapter', () => {
       {rowCount: 1},
     );
     const adapter = new PostgresAdapter(mockedPool.pool());
-    const result = await adapter.insert(mockedSchema, 'author', [
+    await adapter.insert(mockedSchema, 'author', [
       {name: 'bar'},
       {name: 'foo'},
     ]);
@@ -178,7 +178,7 @@ describe('postgres.data-adapter', () => {
       {rowCount: 1},
     );
     const adapter = new PostgresAdapter(mockedPool.pool());
-    const result = await adapter.insert(mockedSchema, 'author', [
+    await adapter.insert(mockedSchema, 'author', [
       {name: 'bar'},
       {test: 'foo'},
     ]);

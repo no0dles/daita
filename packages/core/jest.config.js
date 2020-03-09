@@ -3,6 +3,10 @@ module.exports = {
         "ts",
         "js"
     ],
+    "coverageReporters": [
+        "json",
+        "html"
+    ],
     "transform": {
         "^.+\\.ts$": "ts-jest"
     },

@@ -27,15 +27,13 @@ export function relationalTransactionRemoteTest(ctx: {adminContext: RelationalTr
 
   describe('relational-transaction', () => {
     beforeEach(async () => {
-      await ctx.adminContext.delete(User).exec();
+      await ctx.adminContext.delete(User);
       await ctx.adminContext
         .insert(User)
-        .value(userA)
-        .exec();
+        .value(userA);
       await ctx.adminContext
         .insert(User)
-        .value(userB)
-        .exec();
+        .value(userB);
     });
 
     it('should timeout trx', async () => {
@@ -43,8 +41,7 @@ export function relationalTransactionRemoteTest(ctx: {adminContext: RelationalTr
         await ctx.adminContext
           .transaction(async (trx) => {
             await trx.delete(User)
-              .where({id: 'b'})
-              .exec();
+              .where({id: 'b'});
 
             await sleep(1300);
 
@@ -54,7 +51,7 @@ export function relationalTransactionRemoteTest(ctx: {adminContext: RelationalTr
         expect(e.message).toEqual('transaction timeout');
       }
 
-      const afterUsers = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
+      const afterUsers = await ctx.adminContext.select(User).orderBy(u => u.id);
       expect(afterUsers).toEqual([userA, userB]);
     });
   });
@@ -64,30 +61,26 @@ export function relationalTransactionTest(ctx: {adminContext: RelationalTransact
 
   describe('relational-transaction', () => {
     beforeEach(async () => {
-      await ctx.adminContext.delete(User).exec();
+      await ctx.adminContext.delete(User);
       await ctx.adminContext
         .insert(User)
-        .value(userA)
-        .exec();
+        .value(userA);
       await ctx.adminContext
         .insert(User)
-        .value(userB)
-        .exec();
+        .value(userB);
     });
 
     it('should not get mixed up with parallel calls outside of trx', async () => {
-      let promise: Promise<any> | null = null;
+      let promise: PromiseLike<any> | null = null;
 
       try {
         await ctx.adminContext
           .transaction(async (trx) => {
             await trx.delete(User)
-              .where({id: 'b'})
-              .exec();
+              .where({id: 'b'});
 
             promise = ctx.adminContext.delete(User)
-              .where({id: 'a'})
-              .exec();
+              .where({id: 'a'});
 
             throw new Error('cancel');
           });
@@ -100,7 +93,7 @@ export function relationalTransactionTest(ctx: {adminContext: RelationalTransact
         await promise;
       }
 
-      const afterUsers = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
+      const afterUsers = await ctx.adminContext.select(User).orderBy(u => u.id);
       expect(afterUsers).toEqual([userB]);
     });
 
@@ -108,17 +101,16 @@ export function relationalTransactionTest(ctx: {adminContext: RelationalTransact
       await ctx.adminContext
         .transaction(async (trx) => {
           await trx.delete(User)
-            .where({id: 'b'})
-            .exec();
+            .where({id: 'b'});
 
-          const insideUsers = await trx.select(User).orderBy(u => u.id).exec();
+          const insideUsers = await trx.select(User).orderBy(u => u.id);
           expect(insideUsers).toEqual([userA]);
 
-          const outsideUsers = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
+          const outsideUsers = await ctx.adminContext.select(User).orderBy(u => u.id);
           expect(outsideUsers).toEqual([userA, userB]);
         });
 
-      const afterUsers = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
+      const afterUsers = await ctx.adminContext.select(User).orderBy(u => u.id);
       expect(afterUsers).toEqual([userA]);
     });
 
@@ -127,15 +119,14 @@ export function relationalTransactionTest(ctx: {adminContext: RelationalTransact
         await ctx.adminContext
           .transaction(async (trx) => {
             await trx.delete(User)
-              .where({id: 'b'})
-              .exec();
+              .where({id: 'b'});
             throw new Error('custom err');
           });
       } catch (e) {
         expect(e.message).toEqual('custom err');
       }
 
-      const users = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
+      const users = await ctx.adminContext.select(User).orderBy(u => u.id);
       expect(users).toEqual([userA, userB]);
     });
 
@@ -143,11 +134,10 @@ export function relationalTransactionTest(ctx: {adminContext: RelationalTransact
       await ctx.adminContext
         .transaction(async (trx) => {
           await trx.delete(User)
-            .where({id: 'b'})
-            .exec();
+            .where({id: 'b'});
         });
 
-      const users = await ctx.adminContext.select(User).orderBy(u => u.id).exec();
+      const users = await ctx.adminContext.select(User).orderBy(u => u.id);
       expect(users).toEqual([userA]);
     });
   });

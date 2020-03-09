@@ -19,28 +19,24 @@ const userB = {
 export function relationalUpdateContextTest(ctx: {adminContext: RelationalDataContext}) {
   describe('relational-update-context', () => {
     beforeEach(async () => {
-      await ctx.adminContext.delete(User).exec();
+      await ctx.adminContext.delete(User);
       await ctx.adminContext
         .insert(User)
-        .value(userA)
-        .exec();
+        .value(userA);
       await ctx.adminContext
         .insert(User)
-        .value(userB)
-        .exec();
+        .value(userB);
     });
 
     it('should update(User).set(name: bar).where(id: a)', async () => {
       const result = await ctx.adminContext
         .update(User)
         .set({name: 'bar'})
-        .where({id: 'a'})
-        .exec();
+        .where({id: 'a'});
       expect(result).toEqual({affectedRows: 1});
       const serverUsers = await ctx.adminContext
         .select(User)
-        .orderBy(s => s.id)
-        .exec();
+        .orderBy(s => s.id);
       expect(serverUsers).toEqual([
         {...userA, name: 'bar'},
         userB,

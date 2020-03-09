@@ -16,8 +16,7 @@ context.transaction(async (trx) => {
       id: cantonId,
       name: 'Valais',
       shortName: 'VS',
-    })
-    .exec();
+    });
 
   await trx.insert(Mountain)
     .value({
@@ -25,14 +24,12 @@ context.transaction(async (trx) => {
       name: 'Matterhorn',
       cantonId,
       height: 4478,
-    })
-    .exec();
+    });
 }).then(async () => {
   const mountains = await context.select(Mountain)
     .include(m => m.canton)
     .orderBy(m => m.height)
-    .limit(10)
-    .exec();
+    .limit(10);
 
   console.log(mountains);
 });
