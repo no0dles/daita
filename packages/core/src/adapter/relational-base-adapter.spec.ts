@@ -122,7 +122,7 @@ describe('test', () => {
           },
         },
         {
-          from: {table: 'User_first', alias: 'base_ parent_parent'},
+          from: {table: 'User_first', alias: 'base_parent_parent'},
           type: 'left',
           on: {
             left: {table: 'base_parent', field: 'parentId_first'},

@@ -72,12 +72,12 @@ steps:
     - cd packages/examples/node-example
     - yarn build
 
-- name: build:example:angular
-  image: node:12
-  depends_on: [install, build:core, build:cli, build:web-client]
-  commands:
-    - cd packages/examples/angular-todo
-    - yarn build
+#- name: build:example:angular
+#  image: node:12
+#  depends_on: [install, build:core, build:cli, build:web-client]
+#  commands:
+#    - cd packages/examples/angular-todo
+#    - yarn build
 
 - name: tslint:core
   image: node:12
@@ -121,24 +121,72 @@ steps:
     - cd packages/mongodb
     - yarn lint
 
-- name: test
+- name: test:core
   image: node:12
-  depends_on: [install, build:core, build:cli, build:web, build:web-client]
+  depends_on: [build:core]
+  commands:
+    - cd packages/core
+    - yarn test
+  environment:
+    CI: true
+
+- name: test:cli
+  image: node:12
+  depends_on: [build:cli]
+  commands:
+    - cd packages/cli
+    - yarn test
+  environment:
+    CI: true
+
+- name: test:tslint
+  image: node:12
+  depends_on: [build:cli]
+  commands:
+    - cd packages/tslint
+    - yarn test
+  environment:
+    CI: true
+
+- name: test:web
+  image: node:12
+  depends_on: [build:web]
+  commands:
+    - cd packages/web
+    - yarn test
+  environment:
+    CI: true
+
+- name: test:web-client
+  image: node:12
+  depends_on: [build:web-client]
+  commands:
+    - cd packages/web-client
+    - yarn test
   environment:
     POSTGRES_URI: postgres://postgres:postgres@postgres
     KEYCLOAK_URI: http://keycloak
     CI: true
-  commands:
-    - yarn coverage
 
-- name: coverage
-  image: plugins/codecov
-  depends_on: [test]
-  settings:
-    paths:
-      - coverage
-    token:
-      from_secret: codecov_token
+- name: test:pg
+  image: node:12
+  depends_on: [build:pg]
+  commands:
+    - cd packages/pg
+    - yarn test
+  environment:
+    POSTGRES_URI: postgres://postgres:postgres@postgres
+    CI: true
+
+#
+#- name: coverage
+#  image: plugins/codecov
+#  depends_on: [test]
+#  settings:
+#    paths:
+#      - coverage
+#    token:
+#      from_secret: codecov_token
 
 services:
   - name: postgres
