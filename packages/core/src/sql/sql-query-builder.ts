@@ -1,38 +1,40 @@
 import {SqlQuery} from './sql-query';
-import {SqlSelect} from './sql-select';
-import {SqlUpdate} from './sql-update';
-import {SqlDelete} from './sql-delete';
-import {SqlInsert} from './sql-insert';
-import {SqlMinFunction} from './sql-min-function';
-import {SqlFunction} from './sql-function';
+import {isSqlSelect, SqlSelect} from './sql-select';
+import {isSqlUpdate, SqlUpdate} from './sql-update';
+import {isSqlDelete, SqlDelete} from './sql-delete';
+import {isSqlInsert, SqlInsert} from './sql-insert';
+import {isSqlMinFunction} from './sql-min-function';
+import {isSqlFunction, SqlFunction} from './sql-function';
 import {SqlSelectJoinType} from './sql-select-join-type';
-import {SqlSumFunction} from './sql-sum-function';
-import {SqlMaxFunction} from './sql-max-function';
-import {SqlConcatFunction} from './sql-concat-function';
-import {SqlAvgFunction} from './sql-avg-function';
+import {isSqlSumFunction} from './sql-sum-function';
+import {isSqlMaxFunction} from './sql-max-function';
+import {isSqlConcatFunction} from './sql-concat-function';
+import {isSqlAvgFunction} from './sql-avg-function';
 import {SqlOperand} from './sql-operand';
-import {SqlAndExpression} from './sql-and-expression';
+import {isSqlAndExpression} from './sql-and-expression';
 import {SqlExpression} from './sql-expression';
-import {SqlOrExpression} from './sql-or-expression';
-import {SqlRawValue} from './sql-raw-value';
-import {SqlCompareExpression} from './sql-compare-expression';
-import {SqlValue} from './sql-value';
+import {isSqlOrExpression} from './sql-or-expression';
+import {isSqlRawValue, SqlRawValue} from './sql-raw-value';
+import {isSqlCompareExpression} from './sql-compare-expression';
+import {isSqlValue, SqlValue} from './sql-value';
 import {SqlSelectField} from './sql-select-field';
-import {SqlSchemaTableField} from './sql-schema-table-field';
+import {isSqlSchemaTableField, SqlSchemaTableField} from './sql-schema-table-field';
 import {SqlSelectFrom} from './sql-select-from';
 import {SqlSelectJoin} from './sql-select-join';
-import {SqlAlias} from './sql-alias';
-import {SqlCountFunction} from './sql-count-function';
-import {SqlSelectAll} from './sql-select-all';
-import {SqlRawAliasValue} from './sql-raw-alias-value';
-import {SqlSelectDistinct} from './sql-select-distinct';
-import {SqlSchemaTable} from './sql-schema-table';
+import {isSqlAlias, SqlAlias} from './sql-alias';
+import {isSqlCountFunction} from './sql-count-function';
+import {isSqlSelectAll} from './sql-select-all';
+import {isSqlRawAliasValue} from './sql-raw-alias-value';
+import {isSqlSelectDistinct} from './sql-select-distinct';
+import {isSqlSchemaTable} from './sql-schema-table';
 import {SqlBaseBuilder} from './sql-base-builder';
-import {SqlInExpression} from './sql-in-expression';
+import {isSqlInExpression} from './sql-in-expression';
 import {SqlInOperand} from './sql-in-operand';
 import {SqlOrderDirection} from './sql-order-direction';
-import {SqlSelectOrderByField} from './sql-select-order-by-field';
-import {SqlSelectOrderByIndex} from './sql-select-order-by-index';
+import {assertNever} from '../utils/assert-never';
+import {isSqlSelectOrderByIndex} from './sql-select-order-by-index';
+import {SqlSelectOrderBy} from './sql-select-order-by';
+import {SqlSelectGroupBy} from './sql-select-group-by';
 
 export class SqlQueryBuilder extends SqlBaseBuilder {
   sql = '';
@@ -59,15 +61,16 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
 
   constructor(query: SqlQuery) {
     super();
-    const quy = query as SqlSelect & SqlUpdate & SqlDelete & SqlInsert;
-    if (quy.update) {
-      this.sql = this.formatUpdate(quy);
-    } else if (quy.select) {
-      this.sql = this.formatSelect(quy);
-    } else if (quy.delete) {
-      this.sql = this.formatDelete(quy);
-    } else if (quy.insert) {
-      this.sql = this.formatInsert(quy);
+    if (isSqlUpdate(query)) {
+      this.sql = this.formatUpdate(query);
+    } else if (isSqlSelect(query)) {
+      this.sql = this.formatSelect(query);
+    } else if (isSqlDelete(query)) {
+      this.sql = this.formatDelete(query);
+    } else if (isSqlInsert(query)) {
+      this.sql = this.formatInsert(query);
+    } else {
+      assertNever(query, 'unknown query');
     }
   }
 
@@ -85,22 +88,23 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
       return this.escapeTable(table);
     }
 
-    const selectAlias = table as SqlSelect & SqlAlias;
-    if (selectAlias.select && selectAlias.alias) {
-      return `(${this.formatSelect(selectAlias)}) ${this.asKeyword} ${this.escapeAlias(selectAlias.alias)}`;
+    if (isSqlSelect(table)) {
+      if (isSqlAlias(table)) {
+        return `(${this.formatSelect(table)}) ${this.asKeyword} ${this.escapeAlias(table.alias)}`;
+      } else {
+        return `(${this.formatSelect(table)})`;
+      }
     }
 
-    const select = table as SqlSelect;
-    if (select.select) {
-      return `(${this.formatSelect(select)})`;
+    if (isSqlSchemaTable(table)) {
+      if (isSqlAlias(table)) {
+        return this.formatSchemaTableField(table.schema, table.table, undefined, table.alias);
+      } else {
+        return this.formatSchemaTableField(table.schema, table.table, undefined, undefined);
+      }
     }
 
-    const tableAlias = table as SqlSchemaTable & SqlAlias;
-    if (tableAlias.table) {
-      return this.formatSchemaTableField(tableAlias.schema, tableAlias.table, undefined, tableAlias.alias);
-    }
-
-    throw new Error('unknown table');
+    assertNever(table, 'unknown table');
   }
 
   protected formatUpdate(update: SqlUpdate) {
@@ -169,27 +173,11 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
     }
 
     if (select.groupBy && select.groupBy.length > 0) {
-      const groupBySql = select.groupBy.map(groupBy => {
-        if (typeof groupBy === 'number') {
-          return this.appendValue(groupBy);
-        }
-        return this.formatSchemaTableField(groupBy.schema, groupBy.table, groupBy.field);
-      });
-      sql += ` ${this.groupByKeyword} ${groupBySql.join(', ')}`;
+      sql += ` ${this.groupByKeyword} ${select.groupBy.map(groupBy => this.formatGroupBy(groupBy)).join(', ')}`;
     }
 
     if (select.orderBy && select.orderBy.length > 0) {
-      const orderBySql = select.orderBy.map(orderBy => {
-        if (typeof orderBy === 'number') {
-          return this.appendValue(orderBy);
-        }
-        const ord = orderBy as SqlSelectOrderByField & SqlSelectOrderByIndex;
-        if (ord.index) {
-          return `${this.appendValue(ord.index)} ${orderBy.direction ? this.escapeOrderDirection(orderBy.direction) : ''}`.trimRight();
-        }
-        return `${this.formatSchemaTableField(ord.schema, ord.table, ord.field)} ${orderBy.direction ? this.escapeOrderDirection(orderBy.direction) : ''}`.trimRight();
-      });
-      sql += ` ${this.orderByKeyword} ${orderBySql.join(', ')}`;
+      sql += ` ${this.orderByKeyword} ${select.orderBy.map(orderBy => this.formatOrderBy(orderBy)).join(', ')}`;
     }
 
     if (select.having) {
@@ -207,128 +195,150 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
     return sql;
   }
 
-  private formatJoin(join: SqlSelectJoin) {
+  protected formatGroupBy(groupBy: SqlSelectGroupBy) {
+    if (typeof groupBy === 'number') {
+      return this.appendValue(groupBy);
+    }
+    return this.formatSchemaTableField(groupBy.schema, groupBy.table, groupBy.field);
+  }
+
+  protected formatOrderBy(orderBy: SqlSelectOrderBy) {
+    if (typeof orderBy === 'number') {
+      return this.appendValue(orderBy);
+    }
+    if (isSqlSelectOrderByIndex(orderBy)) {
+      return `${this.appendValue(orderBy.index)} ${orderBy.direction ? this.escapeOrderDirection(orderBy.direction) : ''}`.trimRight();
+    }
+    if (isSqlSchemaTableField(orderBy)) {
+      return `${this.formatSchemaTableField(orderBy.schema, orderBy.table, orderBy.field)} ${orderBy.direction ? this.escapeOrderDirection(orderBy.direction) : ''}`.trimRight();
+    }
+
+    assertNever(orderBy, 'unknown order by');
+  }
+
+  protected formatJoin(join: SqlSelectJoin) {
     return `${this.escapeJoinType(join.type)} ${this.formatTable(join.from)} ${this.onKeyword} ${this.formatExpression(join.on, false)}`;
   }
 
   protected formatExpression(expression: SqlExpression, wrap: boolean): string {
-    const expr = expression as SqlCompareExpression & SqlInExpression & SqlAndExpression & SqlOrExpression;
-
-    if (expr.and) {
-      return `${wrap ? '(' : ''}${expr.and.map(exp => this.formatExpression(exp, true)).join(` ${this.andKeyword} `)}${wrap ? ')' : ''}`;
+    if (isSqlAndExpression(expression)) {
+      return `${wrap ? '(' : ''}${expression.and.map(exp => this.formatExpression(exp, true)).join(` ${this.andKeyword} `)}${wrap ? ')' : ''}`;
     }
 
-    if (expr.or) {
-      return `${wrap ? '(' : ''}${expr.or.map(exp => this.formatExpression(exp, true)).join(` ${this.orKeyword} `)}${wrap ? ')' : ''}`;
+    if (isSqlOrExpression(expression)) {
+      return `${wrap ? '(' : ''}${expression.or.map(exp => this.formatExpression(exp, true)).join(` ${this.orKeyword} `)}${wrap ? ')' : ''}`;
     }
 
-    if (expr.value) {
-      return `${this.formatValue(expr.left)} ${this.escapeInOperand(expr.operand, expr.value)}`;
+    if (isSqlInExpression(expression)) {
+      return `${this.formatValue(expression.left)} ${this.escapeInOperand(expression.operand, expression.value)}`;
     }
 
-    return `${this.formatValue(expr.left)} ${this.escapeOperator(expr.operand)} ${this.formatValue(expr.right)}`;
+    if (isSqlCompareExpression(expression)) {
+      return `${this.formatValue(expression.left)} ${this.escapeOperator(expression.operand)} ${this.formatValue(expression.right)}`;
+    }
+
+    assertNever(expression, 'unknown sql expression');
   }
 
-
   protected formatFunction(fn: SqlFunction) {
-    const func = fn as SqlCountFunction
-      & SqlAvgFunction
-      & SqlSumFunction
-      & SqlMinFunction
-      & SqlMaxFunction
-      & SqlConcatFunction
-      & SqlAlias;
+    let alias: string | undefined = undefined;
 
-    if (func.count) {
-      const count = func.count as SqlSchemaTableField & SqlSelectAll & SqlSelectDistinct & SqlSchemaTable;
+    if (isSqlAlias(fn)) {
+      alias = fn.alias;
+    }
 
-      if (count.distinct) {
-        return this.escapeCount(`${this.distinctKeyword} ${this.formatSchemaTableField(count.schema, count.table, count.field, func.alias)}`);
+    if (isSqlCountFunction(fn)) {
+      if (isSqlSelectDistinct(fn.count)) {
+        return this.escapeCount(`${this.distinctKeyword} ${this.formatSchemaTableField(fn.count.schema, fn.count.table, fn.count.field, alias)}`);
       }
-      if (count.field) {
-        return this.escapeCount(this.formatSchemaTableField(count.schema, count.table, count.field, func.alias));
+      if (isSqlSchemaTableField(fn.count)) {
+        return this.escapeCount(this.formatSchemaTableField(fn.count.schema, fn.count.table, fn.count.field, alias));
       }
-      if (count.all) {
-        if (count.table) {
-          return this.escapeCount(`${this.formatSchemaTableField(count.schema, count.table)}.${this.allKeyword}`);
+      if (isSqlSelectAll(fn.count)) {
+        if (isSqlSchemaTable(fn.count)) {
+          return this.escapeCount(`${this.formatSchemaTableField(fn.count.schema, fn.count.table)}.${this.allKeyword}`);
         } else {
           return this.escapeCount(this.allKeyword);
         }
       }
-      throw new Error('unknown count function');
+
+      assertNever(fn.count, 'unknown sql count function');
     }
 
-    if (func.avg) {
-      return this.escapeAvg(this.formatSchemaTableField(func.avg.schema, func.avg.table, func.avg.field, func.alias));
+    if (isSqlSumFunction(fn)) {
+      return this.escapeSum(this.formatSchemaTableField(fn.sum.schema, fn.sum.table, fn.sum.field, alias));
     }
 
-    if (func.min) {
-      return this.escapeMin(this.formatSchemaTableField(func.min.schema, func.min.table, func.min.field, func.alias));
+    if (isSqlAvgFunction(fn)) {
+      return this.escapeAvg(this.formatSchemaTableField(fn.avg.schema, fn.avg.table, fn.avg.field, alias));
     }
 
-    if (func.max) {
-      return this.escapeMax(this.formatSchemaTableField(func.max.schema, func.max.table, func.max.field, func.alias));
+    if (isSqlMinFunction(fn)) {
+      return this.escapeMin(this.formatSchemaTableField(fn.min.schema, fn.min.table, fn.min.field, alias));
     }
 
-    if (func.concat && func.concat instanceof Array) {
-      return this.escapeConcat(func.concat);
+    if (isSqlMaxFunction(fn)) {
+      return this.escapeMax(this.formatSchemaTableField(fn.max.schema, fn.max.table, fn.max.field, alias));
     }
 
-    return null;
+    if (isSqlConcatFunction(fn)) {
+      return this.escapeConcat(fn.concat);
+    }
+
+    assertNever(fn, 'unknown sql function');
   }
 
-  protected formatValue(value: SqlValue): string | null {
-    const val = value as SqlRawValue & SqlSelect & SqlAlias & SqlSchemaTableField & SqlFunction;
-    if (typeof val === 'string' || typeof val === 'boolean' || typeof val === 'number' || val instanceof Date || val === null || val === undefined) {
-      return this.appendValue(val);
+  protected formatValue(value: SqlValue): string {
+    if (isSqlRawValue(value)) {
+      return this.appendValue(value);
     }
 
-    const fnSql = this.formatFunction(val);
-    if (fnSql) {
-      return fnSql;
+    if (isSqlFunction(value)) {
+      return this.formatFunction(value);
     }
 
-    if (val.select && val.alias) {
-      return `(${this.formatSelect(val)}) ${this.asKeyword} ${this.escapeAlias(val.alias)}`;
+    if (isSqlSelect(value)) {
+      if (isSqlAlias(value)) {
+        return `(${this.formatSelect(value)}) ${this.asKeyword} ${this.escapeAlias(value.alias)}`;
+      } else {
+        return `(${this.formatSelect(value)})`;
+      }
     }
 
-    if (val.select) {
-      return `(${this.formatSelect(val)})`;
+    if (isSqlSchemaTableField(value)) {
+      return this.formatSchemaTableField(value.schema, value.table, value.field);
     }
 
-    if (val.field) {
-      return this.formatSchemaTableField(undefined, val.table, val.field);
-    }
-
-    return null;
+    assertNever(value, 'unknown value');
   }
 
   protected formatField(field: SqlSelectField): string {
-    const fld = field as SqlSelectAll & SqlRawAliasValue & SqlValue & SqlFunction & SqlAlias & SqlSelect & SqlSchemaTableField;
-
-    if (fld.value) {
-      const param = this.appendValue(fld.value);
-      return `${param} ${this.asKeyword} ${this.escapeAlias(fld.alias)}`;
+    if (isSqlRawAliasValue(field)) {
+      const param = this.appendValue(field.value);
+      return `${param} ${this.asKeyword} ${this.escapeAlias(field.alias)}`;
     }
 
-    if (fld.all) {
-      const sql = this.formatSchemaTableField(fld.schema, fld.table);
-      if (sql.length > 0) {
-        return `${sql}.${this.allKeyword}`;
+    if (isSqlSelectAll(field)) {
+      if (isSqlSchemaTable(field)) {
+        return `${this.formatSchemaTableField(field.schema, field.table)}.${this.allKeyword}`;
+      } else {
+        return this.allKeyword;
       }
-      return this.allKeyword;
     }
 
-    if (fld.field) {
-      return this.formatSchemaTableField(fld.schema, fld.table, fld.field, fld.alias);
+    if (isSqlSchemaTableField(field)) {
+      let alias = undefined;
+      if (isSqlAlias(field)) {
+        alias = field.alias;
+      }
+      return this.formatSchemaTableField(field.schema, field.table, field.field, alias);
     }
 
-    const valueSql = this.formatValue(fld);
-    if (valueSql) {
-      return valueSql;
+    if (isSqlValue(field)) {
+      return this.formatValue(field);
     }
 
-    throw new Error('unknown select field');
+    assertNever(field, 'unknown select field');
   }
 
   protected escapeOrderDirection(direction: SqlOrderDirection): string {
@@ -395,6 +405,10 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
 
   protected escapeCount(value: string) {
     return `count(${value})`;
+  }
+
+  protected escapeSum(value: string) {
+    return `sum(${value})`;
   }
 
   protected escapeAvg(value: string) {

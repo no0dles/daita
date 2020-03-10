@@ -5,6 +5,8 @@ import {SqlCompareExpression} from './sql-compare-expression';
 import {SqlSelectFrom} from './sql-select-from';
 import {SqlSelectJoin} from './sql-select-join';
 import {SqlSelectOrderBy} from './sql-select-order-by';
+import {isKind} from '../utils/is-kind';
+import {SqlUpdate} from './sql-update';
 
 export interface SqlSelect {
   select: SqlSelectField[];
@@ -17,3 +19,5 @@ export interface SqlSelect {
   limit?: number | null;
   offset?: number | null;
 }
+
+export const isSqlSelect = (val: any): val is SqlSelect => isKind<SqlSelect>(val, ['select']);

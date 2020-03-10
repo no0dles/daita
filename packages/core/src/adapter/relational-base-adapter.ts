@@ -155,12 +155,13 @@ export abstract class RelationalBaseAdapter implements RelationalDataAdapter {
       select: [],
       from: {table: this.mapSourceTable(table), alias: 'base'},
     };
+
     if (query.filter) {
       select.where = this.parseJoinFilter(schema, table, query.filter, select);
     }
 
     const sql: SqlSelect = {
-      select: [{count: {all: true}}],
+      select: [{count: {all: true}, alias: 'count'}],
       from: { ...select, alias: 'cnt' },
     };
 

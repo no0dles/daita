@@ -640,7 +640,7 @@ describe('sql-query-builder', () => {
       query: {
         delete: 'foo',
       },
-      sql: 'DELETE "foo"',
+      sql: 'DELETE FROM "foo"',
       values: [],
     });
 
@@ -653,7 +653,7 @@ describe('sql-query-builder', () => {
           right: 2,
         },
       },
-      sql: 'DELETE "foo" WHERE $1 != $2',
+      sql: 'DELETE FROM "foo" WHERE $1 != $2',
       values: [1, 2],
     });
   });

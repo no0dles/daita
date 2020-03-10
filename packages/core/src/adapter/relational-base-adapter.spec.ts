@@ -44,16 +44,16 @@ describe('test', () => {
     const query = await testQuery(mock => mock.select(User).include(u => u.parent));
     expect(query).toEqual({
       select: [
-        {field: 'id_first', table: 'base', alias: 'base_id'},
-        {field: 'name_first', table: 'base', alias: 'base_name'},
-        {field: 'count_first', table: 'base', alias: 'base_count'},
-        {field: 'parentId_first', table: 'base', alias: 'base_parentId'},
-        {field: 'admin_second', table: 'base', alias: 'base_admin'},
-        {field: 'id_first', table: 'base_parent', alias: 'base_parent_id'},
-        {field: 'name_first', table: 'base_parent', alias: 'base_parent_name'},
-        {field: 'count_first', table: 'base_parent', alias: 'base_parent_count'},
-        {field: 'parentId_first', table: 'base_parent', alias: 'base_parent_parentId'},
-        {field: 'admin_second', table: 'base_parent', alias: 'base_parent_admin'},
+        {field: 'id_first', table: 'base', alias: 'base.id'},
+        {field: 'name_first', table: 'base', alias: 'base.name'},
+        {field: 'count_first', table: 'base', alias: 'base.count'},
+        {field: 'parentId_first', table: 'base', alias: 'base.parentId'},
+        {field: 'admin_second', table: 'base', alias: 'base.admin'},
+        {field: 'id_first', table: 'base_parent', alias: 'base_parent.id'},
+        {field: 'name_first', table: 'base_parent', alias: 'base_parent.name'},
+        {field: 'count_first', table: 'base_parent', alias: 'base_parent.count'},
+        {field: 'parentId_first', table: 'base_parent', alias: 'base_parent.parentId'},
+        {field: 'admin_second', table: 'base_parent', alias: 'base_parent.admin'},
       ],
       from: {table: 'User_first', alias: 'base'},
       joins: [
@@ -74,11 +74,11 @@ describe('test', () => {
     const query = await testQuery(mock => mock.select(User).where({parent: {name: 'foo'}}));
     expect(query).toEqual({
       select: [
-        {field: 'id_first', table: 'base', alias: 'base_id'},
-        {field: 'name_first', table: 'base', alias: 'base_name'},
-        {field: 'count_first', table: 'base', alias: 'base_count'},
-        {field: 'parentId_first', table: 'base', alias: 'base_parentId'},
-        {field: 'admin_second', table: 'base', alias: 'base_admin'},
+        {field: 'id_first', table: 'base', alias: 'base.id'},
+        {field: 'name_first', table: 'base', alias: 'base.name'},
+        {field: 'count_first', table: 'base', alias: 'base.count'},
+        {field: 'parentId_first', table: 'base', alias: 'base.parentId'},
+        {field: 'admin_second', table: 'base', alias: 'base.admin'},
       ],
       from: {table: 'User_first', alias: 'base'},
       joins: [
@@ -104,11 +104,11 @@ describe('test', () => {
     const query = await testQuery(mock => mock.select(User).where({parent: {parent:{name: 'foo'}}}));
     expect(query).toEqual({
       select: [
-        {field: 'id_first', table: 'base', alias: 'base_id'},
-        {field: 'name_first', table: 'base', alias: 'base_name'},
-        {field: 'count_first', table: 'base', alias: 'base_count'},
-        {field: 'parentId_first', table: 'base', alias: 'base_parentId'},
-        {field: 'admin_second', table: 'base', alias: 'base_admin'},
+        {field: 'id_first', table: 'base', alias: 'base.id'},
+        {field: 'name_first', table: 'base', alias: 'base.name'},
+        {field: 'count_first', table: 'base', alias: 'base.count'},
+        {field: 'parentId_first', table: 'base', alias: 'base.parentId'},
+        {field: 'admin_second', table: 'base', alias: 'base.admin'},
       ],
       from: {table: 'User_first', alias: 'base'},
       joins: [
@@ -122,7 +122,7 @@ describe('test', () => {
           },
         },
         {
-          from: {table: 'User_first', alias: 'base_parent_parent'},
+          from: {table: 'User_first', alias: 'base_ parent_parent'},
           type: 'left',
           on: {
             left: {table: 'base_parent', field: 'parentId_first'},
@@ -143,11 +143,11 @@ describe('test', () => {
     const query = await testQuery(mock => mock.select(User).orderBy(u => u.parent.id, 'asc'));
     expect(query).toEqual({
       select: [
-        {field: 'id_first', table: 'base', alias: 'base_id'},
-        {field: 'name_first', table: 'base', alias: 'base_name'},
-        {field: 'count_first', table: 'base', alias: 'base_count'},
-        {field: 'parentId_first', table: 'base', alias: 'base_parentId'},
-        {field: 'admin_second', table: 'base', alias: 'base_admin'},
+        {field: 'id_first', table: 'base', alias: 'base.id'},
+        {field: 'name_first', table: 'base', alias: 'base.name'},
+        {field: 'count_first', table: 'base', alias: 'base.count'},
+        {field: 'parentId_first', table: 'base', alias: 'base.parentId'},
+        {field: 'admin_second', table: 'base', alias: 'base.admin'},
       ],
       from: {table: 'User_first', alias: 'base'},
       joins: [
