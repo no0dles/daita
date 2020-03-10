@@ -1,7 +1,7 @@
 import {setupEnv} from '../test/utils';
 
 describe('cli serve', () => {
-  it(`should serve auth`, setupEnv('serve-auth', async (ctx) => {
+  it(`should serve auth`, setupEnv('serve-auth', async ctx => {
     // ctx.env('POSTGRES_URI', 'postgres://postgres:postgres@localhost/postgres');
     // const defer = new Defer<void>();
     //

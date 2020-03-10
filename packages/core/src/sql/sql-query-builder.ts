@@ -138,17 +138,17 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
 
     if (insert.values instanceof Array) {
       sql += ` ${this.valuesKeyword} `;
-      const values: any[][] = [];
+      const rows: any[][] = [];
       for (const value of insert.values) {
         if (value instanceof Array) {
-          values.push(value);
+          rows.push(value);
         }
       }
-      if (values.length === 0) {
-        values.push(insert.values);
+      if (rows.length === 0) {
+        rows.push(insert.values);
       }
 
-      sql += values.map(value => `(${value.map(value => this.formatValue(value)).join(', ')})`).join(', ');
+      sql += rows.map(row => `(${row.map(value => this.formatValue(value)).join(', ')})`).join(', ');
     } else if (insert.values.select) {
       sql += ' ' + this.formatSelect(insert.values);
     }
@@ -241,7 +241,7 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
   }
 
   protected formatFunction(fn: SqlFunction) {
-    let alias: string | undefined = undefined;
+    let alias: string | undefined;
 
     if (isSqlAlias(fn)) {
       alias = fn.alias;
@@ -327,7 +327,7 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
     }
 
     if (isSqlSchemaTableField(field)) {
-      let alias = undefined;
+      let alias;
       if (isSqlAlias(field)) {
         alias = field.alias;
       }
@@ -386,7 +386,7 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
 
   protected escapeInOperand(inOperand: SqlInOperand, value: SqlRawValue[] | SqlSelect): string {
     if (value instanceof Array) {
-      const values = value.map(value => this.formatValue(value)).join(', ');
+      const values = value.map(item => this.formatValue(item)).join(', ');
       switch (inOperand) {
         case 'in':
           return `IN (${values})`;

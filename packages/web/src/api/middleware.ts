@@ -11,7 +11,7 @@ import {AppOptions} from '../app-options';
 import {ContextManager} from '../context-manager';
 
 const getTable = (name: string): TableInformation<any> => {
-  return {name: name};
+  return {name};
 };
 
 export function relationalApi(options: AppOptions): express.Router {

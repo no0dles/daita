@@ -6,7 +6,6 @@
   ],
   "jsRules": {},
   "rules": {
-    "prettier": true,
     "no-empty": false,
     "max-classes-per-file": false,
     "quotemark": ["single"],
@@ -14,6 +13,8 @@
     "interface-name": [true, "never-prefix"],
     "arrow-parens": [true, "ban-single-arg-parens"],
     "no-src-import": true,
+    "no-unsafe-finally": true,
+    "no-unused-expression": true,
     "object-literal-sort-keys": false,
     "ordered-imports": false,
     "member-access": [true, "no-public"],

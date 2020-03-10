@@ -5,9 +5,9 @@ import {AstType, parsePropertyType} from './ast-type';
 import {AstObjectValue} from './ast-object-value';
 
 export class AstPropertyDeclaration {
-  public name: string | null = null;
-  public initializer: AstObjectValue | null = null;
-  public type: AstType | null = null;
+  name: string | null = null;
+  initializer: AstObjectValue | null = null;
+  type: AstType | null = null;
 
   constructor(private sourceFile: AstSourceFile,
               private propertyDeclaration: ts.PropertyDeclaration) {

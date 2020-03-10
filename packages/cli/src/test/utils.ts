@@ -51,9 +51,7 @@ export interface CliEnvironment {
   contains(dir: string, files: string[]): Promise<void>;
 }
 
-export interface CliEnvironmentCallback {
-  (ctx: CliEnvironment): Promise<any>;
-}
+export type CliEnvironmentCallback = (ctx: CliEnvironment) => Promise<any>;
 
 export function setupEnv(testName: string, callback: CliEnvironmentCallback, options?: { schema?: string }) {
   const scenarioResultRoot = path.join(__dirname, '../../test/tmp/scenario');
@@ -89,7 +87,7 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
       env: (name: string, value: string) => {
         process.env[name] = value;
       },
-      run: (args) => {
+      run:args => {
         return cli.run([...args.split(' '), '--cwd', resultPath]);
       },
       expectConsoleOutput: (expectedOutput: string, timeout?: number) => {

@@ -45,8 +45,9 @@ export async function getSchemaLocation(
 
   const migrationDirectory = path.join(sourceDirectory, 'migrations');
 
+  let fileName = '';
   if (flags.schema) {
-    const fileName = path.join(cwd, flags.schema);
+    fileName = path.join(cwd, flags.schema);
 
     if (fs.existsSync(fileName)) {
       return resolveSchemaLocation(
@@ -58,7 +59,7 @@ export async function getSchemaLocation(
       cmd.warn(`schema not found at ${fileName}`);
     }
   } else {
-    const fileName = path.join(sourceDirectory, 'schema.ts');
+    fileName = path.join(sourceDirectory, 'schema.ts');
     if (fs.existsSync(fileName)) {
       return resolveSchemaLocation(
         fileName,
@@ -68,10 +69,11 @@ export async function getSchemaLocation(
     }
   }
 
-  let fileName = path.relative(
+  fileName = path.relative(
     cwd,
     path.join(sourceDirectory, 'schema.ts'),
   );
+
   while (true) {
     fileName = await cli.prompt('Where is your schema file?', {
       default: fileName,
@@ -97,7 +99,7 @@ function resolveSchemaLocation(
   migrationDirectory: string,
 ): SchemaLocation {
   return {
-    fileName: fileName,
+    fileName,
     directory: path.dirname(fileName),
     sourceDirectory,
     migrationDirectory,

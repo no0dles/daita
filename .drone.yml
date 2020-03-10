@@ -79,6 +79,48 @@ steps:
     - cd packages/examples/angular-todo
     - yarn build
 
+- name: tslint:core
+  image: node:12
+  depends_on: [install, build:tslint]
+  commands:
+    - cd packages/core
+    - yarn lint
+
+- name: tslint:pg
+  image: node:12
+  depends_on: [install, build:tslint]
+  commands:
+    - cd packages/pg
+    - yarn lint
+
+- name: tslint:cli
+  image: node:12
+  depends_on: [install, build:tslint]
+  commands:
+    - cd packages/cli
+    - yarn lint
+
+- name: tslint:web
+  image: node:12
+  depends_on: [install, build:tslint]
+  commands:
+    - cd packages/web
+    - yarn lint
+
+- name: tslint:web-client
+  image: node:12
+  depends_on: [install, build:tslint]
+  commands:
+    - cd packages/web-client
+    - yarn lint
+
+- name: tslint:mongodb
+  image: node:12
+  depends_on: [install, build:tslint]
+  commands:
+    - cd packages/mongodb
+    - yarn lint
+
 - name: test
   image: node:12
   depends_on: [install, build:core, build:cli, build:web, build:web-client]

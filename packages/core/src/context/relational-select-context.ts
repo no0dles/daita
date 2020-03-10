@@ -122,6 +122,7 @@ abstract class BaseRelationalSelectContext<T, C> implements PromiseLike<T[]> {
   private isConstructor(value: any) {
     try {
       new new Proxy(value, {
+        // tslint:disable-next-line
         construct() {
           return {};
         },

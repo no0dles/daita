@@ -72,7 +72,8 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
     "version": "oclif-dev readme && git add README.md",
-    "lint": "tslint src/**/*.ts",
+    "lint": "tslint -c tslint.json src/**/*.ts",
+    "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
     "prettier": "prettier 'src/**/*.ts' --write"
   },
   "types": "dist/index.d.ts"

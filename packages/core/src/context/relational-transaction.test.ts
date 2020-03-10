@@ -39,7 +39,7 @@ export function relationalTransactionRemoteTest(ctx: {adminContext: RelationalTr
     it('should timeout trx', async () => {
       try {
         await ctx.adminContext
-          .transaction(async (trx) => {
+          .transaction(async trx => {
             await trx.delete(User)
               .where({id: 'b'});
 
@@ -75,7 +75,7 @@ export function relationalTransactionTest(ctx: {adminContext: RelationalTransact
 
       try {
         await ctx.adminContext
-          .transaction(async (trx) => {
+          .transaction(async trx => {
             await trx.delete(User)
               .where({id: 'b'});
 
@@ -99,7 +99,7 @@ export function relationalTransactionTest(ctx: {adminContext: RelationalTransact
 
     it('should not be visible outside of trx', async () => {
       await ctx.adminContext
-        .transaction(async (trx) => {
+        .transaction(async trx => {
           await trx.delete(User)
             .where({id: 'b'});
 
@@ -117,7 +117,7 @@ export function relationalTransactionTest(ctx: {adminContext: RelationalTransact
     it('should rollback trx', async () => {
       try {
         await ctx.adminContext
-          .transaction(async (trx) => {
+          .transaction(async trx => {
             await trx.delete(User)
               .where({id: 'b'});
             throw new Error('custom err');
@@ -132,7 +132,7 @@ export function relationalTransactionTest(ctx: {adminContext: RelationalTransact
 
     it('should commit trx', async () => {
       await ctx.adminContext
-        .transaction(async (trx) => {
+        .transaction(async trx => {
           await trx.delete(User)
             .where({id: 'b'});
         });

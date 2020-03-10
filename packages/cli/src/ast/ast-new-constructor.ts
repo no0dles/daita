@@ -3,8 +3,8 @@ import * as ts from 'typescript';
 import {AstObjectValue} from './ast-object-value';
 
 export class AstNewConstructor {
-  public typeName: string | null = null;
-  public arguments: AstObjectValue[] = [];
+  typeName: string | null = null;
+  arguments: AstObjectValue[] = [];
 
   constructor(private expression: ts.NewExpression) {
     this.typeName = getIdentifierName(expression.expression);

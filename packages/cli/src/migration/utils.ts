@@ -41,8 +41,8 @@ export function mergeList<T>(
 ) {
   const leftItems = [...newItems];
   for (const currentItem of currentItems) {
-    const newItem = newItems.filter(newItem =>
-      functions.compare(newItem, currentItem),
+    const newItem = newItems.filter(item =>
+      functions.compare(item, currentItem),
     )[0];
     if (newItem) {
       const index = leftItems.indexOf(newItem);

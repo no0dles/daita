@@ -142,8 +142,7 @@ export class PostgresAdapter implements RelationalMigrationAdapter {
   }
 
   raw(sql: string, values: any[]): Promise<RelationalRawResult>;
-  raw(sql: SqlQuery): Promise<RelationalRawResult>;
-  raw(sql: SqlDmlQuery): Promise<RelationalRawResult>;
+  raw(sql: SqlQuery | SqlDmlQuery): Promise<RelationalRawResult>;
   raw(sql: string | SqlQuery | SqlDmlQuery, values?: any[]): Promise<RelationalRawResult> {
     return this.run(async client => {
       const adapter = new PostgresDataAdapter(client);

@@ -14,8 +14,8 @@ export default class Diagram extends Command {
   };
 
   async run() {
-    const {flags} = this.parse(Diagram);
-    const schemaLocation = await getSchemaLocation(flags, this);
+    const parsed = this.parse(Diagram);
+    const schemaLocation = await getSchemaLocation(parsed.flags, this);
     const astContext = new AstContext();
     const schemaInfo = await getSchemaInformation(astContext, schemaLocation, this);
     if (!schemaInfo) {
@@ -52,8 +52,8 @@ export default class Diagram extends Command {
 
     const svg = nomnoml.renderSvg(content);
     //const svg = await (<any>yuml2svg)(content, { isDark: true, type:  'class', dir: 'LR' });
-    const cwd = flags.cwd ? path.resolve(flags.cwd) : process.cwd();
-    const svgFile = path.join(cwd, flags.filename || 'docs/schema.svg');
+    const cwd = parsed.flags.cwd ? path.resolve(parsed.flags.cwd) : process.cwd();
+    const svgFile = path.join(cwd, parsed.flags.filename || 'docs/schema.svg');
     const svgDirectory = path.dirname(svgFile);
     if (!fs.existsSync(svgDirectory)) {
       fs.mkdirSync(svgDirectory, {recursive: true});

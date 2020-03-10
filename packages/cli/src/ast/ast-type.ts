@@ -135,7 +135,7 @@ export function parseType(sourceFile: AstSourceFile, typeNode: ts.TypeNode, allo
     return {
       kind: 'reference',
       allowUndefined,
-      referenceName: referenceName,
+      referenceName,
       reference: referenceClassDeclaration,
     };
   }

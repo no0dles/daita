@@ -51,7 +51,7 @@ export class SocketRelationalAdapter extends SocketRelationalDataAdapter
     try {
       const timeoutDefer = new Defer<void>();
       this.transactions[tid] = timeoutDefer;
-      const execution = action(new SocketRelationalDataAdapter(this.defers, this.socket, {tid: tid}));
+      const execution = action(new SocketRelationalDataAdapter(this.defers, this.socket, {tid}));
       await Promise.race([execution, timeoutDefer.promise]);
       if (timeoutDefer.isRejected) {
         throw timeoutDefer.rejectedError;

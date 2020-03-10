@@ -38,25 +38,25 @@ export default class Serve extends Command {
   };
 
   async run() {
-    const {flags} = this.parse(Serve);
-    const schemaLocation = await getSchemaLocation(flags, this);
+    const parsed = this.parse(Serve);
+    const schemaLocation = await getSchemaLocation(parsed.flags, this);
 
 
-    process.env['SUPPRESS_NO_CONFIG_WARNING'] = 'true';
-    if (flags.cwd) {
-      process.env['NODE_CONFIG_DIR'] = path.join(flags.cwd, 'config');
+    process.env.SUPPRESS_NO_CONFIG_WARNING = 'true';
+    if (parsed.flags.cwd) {
+      process.env.NODE_CONFIG_DIR = path.join(parsed.flags.cwd, 'config');
     }
 
-    const dataAdapter = getRelationalDataAdapter(flags, this);
+    const dataAdapter = getRelationalDataAdapter(parsed.flags, this);
     if (!dataAdapter) {
       throw new Error('no relational adapter');
     }
 
-    const tokenProvider = getTokenProvider(flags, this);
+    const tokenProvider = getTokenProvider(parsed.flags, this);
 
     const watchPaths = [schemaLocation.sourceDirectory];
 
-    let currentPath = flags.cwd ? path.resolve(flags.cwd) : process.cwd();
+    let currentPath = parsed.flags.cwd ? path.resolve(parsed.flags.cwd) : process.cwd();
     const pathParts = path.dirname(currentPath).split(path.sep);
     for (let i = 0; i < pathParts.length + 1; i++) {
       const nodePath = path.join(currentPath, 'node_modules');
@@ -96,14 +96,14 @@ export default class Serve extends Command {
       const app = getApp({
         type: 'migrationTree',
         dataAdapter,
-        migrationTree: migrationTree,
+        migrationTree,
         auth: tokenProvider ? {
           tokenProvider,
           userProvider,
         } : undefined,
       });
 
-      const port = flags.port || 8765;
+      const port = parsed.flags.port || 8765;
       this.server = app.listen(port, () => {
         this.log(`listening on http://localhost:${port}`);
       });
@@ -113,13 +113,13 @@ export default class Serve extends Command {
       followSymlinks: true,
       ignored: /^(.[ts|js])$/,
     });
-    watcher.on('change', path => {
+    watcher.on('change', () => {
       debouncer.bounce();
     });
-    watcher.on('add', path => {
+    watcher.on('add', () => {
       debouncer.bounce();
     });
-    watcher.on('unlink', path => {
+    watcher.on('unlink', () => {
       debouncer.bounce();
     });
   }

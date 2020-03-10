@@ -1,5 +1,5 @@
 import * as http from 'http';
-import * as socket from 'socket.io';
+import * as socketIo from 'socket.io';
 import {SocketUpdateEvent} from './events/socket-update-event';
 import {SocketInsertEvent} from './events/socket-insert-event';
 import {SocketSelectEvent} from './events/socket-select-event';
@@ -17,7 +17,7 @@ import {SocketAuthEvent} from './events/socket-auth-event';
 import {ContextUser} from '@daita/core/dist/auth';
 
 function handle<T>(
-  socket: socket.Socket,
+  socket: socketIo.Socket,
   event: string,
   action: (data: T) => PromiseLike<any>,
 ) {
@@ -25,7 +25,7 @@ function handle<T>(
     debug('daita:web:socket')('received event ' + event, data);
     try {
       const result = await action(data);
-      socket.emit(event, {cid: data.cid, result: result});
+      socket.emit(event, {cid: data.cid, result});
     } catch (e) {
       socket.emit('err', {cid: data.cid, err: e.message});
     }
@@ -36,7 +36,7 @@ export function createSocketApp(
   server: http.Server,
   options: AppOptions,
 ): http.Server {
-  const io = socket(server);
+  const io = socketIo(server);
 
   io.on('connection', socket => {
     let user: ContextUser | null = null;
@@ -76,32 +76,32 @@ export function createSocketApp(
     });
 
     handle<SocketInsertEvent>(socket, 'insert', async data => {
-      const context = manager.getContext({migrationId: data.migrationId, user: user, transactionId: data.tid});
+      const context = manager.getContext({migrationId: data.migrationId, user, transactionId: data.tid});
       return insert({name: data.table}, context, data);
     });
 
     handle<SocketUpdateEvent>(socket, 'update', data => {
-      const context = manager.getContext({migrationId: data.migrationId, user: user, transactionId: data.tid});
+      const context = manager.getContext({migrationId: data.migrationId, user, transactionId: data.tid});
       return update({name: data.table}, context, data);
     });
 
     handle<SocketDeleteEvent>(socket, 'delete', data => {
-      const context = manager.getContext({migrationId: data.migrationId, user: user, transactionId: data.tid});
+      const context = manager.getContext({migrationId: data.migrationId, user, transactionId: data.tid});
       return remove({name: data.table}, context, data);
     });
 
     handle<SocketSelectEvent>(socket, 'select', data => {
-      const context = manager.getContext({migrationId: data.migrationId, user: user, transactionId: data.tid});
+      const context = manager.getContext({migrationId: data.migrationId, user, transactionId: data.tid});
       return select({name: data.table}, context, data);
     });
 
     handle<SocketCountEvent>(socket, 'count', data => {
-      const context = manager.getContext({migrationId: data.migrationId, user: user, transactionId: data.tid});
+      const context = manager.getContext({migrationId: data.migrationId, user, transactionId: data.tid});
       return count({name: data.table}, context, data);
     });
 
     handle<SocketRawEvent>(socket, 'raw', data => {
-      const context = manager.getContext({user: user, transactionId: data.tid});
+      const context = manager.getContext({user, transactionId: data.tid});
       return context.raw(data.sql, data.values);
     });
 

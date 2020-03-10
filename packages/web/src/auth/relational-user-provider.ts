@@ -32,7 +32,7 @@ export class RelationalUserProvider implements UserProvider {
     const subject = userId.substr(index + 1);
     await this.context.insert(UserRole)
       .value({
-        roleName: roleName,
+        roleName,
         userIssuer: issuer,
         userSubject: subject,
       });
@@ -75,7 +75,7 @@ export class RelationalUserProvider implements UserProvider {
     }
 
     return {
-      roles: roles,
+      roles,
       claims: [],
       id: `${user.issuer}:${user.subject}`,
       username: null,

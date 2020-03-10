@@ -37,17 +37,17 @@ export default class New extends Command {
   ];
 
   async run() {
-    const {flags, args} = this.parse(New);
+    const parsed = this.parse(New);
 
-    let name = args.name;
-    let license = flags.license;
-    let database = flags.database;
+    let name = parsed.args.name;
+    let license = parsed.flags.license;
+    let database = parsed.flags.database;
 
     if (!name) {
       name = await cli.prompt('Whats your project name?', {default: ''});
     }
 
-    const projectPath = path.join(flags.cwd || process.cwd(), name);
+    const projectPath = path.join(parsed.flags.cwd || process.cwd(), name);
     if (fs.existsSync(projectPath)) {
       this.error(`Directory "${projectPath}" already exists, needs to be empty`);
       this.exit(1);
@@ -55,7 +55,7 @@ export default class New extends Command {
     }
 
     if (!database) {
-      let responses: any = await inquirer.prompt([{
+      const responses: any = await inquirer.prompt([{
         name: 'database',
         message: 'select a database',
         type: 'list',
@@ -65,7 +65,7 @@ export default class New extends Command {
           {name: 'mongodb'},
         ],
       }]);
-      database = responses.database
+      database = responses.database;
     }
 
     if (!license) {
@@ -107,17 +107,17 @@ export default class New extends Command {
       },
       {
         title: 'Install dependencies',
-        skip: ctx => flags['skip-install'],
-        task: async (ctx) => {
-          await installDependencies(flags['npm-client'], projectPath);
+        skip: ctx => parsed.flags['skip-install'],
+        task: async ctx => {
+          await installDependencies(parsed.flags['npm-client'], projectPath);
         },
       },
     ]);
     await tasks.run();
 
     this.log('cd foo');
-    if (flags['skip-install']) {
-      this.log(`${flags['npm-client']} install`);
+    if (parsed.flags['skip-install']) {
+      this.log(`${parsed.flags['npm-client']} install`);
     }
     this.log('docker-compose up -d');
     this.log('npx dc migration:add init');
@@ -137,7 +137,7 @@ function installDependencies(npmClient: string, projectPath: string) {
 
 function runCommand(cmd: string, cwd: string) {
   return new Promise(((resolve, reject) => {
-    exec(cmd, {cwd}, (err) => {
+    exec(cmd, {cwd}, err => {
       if (err) {
         reject(err.message);
       } else {

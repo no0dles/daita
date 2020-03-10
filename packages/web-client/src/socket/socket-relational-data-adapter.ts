@@ -30,7 +30,7 @@ export class SocketRelationalDataAdapter implements RelationalDataAdapter {
     const defer = new Defer<any>();
     this.defers[cid] = defer;
     debug('web:socket')('emit event ' + event + ' with cid ' + cid);
-    this.socket.emit(event, {...data, cid: cid, ...this.globalEmitValue});
+    this.socket.emit(event, {...data, cid, ...this.globalEmitValue});
     return defer.promise;
   }
 
