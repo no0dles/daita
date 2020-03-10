@@ -100,12 +100,12 @@ steps:
     - cd packages/cli
     - yarn lint
 
-- name: tslint:web
-  image: node:12
-  depends_on: [install, build:tslint]
-  commands:
-    - cd packages/web
-    - yarn lint
+#- name: tslint:web
+#  image: node:12
+#  depends_on: [install, build:tslint]
+#  commands:
+#    - cd packages/web
+#    - yarn lint
 
 - name: tslint:web-client
   image: node:12
