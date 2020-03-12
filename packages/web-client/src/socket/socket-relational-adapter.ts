@@ -25,7 +25,7 @@ export class SocketRelationalAdapter extends SocketRelationalDataAdapter
         });
       } else if (options.auth.kind === 'token') {
         options.auth.getToken().then(token => {
-          this.emit('auth', {kind: 'token', token: token}).then(res => {
+          this.emit('auth', {kind: 'token', token}).then(res => {
             this.authDefer.resolve(); //TODO refresh
           });
         });
