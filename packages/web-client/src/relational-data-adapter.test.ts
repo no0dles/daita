@@ -44,8 +44,8 @@ export class WebDataAdapterFactory<T extends RelationalDataAdapter> implements R
     const adminPayload = await tokenProvider.verify(adminToken);
     const adminUser = await userProvider.get(adminPayload);
     console.log(adminUser);
-    await userProvider.addRole('provider');
-    await userProvider.addUserRole(adminUser.id, 'provider');
+    await userProvider.addRole('admin');
+    await userProvider.addUserRole(adminUser.id, 'admin');
 
     if (backendResult.dataAdapter.isKind('migration')) {
       const backendContext = schema.context(backendResult.dataAdapter as RelationalMigrationAdapter);
@@ -74,7 +74,9 @@ export class WebDataAdapterFactory<T extends RelationalDataAdapter> implements R
 
 export class SocketDataAdapterFactory extends WebDataAdapterFactory<SocketRelationalAdapter> {
   constructor(relationalDataAdapterFactory: RelationalDataAdapterFactory<RelationalMigrationAdapter>) {
-    super(relationalDataAdapterFactory, port => new SocketRelationalAdapter(`http://localhost:${port}`));
+    super(relationalDataAdapterFactory, (port, auth) => new SocketRelationalAdapter(`http://localhost:${port}`, {
+      auth: auth,
+    }));
   }
 }
 

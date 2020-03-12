@@ -349,13 +349,13 @@ export abstract class RelationalBaseAdapter implements RelationalDataAdapter {
 
       if (operand === 'in' || operand === 'not in') {
         return {
-          left: {table: tableAlias, field: this.getSourceField(table, prop)},
+          left: {table: tableAlias, field: this.getSourceField(tbl, prop)},
           operand,
           value,
         } as SqlInExpression;
       }
       return {
-        left: {table: tableAlias, field: this.getSourceField(table, prop)},
+        left: {table: tableAlias, field: this.getSourceField(tbl, prop)},
         operand,
         right: value,
       } as SqlCompareExpression;

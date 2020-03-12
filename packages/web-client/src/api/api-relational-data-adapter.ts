@@ -107,6 +107,7 @@ export class ApiRelationalDataAdapter implements RelationalDataAdapter {
       limit: query.limit,
       skip: query.skip,
       orderBy: query.orderBy,
+      include: query.include,
     });
   }
 

@@ -87,13 +87,10 @@ export function relationalApi(options: AppOptions): express.Router {
 
   router.post('/:migration/select/:table', async (req, res, next) => {
     try {
-      const context = manager.getContext({
-        migrationId: req.params.migration,
-        user: req.user,
-        transactionId: req.query.tid,
-      });
+      const schema = manager.getMigration(req.params.migration);
+      const dataAdapter = manager.getDataAdapter(req.query.tid);
       const type = getTable(req.params.table);
-      const result = await select(type, context, req.body);
+      const result = await select(type, dataAdapter, schema, req.body, req.user);
       if (req.query.tid) {
         res.setHeader('X-Transaction', req.query.tid);
         res.setHeader('X-Transaction-Timeout', manager.getTransactionTimeout(req.query.tid));

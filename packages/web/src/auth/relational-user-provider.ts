@@ -42,8 +42,13 @@ export class RelationalUserProvider implements UserProvider {
     const roles: string[] = [];
 
     if (!this.migrated) {
-      await this.context.applyMigrations();
-      this.migrated = true;
+      try {
+        await this.context.applyMigrations();
+        this.migrated = true;
+      } catch (e) {
+        console.log('migration failed', e);
+        throw e;
+      }
     }
 
     let user = await this.context

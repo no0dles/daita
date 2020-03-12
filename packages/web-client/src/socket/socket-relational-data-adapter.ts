@@ -13,10 +13,11 @@ import {IdGenerator} from '../id-generator';
 import {RelationalRawResult} from '@daita/core/dist/adapter/relational-raw-result';
 
 export class SocketRelationalDataAdapter implements RelationalDataAdapter {
+  protected authDefer = new Defer();
   protected idGenerator: IdGenerator;
 
   constructor(protected defers: { [key: string]: Defer<any> },
-              protected socket: any,
+              protected socket: SocketIOClient.Socket,
               private globalEmitValue: any) {
     this.idGenerator = new IdGenerator();
   }
@@ -25,9 +26,12 @@ export class SocketRelationalDataAdapter implements RelationalDataAdapter {
     return kind === 'data';
   }
 
-  protected emit<T>(event: string, data: T) {
+  protected async emit<T>(event: string, data: T) {
     const cid = this.idGenerator.next();
     const defer = new Defer<any>();
+    if (event !== 'auth') {
+      await this.authDefer.promise;
+    }
     this.defers[cid] = defer;
     debug('web:socket')('emit event ' + event + ' with cid ' + cid);
     this.socket.emit(event, {...data, cid, ...this.globalEmitValue});
@@ -81,6 +85,7 @@ export class SocketRelationalDataAdapter implements RelationalDataAdapter {
     return this.emit('select', {
       migrationId: schema.migrationId,
       table,
+      include: query.include,
       where: query.filter,
       orderBy: query.orderBy,
       limit: query.limit,

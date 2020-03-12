@@ -155,4 +155,8 @@ export class ContextManager {
       user,
     );
   }
+
+  getMigration(migrationId? : string) {
+    return this.migrationTree.defaultSchema(migrationId);
+  }
 }

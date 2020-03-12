@@ -45,18 +45,26 @@ export function createSocketApp(
 
     handle<SocketAuthEvent>(socket, 'auth', async data => {
       if (options.auth) {
-        const result = await options.auth.tokenProvider.verify(data.token);
-        user = await options.auth.userProvider.get(result);
-        if (result.exp) {
-          if (userExpireTimeout) {
-            clearTimeout(userExpireTimeout);
-          }
-          userExpireTimeout = setTimeout(() => {
-            if (user) {
-              debug('daita:web:socket')(`user ${user.username} expired`);
+        if (data.kind === 'token') {
+          const result = await options.auth.tokenProvider.verify(data.token);
+          user = await options.auth.userProvider.get(result);
+          if (result.exp) {
+            if (userExpireTimeout) {
+              clearTimeout(userExpireTimeout);
             }
-            user = null;
-          }, result.exp - new Date().getTime());
+            const now = Math.floor(new Date().getTime() / 1000);
+            const timeExpired = (result.exp - now) * 1000;
+            console.log(timeExpired);
+            userExpireTimeout = setTimeout(() => {
+              if (user) {
+                debug('daita:web:socket')(`user ${user.username} expired`);
+              }
+              user = null;
+            }, timeExpired);
+          }
+          return {};
+        } else if (data.kind === 'userpass') {
+          throw new Error('no userpass auth configured');
         }
       } else {
         throw new Error('no auth configured');
@@ -91,8 +99,9 @@ export function createSocketApp(
     });
 
     handle<SocketSelectEvent>(socket, 'select', data => {
-      const context = manager.getContext({migrationId: data.migrationId, user, transactionId: data.tid});
-      return select({name: data.table}, context, data);
+      const schema = manager.getMigration(data.migrationId);
+      const dataAdapter = manager.getDataAdapter(data.tid);
+      return select({name: data.table}, dataAdapter, schema, data, user);
     });
 
     handle<SocketCountEvent>(socket, 'count', data => {

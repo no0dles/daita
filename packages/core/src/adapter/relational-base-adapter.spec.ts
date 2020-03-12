@@ -10,6 +10,7 @@ import {Defer} from '../defer';
 import {blogSchema} from '../test/schemas/blog/schema';
 import {RelationalDataContext} from '../context/relational-data-context';
 import {blogAdminUser} from '../test/schemas/blog/users';
+import {Comment} from '../test/schemas/blog/models/comment';
 
 describe('test', () => {
 
@@ -164,6 +165,64 @@ describe('test', () => {
       orderBy: [
         {field: 'id_first', table: 'base_parent', direction: 'asc'},
       ],
+    } as SqlSelect);
+  });
+
+  it('should add nested where conditions', async () => {
+    const query = await testQuery(mock => mock.select(Comment).where({user: {name: 'foo'}}));
+    expect(query).toEqual({
+      select: [
+        {field: 'id_second', table: 'base', alias: 'base.id'},
+        {field: 'text_second', table: 'base', alias: 'base.text'},
+        {field: 'userId_second', table: 'base', alias: 'base.userId'},
+      ],
+      from: {table: 'Comment_second', alias: 'base'},
+      joins: [
+        {
+          from: {table: 'User_first', alias: 'base_user'},
+          type: 'left',
+          on: {
+            left: {table: 'base', field: 'userId_second'},
+            operand: '=',
+            right: {table: 'base_user', field: 'id_first'},
+          },
+        },
+      ],
+      where: {
+        left: {table: 'base_user', field: 'name_first'},
+        operand: '=',
+        right: 'foo',
+      },
+    } as SqlSelect);
+  });
+
+  it('should add nested recursive where conditions', async () => {
+    const query = await testQuery(mock => mock.select(User).where({parent: {name: 'foo'}}));
+    expect(query).toEqual({
+      select: [
+        {field: 'id_first', table: 'base', alias: 'base.id'},
+        {field: 'name_first', table: 'base', alias: 'base.name'},
+        {field: 'count_first', table: 'base', alias: 'base.count'},
+        {field: 'parentId_first', table: 'base', alias: 'base.parentId'},
+        {field: 'admin_second', table: 'base', alias: 'base.admin'},
+      ],
+      from: {table: 'User_first', alias: 'base'},
+      joins: [
+        {
+          from: {table: 'User_first', alias: 'base_parent'},
+          type: 'left',
+          on: {
+            left: {table: 'base', field: 'parentId_first'},
+            operand: '=',
+            right: {table: 'base_parent', field: 'id_first'},
+          },
+        },
+      ],
+      where: {
+        left: {table: 'base_parent', field: 'name_first'},
+        operand: '=',
+        right: 'foo',
+      },
     } as SqlSelect);
   });
 
