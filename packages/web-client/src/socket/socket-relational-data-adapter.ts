@@ -20,6 +20,9 @@ export class SocketRelationalDataAdapter implements RelationalDataAdapter {
               protected socket: SocketIOClient.Socket,
               private globalEmitValue: any) {
     this.idGenerator = new IdGenerator();
+    if (globalEmitValue.tid) {
+      this.authDefer.resolve();
+    }
   }
 
   isKind(kind: 'data' | 'migration' | 'transaction'): boolean {
