@@ -209,7 +209,7 @@ trigger:
 
 ---
 
-name: pages
+name: docs
 
 kind: pipeline
 type: docker
@@ -218,14 +218,14 @@ steps:
 - name: build
   image: node:12
   commands:
-  - cd packages/website
-  - npm install
-  - npm run build
+  - cd packages/docs
+  - yarn install
+  - yarn build
 
 - name: publish
   image: plugins/gh-pages
   settings:
-    pages_directory: packages/website/public/
+    pages_directory: packages/docs/build/
   commands: []
 
 trigger:
