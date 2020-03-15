@@ -21,6 +21,7 @@
       "packages/core",
       "packages/tslint",
       "packages/web",
+      "packages/docs",
       "packages/pg",
       "packages/mongodb",
       "packages/web-client",

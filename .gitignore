@@ -5,6 +5,13 @@ node_modules
 .task
 .nyc_output
 coverage
-**/*.log
+
 tsconfig.tsbuildinfo
 tmp
+
+.docusaurus
+.cache-loader
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

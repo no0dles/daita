@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="65px" height="65px" viewBox="0 0 65 65" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icon">
+            <rect id="Rectangle" stroke="#EBCB8B" fill="#EBCB8B" x="0.5" y="0.5" width="64" height="64"></rect>
+            <g id="Board" transform="translate(32.500000, 32.000000) rotate(180.000000) translate(-32.500000, -32.000000) translate(4.500000, 10.500000)" stroke="#592720" stroke-width="2">
+                <circle id="Oval" cx="32.5" cy="33.5" r="4.5"></circle>
+                <circle id="Oval" cx="31.5" cy="17" r="4.5"></circle>
+                <circle id="Oval" cx="43.5" cy="6" r="4.5"></circle>
+                <circle id="Oval" cx="50.5" cy="28.5" r="4.5"></circle>
+                <line x1="22.5" y1="23.5" x2="29" y2="29" id="Line-2" stroke-linecap="round" transform="translate(26.000000, 26.500000) rotate(4.763642) translate(-26.000000, -26.500000) "></line>
+                <line x1="15.110043" y1="29.6872783" x2="26.4845995" y2="41.4671922" id="Line-2" stroke-linecap="round" transform="translate(21.110043, 35.687278) rotate(-1.002955) translate(-21.110043, -35.687278) "></line>
+                <line x1="22" y1="6" x2="16" y2="11" id="Line-2" stroke-linecap="round"></line>
+                <line x1="36.9930891" y1="41.7372058" x2="27.0069109" y2="42.2627942" id="Line-2" stroke-linecap="round" transform="translate(32.000000, 42.000000) rotate(3.012788) translate(-32.000000, -42.000000) "></line>
+                <line x1="14" y1="29" x2="1" y2="29" id="Line-2" stroke-linecap="round"></line>
+                <line x1="22" y1="23" x2="1" y2="23" id="Line-2" stroke-linecap="round"></line>
+                <line x1="26" y1="17" x2="1" y2="17" id="Line-2" stroke-linecap="round"></line>
+                <line x1="16" y1="11" x2="1" y2="11" id="Line-2" stroke-linecap="round"></line>
+                <line x1="38" y1="6" x2="22" y2="6" id="Line-2" stroke-linecap="round"></line>
+                <line x1="46.9158035" y1="32.2079018" x2="37.5" y2="41.2079018" id="Line-2" stroke-linecap="round"></line>
+                <rect id="Rectangle" fill="#592720" x="1" y="22" width="3" height="2"></rect>
+                <rect id="Rectangle" fill="#592720" x="1" y="28" width="3" height="2"></rect>
+                <rect id="Rectangle" fill="#592720" x="1" y="16" width="3" height="2"></rect>
+                <rect id="Rectangle" fill="#592720" x="1" y="10" width="3" height="2"></rect>
+            </g>
+        </g>
+    </g>
+</svg>
