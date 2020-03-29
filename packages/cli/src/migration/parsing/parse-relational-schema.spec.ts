@@ -2,7 +2,7 @@ import {MockAstContext} from '../../ast/ast-context';
 import {parseRelationalSchema} from './parse-relational-schema';
 import {isNotNull} from '../../test/utils';
 import 'jest-extended';
-import {Permission, RelationalTableSchema} from '@daita/core';
+import {TablePermission, RelationalTableSchema} from '@daita/core';
 import {RelationalTableSchemaTableReferenceKey} from '@daita/core/dist/schema/relational-table-schema-table-reference-key';
 
 describe('parse-relational-schema', () => {
@@ -25,8 +25,8 @@ describe('parse-relational-schema', () => {
   context.mock('permissions.ts', `
     import {User} from './user';
     const permissions = new PermissionBuilder();
-    permissions.push(User, {type: 'role', role: 'admin', select: true });
-    permissions.push(User, {type: 'role', role: 'member', select: {limit: 25, fields: ['username', 'id', 'admin']}});
+    permissions.push(User, {role: 'admin', select: true });
+    permissions.push(User, {role: 'member', select: {limit: 25, fields: ['username', 'id', 'admin']}});
     export = permissions;
   `);
   context.mock('base.ts', `
@@ -147,8 +147,8 @@ describe('parse-relational-schema', () => {
       ...baseFields,
     ],
     permissions: [
-      {type: 'role', role: 'admin', select: true},
-      {type: 'role', role: 'member', select: {limit: 25, fields: ['username', 'id', 'admin']}}
+      {role: 'admin', select: true},
+      {role: 'member', select: {limit: 25, fields: ['username', 'id', 'admin']}}
     ],
   });
 
@@ -296,7 +296,7 @@ interface ExpectedTable {
   primaryKeys: string[],
   foreignKeys: RelationalTableSchemaTableReferenceKey[],
   fields: ExpectedTableField[],
-  permissions: Permission<any>[];
+  permissions: TablePermission<any>[];
 }
 
 interface ExpectedTableField {

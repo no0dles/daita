@@ -34,7 +34,7 @@ export class SocketRelationalAdapter extends SocketRelationalDataAdapter
       }
     }
 
-    const events = ['insert', 'update', 'select', 'delete', 'raw', 'count', 'beginTrx', 'commitTrx', 'rollbackTrx', 'auth'];
+    const events = ['raw', 'beginTrx', 'commitTrx', 'rollbackTrx', 'auth'];
     for (const event of events) {
       this.socket.on(event, (data: any) => {
         const defer = this.defers[data.cid];
@@ -54,10 +54,6 @@ export class SocketRelationalAdapter extends SocketRelationalDataAdapter
       this.transactions[data.tid].reject(new Error('transaction timeout'));
       delete this.transactions[data.tid];
     });
-  }
-
-  isKind(kind: 'data' | 'migration' | 'transaction'): boolean {
-    return kind === 'data' || kind === 'transaction';
   }
 
   close() {

@@ -1,9 +1,9 @@
 import { RelationalTableSchemaTable } from './relational-table-schema-table';
-import {Permission} from '../permission';
+import {TablePermission} from '../permission';
 
 export interface RelationalTableSchema {
   tableNames: string[];
   table(name: string): RelationalTableSchemaTable | null;
   tables: RelationalTableSchemaTable[];
-  tablePermissions(name: string): Permission<any>[];
+  tablePermissions(name: string): TablePermission<any>[];
 }

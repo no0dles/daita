@@ -183,7 +183,7 @@ export class MigrationExecution {
 
     await dataAdapter.transaction(async client => {
       await client.raw(`LOCK TABLE "daita"."migrations"`, []);
-      await client.raw({insert: {schema: 'daita', table: 'migrations'}, into: ['id'], values: [migration.id]});
+      await client.raw({insert: {schema: 'daita', table: 'migrations'}, values: [{id: migration.id}]});
 
       for (const sql of sqls) {
         debug('daita:core:migration')(sql);

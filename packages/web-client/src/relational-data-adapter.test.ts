@@ -26,9 +26,7 @@ export class WebDataAdapterFactory<T extends RelationalDataAdapter> implements R
     });
 
     const server = getApp({
-      type: 'schema',
       dataAdapter: backendResult.dataAdapter,
-      schema: schema,
       transactionTimeout: 1000,
       auth: {
         tokenProvider,
@@ -47,10 +45,8 @@ export class WebDataAdapterFactory<T extends RelationalDataAdapter> implements R
     await userProvider.addRole('admin');
     await userProvider.addUserRole(adminUser.id, 'admin');
 
-    if (backendResult.dataAdapter.isKind('migration')) {
-      const backendContext = schema.context(backendResult.dataAdapter as RelationalMigrationAdapter);
-      await backendContext.applyMigrations();
-    }
+    const backendContext = schema.migrationContext(backendResult.dataAdapter);
+    await backendContext.apply();
 
     const port = 3000 + Math.round(Math.random() * 1000);
     const defer = new Defer();

@@ -197,8 +197,8 @@ async function applyMigrations(
   for (const migration of migrations) {
     schema.migration(migration);
   }
-  const context = schema.context(dataAdapter);
-  await context.applyMigrations();
+  const context = schema.migrationContext(dataAdapter);
+  await context.apply();
 }
 
 async function getTables(dataAdapter: RelationalDataAdapter, schema: string) {

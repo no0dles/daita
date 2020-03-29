@@ -1,7 +1,7 @@
 import {DatabaseSchema} from '@daita/core/dist/schema/database-schema';
 import {generateRelationalMigrationSteps} from './generate-relational-migration-steps';
 import {DatabaseSchemaTable} from '@daita/core/dist/schema/database-schema-table';
-import {Permission, RelationalTableSchemaTableField, RelationalTableSchemaTableFieldType} from '@daita/core';
+import {TablePermission, RelationalTableSchemaTableField, RelationalTableSchemaTableFieldType} from '@daita/core';
 import {RelationalTableSchemaTableReferenceKey} from '@daita/core/dist/schema/relational-table-schema-table-reference-key';
 
 describe('get-migration-steps', () => {
@@ -56,13 +56,13 @@ describe('get-migration-steps', () => {
       tables: {
         'User': {
           fields: {id: {type: 'string', primaryKey: true}},
-          permissions: [{type: 'role', role: 'admin', select: true}],
+          permissions: [{role: 'admin', select: true}],
         },
       },
     });
     const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
     expect(steps).toEqual([
-      {kind: 'add_table_permission', table: 'User', permission: {role: 'admin', select: true, type: 'role'}},
+      {kind: 'add_table_permission', table: 'User', permission: {role: 'admin', select: true}},
     ]);
   });
 
@@ -71,7 +71,7 @@ describe('get-migration-steps', () => {
       tables: {
         'User': {
           fields: {id: {type: 'string', primaryKey: true}},
-          permissions: [{type: 'role', role: 'admin', select: true}],
+          permissions: [{role: 'admin', select: true}],
         },
       },
     });
@@ -84,7 +84,7 @@ describe('get-migration-steps', () => {
     });
     const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
     expect(steps).toEqual([
-      {kind: 'drop_table_permission', table: 'User', permission: {role: 'admin', select: true, type: 'role'}},
+      {kind: 'drop_table_permission', table: 'User', permission: {role: 'admin', select: true}},
     ]);
   });
 
@@ -149,12 +149,12 @@ describe('get-migration-steps', () => {
 });
 
 interface ExpectedSchema {
-  tables?: { [key: string]: { fields: { [key: string]: { primaryKey?: boolean, required?: boolean, type: RelationalTableSchemaTableFieldType, defaultValue?: any } }, permissions?: Permission<any>[] } }
+  tables?: { [key: string]: { fields: { [key: string]: { primaryKey?: boolean, required?: boolean, type: RelationalTableSchemaTableFieldType, defaultValue?: any } }, permissions?: TablePermission<any>[] } }
 }
 
 function createSchema(schema: ExpectedSchema) {
   const tableMap: { [key: string]: DatabaseSchemaTable } = {};
-  const permissionMap: { [key: string]: Permission<any>[] } = {};
+  const permissionMap: { [key: string]: TablePermission<any>[] } = {};
   if (schema.tables) {
     for (const tableKey of Object.keys(schema.tables)) {
       const table = schema.tables[tableKey];

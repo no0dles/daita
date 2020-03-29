@@ -1,7 +1,6 @@
 import {
   Debouncer,
-  Defer, MigrationTree,
-  RelationalContext,
+  Defer,
   RelationalDataAdapter, RelationalTransactionAdapter,
 } from '@daita/core';
 import {
@@ -10,6 +9,9 @@ import {
 import * as debug from 'debug';
 import {ContextUser} from '@daita/core/dist/auth';
 import {RelationalMigrationAdapter} from '@daita/core/dist/adapter/relational-migration-adapter';
+import {isRelationalTransactionAdapter} from '@daita/core/dist/adapter/relational-transaction-adapter';
+import {SocketRawEvent} from './socket/events/socket-raw-event';
+import {isSqlQuery} from '@daita/core/dist/sql/sql-query';
 
 interface ContextTransaction {
   adapter: RelationalDataAdapter | RelationalTransactionAdapter | RelationalMigrationAdapter;
@@ -23,18 +25,12 @@ export interface ContextTransactionTimeoutEmitter {
 }
 
 export class ContextManager {
-  private readonly migrationTree: MigrationTree;
   private readonly transactionTimeout: number;
   private readonly transactions: { [key: string]: ContextTransaction } = {};
 
   constructor(private appOptions: AppOptions,
               private timeoutEmitter?: ContextTransactionTimeoutEmitter) {
     this.transactionTimeout = appOptions.transactionTimeout || 5000;
-    if (appOptions.type === 'schema') {
-      this.migrationTree = (<any>appOptions.schema).migrationTree;
-    } else {
-      this.migrationTree = (<any>this.appOptions).migrationTree;
-    }
   }
 
   close() {
@@ -71,7 +67,7 @@ export class ContextManager {
     const commitDefer = new Defer<void>();
     const resultDefer = new Defer<void>();
 
-    if(!this.appOptions.dataAdapter.isKind('transaction')) {
+    if (!isRelationalTransactionAdapter(this.appOptions.dataAdapter)) {
       throw new Error('transaction not supported by the data adapter');
     }
 
@@ -144,19 +140,20 @@ export class ContextManager {
     }
   }
 
-  getContext(options: { migrationId?: string, user?: ContextUser | null, transactionId?: string }) {
-    const schema = this.migrationTree.defaultSchema(options.migrationId);
-    const user = (options.user ? options.user : null) || null;
-    const dataAdapter = this.getDataAdapter(options.transactionId);
-    return new RelationalContext(
-      dataAdapter,
-      schema,
-      this.migrationTree,
-      user,
-    );
-  }
+  async raw(value: SocketRawEvent, user: ContextUser) {
+    const dataAdapter = this.getDataAdapter(value.tid);
+    if (this.appOptions.auth) {
+      const userPermissions = this.appOptions.auth.permissions.userPermissions(user);
+      const sqlPermissions = userPermissions.sqlPermissions();
+      if (!sqlPermissions.isQueryAuthorized(value.sql)) {
+        throw new Error('not authorized');
+      }
+    }
 
-  getMigration(migrationId? : string) {
-    return this.migrationTree.defaultSchema(migrationId);
+    if (isSqlQuery(value.sql)) {
+      return dataAdapter.raw(value.sql);
+    } else {
+      throw new Error('invalid sql');
+    }
   }
 }

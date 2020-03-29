@@ -1,292 +1,158 @@
-import {RelationalDataAdapter} from '../adapter';
 import {RootFilter} from '../query/root-filter';
 import {MigrationSchema} from '../schema/migration-schema';
-import {TableInformation} from './table-information';
 import {ExcludePrimitive} from './types/exclude-primitive';
-import {ContextUser} from '../auth';
 import {Full} from './types/full';
+import {DefaultConstructable} from '../constructable';
+import {RelationalSchemaBaseContext} from './relational-schema-base-context';
+import {SqlRawValue} from '../sql/sql-raw-value';
+import {isSqlSchemaTableField} from '../sql/sql-schema-table-field';
+import {RelationalSelectBuilder} from '../builder/relational-select-builder';
+import {getTableFromSelector} from '../builder/utils';
+import {isSqlCompareExpression} from '../sql/expression/sql-compare-expression';
+import {SqlSelect} from '../sql/select';
+import {isSqlOrExpression} from '../sql/expression/sql-or-expression';
+import {SqlExpression} from '../sql/expression';
+import {isSqlAndExpression} from '../sql/expression/sql-and-expression';
+import {isSqlInExpression} from '../sql/expression/sql-in-expression';
+import {isSqlAlias} from '../sql/select/sql-alias';
 
-interface RelationalSelectState {
-  skip: number | null;
-  limit: number | null;
-  orderBy: { path: string[]; direction: 'asc' | 'desc' }[];
-  include: { path: string[] }[];
-  filter: RootFilter<any> | null;
-}
-
-abstract class BaseRelationalSelectContext<T, C> implements PromiseLike<T[]> {
-  protected shouldMapResult: boolean;
+export class RelationalSelectContext<T> extends RelationalSchemaBaseContext<T[]> {
+  //protected shouldMapResult: boolean;
 
   constructor(
-    protected dataAdapter: RelationalDataAdapter,
-    protected schema: MigrationSchema,
-    protected type: TableInformation<T>,
-    protected state: RelationalSelectState,
-    protected user: ContextUser | null,
+    private schema: MigrationSchema,
+    private type: DefaultConstructable<T>,
+    private builder: RelationalSelectBuilder<T>,
   ) {
-    this.shouldMapResult = this.isConstructor(this.type);
-  }
-
-  protected getSelectorPath(tableName: string, path?: string[]): any {
-    const table = this.schema.table(tableName);
-    if (!table) {
-      throw new Error('table does not exist');
-    }
-
-    const handler = {
-      get: (obj: any, prop: any) => {
-        const field = table.field(prop);
-        if (field) {
-          return {_path: path ? [...path, prop] : [prop]};
-        }
-
-        const reference = table.foreignKeys.filter(fk => fk.name === prop)[0];
-        if (reference) {
-          if (!table) {
-            throw new Error('table does not exist');
-          }
-          return this.getSelectorPath(reference.table, path ? [...path, prop] : [prop]);
-        }
-
-        if (prop === '_path') {
-          return path;
-        }
-
-        throw new Error('unknown get of ' + prop);
-      },
-    };
-
-    return new Proxy({}, handler);
+    super(builder);
+    //this.shouldMapResult = this.isConstructor(this.type);
   }
 
   skip(value: number) {
-    return this.newContext({
-      filter: this.state.filter,
-      limit: this.state.limit,
-      include: this.state.include,
-      skip: value,
-      orderBy: this.state.orderBy,
-    });
+    const newBuilder = this.builder.skip(value);
+    return new RelationalSelectContext<T>(this.schema, this.type, newBuilder);
   }
 
   limit(value: number) {
-    return this.newContext({
-      filter: this.state.filter,
-      limit: value,
-      include: this.state.include,
-      skip: this.state.skip,
-      orderBy: this.state.orderBy,
-    });
+    const newBuilder = this.builder.limit(value);
+    return new RelationalSelectContext<T>(this.schema, this.type, newBuilder);
   }
 
   where(filter: RootFilter<T>) {
-    if (this.state.filter) {
-      return this.newContext({
-        filter: {$and: [this.state.filter, filter]},
-        limit: this.state.limit,
-        include: this.state.include,
-        skip: this.state.skip,
-        orderBy: this.state.orderBy,
-      });
+    let newBuilder = this.builder.where(filter);
+    const query = this.getBuilderQuery(newBuilder);
+    if (query.where) {
+      newBuilder = this.ensureExpressionJoin(newBuilder, query.where);
     }
-
-    return this.newContext({
-      filter,
-      limit: this.state.limit,
-      skip: this.state.skip,
-      include: this.state.include,
-      orderBy: this.state.orderBy,
-    });
+    return new RelationalSelectContext<T>(this.schema, this.type, newBuilder);
   }
 
-  private async exec(): Promise<T[]> {
-    this.validatePermission();
-    const results = await this.dataAdapter.select(
-      this.schema,
-      this.type.name,
-      this.state,
-    );
-    if (this.shouldMapResult) {
-      return results.map(result => this.mapResult(result));
+  async first(): Promise<T | null> {
+    return this.builder.first();
+  }
+
+  async count(): Promise<number> {
+    const newBuilder = this.builder.count();
+    const result = await newBuilder;
+    return result.count;
+  }
+
+  include(selector: (table: ExcludePrimitive<T>) => any) {
+    const tableAlias = getTableFromSelector(selector);
+    if (!tableAlias) {
+      throw new Error('invalid include');
     }
-
-    return results;
+    const newBuilder = this.ensureJoin(this.builder, tableAlias);
+    return new RelationalSelectContext<T>(this.schema, this.type, newBuilder);
   }
 
-  then<TResult1 = T[], TResult2 = never>(onfulfilled?: ((value: T[]) => (PromiseLike<TResult1> | TResult1)) | undefined | null, onrejected?: ((reason: any) => (PromiseLike<TResult2> | TResult2)) | undefined | null): PromiseLike<TResult1 | TResult2> {
-    return this.exec()
-      .then(onfulfilled)
-      .catch(onrejected);
+  orderBy(
+    selector: (table: Full<T>) => SqlRawValue,
+    direction?: 'asc' | 'desc',
+  ) {
+    let newBuilder = this.builder.orderBy(selector, direction);
+    const query = this.getBuilderQuery(newBuilder);
+    if (query.orderBy) {
+      for (const orderBy of query.orderBy) {
+        if (isSqlSchemaTableField(orderBy) && orderBy.table) {
+          newBuilder = this.ensureJoin(newBuilder, orderBy.table);
+        }
+      }
+    }
+    return new RelationalSelectContext<T>(this.schema, this.type, newBuilder);
   }
 
-  private isConstructor(value: any) {
-    try {
-      new new Proxy(value, {
-        // tslint:disable-next-line
-        construct() {
-          return {};
-        },
-      })();
-      return true;
-    } catch (err) {
+  private hasJoin(builder: RelationalSelectBuilder<T>, alias: string) {
+    const query = this.getBuilderQuery(builder);
+    if (!query.joins) {
+      return false;
+    } else {
+      for (const join of query.joins) {
+        if (isSqlAlias(join.from) && join.from.alias === alias) {
+          return true;
+        }
+      }
       return false;
     }
   }
 
-  private mapResult(result: any): T {
-    const instance = new (<any>this.type)();
-    for (const key of Object.keys(result)) {
-      (<any>instance)[key] = result[key];
-    }
-    return instance;
-  }
-
-  async first(): Promise<T | null> {
-    this.validatePermission();
-    const results = await this.dataAdapter.select(this.schema, this.type.name, {
-      filter: this.state.filter,
-      limit: 1,
-      orderBy: this.state.orderBy,
-      skip: this.state.skip,
-      include: this.state.include,
-    });
-    const item = results[0] || null;
-    if (!item) {
-      return null;
+  private ensureJoin(builder: RelationalSelectBuilder<T>, alias: string): RelationalSelectBuilder<T> {
+    if (this.hasJoin(builder, alias)) {
+      return builder;
     }
 
-    if (this.shouldMapResult) {
-      return this.mapResult(item);
+    const aliasParts = alias.split('.');
+    //const newBuilder = builder.join(, ,);
+    return builder;
+  }
+
+  private ensureExpressionJoin(builder: RelationalSelectBuilder<T>, expression: SqlExpression): RelationalSelectBuilder<T> {
+    if (isSqlAndExpression(expression)) {
+      for (const andExpression of expression.and) {
+        builder = this.ensureExpressionJoin(builder, andExpression);
+      }
+    } else if (isSqlOrExpression(expression)) {
+      for (const orExpression of expression.or) {
+        builder = this.ensureExpressionJoin(builder, orExpression);
+      }
+    } else if (isSqlCompareExpression(expression)) {
+      if (isSqlSchemaTableField(expression.left) && expression.left.table) {
+        builder = this.ensureJoin(builder, expression.left.table);
+      }
+      if (isSqlSchemaTableField(expression.right) && expression.right.table) {
+        builder = this.ensureJoin(builder, expression.right.table);
+      }
+    } else if (isSqlInExpression(expression)) {
+      if (isSqlSchemaTableField(expression.left) && expression.left.table) {
+        builder = this.ensureJoin(builder, expression.left.table);
+      }
     }
-
-    return item;
+    return builder;
   }
 
-  protected validatePermission() {
-    const permissions = this.schema.tablePermissions(this.type.name);
-    for (const permission of permissions) {
-      if (permission.type === 'role') {
-        if (!this.user || this.user.roles.indexOf(permission.role) === -1) {
-          continue;
-        }
-      } else if (permission.type === 'authorized') {
-        if (!this.user) {
-          continue;
-        }
-      }
-
-      if (!permission.select) {
-        continue;
-      }
-
-      if (permission.select === true) {
-        return true;
-      }
-
-      if (permission.select.skip !== null && permission.select.skip !== undefined) {
-        if (typeof permission.select.skip === 'number') {
-          if (permission.select.skip !== this.state.skip) {
-            throw new Error(`not authorized, skip`); //TODO
-          }
-        } else {
-          throw new Error('not impl');
-        }
-      }
-      //TODO
-    }
-
-    throw new Error('not authorized, no rule matches');
+  private getBuilderQuery(builder: RelationalSelectBuilder<T>): SqlSelect {
+    return (<any>builder).query;
   }
 
-  count(): Promise<number> {
-    this.validatePermission();
-    return this.dataAdapter.count(this.schema, this.type.name, {
-      filter: this.state.filter,
-      orderBy: this.state.orderBy,
-      include: this.state.include,
-      limit: null,
-      skip: null,
-    });
-  }
+  // private isConstructor(value: any) {
+  //   try {
+  //     new new Proxy(value, {
+  //       // tslint:disable-next-line
+  //       construct() {
+  //         return {};
+  //       },
+  //     })();
+  //     return true;
+  //   } catch (err) {
+  //     return false;
+  //   }
+  // }
 
-  include(selector: (table: ExcludePrimitive<T>) => any) {
-    const selectorValue = this.getSelectorPath(this.type.name);
-    const selectorResult = selector(selectorValue);
-
-    return this.newContext({
-      filter: this.state.filter,
-      limit: this.state.limit,
-      skip: this.state.skip,
-      orderBy: this.state.orderBy,
-      include: [...this.state.include, {path: selectorResult._path}],
-    });
-  }
-
-  protected addOrderBy(
-    selector: (table: Full<T>) => any,
-    direction?: 'asc' | 'desc',
-  ) {
-    const selectorValue = this.getSelectorPath(this.type.name);
-    const selectorResult = selector(selectorValue);
-
-    return new RelationalSelectContextOrdered<T>(
-      this.dataAdapter,
-      this.schema,
-      this.type,
-      {
-        filter: this.state.filter,
-        limit: this.state.limit,
-        skip: this.state.skip,
-        include: this.state.include,
-        orderBy: [
-          ...this.state.orderBy,
-          {path: selectorResult._path, direction: direction || 'asc'},
-        ],
-      },
-      this.user,
-    );
-  }
-
-  protected abstract newContext(state: RelationalSelectState): C;
-}
-
-export class RelationalSelectContextOrdered<T> extends BaseRelationalSelectContext<T, RelationalSelectContextOrdered<T>> {
-  orderThenBy(
-    selector: (table: Full<T>) => any,
-    direction?: 'asc' | 'desc',
-  ): RelationalSelectContextOrdered<T> {
-    return this.addOrderBy(selector, direction);
-  }
-
-  protected newContext(state: RelationalSelectState) {
-    return new RelationalSelectContextOrdered<T>(
-      this.dataAdapter,
-      this.schema,
-      this.type,
-      state,
-      this.user,
-    );
-  }
-}
-
-export class RelationalSelectContext<T> extends BaseRelationalSelectContext<T,
-  RelationalSelectContext<T>> {
-  orderBy(
-    selector: (table: Full<T>) => any,
-    direction?: 'asc' | 'desc',
-  ): RelationalSelectContextOrdered<T> {
-    return this.addOrderBy(selector, direction);
-  }
-
-  protected newContext(
-    state: RelationalSelectState,
-  ): RelationalSelectContext<T> {
-    return new RelationalSelectContext<T>(
-      this.dataAdapter,
-      this.schema,
-      this.type,
-      state,
-      this.user,
-    );
-  }
+  // private mapResult(result: any): T {
+  //   const instance = new (<any>this.type)();
+  //   for (const key of Object.keys(result)) {
+  //     (<any>instance)[key] = result[key];
+  //   }
+  //   return instance;
+  // }
 }

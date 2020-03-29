@@ -1,8 +1,8 @@
 import {AstVariable} from '../../ast/ast-variable';
-import {Permission} from '@daita/core';
+import {TablePermission} from '@daita/core';
 
 export function parsePermissionBuilder(builderVariable: AstVariable) {
-  const permissions: { [key: string]: Permission<any>[] } = {};
+  const permissions: { [key: string]: TablePermission<any>[] } = {};
 
   const pushCalls = builderVariable.getCalls({name: 'push'});
   for (const pushCall of pushCalls) {

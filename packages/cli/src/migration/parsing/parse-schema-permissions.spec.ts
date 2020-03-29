@@ -22,7 +22,7 @@ describe('parse-schema-permissions', () => {
     context.mock('permissions.ts', `
       import {User} from './user';
       const permissions = new PermissionBuilder();
-      permissions.push(User, {type: 'role', role: 'admin', select: true});
+      permissions.push(User, {role: 'admin', select: true});
       export = permissions;
     `);
     const sourceFile = context.get('schema.ts');
@@ -33,7 +33,7 @@ describe('parse-schema-permissions', () => {
 
     expect(permissions).toContainAllKeys(['User']);
     expect(permissions['User']).toEqual([
-      {type: 'role', role: 'admin', select: true},
+      {role: 'admin', select: true},
     ]);
   });
 });

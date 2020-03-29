@@ -1,6 +1,6 @@
 import {Command} from '@oclif/command';
-import {RelationalDataAdapter} from '@daita/core';
 import {PostgresAdapter} from '@daita/pg';
+import {RelationalMigrationAdapter} from '@daita/core/dist/adapter/relational-migration-adapter';
 
 export interface DaitaContextConfig {
   type: string;
@@ -15,7 +15,7 @@ export interface DaitaContextConfig {
 export function getRelationalDataAdapter(
   flags: { context: string | undefined, cwd: string | undefined },
   cmd: Command,
-): RelationalDataAdapter | null {
+): RelationalMigrationAdapter | null {
 
   const config = require('config');
   const contextName = flags.context || 'default';

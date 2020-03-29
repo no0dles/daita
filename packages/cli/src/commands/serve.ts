@@ -6,10 +6,11 @@ import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as http from 'http';
 import {getApp} from '@daita/web';
-import {Debouncer, RelationalContext} from '@daita/core';
+import {Debouncer} from '@daita/core';
 import {getTokenProvider} from '../utils/token-provider';
 import {AccessToken} from '@daita/web/dist/auth/token-provider';
 import {AstContext} from '../ast/ast-context';
+import {RelationalSchemaMigrationContext} from '@daita/core/dist/context/relational-schema-migration-context';
 
 export default class Serve extends Command {
   private server: http.Server | null = null;
@@ -79,14 +80,12 @@ export default class Serve extends Command {
       }
 
       const migrationTree = schemaInfo.getMigrationTree();
-      const schema = migrationTree.defaultSchema();
-      const context = new RelationalContext(
+
+      const context = new RelationalSchemaMigrationContext(
         dataAdapter,
-        schema,
         migrationTree,
-        null,
       );
-      await context.applyMigrations();
+      await context.apply();
       const userProvider = {
         get: async (token: AccessToken) => {
           throw new Error('not found');
@@ -94,9 +93,7 @@ export default class Serve extends Command {
       };
 
       const app = getApp({
-        type: 'migrationTree',
         dataAdapter,
-        migrationTree,
         auth: tokenProvider ? {
           tokenProvider,
           userProvider,

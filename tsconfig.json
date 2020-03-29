@@ -2,13 +2,14 @@
   "extends": "./tsconfig.build.json",
   "compilerOptions": {
     "rootDir": "./packages",
+    "baseUrl": "./packages",
     "paths": {
-      "@daita/core": ["core/src"],
-      "@daita/web": ["web/src"],
-      "@daita/pg": ["pg/src"],
-      "@daita/cli": ["cli/src"],
-      "@daita/mongodb": ["mongodb/src"],
-      "@daita/web-client": ["web-client/src"]
+//      "@daita/core": ["core/src"],
+//      "@daita/web": ["web/src"],
+//      "@daita/pg": ["pg/src"],
+//      "@daita/cli": ["cli/src"],
+//      "@daita/mongodb": ["mongodb/src"],
+//      "@daita/web-client": ["web-client/src"]
     }
   }
 }

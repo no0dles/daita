@@ -1,7 +1,7 @@
-import {Permission} from '../../permission';
+import {TablePermission} from '../../permission';
 
 export interface RelationalDropPermissionMigrationStep {
   kind: 'drop_table_permission';
   table: string;
-  permission: Permission<any>;
+  permission: TablePermission<any>;
 }

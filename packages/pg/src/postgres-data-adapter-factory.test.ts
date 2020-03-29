@@ -11,8 +11,8 @@ export class PostgresDataAdapterFactory implements RelationalDataAdapterFactory<
     await dropDatabase(connectionString);
 
     const dataAdapter = new PostgresAdapter(connectionString);
-    const context = schema.context(dataAdapter);
-    await context.applyMigrations();
+    const context = schema.migrationContext(dataAdapter);
+    await context.apply();
     return {
       close: async() => {
         await dataAdapter.close();

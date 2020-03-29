@@ -19,7 +19,7 @@ export const FirstMigration: MigrationDescription = {
       foreignFieldNames: ['id'],
       required: true,
     },
-    {kind: 'add_table_permission', table: 'User', permission: {role: blogAdminRole, type: 'role', select: true}},
-    {kind: 'add_table_permission', table: 'Comment', permission: {role: blogAdminRole, type: 'role', select: true}}
+    {kind: 'add_table_permission', table: 'User', permission: {role: blogAdminRole, select: true}},
+    {kind: 'add_table_permission', table: 'Comment', permission: {role: blogAdminRole, select: true}}
   ],
 };

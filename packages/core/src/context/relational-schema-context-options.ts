@@ -1,6 +1,6 @@
 import {ContextUser} from '../auth';
 
 export interface RelationalSchemaContextOptions {
-  migrationId?: string,
+  migrationId?: string;
   user?: ContextUser;
 }

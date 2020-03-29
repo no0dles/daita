@@ -662,8 +662,7 @@ describe('sql-query-builder', () => {
     testQuery({
       query: {
         insert: 'foo',
-        into: ['bar', 'foo'],
-        values: [1, 2],
+        values: [{bar: 1,foo: 2}],
       },
       sql: 'INSERT INTO "foo" ("bar", "foo") VALUES ($1, $2)',
       values: [1, 2],
@@ -672,8 +671,7 @@ describe('sql-query-builder', () => {
     testQuery({
       query: {
         insert: 'foo',
-        into: ['bar', 'foo'],
-        values: [[1, 2], [1, 1]],
+        values: [{bar:1, foo:2}, {bar:1, foo:1}],
       },
       sql: 'INSERT INTO "foo" ("bar", "foo") VALUES ($1, $2), ($1, $1)',
       values: [1, 2],
@@ -682,7 +680,6 @@ describe('sql-query-builder', () => {
     testQuery({
       query: {
         insert: 'foo',
-        into: ['bar', 'foo'],
         values: {
           select: [{field: 'bar'}, {field: 'bar'}],
           from: 'bar',

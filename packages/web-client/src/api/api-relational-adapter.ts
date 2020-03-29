@@ -13,10 +13,6 @@ export class ApiRelationalAdapter extends ApiRelationalDataAdapter implements Re
     });
   }
 
-  isKind(kind: 'data' | 'migration' | 'transaction'): boolean {
-    return kind === 'data' || kind === 'transaction';
-  }
-
   async transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
     const tid = this.idGenerator.next();
     const timeoutDefer = new Defer<void>();

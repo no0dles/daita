@@ -181,19 +181,19 @@ export function relationalSelectContext(ctx: { adminContext: RelationalDataConte
       }]);
     });
 
-    it('should execute select(User).orderBy(name).orderThenBy(count)', async () => {
+    it('should execute select(User).orderBy(name).orderBy(count)', async () => {
       const users = await ctx.adminContext
         .select(User)
         .orderBy(u => u.name)
-        .orderThenBy(u => u.count);
+        .orderBy(u => u.count);
       expect(users).toEqual([userB, userA]);
     });
 
-    it('should execute select(User).orderBy(name).orderThenBy(count).where({name: foobar})', async () => {
+    it('should execute select(User).orderBy(name).orderBy(count).where({name: foobar})', async () => {
       const users = await ctx.adminContext
         .select(User)
         .orderBy(u => u.name)
-        .orderThenBy(u => u.count)
+        .orderBy(u => u.count)
         .where({name: 'foobar'});
       expect(users).toEqual([]);
     });

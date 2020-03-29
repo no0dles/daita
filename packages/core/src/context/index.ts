@@ -4,7 +4,7 @@ export { DocumentCreateContext } from './document-create-context';
 export { DocumentFindContext } from './document-find-context';
 export { DocumentRemoveContext } from './document-remove-context';
 export { DocumentUpdateContext } from './document-update-context';
-export { RelationalContext } from './relational-context';
+export { RelationalSchemaContext } from './relational-schema-context';
 export { RelationalDeleteContext } from './relational-delete-context';
 export { RelationalInsertContext } from './relational-insert-context';
 export { RelationalSelectContext } from './relational-select-context';

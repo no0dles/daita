@@ -3,13 +3,13 @@ import {MigrationSchemaCollection} from './migration-schema-collection';
 import {MigrationSchemaCollectionField} from './migration-schema-collection-field';
 import {MigrationSchemaTable} from './migration-schema-table';
 import {MigrationDescription} from '../migration';
-import {Permission} from '../permission';
+import {TablePermission} from '../permission';
 import {MigrationSchemaTableField} from './migration-schema-table-field';
 
 export function getMigrationSchema(migrationPath: MigrationDescription[]) {
   const collectionMap: { [key: string]: MigrationSchemaCollection } = {};
   const tableMap: { [key: string]: MigrationSchemaTable } = {};
-  const permissionMap: { [key: string]: Permission<any>[] } = {};
+  const permissionMap: { [key: string]: TablePermission<any>[] } = {};
 
   for (const migration of migrationPath) {
     for (const step of migration.steps) {

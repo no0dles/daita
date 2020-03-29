@@ -1,20 +1,21 @@
-import {RelationalDataAdapter} from '../adapter';
 import {MigrationSchema} from '../schema/migration-schema';
 import {ExcludeNonPrimitive} from './types/exclude-non-primitive';
-import {TableInformation} from './table-information';
 import {MigrationSchemaTable} from '../schema/migration-schema-table';
-import {ContextUser} from '../auth';
+import {DefaultConstructable} from '../constructable';
+import {RelationalSchemaBaseContext} from './relational-schema-base-context';
+import {RelationalInsertBuilder} from '../builder/relational-insert-builder';
+import {SqlInsertResult} from '../sql/insert';
 
-export class RelationalInsertContext<T> implements PromiseLike<void> {
+export class RelationalInsertContext<T> extends RelationalSchemaBaseContext<SqlInsertResult> {
   private table: MigrationSchemaTable;
 
   constructor(
-    private dataAdapter: RelationalDataAdapter,
     private schema: MigrationSchema,
-    private type: TableInformation<T>,
-    private rows: any[],
-    private user: ContextUser | null,
+    private type: DefaultConstructable<T>,
+    private builder: RelationalInsertBuilder<T>,
   ) {
+    super(builder);
+
     const table = this.schema.table(this.type.name);
     if (!table) {
       throw new Error(`Could not find table ${this.type.name} in schema`);
@@ -81,31 +82,13 @@ export class RelationalInsertContext<T> implements PromiseLike<void> {
 
   value(item: ExcludeNonPrimitive<T>): RelationalInsertContext<T> {
     const object = this.validateObject(item);
-
-    return new RelationalInsertContext<T>(
-      this.dataAdapter,
-      this.schema,
-      this.type,
-      [...this.rows, object],
-      this.user,
-    );
+    const newBuilder = this.builder.value(object);
+    return new RelationalInsertContext<T>(this.schema, this.type, newBuilder);
   }
 
   values(...items: ExcludeNonPrimitive<T>[]): RelationalInsertContext<T> {
     const objects = items.map(item => this.validateObject(item));
-    return new RelationalInsertContext<T>(
-      this.dataAdapter,
-      this.schema,
-      this.type,
-      [...this.rows, ...objects],
-      this.user,
-    );
-  }
-
-  then<TResult1 = void, TResult2 = never>(onfulfilled?: ((value: void) => (PromiseLike<TResult1> | TResult1)) | undefined | null, onrejected?: ((reason: any) => (PromiseLike<TResult2> | TResult2)) | undefined | null): PromiseLike<TResult1 | TResult2> {
-    return this.dataAdapter
-      .insert(this.schema, this.type.name, this.rows)
-      .then(onfulfilled)
-      .catch(onrejected);
+    const newBuilder = this.builder.values(...objects);
+    return new RelationalInsertContext<T>(this.schema, this.type, newBuilder);
   }
 }

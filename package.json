@@ -17,6 +17,7 @@
   "workspaces": {
     "packages":[
       "packages/examples/node-example",
+      "packages/examples/query-example",
       "packages/cli",
       "packages/core",
       "packages/tslint",
@@ -24,8 +25,7 @@
       "packages/docs",
       "packages/pg",
       "packages/mongodb",
-      "packages/web-client",
-      "packages/website"
+      "packages/web-client"
     ]
   },
   "license": "MIT"

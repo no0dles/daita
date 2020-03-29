@@ -1,23 +1,16 @@
 import {UserProvider} from './user-provider';
 import {AccessToken} from './token-provider';
-import {ContextUser} from '@daita/core/dist/auth';
-import {PermissionBuilder, RelationalSchema} from '@daita/core';
+import {RelationalSchema} from '@daita/core';
 import {RelationalMigrationAdapter} from '@daita/core/dist/adapter/relational-migration-adapter';
-import {RelationalMigrationContext} from '@daita/core/dist/context/relational-migration-context';
+import {RelationalDataContext} from '@daita/core/dist/context/relational-data-context';
+import {AuthorizedContextUser} from '@daita/core/dist/auth';
 
 export class RelationalUserProvider implements UserProvider {
-  private context: RelationalMigrationContext;
+  private context: RelationalDataContext;
   private migrated = false;
 
   constructor(private dataAdapter: RelationalMigrationAdapter) {
-    this.context = schema.context(dataAdapter, {
-      user: {
-        username: 'provider',
-        id: 'provider',
-        claims: [],
-        roles: ['provider'],
-      },
-    });
+    this.context = schema.context(dataAdapter);
   }
 
   async addRole(name: string) {
@@ -38,12 +31,13 @@ export class RelationalUserProvider implements UserProvider {
       });
   }
 
-  async get(token: AccessToken): Promise<ContextUser> {
+  async get(token: AccessToken): Promise<AuthorizedContextUser> {
     const roles: string[] = [];
 
     if (!this.migrated) {
       try {
-        await this.context.applyMigrations();
+        const migrationContext = schema.migrationContext(this.dataAdapter)
+        await migrationContext.apply();
         this.migrated = true;
       } catch (e) {
         console.log('migration failed', e);
@@ -81,7 +75,8 @@ export class RelationalUserProvider implements UserProvider {
 
     return {
       roles,
-      claims: [],
+      permissions: [],
+      anonymous: false,
       id: `${user.issuer}:${user.subject}`,
       username: null,
     };
@@ -113,10 +108,10 @@ schema.table(User, {key: ['subject', 'issuer']});
 schema.table(Role, {key: ['name']});
 schema.table(UserRole, {key: ['userSubject', 'userIssuer', 'roleName']});
 
-const permissions = new PermissionBuilder();
-permissions.push(User, {role: 'provider', select: true, type: 'role'});
-permissions.push(Role, {role: 'provider', select: true, type: 'role'});
-permissions.push(UserRole, {role: 'provider', select: true, type: 'role'});
+// const permissions = new PermissionBuilder();
+// permissions.push(User, {role: 'provider', select: true, type: 'role'});
+// permissions.push(Role, {role: 'provider', select: true, type: 'role'});
+// permissions.push(UserRole, {role: 'provider', select: true, type: 'role'});
 
 schema.migration({
   id: 'first-auth',
@@ -155,10 +150,10 @@ schema.migration({
       foreignTable: 'Role',
       foreignFieldNames: ['name'],
     },
-    {kind: 'add_table_permission', table: 'User', permission: {role: 'provider', select: true, type: 'role'}},
-    {kind: 'add_table_permission', table: 'Role', permission: {role: 'provider', select: true, type: 'role'}},
-    {kind: 'add_table_permission', table: 'UserRole', permission: {role: 'provider', select: true, type: 'role'}},
+    {kind: 'add_table_permission', table: 'User', permission: {role: 'provider', select: true}},
+    {kind: 'add_table_permission', table: 'Role', permission: {role: 'provider', select: true}},
+    {kind: 'add_table_permission', table: 'UserRole', permission: {role: 'provider', select: true}},
   ],
 });
 
-schema.permission(permissions);
+// schema.permission(permissions);

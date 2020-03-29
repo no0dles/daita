@@ -1,40 +1,39 @@
 import {SqlQuery} from './sql-query';
-import {isSqlSelect, SqlSelect} from './sql-select';
-import {isSqlUpdate, SqlUpdate} from './sql-update';
-import {isSqlDelete, SqlDelete} from './sql-delete';
-import {isSqlInsert, SqlInsert} from './sql-insert';
-import {isSqlMinFunction} from './sql-min-function';
-import {isSqlFunction, SqlFunction} from './sql-function';
-import {SqlSelectJoinType} from './sql-select-join-type';
-import {isSqlSumFunction} from './sql-sum-function';
-import {isSqlMaxFunction} from './sql-max-function';
-import {isSqlConcatFunction} from './sql-concat-function';
-import {isSqlAvgFunction} from './sql-avg-function';
-import {SqlOperand} from './sql-operand';
-import {isSqlAndExpression} from './sql-and-expression';
-import {SqlExpression} from './sql-expression';
-import {isSqlOrExpression} from './sql-or-expression';
 import {isSqlRawValue, SqlRawValue} from './sql-raw-value';
-import {isSqlCompareExpression} from './sql-compare-expression';
 import {isSqlValue, SqlValue} from './sql-value';
-import {SqlSelectField} from './sql-select-field';
-import {isSqlSchemaTableField, SqlSchemaTableField} from './sql-schema-table-field';
-import {SqlSelectFrom} from './sql-select-from';
-import {SqlSelectJoin} from './sql-select-join';
-import {isSqlAlias, SqlAlias} from './sql-alias';
-import {isSqlCountFunction} from './sql-count-function';
-import {isSqlSelectAll} from './sql-select-all';
+import {isSqlSchemaTableField,} from './sql-schema-table-field';
 import {isSqlRawAliasValue} from './sql-raw-alias-value';
-import {isSqlSelectDistinct} from './sql-select-distinct';
 import {isSqlSchemaTable} from './sql-schema-table';
 import {SqlBaseBuilder} from './sql-base-builder';
-import {isSqlInExpression} from './sql-in-expression';
-import {SqlInOperand} from './sql-in-operand';
-import {SqlOrderDirection} from './sql-order-direction';
 import {assertNever} from '../utils/assert-never';
-import {isSqlSelectOrderByIndex} from './sql-select-order-by-index';
-import {SqlSelectOrderBy} from './sql-select-order-by';
-import {SqlSelectGroupBy} from './sql-select-group-by';
+import {isSqlSelectOrderByIndex} from './select/sql-select-order-by-index';
+import {isSqlDelete, SqlDelete} from './delete/sql-delete';
+import {isSqlCompareExpression} from './expression/sql-compare-expression';
+import {isSqlSelect, SqlSelect} from './select/sql-select';
+import {isSqlOrExpression} from './expression/sql-or-expression';
+import {isSqlSumFunction} from './function/sql-sum-function';
+import {isSqlMaxFunction} from './function/sql-max-function';
+import {SqlExpression, SqlInOperand, SqlOperand} from './expression';
+import {isSqlUpdate, SqlUpdate} from './update/sql-update';
+import {isSqlInsert, SqlInsert} from './insert/sql-insert';
+import {isSqlSelectDistinct} from './select/sql-select-distinct';
+import {isSqlCountFunction} from './function/sql-count-function';
+import {isSqlAvgFunction} from './function/sql-avg-function';
+import {isSqlFunction, SqlFunction} from './function/sql-function';
+import {
+  SqlOrderDirection,
+  SqlSelectField,
+  SqlSelectFrom, SqlSelectGroupBy,
+  SqlSelectJoin,
+  SqlSelectJoinType,
+  SqlSelectOrderBy,
+} from './select';
+import {isSqlConcatFunction} from './function/sql-concat-function';
+import {isSqlSelectAll} from './select/sql-select-all';
+import {isSqlMinFunction} from './function/sql-min-function';
+import {isSqlAndExpression} from './expression/sql-and-expression';
+import {isSqlInExpression} from './expression/sql-in-expression';
+import {isSqlAlias} from './select/sql-alias';
 
 export class SqlQueryBuilder extends SqlBaseBuilder {
   sql = '';
@@ -134,23 +133,41 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
   protected formatInsert(insert: SqlInsert) {
     let sql = `${this.insertKeyword} ${this.formatTable(insert.insert)}`;
 
-    sql += ` (${insert.into.map(into => this.escapeField(into)).join(', ')})`;
+    const into: string[] = [];
+    const rows: SqlRawValue[][] = [];
 
     if (insert.values instanceof Array) {
-      sql += ` ${this.valuesKeyword} `;
-      const rows: any[][] = [];
-      for (const value of insert.values) {
-        if (value instanceof Array) {
-          rows.push(value);
+      for (const item of insert.values) {
+        const row: SqlRawValue[] = [];
+        const keys = Object.keys(item);
+        for (const existingKey of into) {
+          const value = item[existingKey];
+          row.push(value);
+          const index = keys.indexOf(existingKey as string);
+          if (index !== -1) {
+            keys.splice(index, 1);
+          }
         }
+        for (const key of keys) {
+          into.push(key);
+          row.push(item[key]);
+        }
+        rows.push(row);
       }
-      if (rows.length === 0) {
-        rows.push(insert.values);
-      }
-
+      sql += ` (${into.map(into => this.escapeField(into)).join(', ')}) ${this.valuesKeyword} `;
       sql += rows.map(row => `(${row.map(value => this.formatValue(value)).join(', ')})`).join(', ');
-    } else if (insert.values.select) {
+    } else if (isSqlSelect(insert.values)) {
       sql += ' ' + this.formatSelect(insert.values);
+    } else {
+      const keys = Object.keys(insert.values);
+      const value: SqlRawValue[] = [];
+      for (const key of keys) {
+        into.push(key);
+        value.push((insert.values as any)[key]);
+      }
+      rows.push(value);
+      sql += ` (${into.map(into => this.escapeField(into)).join(', ')}) ${this.valuesKeyword} `;
+      sql += rows.map(row => `(${row.map(value => this.formatValue(value)).join(', ')})`).join(', ');
     }
 
     return sql;

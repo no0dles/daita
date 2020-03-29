@@ -1,6 +1,5 @@
 import {User} from '../test/schemas/blog/models/user';
 import {RelationalTransactionContext} from './relational-transaction-context';
-import {RelationalDataContext} from './relational-data-context';
 
 const userA = {
   id: 'a',

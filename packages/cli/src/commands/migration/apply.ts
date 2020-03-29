@@ -1,8 +1,8 @@
 import {Command, flags} from '@oclif/command';
-import {RelationalContext} from '@daita/core';
 import {getSchemaInformation, getSchemaLocation} from '../../utils/path';
 import {getRelationalDataAdapter} from '../../utils/data-adapter';
 import {AstContext} from '../../ast/ast-context';
+import {RelationalSchemaMigrationContext} from '@daita/core/dist/context/relational-schema-migration-context';
 
 export default class Apply extends Command {
   static description = 'apply relational migrations';
@@ -42,12 +42,10 @@ export default class Apply extends Command {
       return;
     }
 
-    const context = new RelationalContext(
+    const context = new RelationalSchemaMigrationContext(
       dataAdapter,
-      currentSchema,
-      migrationTree,
-      null,
+      migrationTree
     );
-    await context.applyMigrations();
+    await context.apply();
   }
 }

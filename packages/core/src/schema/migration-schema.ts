@@ -1,7 +1,7 @@
 import { DatabaseSchema } from './database-schema';
 import { MigrationSchemaCollection } from './migration-schema-collection';
 import { MigrationSchemaTable } from './migration-schema-table';
-import {Permission} from '../permission';
+import {TablePermission} from '../permission';
 
 export class MigrationSchema extends DatabaseSchema<
   MigrationSchemaCollection,
@@ -11,7 +11,7 @@ export class MigrationSchema extends DatabaseSchema<
     public migrationId: string | null,
     collectionMap: { [key: string]: MigrationSchemaCollection } = {},
     tableMap: { [key: string]: MigrationSchemaTable } = {},
-    permissionMap: {[key:string]: Permission<any>[]} = {},
+    permissionMap: {[key:string]: TablePermission<any>[]} = {},
   ) {
     super(collectionMap, tableMap, permissionMap);
   }

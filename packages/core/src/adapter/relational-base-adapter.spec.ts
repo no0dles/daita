@@ -1,49 +1,21 @@
-import {RelationalBaseAdapter} from './relational-base-adapter';
-import {SqlSelect} from '../sql/sql-select';
-import {SqlDelete} from '../sql/sql-delete';
-import {SqlInsert} from '../sql/sql-insert';
-import {RelationalRawResult} from './relational-raw-result';
-import {SqlUpdate} from '../sql/sql-update';
 import {User} from '../test/schemas/blog/models/user';
-import {SqlQuery} from '../sql/sql-query';
-import {Defer} from '../defer';
 import {blogSchema} from '../test/schemas/blog/schema';
 import {RelationalDataContext} from '../context/relational-data-context';
-import {blogAdminUser} from '../test/schemas/blog/users';
 import {Comment} from '../test/schemas/blog/models/comment';
+import {RelationalAdapterMock} from '../testing/relational-adapter-mock';
+import {SqlQuery, SqlSelect} from '../sql';
 
 describe('test', () => {
 
-  async function testQuery(fn: (context: RelationalDataContext) => PromiseLike<any>): Promise<SqlQuery | string> {
-    const defer = new Defer<SqlQuery | string>();
-
-    class MockRelationalTest extends RelationalBaseAdapter {
-      isKind(kind: 'data' | 'migration' | 'transaction'): boolean {
-        return true;
-      }
-
-      protected runQuery(sql: SqlSelect | SqlDelete | SqlUpdate | SqlInsert | string, values?: any[]): Promise<RelationalRawResult> {
-        defer.resolve(sql);
-        throw new Error('mock');
-      }
-    }
-
-    const mock = new MockRelationalTest();
-    const context = blogSchema.context(mock, {user: blogAdminUser});
-    try {
-      await fn(context);
-    } catch (e) {
-      if (e.message !== 'mock') {
-        defer.reject(e);
-      }
-    }
-
-    return defer.promise;
+  async function expectQuery(fn: (context: RelationalDataContext) => Promise<any>, query: SqlQuery): Promise<void> {
+    const mock = new RelationalAdapterMock();
+    mock.expect(query, {rows: [], rowCount: 0});
+    const context = blogSchema.context(mock);
+    await fn(context);
   }
 
   it('should include join', async () => {
-    const query = await testQuery(mock => mock.select(User).include(u => u.parent));
-    expect(query).toEqual({
+    await expectQuery(ctx => ctx.select(User).include(u => u.parent), {
       select: [
         {field: 'id_first', table: 'base', alias: 'base.id'},
         {field: 'name_first', table: 'base', alias: 'base.name'},
@@ -72,8 +44,7 @@ describe('test', () => {
   });
 
   it('should join for where condition', async () => {
-    const query = await testQuery(mock => mock.select(User).where({parent: {name: 'foo'}}));
-    expect(query).toEqual({
+    await expectQuery(ctx => ctx.select(User).where({parent: {name: 'foo'}}), {
       select: [
         {field: 'id_first', table: 'base', alias: 'base.id'},
         {field: 'name_first', table: 'base', alias: 'base.name'},
@@ -102,8 +73,7 @@ describe('test', () => {
   });
 
   it('should nested join for where condition', async () => {
-    const query = await testQuery(mock => mock.select(User).where({parent: {parent:{name: 'foo'}}}));
-    expect(query).toEqual({
+    await expectQuery(ctx => ctx.select(User).where({parent: {parent: {name: 'foo'}}}), {
       select: [
         {field: 'id_first', table: 'base', alias: 'base.id'},
         {field: 'name_first', table: 'base', alias: 'base.name'},
@@ -141,8 +111,7 @@ describe('test', () => {
   });
 
   it('should add join for order by', async () => {
-    const query = await testQuery(mock => mock.select(User).orderBy(u => u.parent.id, 'asc'));
-    expect(query).toEqual({
+    await expectQuery(ctx => ctx.select(User).orderBy(u => u.parent.id, 'asc'), {
       select: [
         {field: 'id_first', table: 'base', alias: 'base.id'},
         {field: 'name_first', table: 'base', alias: 'base.name'},
@@ -169,8 +138,7 @@ describe('test', () => {
   });
 
   it('should add nested where conditions', async () => {
-    const query = await testQuery(mock => mock.select(Comment).where({user: {name: 'foo'}}));
-    expect(query).toEqual({
+    await expectQuery(ctx => ctx.select(Comment).where({user: {name: 'foo'}}), {
       select: [
         {field: 'id_second', table: 'base', alias: 'base.id'},
         {field: 'text_second', table: 'base', alias: 'base.text'},
@@ -197,8 +165,7 @@ describe('test', () => {
   });
 
   it('should add nested recursive where conditions', async () => {
-    const query = await testQuery(mock => mock.select(User).where({parent: {name: 'foo'}}));
-    expect(query).toEqual({
+    await expectQuery(ctx => ctx.select(User).where({parent: {name: 'foo'}}), {
       select: [
         {field: 'id_first', table: 'base', alias: 'base.id'},
         {field: 'name_first', table: 'base', alias: 'base.name'},
@@ -227,8 +194,7 @@ describe('test', () => {
   });
 
   it('should should delete with single condition', async () => {
-    const query = await testQuery(mock => mock.delete(User).where({name: 'foo'}));
-    expect(query).toEqual({
+    await expectQuery(ctx => ctx.delete(User).where({name: 'foo'}), {
       delete: 'User_first',
       where: {
         left: {field: 'name_first'},

@@ -1,14 +1,12 @@
 import {Pool, PoolClient, types} from 'pg';
 import {ensureDatabaseExists} from './postgres.util';
-import {RelationalDataAdapter, RelationalSelectQuery, RootFilter, SqlQuery} from '@daita/core';
-import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
+import {RelationalDataAdapter, SqlQuery} from '@daita/core';
 import {RelationalMigrationAdapter} from '@daita/core/dist/adapter/relational-migration-adapter';
 import {PostgresDataAdapter} from './postgres-data-adapter';
 import {RelationalRawResult} from '@daita/core/dist/adapter/relational-raw-result';
 import {SqlDmlQuery} from '@daita/core/dist/sql/sql-dml-builder';
 
 export class PostgresAdapter implements RelationalMigrationAdapter {
-  kind: 'dataAdapter' = 'dataAdapter';
 
   private readonly pool: Pool;
   private readonly connectionString: string | undefined;
@@ -44,10 +42,6 @@ export class PostgresAdapter implements RelationalMigrationAdapter {
     this.initalized = true;
   }
 
-  isKind(kind: 'data' | 'migration' | 'transaction'): boolean {
-    return kind === 'data' || kind === 'migration' || kind === 'transaction';
-  }
-
   private async run<T>(action: (client: PoolClient) => Promise<T>): Promise<T> {
     let client: PoolClient | null = null;
     try {
@@ -72,47 +66,6 @@ export class PostgresAdapter implements RelationalMigrationAdapter {
     }
   }
 
-  delete(
-    schema: MigrationSchema,
-    table: string,
-    filter: RootFilter<any> | null,
-  ): Promise<{ affectedRows: number }> {
-    return this.run(async client => {
-      const adapter = new PostgresDataAdapter(client);
-      return adapter.delete(schema, table, filter);
-    });
-  }
-
-  insert(schema: MigrationSchema, table: string, data: any[]): Promise<void> {
-    return this.run(async client => {
-      const adapter = new PostgresDataAdapter(client);
-      return adapter.insert(schema, table, data);
-    });
-  }
-
-  select(
-    schema: MigrationSchema,
-    table: string,
-    query: RelationalSelectQuery,
-  ): Promise<any[]> {
-    return this.run(async client => {
-      const adapter = new PostgresDataAdapter(client);
-      return adapter.select(schema, table, query);
-    });
-  }
-
-  update(
-    schema: MigrationSchema,
-    table: string,
-    data: any,
-    filter: RootFilter<any> | null,
-  ): Promise<{ affectedRows: number }> {
-    return this.run(async client => {
-      const adapter = new PostgresDataAdapter(client);
-      return adapter.update(schema, table, data, filter);
-    });
-  }
-
   async transaction<T>(
     action: (adapter: RelationalDataAdapter) => Promise<T>,
   ): Promise<T> {
@@ -127,17 +80,6 @@ export class PostgresAdapter implements RelationalMigrationAdapter {
         await client.query('ROLLBACK');
         throw e;
       }
-    });
-  }
-
-  count(
-    schema: MigrationSchema,
-    table: string,
-    query: RelationalSelectQuery,
-  ): Promise<number> {
-    return this.run(async client => {
-      const adapter = new PostgresDataAdapter(client);
-      return adapter.count(schema, table, query);
     });
   }
 

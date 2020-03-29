@@ -1,4 +1,4 @@
-import {MigrationStep, Permission, RelationalTableSchema} from '@daita/core';
+import {MigrationStep, TablePermission, RelationalTableSchema} from '@daita/core';
 import {generateRelationalTableMigrationSteps} from './generate-relational-table-migration-steps';
 import {mergeList} from '../utils';
 
@@ -73,6 +73,6 @@ export function generateRelationalMigrationSteps(
   return steps;
 }
 
-function getPermissionId(permission: Permission<any>) {
+function getPermissionId(permission: TablePermission<any>) {
   return JSON.stringify(permission);
 }

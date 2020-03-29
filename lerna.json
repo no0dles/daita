@@ -1,6 +1,7 @@
 {
   "packages": [
     "packages/examples/node-example",
+    "packages/examples/query-example",
     "packages/cli",
     "packages/core",
     "packages/tslint",
@@ -8,8 +9,7 @@
     "packages/pg",
     "packages/docs",
     "packages/mongodb",
-    "packages/web-client",
-    "packages/website"
+    "packages/web-client"
   ],
   "npmClient": "yarn",
   "useWorkspaces": true,

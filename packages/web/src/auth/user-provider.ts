@@ -1,6 +1,6 @@
 import {AccessToken} from './token-provider';
-import {ContextUser} from '@daita/core/dist/auth';
+import {AuthorizedContextUser} from '@daita/core/dist/auth';
 
 export interface UserProvider {
-  get(token: AccessToken): Promise<ContextUser>;
+  get(token: AccessToken): Promise<AuthorizedContextUser>;
 }

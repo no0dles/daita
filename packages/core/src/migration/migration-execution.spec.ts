@@ -1,7 +1,7 @@
 import {getMigrationSchema} from '../schema/migration-schema-builder';
-import {SqlDmlQuery} from '../sql';
 import {MigrationExecution} from './migration-execution';
 import {MigrationDescription} from './migration-description';
+import {SqlDmlQuery} from '../sql/sql-dml-builder';
 
 function testMigrations(
   migrationBefore: MigrationDescription[],

@@ -1,17 +1,13 @@
-import {MigrationSchema} from '@daita/core/dist/schema/migration-schema';
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import {
-  AndRootFilter,
-  OrRootFilter,
   RelationalDataAdapter,
-  RelationalSelectQuery,
-  SqlDmlQuery,
   SqlQuery,
 } from '@daita/core';
 import * as debug from 'debug';
 import {AuthProvider} from '../auth/auth-provider';
 import {IdGenerator} from '../id-generator';
 import {RelationalRawResult} from '@daita/core/dist/adapter/relational-raw-result';
+import {SqlDmlQuery} from '@daita/core/dist/sql/sql-dml-builder';
 
 export class ApiRelationalDataAdapter implements RelationalDataAdapter {
   protected idGenerator: IdGenerator;
@@ -25,10 +21,6 @@ export class ApiRelationalDataAdapter implements RelationalDataAdapter {
     if (options.auth) {
       this.auth = options.auth;
     }
-  }
-
-  isKind(kind: 'data' | 'migration' | 'transaction'): boolean {
-    return kind === 'data';
   }
 
   protected async send<T>(url: string, data?: any, query?: { [key: string]: string }) {
@@ -60,66 +52,10 @@ export class ApiRelationalDataAdapter implements RelationalDataAdapter {
     }
   }
 
-  async count(
-    schema: MigrationSchema,
-    tableName: string,
-    query: RelationalSelectQuery,
-  ): Promise<number> {
-    return this.send(`${schema.migrationId}/count/${tableName}`, {
-      where: query.filter,
-    });
-  }
-
-  async delete(
-    schema: MigrationSchema,
-    tableName: string,
-    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
-  ): Promise<{ affectedRows: number }> {
-    return this.send(`${schema.migrationId}/delete/${tableName}`, {
-      where: filter,
-    });
-  }
-
-  async insert(
-    schema: MigrationSchema,
-    tableName: string,
-    data: any[],
-  ): Promise<void> {
-    return this.send(`${schema.migrationId}/insert/${tableName}`, {
-      data,
-    });
-  }
-
   async raw(
     sql: string | SqlQuery | SqlDmlQuery,
     values?: any[],
   ): Promise<RelationalRawResult> {
     return this.send(`raw`, {sql, values});
-  }
-
-  async select(
-    schema: MigrationSchema,
-    tableName: string,
-    query: RelationalSelectQuery,
-  ): Promise<any[]> {
-    return this.send(`${schema.migrationId}/select/${tableName}`, {
-      where: query.filter,
-      limit: query.limit,
-      skip: query.skip,
-      orderBy: query.orderBy,
-      include: query.include,
-    });
-  }
-
-  async update(
-    schema: MigrationSchema,
-    tableName: string,
-    data: any,
-    filter: OrRootFilter<any> | AndRootFilter<any> | any | null,
-  ): Promise<{ affectedRows: number }> {
-    return this.send(`${schema.migrationId}/update/${tableName}`, {
-      set: data,
-      where: filter,
-    });
   }
 }
