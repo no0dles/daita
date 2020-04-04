@@ -10,11 +10,11 @@ steps:
   - yarn install
   - yarn lerna bootstrap
 
-- name: build:website
+- name: build:docs
   image: node:12
   depends_on: [install]
   commands:
-    - cd packages/website
+    - cd packages/docs
     - yarn build
 
 - name: build:core
