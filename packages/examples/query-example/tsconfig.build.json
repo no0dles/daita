@@ -3,8 +3,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
-    "types" : ["jest", "pg"]
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
   "references": [{
     "path": "../../core/tsconfig.build.json"

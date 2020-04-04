@@ -3,7 +3,7 @@ import * as schema from './schema';
 import {PostgresAdapter} from '@daita/pg';
 
 const adapter = new PostgresAdapter("postgres://localhost/datam");
-const context = schema.context(adapter);
+const context = schema.transactionContext(adapter);
 
 //context.login('admin', 'admin');
 context.transaction(async(trx) => {

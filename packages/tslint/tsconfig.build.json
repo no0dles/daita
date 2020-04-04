@@ -3,8 +3,7 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
-    "types" : ["jest"]
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
   "exclude": [
     "node_modules",

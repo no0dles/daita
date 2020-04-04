@@ -145,6 +145,10 @@ export class ContextManager {
     if (this.appOptions.auth) {
       const userPermissions = this.appOptions.auth.permissions.userPermissions(user);
       const sqlPermissions = userPermissions.sqlPermissions();
+      if (typeof value.sql === 'string') {
+        throw new Error('raw string sql not implemented yet');
+      }
+
       if (!sqlPermissions.isQueryAuthorized(value.sql)) {
         throw new Error('not authorized');
       }

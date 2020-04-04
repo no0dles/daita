@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types" : ["node", "jest", "express"]
+    "lib": ["ES2016"]
   },
   "exclude": [
     "node_modules",

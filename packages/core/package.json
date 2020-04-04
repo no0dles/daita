@@ -9,6 +9,9 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "prepare" : "npm run build",
+    "prepublishOnly" : "npm test && npm run lint",
+    "preversion" : "npm run lint",
     "test": "jest",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",

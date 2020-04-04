@@ -13,6 +13,7 @@ import {
   RelationalAuthSchemaContext,
   RelationalAuthTransactionSchemaContext, SchemaPermissions,
 } from '../permission/permission-builder';
+import {RelationalSchemaDescription} from './description/relational-schema-description';
 
 export class RelationalSchema {
   private migrationTree = new MigrationTree();
@@ -50,8 +51,8 @@ export class RelationalSchema {
   //
   // }
 
-  migrationSchema(options?: RelationalSchemaContextOptions) {
-    return this.migrationTree.defaultSchema(options ? options.migrationId : undefined);
+  migrationSchema(options?: RelationalSchemaContextOptions): RelationalSchemaDescription {
+    return this.migrationTree.defaultBackwardDescription(options ? options.migrationId : undefined);
   }
 
   context(

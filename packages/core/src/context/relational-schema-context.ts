@@ -1,5 +1,4 @@
 import {RelationalDataAdapter} from '../adapter/relational-data-adapter';
-import {MigrationSchema} from '../schema/migration-schema';
 import {RelationalInsertContext} from './relational-insert-context';
 import {DefaultConstructable} from '../constructable';
 import {RelationalSelectContext} from './relational-select-context';
@@ -11,10 +10,11 @@ import {RelationalInsertBuilder} from '../builder/relational-insert-builder';
 import {RelationalDeleteBuilder} from '../builder/relational-delete-builder';
 import {getSqlTable} from '../builder/utils';
 import {RelationalSelectBuilder} from '../builder/relational-select-builder';
+import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
 
 export class RelationalSchemaContext implements RelationalDataContext {
   constructor(protected relationalDataAdapter: RelationalDataAdapter,
-              protected schema: MigrationSchema) {
+              protected schema: RelationalSchemaDescription) {
   }
 
   insert<T>(type: DefaultConstructable<T>): RelationalInsertContext<T> {
@@ -29,7 +29,7 @@ export class RelationalSchemaContext implements RelationalDataContext {
     return new RelationalSelectContext<T>(
       this.schema,
       type,
-      new RelationalSelectBuilder(this.relationalDataAdapter, getSqlTable(type)),
+      new RelationalSelectBuilder<T>(this.relationalDataAdapter, getSqlTable(type)),
     );
   }
 

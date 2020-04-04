@@ -1,15 +1,15 @@
 import {RelationalInsertContext} from './relational-insert-context';
-import {DefaultConstructable} from '../constructable';
 import {RelationalSelectContext} from './relational-select-context';
 import {RelationalUpdateContext} from './relational-update-context';
 import {RelationalDeleteContext} from './relational-delete-context';
+import {TableInformation} from './table-information';
 
 export interface RelationalDataContext {
-  insert<T>(type: DefaultConstructable<T>): RelationalInsertContext<T>;
+  insert<T>(type: TableInformation<T>): RelationalInsertContext<T>;
 
-  select<T>(type: DefaultConstructable<T>): RelationalSelectContext<T>;
+  select<T>(type: TableInformation<T>): RelationalSelectContext<T>;
 
-  update<T>(type: DefaultConstructable<T>): RelationalUpdateContext<T>;
+  update<T>(type: TableInformation<T>): RelationalUpdateContext<T>;
 
-  delete<T>(type: DefaultConstructable<T>): RelationalDeleteContext<T>;
+  delete<T>(type: TableInformation<T>): RelationalDeleteContext<T>;
 }

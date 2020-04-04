@@ -12,6 +12,6 @@
     "packages/web-client"
   ],
   "npmClient": "yarn",
-  "useWorkspaces": true,
+  "useWorkspaces": false,
   "version": "0.1.1-alpha.2"
 }

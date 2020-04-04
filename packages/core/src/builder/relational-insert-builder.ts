@@ -22,7 +22,7 @@ export class RelationalInsertBuilder<T> extends RelationalQueryBuilder<SqlInsert
     for (const item of items) {
       this.addValue(clone, item);
     }
-    return this;
+    return clone;
   }
 
   private addValue(clone: RelationalInsertBuilder<T>, item: ExcludeNonPrimitive<T>) {

@@ -4,7 +4,7 @@
     "rootDir": "./packages",
     "baseUrl": "./packages",
     "paths": {
-//      "@daita/core": ["core/src"],
+      //"@daita/core": ["core/src"]
 //      "@daita/web": ["web/src"],
 //      "@daita/pg": ["pg/src"],
 //      "@daita/cli": ["cli/src"],

@@ -11,7 +11,7 @@ export class UserPermission extends BaseTable {
   userUsername!: string;
 }
 
-export const UserPermissionPermissions: TablePermission<User>[] = [
+export const UserPermissionPermissions: TablePermission<UserPermission>[] = [
   {permission: CanViewUsers, select: true, delete: false, insert: false, update: false},
   {permission: CanManageUsers, select: true, delete: true, insert: true, update: true},
 ];

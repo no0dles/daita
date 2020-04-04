@@ -8,12 +8,12 @@ import {SocketRollbackTransaction} from './events/socket-rollback-transaction';
 import {SocketCommitTransaction} from './events/socket-commit-transaction';
 import * as debug from 'debug';
 import {SocketAuthEvent} from './events/socket-auth-event';
-import {AuthorizedContextUser} from '@daita/core/dist/auth';
+import {ContextUser} from '@daita/core/dist/auth';
 
 function handle<T>(
   socket: socketIo.Socket,
   event: string,
-  action: (data: T) => PromiseLike<any>,
+  action: (data: T) => Promise<any>,
 ) {
   socket.on(event, async data => {
     debug('daita:web:socket')('received event ' + event, data);
@@ -33,7 +33,7 @@ export function createSocketApp(
   const io = socketIo(server);
 
   io.on('connection', socket => {
-    let user: AuthorizedContextUser | null = null;
+    let user: ContextUser = {anonymous: true};
     let userExpireTimeout: NodeJS.Timeout | null = null;
     const manager = new ContextManager(options, socket);
 
@@ -50,9 +50,9 @@ export function createSocketApp(
             const timeExpired = (result.exp - now) * 1000;
             userExpireTimeout = setTimeout(() => {
               if (user) {
-                debug('daita:web:socket')(`user ${user.username} expired`);
+                debug('daita:web:socket')(`user ${user} expired`);
               }
-              user = null;
+              user = {anonymous: true};
             }, timeExpired);
           }
           return {};

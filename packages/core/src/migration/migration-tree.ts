@@ -1,5 +1,8 @@
-import { MigrationDescription } from './migration-description';
-import { getMigrationSchema } from '../schema/migration-schema-builder';
+import {MigrationDescription} from './migration-description';
+import {getMigrationSchema} from '../schema/migration-schema-builder';
+import {getSchemaDescription} from '../schema/relational-schema-description';
+import {SchemaMapper} from '../schema/description/schema-mapper';
+import {BackwardCompatibleMapper} from '../schema/description/backward-compatible-mapper';
 
 export class MigrationTree {
   private migrationMap: { [id: string]: MigrationDescription } = {};
@@ -82,14 +85,14 @@ export class MigrationTree {
   }
 
   defaultPath(id?: string) {
-    if(id) {
+    if (id) {
       return this.path(id);
     }
 
     const lastMigrations = this.last();
-    if(lastMigrations.length === 1) {
+    if (lastMigrations.length === 1) {
       return this.path(lastMigrations[0].id);
-    } else if(lastMigrations.length === 0) {
+    } else if (lastMigrations.length === 0) {
       return [];
     } else {
       throw new Error('more than 1 migration');
@@ -98,6 +101,10 @@ export class MigrationTree {
 
   defaultSchema(id?: string) {
     return getMigrationSchema(this.defaultPath(id));
+  }
+
+  defaultBackwardDescription(id?: string) {
+    return getSchemaDescription(new SchemaMapper(() => new BackwardCompatibleMapper()), this.defaultPath(id));
   }
 
   path(id: string) {

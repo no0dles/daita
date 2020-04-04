@@ -685,7 +685,7 @@ describe('sql-query-builder', () => {
           from: 'bar',
         },
       },
-      sql: 'INSERT INTO "foo" ("bar", "foo") SELECT "bar", "bar" FROM "bar"',
+      sql: 'INSERT INTO "foo" SELECT "bar", "bar" FROM "bar"',
       values: [],
     });
   });

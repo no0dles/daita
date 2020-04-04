@@ -1,5 +1,7 @@
 import {SqlTable} from './sql-table';
 import {SqlBaseBuilder} from './sql-base-builder';
+import {isKind} from '../utils/is-kind';
+import {SqlInsert} from './insert';
 
 export type SqlDmlQuery = SqlCreateTableQuery | SqlDropTableQuery | SqlAlterTableQuery;
 
@@ -8,6 +10,8 @@ export interface SqlCreateTableQuery {
   ifNotExist?: boolean;
   fields: SqlCreateFieldQuery[];
 }
+
+export const isSqlCreateTable = (val: any): val is SqlCreateTableQuery => isKind<SqlCreateTableQuery>(val, ['createTable', 'fields']);
 
 export interface SqlCreateFieldQuery {
   name: string;
@@ -20,15 +24,21 @@ export type SqlFieldType = 'string' | 'number' | 'date' | 'boolean' | 'string[]'
 
 export type SqlAlterTableQuery = SqlAlterTableAdd | SqlAlterTableDrop;
 
+export const isSqlAlterTable = (val: any): val is SqlAlterTableQuery => isSqlAlterAddTable(val) || isSqlAlterDropTable(val);
+
 export interface SqlAlterTableAdd {
   alterTable: SqlTable;
   add: SqlAlterTableAddColumn | SqlAlterTableAddForeignKey<string> | SqlAlterTableAddForeignKey<string[]>;
 }
 
+export const isSqlAlterAddTable = (val: any): val is SqlAlterTableAdd => isKind<SqlAlterTableAdd>(val, ['alterTable', 'add']);
+
 export interface SqlAlterTableDrop {
   alterTable: SqlTable;
   drop: SqlAlterTableDropColumn | SqlAlterTableDropConstraint;
 }
+
+export const isSqlAlterDropTable = (val: any): val is SqlAlterTableDrop => isKind<SqlAlterTableDrop>(val, ['alterTable', 'drop']);
 
 export interface SqlAlterTableDropColumn {
   column: string;
@@ -56,6 +66,8 @@ export interface SqlDropTableQuery {
   dropTable: SqlTable;
   ifExist?: boolean;
 }
+
+export const isSqlDropTable = (val: any): val is SqlDropTableQuery => isKind<SqlDropTableQuery>(val, ['dropTable']);
 
 export class SqlDmlBuilder extends SqlBaseBuilder {
   sql = '';

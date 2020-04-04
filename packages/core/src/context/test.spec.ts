@@ -35,7 +35,9 @@ describe('test', () => {
   it('test select', async () => {
     const dataAdapter = new RelationalAdapterMock();
     dataAdapter.expect({
-      select: [],
+      select: [
+        {all: true, schema: 'public', table: 'foo'},
+      ],
       from: {table: 'foo', schema: 'public'},
       where: {
         left: {field: 'foo'},
@@ -56,13 +58,16 @@ describe('test', () => {
   it('test select nested', async () => {
     const dataAdapter = new RelationalAdapterMock();
     dataAdapter.expect({
-      select: [],
+      select: [
+        {all:true, schema: 'public', table: 'foo'},
+        {all:true, table: 'parent'}
+      ],
       from: {table: 'foo', schema: 'public'},
       joins: [
         {
           type: 'inner',
           from: {table: 'foo', schema: 'public', alias: 'parent'},
-          on: {left: {field: 'parentId', table: 'foo'}, operand: '=', right: {field: 'id', table: 'parent'}},
+          on: {left: {field: 'parentId', table: 'foo', schema: 'public'}, operand: '=', right: {field: 'id', table: 'parent'}},
         },
       ],
       where: {
@@ -89,7 +94,7 @@ describe('test', () => {
     const dataAdapter = new RelationalAdapterMock();
     dataAdapter.expect({
       insert: {table: 'foo', schema: 'public'},
-      values: [{foo: 'bar'}],
+      values: [{foo: 'bar', id: 'a'}],
     }, {
       rowCount: 0,
       rows: [],

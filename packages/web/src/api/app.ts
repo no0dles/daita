@@ -12,6 +12,10 @@ export function createApiApp(options: AppOptions): express.Express {
   app.use(bodyParser.json());
   if (options.auth) {
     app.use(authMiddleware(options.auth));
+  } else {
+    app.use((req, res, next) => {
+      req.user = {anonymous: true};
+    });
   }
   app.use('/api/table', relationalApi(options));
   app.use(

@@ -1,7 +1,5 @@
-import {Full} from '../context/types/full';
-import {SqlRawValue} from '../sql/sql-raw-value';
 import {getFieldFromSelector} from './utils';
-import {RelationalEmptyExpressionBuilder} from './relational-empty-expression-builder';
+import {RelationalEmptyExpressionBuilder, RelationalExpressionField} from './relational-empty-expression-builder';
 import {RelationalExpressionBuilder} from './relational-expression-builder';
 import {SqlSchemaTableField} from '../sql/sql-schema-table-field';
 import {isSqlSchemaTable} from '../sql/sql-schema-table';
@@ -29,39 +27,47 @@ export class RelationalEmptyExpressionBuilderImpl<T> implements RelationalEmptyE
     }
   }
 
-  lte(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue) {
-    const left = this.addFrom(getFieldFromSelector(first));
-    const right = this.addFrom(getFieldFromSelector(second));
+  private getField(field: RelationalExpressionField<T>): SqlSchemaTableField {
+    if (typeof field === 'function') {
+      return getFieldFromSelector(field);
+    } else {
+      return field;
+    }
+  }
+
+  lte(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>) {
+    const left = this.addFrom(this.getField(first));
+    const right = this.addFrom(this.getField(second));
     return this.addExpression({left, right, operand: '<='});
   }
 
-  lt(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue) {
-    const left = this.addFrom(getFieldFromSelector(first));
-    const right = this.addFrom(getFieldFromSelector(second));
+  lt(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>) {
+    const left = this.addFrom(this.getField(first));
+    const right = this.addFrom(this.getField(second));
     return this.addExpression({left, right, operand: '<'});
   }
 
-  gte(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue) {
-    const left = this.addFrom(getFieldFromSelector(first));
-    const right = this.addFrom(getFieldFromSelector(second));
+  gte(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>) {
+    const left = this.addFrom(this.getField(first));
+    const right = this.addFrom(this.getField(second));
     return this.addExpression({left, right, operand: '>='});
   }
 
-  gt(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue) {
-    const left = this.addFrom(getFieldFromSelector(first));
-    const right = this.addFrom(getFieldFromSelector(second));
+  gt(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>) {
+    const left = this.addFrom(this.getField(first));
+    const right = this.addFrom(this.getField(second));
     return this.addExpression({left, right, operand: '>'});
   }
 
-  ne(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue) {
-    const left = this.addFrom(getFieldFromSelector(first));
-    const right = this.addFrom(getFieldFromSelector(second));
+  ne(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>) {
+    const left = this.addFrom(this.getField(first));
+    const right = this.addFrom(this.getField(second));
     return this.addExpression({left, right, operand: '!='});
   }
 
-  eq(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue) {
-    const left = this.addFrom(getFieldFromSelector(first));
-    const right = this.addFrom(getFieldFromSelector(second));
+  eq(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>) {
+    const left = this.addFrom(this.getField(first));
+    const right = this.addFrom(this.getField(second));
     return this.addExpression({left, right, operand: '='});
   }
 

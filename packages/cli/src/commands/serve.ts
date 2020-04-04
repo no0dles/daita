@@ -11,6 +11,7 @@ import {getTokenProvider} from '../utils/token-provider';
 import {AccessToken} from '@daita/web/dist/auth/token-provider';
 import {AstContext} from '../ast/ast-context';
 import {RelationalSchemaMigrationContext} from '@daita/core/dist/context/relational-schema-migration-context';
+import {SchemaPermissions} from '@daita/core/dist/permission/permission-builder';
 
 export default class Serve extends Command {
   private server: http.Server | null = null;
@@ -97,6 +98,7 @@ export default class Serve extends Command {
         auth: tokenProvider ? {
           tokenProvider,
           userProvider,
+          permissions: new SchemaPermissions() //TODO use permissions from source code
         } : undefined,
       });
 

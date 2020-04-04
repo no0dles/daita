@@ -1,14 +1,24 @@
 import {Full} from '../context/types/full';
 import {SqlRawValue} from '../sql/sql-raw-value';
 import {RelationalExpressionBuilder} from './relational-expression-builder';
+import {SqlSchemaTableField} from '../sql';
+
+export type RelationalExpressionSelector<T> = (table: Full<T>) => SqlRawValue;
+export type RelationalExpressionField<T> = RelationalExpressionSelector<T> | SqlSchemaTableField;
 
 export interface RelationalEmptyExpressionBuilder<T> {
   or(action: (builder: RelationalEmptyExpressionBuilder<T>) => RelationalExpressionBuilder<T>): RelationalExpressionBuilder<T>;
-  ne(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue): RelationalExpressionBuilder<T>
-  eq(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue): RelationalExpressionBuilder<T>
-  lt(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue): RelationalExpressionBuilder<T>
-  lte(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue): RelationalExpressionBuilder<T>;
-  gte(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue): RelationalExpressionBuilder<T>
-  gt(first: (table: Full<T>) => SqlRawValue, second: (table: Full<T>) => SqlRawValue): RelationalExpressionBuilder<T>
+
+  ne(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>): RelationalExpressionBuilder<T>
+
+  eq(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>): RelationalExpressionBuilder<T>
+
+  lt(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>): RelationalExpressionBuilder<T>
+
+  lte(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>): RelationalExpressionBuilder<T>;
+
+  gte(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>): RelationalExpressionBuilder<T>
+
+  gt(first: RelationalExpressionField<T>, second: RelationalExpressionField<T>): RelationalExpressionBuilder<T>
 }
 

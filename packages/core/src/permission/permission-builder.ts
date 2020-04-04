@@ -5,9 +5,7 @@ import {
   RelationalSelectContext,
   RelationalTransactionContext, RelationalUpdateContext,
 } from '../context';
-import {DefaultConstructable} from '../constructable';
 import {ContextUser} from '../auth';
-import {MigrationSchema} from '../schema/migration-schema';
 import {isSqlSchemaTable, SqlSchemaTable} from '../sql/sql-schema-table';
 import {RelationalUpdateBuilder} from '../builder/relational-update-builder';
 import {RelationalInsertBuilder} from '../builder/relational-insert-builder';
@@ -33,6 +31,14 @@ import {isSqlCompareExpression} from '../sql/expression/sql-compare-expression';
 import {isSqlInExpression} from '../sql/expression/sql-in-expression';
 import {isSqlAndExpression} from '../sql/expression/sql-and-expression';
 import {isSqlOrExpression} from '../sql/expression/sql-or-expression';
+import {
+  isSqlAlterTable,
+  isSqlCreateTable,
+  isSqlDropTable, SqlAlterTableAdd, SqlAlterTableDrop,
+  SqlCreateTableQuery,
+  SqlDmlQuery, SqlDropTableQuery,
+} from '../sql/sql-dml-builder';
+import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
 
 function getTableIdentifier(type: TableInformation<any>): string {
   const table = getSqlTable(type);
@@ -208,7 +214,7 @@ export class SqlPermissions {
     return false;
   }
 
-  isQueryAuthorized(query: SqlQuery) {
+  isQueryAuthorized(query: SqlQuery | SqlDmlQuery) {
     if (isSqlSelect(query)) {
       return this.isSelectAuthorized(query);
     } else if (isSqlUpdate(query)) {
@@ -217,8 +223,26 @@ export class SqlPermissions {
       return this.isDeleteAuthorized(query);
     } else if (isSqlInsert(query)) {
       return this.isInsertAuthorized(query);
+    } else if(isSqlCreateTable(query)) {
+      return this.isSqlCreateTableAuthorized(query);
+    } else if(isSqlDropTable(query)) {
+      return this.isSqlDropTableAuthorized(query);
+    } else if(isSqlAlterTable(query)) {
+      return this.isSqlAlterTableAuthorized(query);
     }
 
+    return false;
+  }
+
+  private isSqlCreateTableAuthorized(query: SqlCreateTableQuery) {
+    return false;
+  }
+
+  private isSqlDropTableAuthorized(query: SqlDropTableQuery) {
+    return false;
+  }
+
+  private isSqlAlterTableAuthorized(query: SqlAlterTableAdd | SqlAlterTableDrop) {
     return false;
   }
 }
@@ -343,11 +367,11 @@ export class UserPermissions {
 
 export class RelationalAuthSchemaContext implements RelationalDataContext {
   constructor(protected relationalDataAdapter: RelationalDataAdapter,
-              protected schema: MigrationSchema,
+              protected schema: RelationalSchemaDescription,
               protected sqlPermissions: SqlPermissions) {
   }
 
-  delete<T>(type: DefaultConstructable<T>): RelationalDeleteContext<T> {
+  delete<T>(type: TableInformation<T>): RelationalDeleteContext<T> {
     const permissions = this.sqlPermissions;
     class RelationalDeleteBuilderAuth extends RelationalDeleteBuilder<T> {
       protected async execute(): Promise<SqlDeleteResult> {
@@ -362,7 +386,7 @@ export class RelationalAuthSchemaContext implements RelationalDataContext {
     return new RelationalDeleteContext(this.schema, type, builder);
   }
 
-  insert<T>(type: DefaultConstructable<T>): RelationalInsertContext<T> {
+  insert<T>(type: TableInformation<T>): RelationalInsertContext<T> {
     const permissions = this.sqlPermissions;
     class RelationalInsertBuilderAuth extends RelationalInsertBuilder<T> {
       protected async execute(): Promise<SqlInsertResult> {
@@ -377,7 +401,7 @@ export class RelationalAuthSchemaContext implements RelationalDataContext {
     return new RelationalInsertContext(this.schema, type, builder);
   }
 
-  select<T>(type: DefaultConstructable<T>): RelationalSelectContext<T> {
+  select<T>(type: TableInformation<T>): RelationalSelectContext<T> {
     const permissions = this.sqlPermissions;
     class RelationalSelectBuilderAuth extends RelationalSelectBuilder<T> {
       protected async execute(): Promise<T[]> {
@@ -400,10 +424,10 @@ export class RelationalAuthSchemaContext implements RelationalDataContext {
     }
 
     const builder = new RelationalSelectBuilderAuth(this.relationalDataAdapter, getSqlTable(type));
-    return new RelationalSelectContext(this.schema, type, builder);
+    return new RelationalSelectContext<T>(this.schema, type, builder);
   }
 
-  update<T>(type: DefaultConstructable<T>): RelationalUpdateContext<T> {
+  update<T>(type: TableInformation<T>): RelationalUpdateContext<T> {
     const permissions = this.sqlPermissions;
     class RelationalUpdateBuilderAuth extends RelationalUpdateBuilder<T> {
       protected async execute(): Promise<SqlUpdateResult> {
@@ -421,7 +445,7 @@ export class RelationalAuthSchemaContext implements RelationalDataContext {
 
 export class RelationalAuthTransactionSchemaContext extends RelationalAuthSchemaContext implements RelationalTransactionContext {
   constructor(private relationalTransactionAdapter: RelationalTransactionAdapter,
-              schema: MigrationSchema,
+              schema: RelationalSchemaDescription,
               sqlPermissions: SqlPermissions) {
     super(relationalTransactionAdapter, schema, sqlPermissions);
   }

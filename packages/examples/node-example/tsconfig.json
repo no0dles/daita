@@ -8,8 +8,7 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "lib": ["dom"],
-    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
-    "types" : ["jest", "@daita/core", "node"]
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
   "exclude": [
     "node_modules",

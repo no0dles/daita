@@ -4,7 +4,8 @@
   "description": "",
   "private": true,
   "dependencies": {
-    "lerna": "^3.16.5"
+    "lerna": "^3.16.5",
+    "jest": "^25.2.4"
   },
   "scripts": {
     "bootstrap": "lerna bootstrap",
@@ -13,20 +14,6 @@
     "test": "jest --silent",
     "coverage": "jest",
     "upload-coverage": "codecov"
-  },
-  "workspaces": {
-    "packages":[
-      "packages/examples/node-example",
-      "packages/examples/query-example",
-      "packages/cli",
-      "packages/core",
-      "packages/tslint",
-      "packages/web",
-      "packages/docs",
-      "packages/pg",
-      "packages/mongodb",
-      "packages/web-client"
-    ]
   },
   "license": "MIT"
 }

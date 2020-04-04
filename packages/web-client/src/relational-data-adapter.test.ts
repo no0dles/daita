@@ -31,6 +31,7 @@ export class WebDataAdapterFactory<T extends RelationalDataAdapter> implements R
       auth: {
         tokenProvider,
         userProvider,
+        permissions: (<any>schema).permissions //TODO remove any cast
       },
     });
 

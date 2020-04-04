@@ -6,7 +6,7 @@ import {UserProvider} from '../auth/user-provider';
 declare global {
   namespace Express {
     export interface Request {
-      user?: ContextUser;
+      user: ContextUser;
     }
   }
 }
@@ -15,13 +15,13 @@ export function authMiddleware(options: { tokenProvider: TokenProvider, userProv
   return async (req, res, next) => {
     const authorization = req.header('authorization');
     if (!authorization || !authorization.startsWith('Bearer ')) {
+      req.user = {anonymous: true};
       return next();
     }
     try {
       const token = authorization.substr('Bearer '.length);
       const tokenPayload = await options.tokenProvider.verify(token);
       const user = await options.userProvider.get(tokenPayload);
-      console.log(user);
       req.user = user;
       next();
     } catch (e) {

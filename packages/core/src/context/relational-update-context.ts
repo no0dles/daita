@@ -1,14 +1,14 @@
 import {RootFilter} from '../query/root-filter';
-import {MigrationSchema} from '../schema/migration-schema';
 import {PrimitivePartial} from './types/primitive-partial';
 import {TableInformation} from './table-information';
 import {RelationalSchemaBaseContext} from './relational-schema-base-context';
 import {RelationalUpdateBuilder} from '../builder/relational-update-builder';
 import {SqlUpdateResult} from '../sql/update';
+import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
 
 export class RelationalUpdateContext<T> extends RelationalSchemaBaseContext<SqlUpdateResult> {
   constructor(
-    private schema: MigrationSchema,
+    private schema: RelationalSchemaDescription,
     private type: TableInformation<T>,
     private builder: RelationalUpdateBuilder<T>,
   ) {

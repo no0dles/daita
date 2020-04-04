@@ -1,6 +1,6 @@
 import {select, SqlSelect} from '@daita/core';
-import {User} from './tables';
-import {dataAdapter} from './data-adapter';
+import {User} from '../tables';
+import {dataAdapter} from '../data-adapter';
 
 describe('select', () => {
   it('should select all', () => {

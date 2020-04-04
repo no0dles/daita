@@ -1,8 +1,5 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "types" : ["jest", "pg"]
-  },
   "exclude": [
     "node_modules",
     "dist"

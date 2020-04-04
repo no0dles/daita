@@ -1,13 +1,13 @@
 import {RootFilter} from '../query/root-filter';
-import {MigrationSchema} from '../schema/migration-schema';
 import {TableInformation} from './table-information';
 import {RelationalSchemaBaseContext} from './relational-schema-base-context';
 import {RelationalDeleteBuilder} from '../builder/relational-delete-builder';
 import {SqlDeleteResult} from '../sql/delete';
+import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
 
 export class RelationalDeleteContext<T> extends RelationalSchemaBaseContext<SqlDeleteResult> {
   constructor(
-    private schema: MigrationSchema,
+    private schema: RelationalSchemaDescription,
     private type: TableInformation<T>,
     private builder: RelationalDeleteBuilder<T>
   ) {

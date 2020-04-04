@@ -111,7 +111,10 @@ describe('test', () => {
   });
 
   it('should add join for order by', async () => {
-    await expectQuery(ctx => ctx.select(User).orderBy(u => u.parent.id, 'asc'), {
+    await expectQuery(async ctx => {
+      const builder = ctx.select(User).orderBy(u => u.parent.id, 'asc')
+      return await builder;
+    }, {
       select: [
         {field: 'id_first', table: 'base', alias: 'base.id'},
         {field: 'name_first', table: 'base', alias: 'base.name'},

@@ -11,28 +11,48 @@ import {
 import {RelationalExpressionBuilder} from './relational-expression-builder';
 import {RelationalSelectFirstOrDefaultBuilder} from './relational-select-first-or-default-builder';
 import {ExcludePrimitive} from '../context/types/exclude-primitive';
-import {ExcludeNonPrimitive} from '../context/types/exclude-non-primitive';
 import {RelationalEmptyExpressionBuilderImpl} from './relational-empty-expression-builder-impl';
 import {isSqlSchemaTable} from '../sql/sql-schema-table';
-import {SqlOrderDirection, SqlSelect, SqlSelectFrom, SqlSelectJoinType, SqlSelectOrderBy} from '../sql/select';
+import {
+  SqlOrderDirection,
+  SqlSelect,
+  SqlSelectField,
+  SqlSelectFrom,
+  SqlSelectJoinType,
+  SqlSelectOrderBy,
+} from '../sql/select';
 import {isSqlAlias} from '../sql/select/sql-alias';
+
+export type SelectBuilderFieldSelector<T> = (table: ExcludePrimitive<T>) => any;
 
 export class RelationalSelectBuilder<T> extends RelationalWhereBuilder<T, SqlSelect, T[]> {
   constructor(dataAdapter: RelationalDataAdapter, table?: SqlSelectFrom | null) {
     super(dataAdapter, {select: [], from: table});
   }
 
-  field(selector: (table: ExcludeNonPrimitive<T>) => any) {
+  field(field: SqlSelectField): RelationalSelectBuilder<T>
+  field(selector: SelectBuilderFieldSelector<T>): RelationalSelectBuilder<T>
+  field(selector: SelectBuilderFieldSelector<T> | SqlSelectField): RelationalSelectBuilder<T> {
     const clone = deepClone(this);
-    //TODO
+    if (typeof selector === 'function') {
+      const field = getFieldFromSelector(selector);
+      clone.query.select.push(field);
+    } else {
+      clone.query.select.push(selector);
+    }
     return clone;
   }
 
-  fields(): RelationalSelectBuilder<T>
-  fields(selector: (table: ExcludePrimitive<T>) => any): RelationalSelectBuilder<T>
-  fields(selector?: (table: ExcludePrimitive<T>) => any): RelationalSelectBuilder<T> {
+  fields(...selectors: (SelectBuilderFieldSelector<T> | SqlSelectField)[]): RelationalSelectBuilder<T> {
     const clone = deepClone(this);
-    //TODO
+    for (const selector of selectors) {
+      if (typeof selector === 'function') {
+        const field = getFieldFromSelector(selector);
+        clone.query.select.push(field);
+      } else {
+        clone.query.select.push(selector);
+      }
+    }
     return clone;
   }
 
@@ -157,15 +177,5 @@ export class RelationalSelectBuilder<T> extends RelationalWhereBuilder<T, SqlSel
     const result = await this.dataAdapter.raw(this.toSql());
     //TODO map
     return [];
-  }
-}
-
-export function select<T>(dataAdapter: RelationalDataAdapter, table: TableInformation<T>): RelationalSelectBuilder<T> {
-  if (typeof table === 'string') {
-    return new RelationalSelectBuilder<T>(dataAdapter, table);
-  } else if (isSqlSchemaTable(table)) {
-    return new RelationalSelectBuilder<T>(dataAdapter, table);
-  } else {
-    return new RelationalSelectBuilder<T>(dataAdapter, table.name);
   }
 }
