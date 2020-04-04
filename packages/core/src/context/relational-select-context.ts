@@ -113,9 +113,9 @@ export class RelationalSelectContext<T> extends RelationalSchemaBaseContext<T[]>
     const aliasPath: string[] = [];
 
     let tableDescription = this.schema.table(this.type);
-    for (const alias of aliasParts) {
-      aliasPath.push(alias);
-      const reference = tableDescription.reference(alias);
+    for (const aliasPart of aliasParts) {
+      aliasPath.push(aliasPart);
+      const reference = tableDescription.reference(aliasPart);
       callback(tableDescription, reference, aliasPath.join('.'));
       tableDescription = reference.table;
     }

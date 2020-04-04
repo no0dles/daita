@@ -11,7 +11,7 @@ export abstract class RelationalQueryBuilder<TQuery extends object, Result> {
 
   protected abstract execute(): Promise<Result>;
 
-  public toSql() {
+  toSql() {
     return deepClone(this.query);
   }
 

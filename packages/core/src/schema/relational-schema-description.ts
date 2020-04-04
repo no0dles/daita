@@ -18,7 +18,7 @@ export function getSchemaDescription(schemaMapper: SchemaMapper, paths: Migratio
         const fieldName = fieldMapper.add(step.fieldName, path.id);
         const table = schema.table({table: step.table, schema: step.schema});
         table.addField(step.fieldName, new RelationalTableFieldDescription(fieldName, step.type, step.required, step.defaultValue));
-      } else if (step.kind == 'add_table_primary_key') {
+      } else if (step.kind === 'add_table_primary_key') {
         //TODO
       } else if (step.kind === 'add_table_foreign_key') {
         const table = schema.table({schema: step.schema, table: step.table});
@@ -38,7 +38,7 @@ export function getSchemaDescription(schemaMapper: SchemaMapper, paths: Migratio
         table.addReference(step.name, {
           table: foreignTable,
           name: step.name,
-          keys: keys,
+          keys,
         });
       } else if (step.kind === 'drop_table_field') {
         schemaMapper.field(step.table).drop(step.fieldName);

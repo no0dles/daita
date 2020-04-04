@@ -154,19 +154,19 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
         }
         rows.push(row);
       }
-      sql += ` (${into.map(into => this.escapeField(into)).join(', ')}) ${this.valuesKeyword} `;
+      sql += ` (${into.map(field => this.escapeField(field)).join(', ')}) ${this.valuesKeyword} `;
       sql += rows.map(row => `(${row.map(value => this.formatValue(value)).join(', ')})`).join(', ');
     } else if (isSqlSelect(insert.values)) {
       sql += ' ' + this.formatSelect(insert.values);
     } else {
       const keys = Object.keys(insert.values);
-      const value: SqlRawValue[] = [];
+      const values: SqlRawValue[] = [];
       for (const key of keys) {
         into.push(key);
-        value.push((insert.values as any)[key]);
+        values.push((insert.values as any)[key]);
       }
-      rows.push(value);
-      sql += ` (${into.map(into => this.escapeField(into)).join(', ')}) ${this.valuesKeyword} `;
+      rows.push(values);
+      sql += ` (${into.map(field => this.escapeField(field)).join(', ')}) ${this.valuesKeyword} `;
       sql += rows.map(row => `(${row.map(value => this.formatValue(value)).join(', ')})`).join(', ');
     }
 
