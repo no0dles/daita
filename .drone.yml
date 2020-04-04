@@ -8,6 +8,7 @@ steps:
   image: node:12
   commands:
   - yarn install
+  - yarn lerna bootstrap
 
 - name: build:website
   image: node:12
