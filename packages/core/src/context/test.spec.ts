@@ -40,7 +40,7 @@ describe('test', () => {
       ],
       from: {table: 'foo', schema: 'public'},
       where: {
-        left: {field: 'foo'},
+        left: {field: 'foo', schema: 'public', table: 'foo'},
         operand: '=',
         right: 'bar',
       },
@@ -59,15 +59,19 @@ describe('test', () => {
     const dataAdapter = new RelationalAdapterMock();
     dataAdapter.expect({
       select: [
-        {all:true, schema: 'public', table: 'foo'},
-        {all:true, table: 'parent'}
+        {all: true, schema: 'public', table: 'foo'},
+        {all: true, table: 'parent'},
       ],
       from: {table: 'foo', schema: 'public'},
       joins: [
         {
           type: 'inner',
           from: {table: 'foo', schema: 'public', alias: 'parent'},
-          on: {left: {field: 'parentId', table: 'foo', schema: 'public'}, operand: '=', right: {field: 'id', table: 'parent'}},
+          on: {
+            left: {field: 'parentId', table: 'foo', schema: 'public'},
+            operand: '=',
+            right: {field: 'id', table: 'parent'},
+          },
         },
       ],
       where: {

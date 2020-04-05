@@ -8,11 +8,11 @@ import {RelationalSchemaDescription} from '../schema/description/relational-sche
 
 export class RelationalUpdateContext<T> extends RelationalSchemaBaseContext<SqlUpdateResult> {
   constructor(
-    private schema: RelationalSchemaDescription,
-    private type: TableInformation<T>,
+    schema: RelationalSchemaDescription,
+    type: TableInformation<T>,
     private builder: RelationalUpdateBuilder<T>,
   ) {
-    super(builder);
+    super(builder, type, schema);
   }
 
   set(data: PrimitivePartial<T>): RelationalUpdateContext<T> {
@@ -23,6 +23,10 @@ export class RelationalUpdateContext<T> extends RelationalSchemaBaseContext<SqlU
 
   where(filter: RootFilter<T>): RelationalUpdateContext<T> {
     const newBuilder = this.builder.where(filter);
+    const query = this.getBuilderQuery(newBuilder);
+    if (query.where) {
+      this.mapExpressionFields(query.where);
+    }
     return new RelationalUpdateContext<T>(this.schema, this.type, newBuilder);
   }
 }

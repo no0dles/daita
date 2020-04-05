@@ -17,7 +17,7 @@ export function getSchemaDescription(schemaMapper: SchemaMapper, paths: Migratio
         const fieldMapper = schemaMapper.field(step.table);
         const fieldName = fieldMapper.add(step.fieldName, path.id);
         const table = schema.table({table: step.table, schema: step.schema});
-        table.addField(step.fieldName, new RelationalTableFieldDescription(fieldName, step.type, step.required, step.defaultValue));
+        table.addField(step.fieldName, new RelationalTableFieldDescription(step.fieldName, fieldName, step.type, step.required, step.defaultValue));
       } else if (step.kind === 'add_table_primary_key') {
         //TODO
       } else if (step.kind === 'add_table_foreign_key') {

@@ -17,26 +17,26 @@ describe('test', () => {
   it('should include join', async () => {
     await expectQuery(ctx => ctx.select(User).include(u => u.parent), {
       select: [
-        {field: 'id_first', table: 'base', alias: 'base.id'},
-        {field: 'name_first', table: 'base', alias: 'base.name'},
-        {field: 'count_first', table: 'base', alias: 'base.count'},
-        {field: 'parentId_first', table: 'base', alias: 'base.parentId'},
-        {field: 'admin_second', table: 'base', alias: 'base.admin'},
-        {field: 'id_first', table: 'base_parent', alias: 'base_parent.id'},
-        {field: 'name_first', table: 'base_parent', alias: 'base_parent.name'},
-        {field: 'count_first', table: 'base_parent', alias: 'base_parent.count'},
-        {field: 'parentId_first', table: 'base_parent', alias: 'base_parent.parentId'},
-        {field: 'admin_second', table: 'base_parent', alias: 'base_parent.admin'},
+        {field: 'id_first', table: 'base', alias: 'id'},
+        {field: 'name_first', table: 'base', alias: 'name'},
+        {field: 'count_first', table: 'base', alias: 'count'},
+        {field: 'parentId_first', table: 'base', alias: 'parentId'},
+        {field: 'admin_second', table: 'base', alias: 'admin'},
+        {field: 'id_first', table: 'parent', alias: 'parent.id'},
+        {field: 'name_first', table: 'parent', alias: 'parent.name'},
+        {field: 'count_first', table: 'parent', alias: 'parent.count'},
+        {field: 'parentId_first', table: 'parent', alias: 'parent.parentId'},
+        {field: 'admin_second', table: 'parent', alias: 'parent.admin'},
       ],
       from: {table: 'User_first', alias: 'base'},
       joins: [
         {
-          from: {table: 'User_first', alias: 'base_parent'},
+          from: {table: 'User_first', alias: 'parent'},
           type: 'left',
           on: {
             left: {table: 'base', field: 'parentId_first'},
             operand: '=',
-            right: {table: 'base_parent', field: 'id_first'},
+            right: {table: 'parent', field: 'id_first'},
           },
         },
       ],
@@ -46,26 +46,26 @@ describe('test', () => {
   it('should join for where condition', async () => {
     await expectQuery(ctx => ctx.select(User).where({parent: {name: 'foo'}}), {
       select: [
-        {field: 'id_first', table: 'base', alias: 'base.id'},
-        {field: 'name_first', table: 'base', alias: 'base.name'},
-        {field: 'count_first', table: 'base', alias: 'base.count'},
-        {field: 'parentId_first', table: 'base', alias: 'base.parentId'},
-        {field: 'admin_second', table: 'base', alias: 'base.admin'},
+        {field: 'id_first', table: 'base', alias: 'id'},
+        {field: 'name_first', table: 'base', alias: 'name'},
+        {field: 'count_first', table: 'base', alias: 'count'},
+        {field: 'parentId_first', table: 'base', alias: 'parentId'},
+        {field: 'admin_second', table: 'base', alias: 'admin'},
       ],
       from: {table: 'User_first', alias: 'base'},
       joins: [
         {
-          from: {table: 'User_first', alias: 'base_parent'},
+          from: {table: 'User_first', alias: 'parent'},
           type: 'left',
           on: {
             left: {table: 'base', field: 'parentId_first'},
             operand: '=',
-            right: {table: 'base_parent', field: 'id_first'},
+            right: {table: 'parent', field: 'id_first'},
           },
         },
       ],
       where: {
-        left: {table: 'base_parent', field: 'name_first'},
+        left: {table: 'parent', field: 'name_first'},
         operand: '=',
         right: 'foo',
       },
@@ -75,35 +75,35 @@ describe('test', () => {
   it('should nested join for where condition', async () => {
     await expectQuery(ctx => ctx.select(User).where({parent: {parent: {name: 'foo'}}}), {
       select: [
-        {field: 'id_first', table: 'base', alias: 'base.id'},
-        {field: 'name_first', table: 'base', alias: 'base.name'},
-        {field: 'count_first', table: 'base', alias: 'base.count'},
-        {field: 'parentId_first', table: 'base', alias: 'base.parentId'},
-        {field: 'admin_second', table: 'base', alias: 'base.admin'},
+        {field: 'id_first', table: 'base', alias: 'id'},
+        {field: 'name_first', table: 'base', alias: 'name'},
+        {field: 'count_first', table: 'base', alias: 'count'},
+        {field: 'parentId_first', table: 'base', alias: 'parentId'},
+        {field: 'admin_second', table: 'base', alias: 'admin'},
       ],
       from: {table: 'User_first', alias: 'base'},
       joins: [
         {
-          from: {table: 'User_first', alias: 'base_parent'},
+          from: {table: 'User_first', alias: 'parent'},
           type: 'left',
           on: {
             left: {table: 'base', field: 'parentId_first'},
             operand: '=',
-            right: {table: 'base_parent', field: 'id_first'},
+            right: {table: 'parent', field: 'id_first'},
           },
         },
         {
-          from: {table: 'User_first', alias: 'base_parent_parent'},
+          from: {table: 'User_first', alias: 'parent.parent'},
           type: 'left',
           on: {
-            left: {table: 'base_parent', field: 'parentId_first'},
+            left: {table: 'parent', field: 'parentId_first'},
             operand: '=',
-            right: {table: 'base_parent_parent', field: 'id_first'},
+            right: {table: 'parent.parent', field: 'id_first'},
           },
         },
       ],
       where: {
-        left: {table: 'base_parent_parent', field: 'name_first'},
+        left: {table: 'parent.parent', field: 'name_first'},
         operand: '=',
         right: 'foo',
       },
@@ -116,26 +116,26 @@ describe('test', () => {
       return await builder;
     }, {
       select: [
-        {field: 'id_first', table: 'base', alias: 'base.id'},
-        {field: 'name_first', table: 'base', alias: 'base.name'},
-        {field: 'count_first', table: 'base', alias: 'base.count'},
-        {field: 'parentId_first', table: 'base', alias: 'base.parentId'},
-        {field: 'admin_second', table: 'base', alias: 'base.admin'},
+        {field: 'id_first', table: 'base', alias: 'id'},
+        {field: 'name_first', table: 'base', alias: 'name'},
+        {field: 'count_first', table: 'base', alias: 'count'},
+        {field: 'parentId_first', table: 'base', alias: 'parentId'},
+        {field: 'admin_second', table: 'base', alias: 'admin'},
       ],
       from: {table: 'User_first', alias: 'base'},
       joins: [
         {
-          from: {table: 'User_first', alias: 'base_parent'},
+          from: {table: 'User_first', alias: 'parent'},
           type: 'left',
           on: {
             left: {table: 'base', field: 'parentId_first'},
             operand: '=',
-            right: {table: 'base_parent', field: 'id_first'},
+            right: {table: 'parent', field: 'id_first'},
           },
         },
       ],
       orderBy: [
-        {field: 'id_first', table: 'base_parent', direction: 'asc'},
+        {field: 'id_first', table: 'parent', direction: 'asc'},
       ],
     } as SqlSelect);
   });
@@ -143,24 +143,24 @@ describe('test', () => {
   it('should add nested where conditions', async () => {
     await expectQuery(ctx => ctx.select(Comment).where({user: {name: 'foo'}}), {
       select: [
-        {field: 'id_second', table: 'base', alias: 'base.id'},
-        {field: 'text_second', table: 'base', alias: 'base.text'},
-        {field: 'userId_second', table: 'base', alias: 'base.userId'},
+        {field: 'id_second', table: 'base', alias: 'id'},
+        {field: 'text_second', table: 'base', alias: 'text'},
+        {field: 'userId_second', table: 'base', alias: 'userId'},
       ],
       from: {table: 'Comment_second', alias: 'base'},
       joins: [
         {
-          from: {table: 'User_first', alias: 'base_user'},
+          from: {table: 'User_first', alias: 'user'},
           type: 'left',
           on: {
             left: {table: 'base', field: 'userId_second'},
             operand: '=',
-            right: {table: 'base_user', field: 'id_first'},
+            right: {table: 'user', field: 'id_first'},
           },
         },
       ],
       where: {
-        left: {table: 'base_user', field: 'name_first'},
+        left: {table: 'user', field: 'name_first'},
         operand: '=',
         right: 'foo',
       },
@@ -170,26 +170,26 @@ describe('test', () => {
   it('should add nested recursive where conditions', async () => {
     await expectQuery(ctx => ctx.select(User).where({parent: {name: 'foo'}}), {
       select: [
-        {field: 'id_first', table: 'base', alias: 'base.id'},
-        {field: 'name_first', table: 'base', alias: 'base.name'},
-        {field: 'count_first', table: 'base', alias: 'base.count'},
-        {field: 'parentId_first', table: 'base', alias: 'base.parentId'},
-        {field: 'admin_second', table: 'base', alias: 'base.admin'},
+        {field: 'id_first', table: 'base', alias: 'id'},
+        {field: 'name_first', table: 'base', alias: 'name'},
+        {field: 'count_first', table: 'base', alias: 'count'},
+        {field: 'parentId_first', table: 'base', alias: 'parentId'},
+        {field: 'admin_second', table: 'base', alias: 'admin'},
       ],
       from: {table: 'User_first', alias: 'base'},
       joins: [
         {
-          from: {table: 'User_first', alias: 'base_parent'},
+          from: {table: 'User_first', alias: 'parent'},
           type: 'left',
           on: {
             left: {table: 'base', field: 'parentId_first'},
             operand: '=',
-            right: {table: 'base_parent', field: 'id_first'},
+            right: {table: 'parent', field: 'id_first'},
           },
         },
       ],
       where: {
-        left: {table: 'base_parent', field: 'name_first'},
+        left: {table: 'parent', field: 'name_first'},
         operand: '=',
         right: 'foo',
       },

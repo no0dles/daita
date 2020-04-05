@@ -9,13 +9,24 @@ import {SqlSchemaTableField} from '../sql/sql-schema-table-field';
 import {SqlCompareExpression, SqlExpression, SqlInExpression, SqlInOperand, SqlOperand} from '../sql/expression';
 import {isSqlOrExpression} from '../sql/expression/sql-or-expression';
 import {isSqlAndExpression} from '../sql/expression/sql-and-expression';
+import {SqlSchemaTable} from '../sql';
 
 export abstract class RelationalWhereBuilder<TData, TQuery extends SqlWhereQuery, Result> extends RelationalQueryBuilder<TQuery, Result> {
 
+  protected abstract getSourceTable(): SqlSchemaTable | null;
+
   private createCompareExpression(path: string[], field: string, value: SqlRawValue, operand: SqlOperand): SqlCompareExpression {
     const tableField: SqlSchemaTableField = {field};
-    if(path.length > 0) {
+    if (path.length > 0) {
       tableField.table = path.join('.');
+    } else {
+      const sourceTable = this.getSourceTable();
+      if (sourceTable) {
+        tableField.table = sourceTable.table;
+        if (sourceTable.schema) {
+          tableField.schema = sourceTable.schema;
+        }
+      }
     }
     return {
       left: tableField,
@@ -26,7 +37,7 @@ export abstract class RelationalWhereBuilder<TData, TQuery extends SqlWhereQuery
 
   private createInExpression(path: string[], field: string, value: SqlRawValue[], operand: SqlInOperand): SqlInExpression {
     const tableField: SqlSchemaTableField = {field};
-    if(path.length > 0) {
+    if (path.length > 0) {
       tableField.table = path.join('.');
     }
     return {

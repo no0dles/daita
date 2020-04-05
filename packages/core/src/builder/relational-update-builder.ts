@@ -5,6 +5,7 @@ import {deepClone} from './utils';
 import {RelationalSubQueryWhereBuilder} from './relational-sub-query-where-builder';
 import {isSqlUpdateSet} from '../sql/update/sql-update-set';
 import {SqlUpdate, SqlUpdateResult} from '../sql/update';
+import {SqlSchemaTable} from '../sql';
 
 export class RelationalUpdateBuilder<T> extends RelationalSubQueryWhereBuilder<T, SqlUpdate, SqlUpdateResult> {
   constructor(dataAdapter: RelationalDataAdapter, table: SqlTable) {
@@ -26,5 +27,9 @@ export class RelationalUpdateBuilder<T> extends RelationalSubQueryWhereBuilder<T
   protected async execute(): Promise<SqlUpdateResult> {
     const result = await this.dataAdapter.raw(this.query);
     return {affectedRows: result.rowCount};
+  }
+
+  protected getSourceTable(): SqlSchemaTable | null {
+    return null;
   }
 }

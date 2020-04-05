@@ -7,7 +7,6 @@ import {isSqlSchemaTableField} from '../sql/sql-schema-table-field';
 import {RelationalSelectBuilder} from '../builder/relational-select-builder';
 import {getTableFromSelector} from '../builder/utils';
 import {isSqlCompareExpression} from '../sql/expression/sql-compare-expression';
-import {SqlSelect} from '../sql/select';
 import {isSqlOrExpression} from '../sql/expression/sql-or-expression';
 import {SqlExpression} from '../sql/expression';
 import {isSqlAndExpression} from '../sql/expression/sql-and-expression';
@@ -18,23 +17,24 @@ import {RelationalExpressionBuilder} from '../builder/relational-expression-buil
 import {RelationalTableReferenceDescription} from '../schema/description/relational-table-reference-description';
 import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
 import {RelationalTableDescription} from '../schema/description/relational-table-description';
+import {removeEmptySchema} from '../utils/remove-empty-schema';
 
 export class RelationalSelectContext<T> extends RelationalSchemaBaseContext<T[]> {
   //protected shouldMapResult: boolean;
 
   constructor(
-    private schema: RelationalSchemaDescription,
-    private type: TableInformation<T>,
+    schema: RelationalSchemaDescription,
+    type: TableInformation<T>,
     private builder: RelationalSelectBuilder<T>,
   ) {
-    super(builder);
+    super(builder, type, schema);
 
     const tableDescription = this.schema.table(this.type);
     for (const fieldDescription of tableDescription.fields) {
-      this.builder = builder.field({
+      this.builder = this.builder.field({
+        alias: fieldDescription.key,
         field: fieldDescription.name,
-        table: tableDescription.name,
-        schema: tableDescription.schema,
+        table: 'base',
       });
     }
     //this.shouldMapResult = this.isConstructor(this.type);
@@ -54,6 +54,7 @@ export class RelationalSelectContext<T> extends RelationalSchemaBaseContext<T[]>
     let newBuilder = this.builder.where(filter);
     const query = this.getBuilderQuery(newBuilder);
     if (query.where) {
+      this.mapExpressionFields(query.where);
       newBuilder = this.ensureExpressionJoin(newBuilder, query.where);
     }
     return new RelationalSelectContext<T>(this.schema, this.type, newBuilder);
@@ -87,6 +88,7 @@ export class RelationalSelectContext<T> extends RelationalSchemaBaseContext<T[]>
     if (query.orderBy) {
       for (const orderBy of query.orderBy) {
         if (isSqlSchemaTableField(orderBy) && orderBy.table) {
+          this.mapTableField(orderBy);
           newBuilder = this.ensureJoin(newBuilder, orderBy.table, false);
         }
       }
@@ -108,25 +110,31 @@ export class RelationalSelectContext<T> extends RelationalSchemaBaseContext<T[]>
     }
   }
 
-  private iterateJoins(alias: string, callback: (table: RelationalTableDescription, reference: RelationalTableReferenceDescription, referenceAlias: string) => void) {
+  private iterateJoins(alias: string, callback: (tableAlias: string, reference: RelationalTableReferenceDescription, referenceAlias: string) => void) {
     const aliasParts = alias.split('.');
     const aliasPath: string[] = [];
 
     let tableDescription = this.schema.table(this.type);
+    let tableAlias = 'base';
     for (const aliasPart of aliasParts) {
       aliasPath.push(aliasPart);
       const reference = tableDescription.reference(aliasPart);
-      callback(tableDescription, reference, aliasPath.join('.'));
+      callback(tableAlias, reference, aliasPath.join('.'));
       tableDescription = reference.table;
+      tableAlias = aliasPath.join('.');
     }
   }
 
   private ensureJoin(builder: RelationalSelectBuilder<T>, alias: string, includeFields: boolean): RelationalSelectBuilder<T> {
     if (this.hasJoin(builder, alias)) {
       if (includeFields) {
-        this.iterateJoins(alias, (tableDescription, reference, referenceAlias) => {
+        this.iterateJoins(alias, (tableAlias, reference, referenceAlias) => {
           for (const field of reference.table.fields) {
-            builder = builder.field({field: field.name, table: referenceAlias});
+            builder = builder.field({
+              field: field.name,
+              table: referenceAlias,
+              alias: `${referenceAlias}.${field.key}`,
+            });
           }
         });
       }
@@ -134,12 +142,14 @@ export class RelationalSelectContext<T> extends RelationalSchemaBaseContext<T[]>
     }
 
 
-    this.iterateJoins(alias, (tableDescription, reference, referenceAlias) => {
-      builder = builder.join({table: reference.table.name, schema: reference.table.schema}, referenceAlias, on => {
+    this.iterateJoins(alias, (tableAlias, reference, referenceAlias) => {
+      builder = builder.leftJoin(removeEmptySchema({
+        table: reference.table.name,
+        schema: reference.table.schema,
+      }), referenceAlias, on => {
         for (const key of reference.keys) {
           on = on.eq({
-            table: tableDescription.name,
-            schema: tableDescription.schema,
+            table: tableAlias,
             field: key.field.name,
           }, {table: referenceAlias, field: key.foreignField.name});
         }
@@ -148,7 +158,7 @@ export class RelationalSelectContext<T> extends RelationalSchemaBaseContext<T[]>
 
       if (includeFields) {
         for (const field of reference.table.fields) {
-          builder = builder.field({field: field.name, table: alias});
+          builder = builder.field({field: field.name, table: referenceAlias, alias: `${alias}.${field.key}`});
         }
       }
     });
@@ -178,10 +188,6 @@ export class RelationalSelectContext<T> extends RelationalSchemaBaseContext<T[]>
       }
     }
     return builder;
-  }
-
-  private getBuilderQuery(builder: RelationalSelectBuilder<T>): SqlSelect {
-    return (<any>builder).query;
   }
 
   // private isConstructor(value: any) {

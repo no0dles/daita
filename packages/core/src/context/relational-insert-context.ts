@@ -7,11 +7,11 @@ import {RelationalSchemaDescription} from '../schema/description/relational-sche
 
 export class RelationalInsertContext<T> extends RelationalSchemaBaseContext<SqlInsertResult> {
   constructor(
-    private schema: RelationalSchemaDescription,
-    private type: TableInformation<T>,
+    schema: RelationalSchemaDescription,
+    type: TableInformation<T>,
     private builder: RelationalInsertBuilder<T>,
   ) {
-    super(builder);
+    super(builder, type, schema);
   }
 
   private validateObject(item: any) {

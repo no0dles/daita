@@ -12,7 +12,7 @@ import {RelationalExpressionBuilder} from './relational-expression-builder';
 import {RelationalSelectFirstOrDefaultBuilder} from './relational-select-first-or-default-builder';
 import {ExcludePrimitive} from '../context/types/exclude-primitive';
 import {RelationalEmptyExpressionBuilderImpl} from './relational-empty-expression-builder-impl';
-import {isSqlSchemaTable} from '../sql/sql-schema-table';
+import {isSqlSchemaTable, SqlSchemaTable} from '../sql/sql-schema-table';
 import {
   SqlOrderDirection,
   SqlSelect,
@@ -22,6 +22,7 @@ import {
   SqlSelectOrderBy,
 } from '../sql/select';
 import {isSqlAlias} from '../sql/select/sql-alias';
+import {removeEmptySchema} from '../utils/remove-empty-schema';
 
 export type SelectBuilderFieldSelector<T> = (table: ExcludePrimitive<T>) => any;
 
@@ -177,5 +178,16 @@ export class RelationalSelectBuilder<T> extends RelationalWhereBuilder<T, SqlSel
     const result = await this.dataAdapter.raw(this.toSql());
     //TODO map
     return [];
+  }
+
+  protected getSourceTable(): SqlSchemaTable | null {
+    if (isSqlAlias(this.query.from)) {
+      return {table: this.query.from.alias};
+    } else if (isSqlSchemaTable(this.query.from)) {
+      return removeEmptySchema({table: this.query.from.table, schema: this.query.from.schema});
+    } else if (typeof this.query.from === 'string') {
+      return {table: this.query.from};
+    }
+    return null;
   }
 }

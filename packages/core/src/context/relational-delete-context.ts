@@ -7,15 +7,19 @@ import {RelationalSchemaDescription} from '../schema/description/relational-sche
 
 export class RelationalDeleteContext<T> extends RelationalSchemaBaseContext<SqlDeleteResult> {
   constructor(
-    private schema: RelationalSchemaDescription,
-    private type: TableInformation<T>,
+    schema: RelationalSchemaDescription,
+    type: TableInformation<T>,
     private builder: RelationalDeleteBuilder<T>
   ) {
-    super(builder);
+    super(builder, type, schema);
   }
 
   where(data: RootFilter<T>): RelationalDeleteContext<T> {
     const newBuilder = this.builder.where(data);
+    const query = this.getBuilderQuery(newBuilder);
+    if (query.where) {
+      this.mapExpressionFields(query.where);
+    }
     return new RelationalDeleteContext<T>(this.schema, this.type, newBuilder);
   }
 }
