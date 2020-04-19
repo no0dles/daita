@@ -1,4 +1,5 @@
-import {MigrationDescription} from '../../../../migration';
+import {MigrationDescription} from '@daita/core';
+import {blogAdminRole} from '../roles';
 
 export const SecondMigration: MigrationDescription = {
   id: 'second',
@@ -19,5 +20,6 @@ export const SecondMigration: MigrationDescription = {
       foreignFieldNames: ['id'],
       required: true,
     },
+    {kind: 'add_table_permission', table: 'Comment', permission: {role: blogAdminRole, select: true}},
   ],
 };

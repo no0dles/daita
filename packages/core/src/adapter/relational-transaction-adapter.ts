@@ -1,5 +1,5 @@
-import {RelationalDataAdapter} from './relational-data-adapter';
-import {isKind} from '../utils/is-kind';
+import { RelationalDataAdapter } from './relational-data-adapter';
+import { isKind } from '../utils/is-kind';
 
 export interface RelationalTransactionAdapter extends RelationalDataAdapter {
   transaction<T>(
@@ -7,4 +7,7 @@ export interface RelationalTransactionAdapter extends RelationalDataAdapter {
   ): Promise<T>;
 }
 
-export const isRelationalTransactionAdapter = (val: any): val is RelationalTransactionAdapter => isKind<RelationalTransactionAdapter>(val, ['transaction']);
+export const isRelationalTransactionAdapter = (
+  val: any,
+): val is RelationalTransactionAdapter =>
+  isKind<RelationalTransactionAdapter>(val, ['transaction']);

@@ -1,10 +1,10 @@
-import {SqlSelectGroupBy} from './sql-select-group-by';
-import {SqlSelectField} from './sql-select-field';
-import {SqlSelectFrom} from './sql-select-from';
-import {SqlSelectJoin} from './sql-select-join';
-import {SqlSelectOrderBy} from './sql-select-order-by';
-import {SqlCompareExpression, SqlExpression} from '../expression';
-import {isKind} from '../../utils/is-kind';
+import { SqlSelectGroupBy } from './sql-select-group-by';
+import { SqlSelectField } from './sql-select-field';
+import { SqlSelectFrom } from './sql-select-from';
+import { SqlSelectJoin } from './sql-select-join';
+import { SqlSelectOrderBy } from './sql-select-order-by';
+import { SqlCompareExpression, SqlExpression } from '../expression';
+import { isKind } from '../../utils/is-kind';
 
 export interface SqlSelect {
   select: SqlSelectField[];
@@ -18,4 +18,5 @@ export interface SqlSelect {
   offset?: number | null;
 }
 
-export const isSqlSelect = (val: any): val is SqlSelect => isKind<SqlSelect>(val, ['select']);
+export const isSqlSelect = (val: any): val is SqlSelect =>
+  isKind<SqlSelect>(val, ['select']);

@@ -1,39 +1,40 @@
-import {SqlQuery} from './sql-query';
-import {isSqlRawValue, SqlRawValue} from './sql-raw-value';
-import {isSqlValue, SqlValue} from './sql-value';
-import {isSqlSchemaTableField,} from './sql-schema-table-field';
-import {isSqlRawAliasValue} from './sql-raw-alias-value';
-import {isSqlSchemaTable} from './sql-schema-table';
-import {SqlBaseBuilder} from './sql-base-builder';
-import {assertNever} from '../utils/assert-never';
-import {isSqlSelectOrderByIndex} from './select/sql-select-order-by-index';
-import {isSqlDelete, SqlDelete} from './delete/sql-delete';
-import {isSqlCompareExpression} from './expression/sql-compare-expression';
-import {isSqlSelect, SqlSelect} from './select/sql-select';
-import {isSqlOrExpression} from './expression/sql-or-expression';
-import {isSqlSumFunction} from './function/sql-sum-function';
-import {isSqlMaxFunction} from './function/sql-max-function';
-import {SqlExpression, SqlInOperand, SqlOperand} from './expression';
-import {isSqlUpdate, SqlUpdate} from './update/sql-update';
-import {isSqlInsert, SqlInsert} from './insert/sql-insert';
-import {isSqlSelectDistinct} from './select/sql-select-distinct';
-import {isSqlCountFunction} from './function/sql-count-function';
-import {isSqlAvgFunction} from './function/sql-avg-function';
-import {isSqlFunction, SqlFunction} from './function/sql-function';
+import { SqlQuery } from './sql-query';
+import { isSqlRawValue, SqlRawValue } from './sql-raw-value';
+import { isSqlValue, SqlValue } from './sql-value';
+import { isSqlSchemaTableField } from './sql-schema-table-field';
+import { isSqlRawAliasValue } from './sql-raw-alias-value';
+import { isSqlSchemaTable } from './sql-schema-table';
+import { SqlBaseBuilder } from './sql-base-builder';
+import { assertNever } from '../utils/assert-never';
+import { isSqlSelectOrderByIndex } from './select/sql-select-order-by-index';
+import { isSqlDelete, SqlDelete } from './delete/sql-delete';
+import { isSqlCompareExpression } from './expression/sql-compare-expression';
+import { isSqlSelect, SqlSelect } from './select/sql-select';
+import { isSqlOrExpression } from './expression/sql-or-expression';
+import { isSqlSumFunction } from './function/sql-sum-function';
+import { isSqlMaxFunction } from './function/sql-max-function';
+import { SqlExpression, SqlInOperand, SqlOperand } from './expression';
+import { isSqlUpdate, SqlUpdate } from './update/sql-update';
+import { isSqlInsert, SqlInsert } from './insert/sql-insert';
+import { isSqlSelectDistinct } from './select/sql-select-distinct';
+import { isSqlCountFunction } from './function/sql-count-function';
+import { isSqlAvgFunction } from './function/sql-avg-function';
+import { isSqlFunction, SqlFunction } from './function/sql-function';
 import {
   SqlOrderDirection,
   SqlSelectField,
-  SqlSelectFrom, SqlSelectGroupBy,
+  SqlSelectFrom,
+  SqlSelectGroupBy,
   SqlSelectJoin,
   SqlSelectJoinType,
   SqlSelectOrderBy,
 } from './select';
-import {isSqlConcatFunction} from './function/sql-concat-function';
-import {isSqlSelectAll} from './select/sql-select-all';
-import {isSqlMinFunction} from './function/sql-min-function';
-import {isSqlAndExpression} from './expression/sql-and-expression';
-import {isSqlInExpression} from './expression/sql-in-expression';
-import {isSqlAlias} from './select/sql-alias';
+import { isSqlConcatFunction } from './function/sql-concat-function';
+import { isSqlSelectAll } from './select/sql-select-all';
+import { isSqlMinFunction } from './function/sql-min-function';
+import { isSqlAndExpression } from './expression/sql-and-expression';
+import { isSqlInExpression } from './expression/sql-in-expression';
+import { isSqlAlias } from './select/sql-alias';
 
 export class SqlQueryBuilder extends SqlBaseBuilder {
   sql = '';
@@ -89,7 +90,9 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
 
     if (isSqlSelect(table)) {
       if (isSqlAlias(table)) {
-        return `(${this.formatSelect(table)}) ${this.asKeyword} ${this.escapeAlias(table.alias)}`;
+        return `(${this.formatSelect(table)}) ${
+          this.asKeyword
+        } ${this.escapeAlias(table.alias)}`;
       } else {
         return `(${this.formatSelect(table)})`;
       }
@@ -97,9 +100,19 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
 
     if (isSqlSchemaTable(table)) {
       if (isSqlAlias(table)) {
-        return this.formatSchemaTableField(table.schema, table.table, undefined, table.alias);
+        return this.formatSchemaTableField(
+          table.schema,
+          table.table,
+          undefined,
+          table.alias,
+        );
       } else {
-        return this.formatSchemaTableField(table.schema, table.table, undefined, undefined);
+        return this.formatSchemaTableField(
+          table.schema,
+          table.table,
+          undefined,
+          undefined,
+        );
       }
     }
 
@@ -107,14 +120,23 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
   }
 
   protected formatUpdate(update: SqlUpdate) {
-    let sql = `${this.updateKeyword} ${this.formatTable(update.update)} ${this.setKeyword} `;
+    let sql = `${this.updateKeyword} ${this.formatTable(update.update)} ${
+      this.setKeyword
+    } `;
 
-    sql += Object.keys(update.set).map(key => {
-      return `${this.escapeField(key)} = ${this.formatValue(update.set[key])}`;
-    }).join(', ');
+    sql += Object.keys(update.set)
+      .map((key) => {
+        return `${this.escapeField(key)} = ${this.formatValue(
+          update.set[key],
+        )}`;
+      })
+      .join(', ');
 
     if (update.where) {
-      sql += ` ${this.whereKeyword} ${this.formatExpression(update.where, false)}`;
+      sql += ` ${this.whereKeyword} ${this.formatExpression(
+        update.where,
+        false,
+      )}`;
     }
 
     return sql;
@@ -154,8 +176,15 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
         }
         rows.push(row);
       }
-      sql += ` (${into.map(field => this.escapeField(field)).join(', ')}) ${this.valuesKeyword} `;
-      sql += rows.map(row => `(${row.map(value => this.formatValue(value)).join(', ')})`).join(', ');
+      sql += ` (${into.map((field) => this.escapeField(field)).join(', ')}) ${
+        this.valuesKeyword
+      } `;
+      sql += rows
+        .map(
+          (row) =>
+            `(${row.map((value) => this.formatValue(value)).join(', ')})`,
+        )
+        .join(', ');
     } else if (isSqlSelect(insert.values)) {
       sql += ' ' + this.formatSelect(insert.values);
     } else {
@@ -166,15 +195,24 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
         values.push((insert.values as any)[key]);
       }
       rows.push(values);
-      sql += ` (${into.map(field => this.escapeField(field)).join(', ')}) ${this.valuesKeyword} `;
-      sql += rows.map(row => `(${row.map(value => this.formatValue(value)).join(', ')})`).join(', ');
+      sql += ` (${into.map((field) => this.escapeField(field)).join(', ')}) ${
+        this.valuesKeyword
+      } `;
+      sql += rows
+        .map(
+          (row) =>
+            `(${row.map((value) => this.formatValue(value)).join(', ')})`,
+        )
+        .join(', ');
     }
 
     return sql;
   }
 
   protected formatSelect(select: SqlSelect) {
-    let sql = `${this.selectKeyword} ${select.select.map(s => this.formatField(s)).join(', ')}`.trimRight();
+    let sql = `${this.selectKeyword} ${select.select
+      .map((s) => this.formatField(s))
+      .join(', ')}`.trimRight();
     if (select.from) {
       sql += ` ${this.fromKeyword} ${this.formatTable(select.from)}`;
     }
@@ -186,19 +224,29 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
     }
 
     if (select.where) {
-      sql += ` ${this.whereKeyword} ${this.formatExpression(select.where, false)}`;
+      sql += ` ${this.whereKeyword} ${this.formatExpression(
+        select.where,
+        false,
+      )}`;
     }
 
     if (select.groupBy && select.groupBy.length > 0) {
-      sql += ` ${this.groupByKeyword} ${select.groupBy.map(groupBy => this.formatGroupBy(groupBy)).join(', ')}`;
+      sql += ` ${this.groupByKeyword} ${select.groupBy
+        .map((groupBy) => this.formatGroupBy(groupBy))
+        .join(', ')}`;
     }
 
     if (select.orderBy && select.orderBy.length > 0) {
-      sql += ` ${this.orderByKeyword} ${select.orderBy.map(orderBy => this.formatOrderBy(orderBy)).join(', ')}`;
+      sql += ` ${this.orderByKeyword} ${select.orderBy
+        .map((orderBy) => this.formatOrderBy(orderBy))
+        .join(', ')}`;
     }
 
     if (select.having) {
-      sql += ` ${this.havingKeyword} ${this.formatExpression(select.having, false)}`;
+      sql += ` ${this.havingKeyword} ${this.formatExpression(
+        select.having,
+        false,
+      )}`;
     }
 
     if (select.limit !== null && select.limit !== undefined) {
@@ -216,7 +264,11 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
     if (typeof groupBy === 'number') {
       return this.appendValue(groupBy);
     }
-    return this.formatSchemaTableField(groupBy.schema, groupBy.table, groupBy.field);
+    return this.formatSchemaTableField(
+      groupBy.schema,
+      groupBy.table,
+      groupBy.field,
+    );
   }
 
   protected formatOrderBy(orderBy: SqlSelectOrderBy) {
@@ -224,34 +276,53 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
       return this.appendValue(orderBy);
     }
     if (isSqlSelectOrderByIndex(orderBy)) {
-      return `${this.appendValue(orderBy.index)} ${orderBy.direction ? this.escapeOrderDirection(orderBy.direction) : ''}`.trimRight();
+      return `${this.appendValue(orderBy.index)} ${
+        orderBy.direction ? this.escapeOrderDirection(orderBy.direction) : ''
+      }`.trimRight();
     }
     if (isSqlSchemaTableField(orderBy)) {
-      return `${this.formatSchemaTableField(orderBy.schema, orderBy.table, orderBy.field)} ${orderBy.direction ? this.escapeOrderDirection(orderBy.direction) : ''}`.trimRight();
+      return `${this.formatSchemaTableField(
+        orderBy.schema,
+        orderBy.table,
+        orderBy.field,
+      )} ${
+        orderBy.direction ? this.escapeOrderDirection(orderBy.direction) : ''
+      }`.trimRight();
     }
 
     assertNever(orderBy, 'unknown order by');
   }
 
   protected formatJoin(join: SqlSelectJoin) {
-    return `${this.escapeJoinType(join.type)} ${this.formatTable(join.from)} ${this.onKeyword} ${this.formatExpression(join.on, false)}`;
+    return `${this.escapeJoinType(join.type)} ${this.formatTable(join.from)} ${
+      this.onKeyword
+    } ${this.formatExpression(join.on, false)}`;
   }
 
   protected formatExpression(expression: SqlExpression, wrap: boolean): string {
     if (isSqlAndExpression(expression)) {
-      return `${wrap ? '(' : ''}${expression.and.map(exp => this.formatExpression(exp, true)).join(` ${this.andKeyword} `)}${wrap ? ')' : ''}`;
+      return `${wrap ? '(' : ''}${expression.and
+        .map((exp) => this.formatExpression(exp, true))
+        .join(` ${this.andKeyword} `)}${wrap ? ')' : ''}`;
     }
 
     if (isSqlOrExpression(expression)) {
-      return `${wrap ? '(' : ''}${expression.or.map(exp => this.formatExpression(exp, true)).join(` ${this.orKeyword} `)}${wrap ? ')' : ''}`;
+      return `${wrap ? '(' : ''}${expression.or
+        .map((exp) => this.formatExpression(exp, true))
+        .join(` ${this.orKeyword} `)}${wrap ? ')' : ''}`;
     }
 
     if (isSqlInExpression(expression)) {
-      return `${this.formatValue(expression.left)} ${this.escapeInOperand(expression.operand, expression.value)}`;
+      return `${this.formatValue(expression.left)} ${this.escapeInOperand(
+        expression.operand,
+        expression.value,
+      )}`;
     }
 
     if (isSqlCompareExpression(expression)) {
-      return `${this.formatValue(expression.left)} ${this.escapeOperator(expression.operand)} ${this.formatValue(expression.right)}`;
+      return `${this.formatValue(expression.left)} ${this.escapeOperator(
+        expression.operand,
+      )} ${this.formatValue(expression.right)}`;
     }
 
     assertNever(expression, 'unknown sql expression');
@@ -266,14 +337,32 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
 
     if (isSqlCountFunction(fn)) {
       if (isSqlSelectDistinct(fn.count)) {
-        return this.escapeCount(`${this.distinctKeyword} ${this.formatSchemaTableField(fn.count.schema, fn.count.table, fn.count.field, alias)}`);
+        return this.escapeCount(
+          `${this.distinctKeyword} ${this.formatSchemaTableField(
+            fn.count.schema,
+            fn.count.table,
+            fn.count.field,
+            alias,
+          )}`,
+        );
       }
       if (isSqlSchemaTableField(fn.count)) {
-        return this.escapeCount(this.formatSchemaTableField(fn.count.schema, fn.count.table, fn.count.field, alias));
+        return this.escapeCount(
+          this.formatSchemaTableField(
+            fn.count.schema,
+            fn.count.table,
+            fn.count.field,
+            alias,
+          ),
+        );
       }
       if (isSqlSelectAll(fn.count)) {
         if (isSqlSchemaTable(fn.count)) {
-          return this.escapeCount(`${this.formatSchemaTableField(fn.count.schema, fn.count.table)}.${this.allKeyword}`);
+          return this.escapeCount(
+            `${this.formatSchemaTableField(fn.count.schema, fn.count.table)}.${
+              this.allKeyword
+            }`,
+          );
         } else {
           return this.escapeCount(this.allKeyword);
         }
@@ -283,19 +372,47 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
     }
 
     if (isSqlSumFunction(fn)) {
-      return this.escapeSum(this.formatSchemaTableField(fn.sum.schema, fn.sum.table, fn.sum.field, alias));
+      return this.escapeSum(
+        this.formatSchemaTableField(
+          fn.sum.schema,
+          fn.sum.table,
+          fn.sum.field,
+          alias,
+        ),
+      );
     }
 
     if (isSqlAvgFunction(fn)) {
-      return this.escapeAvg(this.formatSchemaTableField(fn.avg.schema, fn.avg.table, fn.avg.field, alias));
+      return this.escapeAvg(
+        this.formatSchemaTableField(
+          fn.avg.schema,
+          fn.avg.table,
+          fn.avg.field,
+          alias,
+        ),
+      );
     }
 
     if (isSqlMinFunction(fn)) {
-      return this.escapeMin(this.formatSchemaTableField(fn.min.schema, fn.min.table, fn.min.field, alias));
+      return this.escapeMin(
+        this.formatSchemaTableField(
+          fn.min.schema,
+          fn.min.table,
+          fn.min.field,
+          alias,
+        ),
+      );
     }
 
     if (isSqlMaxFunction(fn)) {
-      return this.escapeMax(this.formatSchemaTableField(fn.max.schema, fn.max.table, fn.max.field, alias));
+      return this.escapeMax(
+        this.formatSchemaTableField(
+          fn.max.schema,
+          fn.max.table,
+          fn.max.field,
+          alias,
+        ),
+      );
     }
 
     if (isSqlConcatFunction(fn)) {
@@ -316,14 +433,20 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
 
     if (isSqlSelect(value)) {
       if (isSqlAlias(value)) {
-        return `(${this.formatSelect(value)}) ${this.asKeyword} ${this.escapeAlias(value.alias)}`;
+        return `(${this.formatSelect(value)}) ${
+          this.asKeyword
+        } ${this.escapeAlias(value.alias)}`;
       } else {
         return `(${this.formatSelect(value)})`;
       }
     }
 
     if (isSqlSchemaTableField(value)) {
-      return this.formatSchemaTableField(value.schema, value.table, value.field);
+      return this.formatSchemaTableField(
+        value.schema,
+        value.table,
+        value.field,
+      );
     }
 
     assertNever(value, 'unknown value');
@@ -337,7 +460,9 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
 
     if (isSqlSelectAll(field)) {
       if (isSqlSchemaTable(field)) {
-        return `${this.formatSchemaTableField(field.schema, field.table)}.${this.allKeyword}`;
+        return `${this.formatSchemaTableField(field.schema, field.table)}.${
+          this.allKeyword
+        }`;
       } else {
         return this.allKeyword;
       }
@@ -348,7 +473,12 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
       if (isSqlAlias(field)) {
         alias = field.alias;
       }
-      return this.formatSchemaTableField(field.schema, field.table, field.field, alias);
+      return this.formatSchemaTableField(
+        field.schema,
+        field.table,
+        field.field,
+        alias,
+      );
     }
 
     if (isSqlValue(field)) {
@@ -401,9 +531,12 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
     }
   }
 
-  protected escapeInOperand(inOperand: SqlInOperand, value: SqlRawValue[] | SqlSelect): string {
+  protected escapeInOperand(
+    inOperand: SqlInOperand,
+    value: SqlRawValue[] | SqlSelect,
+  ): string {
     if (value instanceof Array) {
-      const values = value.map(item => this.formatValue(item)).join(', ');
+      const values = value.map((item) => this.formatValue(item)).join(', ');
       switch (inOperand) {
         case 'in':
           return `IN (${values})`;
@@ -441,6 +574,8 @@ export class SqlQueryBuilder extends SqlBaseBuilder {
   }
 
   protected escapeConcat(values: SqlValue[]) {
-    return `concat(${values.map(value => this.formatValue(value)).join(', ')})`;
+    return `concat(${values
+      .map((value) => this.formatValue(value))
+      .join(', ')})`;
   }
 }

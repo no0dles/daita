@@ -1,1 +1,1 @@
-export {RelationalAdapterMock} from './relational-adapter-mock';
+export { RelationalAdapterMock } from './relational-adapter-mock';

@@ -1,9 +1,12 @@
-import {SqlTable} from './sql-table';
-import {SqlBaseBuilder} from './sql-base-builder';
-import {isKind} from '../utils/is-kind';
-import {SqlInsert} from './insert';
+import { SqlTable } from './sql-table';
+import { SqlBaseBuilder } from './sql-base-builder';
+import { isKind } from '../utils/is-kind';
+import { SqlInsert } from './insert';
 
-export type SqlDmlQuery = SqlCreateTableQuery | SqlDropTableQuery | SqlAlterTableQuery;
+export type SqlDmlQuery =
+  | SqlCreateTableQuery
+  | SqlDropTableQuery
+  | SqlAlterTableQuery;
 
 export interface SqlCreateTableQuery {
   createTable: SqlTable;
@@ -11,7 +14,8 @@ export interface SqlCreateTableQuery {
   fields: SqlCreateFieldQuery[];
 }
 
-export const isSqlCreateTable = (val: any): val is SqlCreateTableQuery => isKind<SqlCreateTableQuery>(val, ['createTable', 'fields']);
+export const isSqlCreateTable = (val: any): val is SqlCreateTableQuery =>
+  isKind<SqlCreateTableQuery>(val, ['createTable', 'fields']);
 
 export interface SqlCreateFieldQuery {
   name: string;
@@ -20,25 +24,39 @@ export interface SqlCreateFieldQuery {
   primaryKey?: boolean;
 }
 
-export type SqlFieldType = 'string' | 'number' | 'date' | 'boolean' | 'string[]' | 'number[]' | 'date[]' | 'boolean[]';
+export type SqlFieldType =
+  | 'string'
+  | 'number'
+  | 'date'
+  | 'boolean'
+  | 'string[]'
+  | 'number[]'
+  | 'date[]'
+  | 'boolean[]';
 
 export type SqlAlterTableQuery = SqlAlterTableAdd | SqlAlterTableDrop;
 
-export const isSqlAlterTable = (val: any): val is SqlAlterTableQuery => isSqlAlterAddTable(val) || isSqlAlterDropTable(val);
+export const isSqlAlterTable = (val: any): val is SqlAlterTableQuery =>
+  isSqlAlterAddTable(val) || isSqlAlterDropTable(val);
 
 export interface SqlAlterTableAdd {
   alterTable: SqlTable;
-  add: SqlAlterTableAddColumn | SqlAlterTableAddForeignKey<string> | SqlAlterTableAddForeignKey<string[]>;
+  add:
+    | SqlAlterTableAddColumn
+    | SqlAlterTableAddForeignKey<string>
+    | SqlAlterTableAddForeignKey<string[]>;
 }
 
-export const isSqlAlterAddTable = (val: any): val is SqlAlterTableAdd => isKind<SqlAlterTableAdd>(val, ['alterTable', 'add']);
+export const isSqlAlterAddTable = (val: any): val is SqlAlterTableAdd =>
+  isKind<SqlAlterTableAdd>(val, ['alterTable', 'add']);
 
 export interface SqlAlterTableDrop {
   alterTable: SqlTable;
   drop: SqlAlterTableDropColumn | SqlAlterTableDropConstraint;
 }
 
-export const isSqlAlterDropTable = (val: any): val is SqlAlterTableDrop => isKind<SqlAlterTableDrop>(val, ['alterTable', 'drop']);
+export const isSqlAlterDropTable = (val: any): val is SqlAlterTableDrop =>
+  isKind<SqlAlterTableDrop>(val, ['alterTable', 'drop']);
 
 export interface SqlAlterTableDropColumn {
   column: string;
@@ -67,7 +85,8 @@ export interface SqlDropTableQuery {
   ifExist?: boolean;
 }
 
-export const isSqlDropTable = (val: any): val is SqlDropTableQuery => isKind<SqlDropTableQuery>(val, ['dropTable']);
+export const isSqlDropTable = (val: any): val is SqlDropTableQuery =>
+  isKind<SqlDropTableQuery>(val, ['dropTable']);
 
 export class SqlDmlBuilder extends SqlBaseBuilder {
   sql = '';
@@ -89,7 +108,9 @@ export class SqlDmlBuilder extends SqlBaseBuilder {
 
   constructor(query: SqlDmlQuery) {
     super();
-    const check = query as SqlCreateTableQuery & SqlAlterTableQuery & SqlDropTableQuery;
+    const check = query as SqlCreateTableQuery &
+      SqlAlterTableQuery &
+      SqlDropTableQuery;
     if (check.createTable) {
       this.sql = this.formatCreateTable(check);
     } else if (check.dropTable) {
@@ -123,17 +144,21 @@ export class SqlDmlBuilder extends SqlBaseBuilder {
     }
     sql += ` ${this.formatTable(table.createTable)}`;
 
-    sql += ` (${table.fields.map(field => {
-      let fieldSql = `${this.escapeField(field.name)} ${this.escapeFieldType(field.type)}`;
-      if (field.notNull) {
-        fieldSql += ` ${this.notNullKeyword}`;
-      }
-      return fieldSql;
-    }).join(', ')}`;
+    sql += ` (${table.fields
+      .map((field) => {
+        let fieldSql = `${this.escapeField(field.name)} ${this.escapeFieldType(
+          field.type,
+        )}`;
+        if (field.notNull) {
+          fieldSql += ` ${this.notNullKeyword}`;
+        }
+        return fieldSql;
+      })
+      .join(', ')}`;
 
     const primaryKeys = table.fields
-      .filter(field => field.primaryKey)
-      .map(field => this.escapeField(field.name));
+      .filter((field) => field.primaryKey)
+      .map((field) => this.escapeField(field.name));
 
     if (primaryKeys.length > 0) {
       sql += `, ${this.primaryKeyKeyword} (${primaryKeys.join(', ')})`;
@@ -146,35 +171,54 @@ export class SqlDmlBuilder extends SqlBaseBuilder {
 
   protected formatAlterTable(alter: SqlAlterTableQuery) {
     const alterTable = alter as SqlAlterTableAdd & SqlAlterTableDrop;
-    let sql = `${this.alterTableKeyword} ${this.formatTable(alterTable.alterTable)}`;
+    let sql = `${this.alterTableKeyword} ${this.formatTable(
+      alterTable.alterTable,
+    )}`;
 
     if (alterTable.add) {
-      const add = alterTable.add as SqlAlterTableAddColumn & SqlAlterTableAddForeignKey<string> & SqlAlterTableAddForeignKey<string[]>;
+      const add = alterTable.add as SqlAlterTableAddColumn &
+        SqlAlterTableAddForeignKey<string> &
+        SqlAlterTableAddForeignKey<string[]>;
       sql += ` ${this.addKeyword}`;
       if (add.column) {
-        sql += ` ${this.columnKeyword} ${this.escapeField(add.column)} ${this.escapeFieldType(add.type)}`;
+        sql += ` ${this.columnKeyword} ${this.escapeField(
+          add.column,
+        )} ${this.escapeFieldType(add.type)}`;
       } else {
         if (add.constraint) {
-          sql += ` ${this.constraintKeyword} ${this.escapeConstraint(add.constraint)}`;
+          sql += ` ${this.constraintKeyword} ${this.escapeConstraint(
+            add.constraint,
+          )}`;
         }
         if (typeof add.foreignKey === 'string') {
-          sql += ` ${this.foreignKeyKeyword} (${this.escapeField(add.foreignKey)})`;
+          sql += ` ${this.foreignKeyKeyword} (${this.escapeField(
+            add.foreignKey,
+          )})`;
         } else {
-          sql += ` ${this.foreignKeyKeyword} (${add.foreignKey.map(key => this.escapeField(key))})`;
+          sql += ` ${this.foreignKeyKeyword} (${add.foreignKey.map((key) =>
+            this.escapeField(key),
+          )})`;
         }
-        sql += ` ${this.foreignKeyReferenceKeyword} ${this.formatTable(add.references.table)}`;
+        sql += ` ${this.foreignKeyReferenceKeyword} ${this.formatTable(
+          add.references.table,
+        )}`;
         if (typeof add.references.primaryKeys === 'string') {
           sql += ` (${this.escapeField(add.references.primaryKeys)})`;
         } else {
-          sql += ` (${add.references.primaryKeys.map(key => this.escapeField(key))})`;
+          sql += ` (${add.references.primaryKeys.map((key) =>
+            this.escapeField(key),
+          )})`;
         }
       }
     } else {
-      const drop = alterTable.drop as SqlAlterTableDropColumn & SqlAlterTableDropConstraint;
+      const drop = alterTable.drop as SqlAlterTableDropColumn &
+        SqlAlterTableDropConstraint;
       if (drop.column) {
         sql += ` ${this.dropColumnKeyword} ${this.escapeField(drop.column)}`;
       } else {
-        sql += ` ${this.dropConstraintKeyword} ${this.escapeConstraint(drop.constraint)}`;
+        sql += ` ${this.dropConstraintKeyword} ${this.escapeConstraint(
+          drop.constraint,
+        )}`;
       }
     }
 

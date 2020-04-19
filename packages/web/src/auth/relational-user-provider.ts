@@ -36,7 +36,7 @@ export class RelationalUserProvider implements UserProvider {
 
     if (!this.migrated) {
       try {
-        const migrationContext = schema.migrationContext(this.dataAdapter)
+        const migrationContext = schema.migrationContext(this.dataAdapter);
         await migrationContext.apply();
         this.migrated = true;
       } catch (e) {
@@ -130,7 +130,6 @@ schema.migration({
     {kind: 'add_table_field', table: 'UserRole', type: 'string', fieldName: 'roleName', required: true},
     {kind: 'add_table_primary_key', table: 'User', fieldNames: ['subject', 'issuer']},
     {kind: 'add_table_primary_key', table: 'Role', fieldNames: ['name']},
-    {kind: 'add_table_field', table: 'Role', type: 'string', fieldName: 'name', required: false},
     {kind: 'add_table_primary_key', table: 'UserRole', fieldNames: ['userSubject', 'userIssuer', 'roleName']},
     {
       kind: 'add_table_foreign_key',

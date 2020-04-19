@@ -1,5 +1,5 @@
-import {MigrationDescription} from '../../../../migration';
 import {blogAdminRole} from '../roles';
+import {MigrationDescription} from '@daita/core';
 
 export const FirstMigration: MigrationDescription = {
   id: 'first',
@@ -20,6 +20,5 @@ export const FirstMigration: MigrationDescription = {
       required: true,
     },
     {kind: 'add_table_permission', table: 'User', permission: {role: blogAdminRole, select: true}},
-    {kind: 'add_table_permission', table: 'Comment', permission: {role: blogAdminRole, select: true}}
   ],
 };

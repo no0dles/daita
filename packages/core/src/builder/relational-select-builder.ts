@@ -1,18 +1,16 @@
-import {RelationalDataAdapter} from '../adapter';
-import {TableInformation} from '../context/table-information';
-import {Full} from '../context/types/full';
-import {SqlRawValue} from '../sql/sql-raw-value';
-import {deepClone, getFieldFromSelector, getSqlTable} from './utils';
-import {RelationalWhereBuilder} from './relational-where-builder';
-import {RelationalSelectFirstBuilder} from './relational-select-first-builder';
-import {
-  RelationalEmptyExpressionBuilder,
-} from './relational-empty-expression-builder';
-import {RelationalExpressionBuilder} from './relational-expression-builder';
-import {RelationalSelectFirstOrDefaultBuilder} from './relational-select-first-or-default-builder';
-import {ExcludePrimitive} from '../context/types/exclude-primitive';
-import {RelationalEmptyExpressionBuilderImpl} from './relational-empty-expression-builder-impl';
-import {isSqlSchemaTable, SqlSchemaTable} from '../sql/sql-schema-table';
+import { RelationalDataAdapter } from '../adapter';
+import { TableInformation } from '../context/table-information';
+import { Full } from '../context/types/full';
+import { SqlRawValue } from '../sql/sql-raw-value';
+import { deepClone, getFieldFromSelector, getSqlTable } from './utils';
+import { RelationalWhereBuilder } from './relational-where-builder';
+import { RelationalSelectFirstBuilder } from './relational-select-first-builder';
+import { RelationalEmptyExpressionBuilder } from './relational-empty-expression-builder';
+import { RelationalExpressionBuilder } from './relational-expression-builder';
+import { RelationalSelectFirstOrDefaultBuilder } from './relational-select-first-or-default-builder';
+import { ExcludePrimitive } from '../context/types/exclude-primitive';
+import { RelationalEmptyExpressionBuilderImpl } from './relational-empty-expression-builder-impl';
+import { isSqlSchemaTable, SqlSchemaTable } from '../sql/sql-schema-table';
 import {
   SqlOrderDirection,
   SqlSelect,
@@ -21,71 +19,110 @@ import {
   SqlSelectJoinType,
   SqlSelectOrderBy,
 } from '../sql/select';
-import {isSqlAlias} from '../sql/select/sql-alias';
-import {removeEmptySchema} from '../utils/remove-empty-schema';
+import { isSqlAlias } from '../sql/select/sql-alias';
+import { removeEmptySchema } from '../utils/remove-empty-schema';
+import { RootFilter } from '../query';
 
 export type SelectBuilderFieldSelector<T> = (table: ExcludePrimitive<T>) => any;
 
-export class RelationalSelectBuilder<T> extends RelationalWhereBuilder<T, SqlSelect, T[]> {
-  constructor(dataAdapter: RelationalDataAdapter, table?: SqlSelectFrom | null) {
-    super(dataAdapter, {select: [], from: table});
+export class RelationalSelectBuilder<T> extends RelationalWhereBuilder<
+  T,
+  SqlSelect,
+  T[]
+> {
+  constructor(dataAdapter: RelationalDataAdapter, select: SqlSelect) {
+    super(dataAdapter, select);
   }
 
-  field(field: SqlSelectField): RelationalSelectBuilder<T>
-  field(selector: SelectBuilderFieldSelector<T>): RelationalSelectBuilder<T>
-  field(selector: SelectBuilderFieldSelector<T> | SqlSelectField): RelationalSelectBuilder<T> {
-    const clone = deepClone(this);
+  field(field: SqlSelectField): RelationalSelectBuilder<T>;
+  field(selector: SelectBuilderFieldSelector<T>): RelationalSelectBuilder<T>;
+  field(
+    selector: SelectBuilderFieldSelector<T> | SqlSelectField,
+  ): RelationalSelectBuilder<T> {
+    const clone = deepClone(this.query);
     if (typeof selector === 'function') {
       const field = getFieldFromSelector(selector);
-      clone.query.select.push(field);
+      clone.select.push(field);
     } else {
-      clone.query.select.push(selector);
+      clone.select.push(selector);
     }
-    return clone;
+    return new RelationalSelectBuilder<T>(this.dataAdapter, clone);
   }
 
-  fields(...selectors: (SelectBuilderFieldSelector<T> | SqlSelectField)[]): RelationalSelectBuilder<T> {
-    const clone = deepClone(this);
+  fields(
+    ...selectors: (SelectBuilderFieldSelector<T> | SqlSelectField)[]
+  ): RelationalSelectBuilder<T> {
+    const clone = deepClone(this.query);
     for (const selector of selectors) {
       if (typeof selector === 'function') {
         const field = getFieldFromSelector(selector);
-        clone.query.select.push(field);
+        clone.select.push(field);
       } else {
-        clone.query.select.push(selector);
+        clone.select.push(selector);
       }
     }
-    return clone;
+    return new RelationalSelectBuilder<T>(this.dataAdapter, clone);
   }
 
   skip(value: number) {
-    const clone = deepClone(this);
-    clone.query.offset = value;
-    return clone;
+    const clone = deepClone(this.query);
+    clone.offset = value;
+    return new RelationalSelectBuilder<T>(this.dataAdapter, clone);
   }
 
   limit(value: number) {
-    const clone = deepClone(this);
-    clone.query.limit = value;
-    return clone;
+    const clone = deepClone(this.query);
+    clone.limit = value;
+    return new RelationalSelectBuilder<T>(this.dataAdapter, clone);
   }
 
-  leftJoin(table: TableInformation<any>, alias: string, on: (builder: RelationalEmptyExpressionBuilder<T>) => RelationalExpressionBuilder<T>) {
+  leftJoin(
+    table: TableInformation<any>,
+    alias: string,
+    on: (
+      builder: RelationalEmptyExpressionBuilder<T>,
+    ) => RelationalExpressionBuilder<T>,
+  ) {
     return this.joinTable('left', table, alias, on);
   }
 
-  fullJoin(table: TableInformation<any>, alias: string, on: (builder: RelationalEmptyExpressionBuilder<T>) => RelationalExpressionBuilder<T>) {
+  fullJoin(
+    table: TableInformation<any>,
+    alias: string,
+    on: (
+      builder: RelationalEmptyExpressionBuilder<T>,
+    ) => RelationalExpressionBuilder<T>,
+  ) {
     return this.joinTable('full', table, alias, on);
   }
 
-  crossJoin(table: TableInformation<any>, alias: string, on: (builder: RelationalEmptyExpressionBuilder<T>) => RelationalExpressionBuilder<T>) {
+  crossJoin(
+    table: TableInformation<any>,
+    alias: string,
+    on: (
+      builder: RelationalEmptyExpressionBuilder<T>,
+    ) => RelationalExpressionBuilder<T>,
+  ) {
     return this.joinTable('cross', table, alias, on);
   }
 
-  rightJoin(table: TableInformation<any>, alias: string, on: (builder: RelationalEmptyExpressionBuilder<T>) => RelationalExpressionBuilder<T>) {
+  rightJoin(
+    table: TableInformation<any>,
+    alias: string,
+    on: (
+      builder: RelationalEmptyExpressionBuilder<T>,
+    ) => RelationalExpressionBuilder<T>,
+  ) {
     return this.joinTable('right', table, alias, on);
   }
 
-  join(table: TableInformation<any>, alias: string, on: (builder: RelationalEmptyExpressionBuilder<T>) => RelationalExpressionBuilder<T>) {
+  join(
+    table: TableInformation<any>,
+    alias: string,
+    on: (
+      builder: RelationalEmptyExpressionBuilder<T>,
+    ) => RelationalExpressionBuilder<T>,
+  ) {
     return this.joinTable('inner', table, alias, on);
   }
 
@@ -93,9 +130,9 @@ export class RelationalSelectBuilder<T> extends RelationalWhereBuilder<T, SqlSel
     selector: (table: Full<T>) => SqlRawValue,
     direction?: SqlOrderDirection,
   ) {
-    const clone = deepClone(this);
+    const clone = deepClone(this.query);
     const field = getFieldFromSelector(selector);
-    const orderBy: SqlSelectOrderBy = {field: field.field};
+    const orderBy: SqlSelectOrderBy = { field: field.field };
     if (direction) {
       orderBy.direction = direction;
     }
@@ -103,13 +140,13 @@ export class RelationalSelectBuilder<T> extends RelationalWhereBuilder<T, SqlSel
       orderBy.table = field.table;
     }
 
-    if (!clone.query.orderBy) {
-      clone.query.orderBy = [orderBy];
+    if (!clone.orderBy) {
+      clone.orderBy = [orderBy];
     } else {
-      clone.query.orderBy.push(orderBy);
+      clone.orderBy.push(orderBy);
     }
 
-    return clone;
+    return new RelationalSelectBuilder<T>(this.dataAdapter, clone);
   }
 
   first(): RelationalSelectFirstBuilder<T> {
@@ -117,14 +154,20 @@ export class RelationalSelectBuilder<T> extends RelationalWhereBuilder<T, SqlSel
   }
 
   firstOrDefault(): RelationalSelectFirstOrDefaultBuilder<T> {
-    return new RelationalSelectFirstOrDefaultBuilder<T>(this.dataAdapter, this.limit(1).query);
+    return new RelationalSelectFirstOrDefaultBuilder<T>(
+      this.dataAdapter,
+      this.limit(1).query,
+    );
   }
 
   count(): RelationalSelectFirstBuilder<{ count: number }> {
-    return new RelationalSelectFirstBuilder<{ count: number }>(this.dataAdapter, {
-      select: [{count: {all: true}, alias: 'count'}],
-      from: deepClone(this.query),
-    });
+    return new RelationalSelectFirstBuilder<{ count: number }>(
+      this.dataAdapter,
+      {
+        select: [{ count: { all: true }, alias: 'count' }],
+        from: { ...deepClone(this.query), alias: 't' },
+      },
+    );
   }
 
   toSql(): SqlSelect {
@@ -146,47 +189,69 @@ export class RelationalSelectBuilder<T> extends RelationalWhereBuilder<T, SqlSel
 
   private addAllField(query: SqlSelect, from: SqlSelectFrom) {
     if (typeof from === 'string') {
-      query.select.push({table: from, all: true});
+      query.select.push({ table: from, all: true });
     } else if (isSqlAlias(from)) {
-      query.select.push({table: from.alias, all: true});
+      query.select.push({ table: from.alias, all: true });
     } else if (isSqlSchemaTable(from)) {
       if (from.schema) {
-        query.select.push({table: from.table, schema: from.schema, all: true});
+        query.select.push({
+          table: from.table,
+          schema: from.schema,
+          all: true,
+        });
       } else {
-        query.select.push({table: from.table, all: true});
+        query.select.push({ table: from.table, all: true });
       }
     }
   }
 
-  private joinTable(type: SqlSelectJoinType, table: TableInformation<any>, alias: string, on: (builder: RelationalEmptyExpressionBuilder<T>) => RelationalExpressionBuilder<T>) {
-    const clone = deepClone(this);
-    const expressionBuilder = on(new RelationalEmptyExpressionBuilderImpl<T>(clone.query.from));
+  private joinTable(
+    type: SqlSelectJoinType,
+    table: TableInformation<any>,
+    alias: string,
+    on: (
+      builder: RelationalEmptyExpressionBuilder<T>,
+    ) => RelationalExpressionBuilder<T>,
+  ) {
+    const clone = deepClone(this.query);
+    const expressionBuilder = on(
+      new RelationalEmptyExpressionBuilderImpl<T>(clone.from),
+    );
 
-    if (!clone.query.joins) {
-      clone.query.joins = [];
+    if (!clone.joins) {
+      clone.joins = [];
     }
 
-    clone.query.joins.push({
+    clone.joins.push({
       type,
-      from: {...getSqlTable(table), alias},
+      from: { ...getSqlTable(table), alias },
       on: expressionBuilder.expression,
     });
-    return clone;
+    return new RelationalSelectBuilder<T>(this.dataAdapter, clone);
+  }
+
+  where(filter: RootFilter<T>): RelationalSelectBuilder<T> {
+    return new RelationalSelectBuilder<T>(
+      this.dataAdapter,
+      this.addWhereFilter(filter),
+    );
   }
 
   protected async execute(): Promise<T[]> {
     const result = await this.dataAdapter.raw(this.toSql());
-    //TODO map
-    return [];
+    return result.rows;
   }
 
   protected getSourceTable(): SqlSchemaTable | null {
     if (isSqlAlias(this.query.from)) {
-      return {table: this.query.from.alias};
+      return { table: this.query.from.alias };
     } else if (isSqlSchemaTable(this.query.from)) {
-      return removeEmptySchema({table: this.query.from.table, schema: this.query.from.schema});
+      return removeEmptySchema({
+        table: this.query.from.table,
+        schema: this.query.from.schema,
+      });
     } else if (typeof this.query.from === 'string') {
-      return {table: this.query.from};
+      return { table: this.query.from };
     }
     return null;
   }

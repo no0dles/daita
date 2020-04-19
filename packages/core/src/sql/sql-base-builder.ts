@@ -1,9 +1,13 @@
 export class SqlBaseBuilder {
-
   protected escapeCharacter = '"';
   protected asKeyword = 'AS';
 
-  protected formatSchemaTableField(schema?: string, table?: string, field?: string, alias?: string) {
+  protected formatSchemaTableField(
+    schema?: string,
+    table?: string,
+    field?: string,
+    alias?: string,
+  ) {
     let sql = '';
     if (schema) {
       sql += this.escapeSchema(schema);

@@ -1,18 +1,24 @@
-import {RelationalQueryBuilder} from './relational-query-builder';
-import {RelationalDataAdapter} from '../adapter';
-import {SqlSelect} from '../sql/select';
+import { RelationalQueryBuilder } from './relational-query-builder';
+import { RelationalDataAdapter } from '../adapter';
+import { SqlSelect } from '../sql/select';
+import { deepClone } from './utils';
 
-export class RelationalSelectFirstBuilder<T> extends RelationalQueryBuilder<SqlSelect, T> {
+export class RelationalSelectFirstBuilder<T> extends RelationalQueryBuilder<
+  SqlSelect,
+  T
+> {
   constructor(dataAdapter: RelationalDataAdapter, query: SqlSelect) {
     super(dataAdapter, query);
   }
 
   protected async execute(): Promise<T> {
-    const result = await this.dataAdapter.raw(this.query);
+    const query = deepClone(this.query);
+    query.limit = 1;
+    const result = await this.dataAdapter.raw(query);
     if (result.rows.length === 1) {
-      //TODO map
+      return result.rows[0];
     }
 
-    throw new Error('');
+    throw new Error('no record found');
   }
 }

@@ -1,9 +1,7 @@
-import {User} from '../test/schemas/blog/models/user';
-import {blogSchema} from '../test/schemas/blog/schema';
-import {RelationalDataContext} from '../context/relational-data-context';
-import {Comment} from '../test/schemas/blog/models/comment';
-import {RelationalAdapterMock} from '../testing/relational-adapter-mock';
-import {SqlQuery, SqlSelect} from '../sql';
+import {RelationalAdapterMock, RelationalDataContext, SqlQuery, SqlSelect} from '@daita/core';
+import {User} from '../models/user';
+import {Comment} from '../models/comment';
+import {blogSchema} from '../schema';
 
 describe('test', () => {
 
@@ -112,7 +110,7 @@ describe('test', () => {
 
   it('should add join for order by', async () => {
     await expectQuery(async ctx => {
-      const builder = ctx.select(User).orderBy(u => u.parent.id, 'asc')
+      const builder = ctx.select(User).orderBy(u => u.parent.id, 'asc');
       return await builder;
     }, {
       select: [
@@ -198,7 +196,7 @@ describe('test', () => {
 
   it('should should delete with single condition', async () => {
     await expectQuery(ctx => ctx.delete(User).where({name: 'foo'}), {
-      delete: 'User_first',
+      delete: {table: 'User_first'},
       where: {
         left: {field: 'name_first'},
         operand: '=',

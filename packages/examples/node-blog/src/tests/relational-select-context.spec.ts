@@ -1,26 +1,34 @@
+import {blogSchema} from '../schema';
+import {blogAdminUser, blogViewUser} from '../users';
+import {getTestAdapter, migrate, seed, userA, userB} from './seed';
+import {User} from '../models/user';
 
 describe('relational-select-context', () => {
+  const dataAdapter = getTestAdapter();
+
+  beforeAll(async() => await migrate(dataAdapter, blogSchema));
+  beforeEach(async () => await seed(dataAdapter, blogSchema).clear(User).table(User, [userA, userB]));
 
   it('should execute select(User)', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext.select(User);
     expect(users).toEqual([userA, userB]);
   });
 
   it('should not execute select(User) without permission', async () => {
-    const viewerContext = await schema.getContext({user: blogViewUser});
+    const viewerContext = await blogSchema.context(dataAdapter, {user: blogViewUser});
     await expect(viewerContext.select(User)).rejects.toThrow('');
   });
 
   it('should execute first select(User)', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const user = await adminContext.select(User).first();
     expect(user).toBeInstanceOf(User);
     expect(user).toEqual(userA);
   });
 
   it('should execute select(User).where({name: foo})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({name: 'foo'});
@@ -28,7 +36,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).where({$or: [{name: foo}, {name: bar}])', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({$or: [{name: 'foo'}, {name: 'bar'}]});
@@ -36,7 +44,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).where({$and: [{name: foo}, {name: bar}])', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({$and: [{name: 'foo'}, {name: 'bar'}]});
@@ -44,7 +52,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).where({name: {$eq: foo}})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({name: {$eq: 'foo'}});
@@ -52,7 +60,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).where({name: {$like: fo%}})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({name: {$like: 'fo%'}});
@@ -60,7 +68,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).where({count: {$gt: 2}})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({count: {$gt: 2}});
@@ -68,7 +76,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).where({count: {$gte: 2}})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({count: {$gte: 2}});
@@ -76,7 +84,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).where({count: 2}).where({count: 14})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({count: 2})
@@ -85,7 +93,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).skip(1)', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .skip(1)
@@ -93,17 +101,17 @@ describe('relational-select-context', () => {
     expect(users).toEqual([userA]);
   });
 
-  it('should execute select(User).where({count: 99}).execFirst()', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+  it('should execute select(User).where({count: 99}).firstOrDefault()', async () => {
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const user = await adminContext
       .select(User)
       .where({count: 99})
-      .first();
+      .firstOrDefault();
     expect(user).toEqual(null);
   });
 
   it('should execute select(User).where({count: {$lt: 2}})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({count: {$lt: 2}});
@@ -111,7 +119,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).where({count: {$lte: 2}})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({count: {$lte: 2}});
@@ -119,7 +127,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).where({name: {$in: [foo, bar]}})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({name: {$in: ['foo', 'bar']}});
@@ -127,7 +135,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).where({name: {$nin: [foo, bar]}})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({name: {$nin: ['foo', 'bar']}});
@@ -135,7 +143,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).where({name: {$ne: foo}})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .where({name: {$ne: 'foo'}});
@@ -143,14 +151,14 @@ describe('relational-select-context', () => {
   });
 
   it('should execute count(User)', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const count = await adminContext.select(User).count();
     expect(count).toEqual(2);
   });
 
 
   it('should execute select(User)', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const result = await adminContext
       .select(User)
       .where({count: 14})
@@ -160,7 +168,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).include(parent)', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .include(u => u.parent);
@@ -170,12 +178,13 @@ describe('relational-select-context', () => {
         name: 'foo',
         count: 2,
         admin: true,
+        parentId: null,
       },
     }]);
   });
 
   it('should execute select(User).orderBy(name).orderBy(count)', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .orderBy(u => u.name)
@@ -184,7 +193,7 @@ describe('relational-select-context', () => {
   });
 
   it('should execute select(User).orderBy(name).orderBy(count).where({name: foobar})', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const users = await adminContext
       .select(User)
       .orderBy(u => u.name)

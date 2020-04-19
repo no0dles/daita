@@ -1,8 +1,12 @@
-import {SqlQueryBuilder} from './sql-query-builder';
-import {SqlQuery} from './sql-query';
-import {SqlRawValue} from './sql-raw-value';
+import { SqlQueryBuilder } from './sql-query-builder';
+import { SqlQuery } from './sql-query';
+import { SqlRawValue } from './sql-raw-value';
 
-function testQuery(expectedResult: { query: SqlQuery, sql: string, values: SqlRawValue[] }) {
+function testQuery(expectedResult: {
+  query: SqlQuery;
+  sql: string;
+  values: SqlRawValue[];
+}) {
   it(`should "${expectedResult.sql}"`, () => {
     const result = new SqlQueryBuilder(expectedResult.query);
     expect(result.sql).toEqual(expectedResult.sql);
@@ -22,7 +26,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [{all: true}],
+        select: [{ all: true }],
       },
       sql: 'SELECT *',
       values: [],
@@ -30,7 +34,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [{all: true, table: 'foo'}],
+        select: [{ all: true, table: 'foo' }],
         from: {
           table: 'foo',
         },
@@ -41,9 +45,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          {table: 'f', alias: 'test', field: 'foo'},
-        ],
+        select: [{ table: 'f', alias: 'test', field: 'foo' }],
         from: {
           schema: 'public',
           table: 'foo',
@@ -51,19 +53,22 @@ describe('sql-query-builder', () => {
         },
         where: {
           and: [
-            {left: {table: 'f', field: 'foo'}, right: {table: 'f', field: 'bar'}, operand: '='},
+            {
+              left: { table: 'f', field: 'foo' },
+              right: { table: 'f', field: 'bar' },
+              operand: '=',
+            },
           ],
         },
       },
-      sql: 'SELECT "f"."foo" AS "test" FROM "public"."foo" AS "f" WHERE "f"."foo" = "f"."bar"',
+      sql:
+        'SELECT "f"."foo" AS "test" FROM "public"."foo" AS "f" WHERE "f"."foo" = "f"."bar"',
       values: [],
     });
 
     testQuery({
       query: {
-        select: [
-          {table: 'f', alias: 'test', field: 'foo'},
-        ],
+        select: [{ table: 'f', alias: 'test', field: 'foo' }],
         from: {
           schema: 'public',
           table: 'foo',
@@ -73,26 +78,28 @@ describe('sql-query-builder', () => {
           and: [
             {
               left: 'foo',
-              right: {select: ['foo'], from: {schema: 'public', table: 'foo', alias: 'foo'}},
+              right: {
+                select: ['foo'],
+                from: { schema: 'public', table: 'foo', alias: 'foo' },
+              },
               operand: '<=',
             },
           ],
         },
       },
-      sql: 'SELECT "f"."foo" AS "test" FROM "public"."foo" AS "f" WHERE $1 <= (SELECT $1 FROM "public"."foo" AS "foo")',
+      sql:
+        'SELECT "f"."foo" AS "test" FROM "public"."foo" AS "f" WHERE $1 <= (SELECT $1 FROM "public"."foo" AS "foo")',
       values: ['foo'],
     });
 
     testQuery({
       query: {
-        select: [
-          {field: 'foo'},
-        ],
+        select: [{ field: 'foo' }],
         from: {
           table: 'foo',
         },
         where: {
-          left: {field: 'foo'},
+          left: { field: 'foo' },
           operand: 'like',
           right: 'foo',
         },
@@ -101,13 +108,9 @@ describe('sql-query-builder', () => {
       values: ['foo'],
     });
 
-
     testQuery({
       query: {
-        select: [
-          {count: {all: true}},
-          {field: 'foo'},
-        ],
+        select: [{ count: { all: true } }, { field: 'foo' }],
         from: {
           table: 'foo',
         },
@@ -119,9 +122,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          {field: 'foo'},
-        ],
+        select: [{ field: 'foo' }],
         from: {
           table: 'foo',
         },
@@ -134,9 +135,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          {select: [{field: 'bar'}], from: 'bar'},
-        ],
+        select: [{ select: [{ field: 'bar' }], from: 'bar' }],
         from: {
           table: 'foo',
         },
@@ -147,9 +146,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          {select: [{field: 'bar'}], from: 'bar', alias: 'f'},
-        ],
+        select: [{ select: [{ field: 'bar' }], from: 'bar', alias: 'f' }],
         from: {
           table: 'foo',
         },
@@ -160,9 +157,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          {table: 'f', field: 'foo'},
-        ],
+        select: [{ table: 'f', field: 'foo' }],
         from: {
           select: ['foo'],
           alias: 'f',
@@ -174,9 +169,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          {all: true},
-        ],
+        select: [{ all: true }],
         from: {
           select: ['foo'],
         },
@@ -187,9 +180,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          {count: {distinct: true, field: 'foo'}},
-        ],
+        select: [{ count: { distinct: true, field: 'foo' } }],
         from: 'bar',
       },
       sql: 'SELECT count(DISTINCT "foo") FROM "bar"',
@@ -198,9 +189,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          {count: {table: 'foo', schema: 'public', field: 'bar'}},
-        ],
+        select: [{ count: { table: 'foo', schema: 'public', field: 'bar' } }],
       },
       sql: 'SELECT count("public"."foo"."bar")',
       values: [],
@@ -208,9 +197,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          {count: {table: 'foo', schema: 'public', all: true}},
-        ],
+        select: [{ count: { table: 'foo', schema: 'public', all: true } }],
       },
       sql: 'SELECT count("public"."foo".*)',
       values: [],
@@ -219,8 +206,8 @@ describe('sql-query-builder', () => {
     testQuery({
       query: {
         select: [
-          {min: {table: 'foo', field: 'count'}},
-          {max: {table: 'foo', field: 'count'}},
+          { min: { table: 'foo', field: 'count' } },
+          { max: { table: 'foo', field: 'count' } },
         ],
       },
       sql: 'SELECT min("foo"."count"), max("foo"."count")',
@@ -230,9 +217,9 @@ describe('sql-query-builder', () => {
     testQuery({
       query: {
         select: [
-          {value: 12, alias: 'foo'},
-          {value: 10, alias: 'bar'},
-          {value: 12, alias: 'foobar'},
+          { value: 12, alias: 'foo' },
+          { value: 10, alias: 'bar' },
+          { value: 12, alias: 'foobar' },
         ],
       },
       sql: 'SELECT $1 AS "foo", $2 AS "bar", $1 AS "foobar"',
@@ -241,9 +228,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          'bar',
-        ],
+        select: ['bar'],
         from: {
           table: 'foo',
         },
@@ -254,8 +239,8 @@ describe('sql-query-builder', () => {
             on: {
               and: [
                 {
-                  left: {table: 'bar', field: 'bar'},
-                  right: {table: 'foo', field: 'foo'},
+                  left: { table: 'bar', field: 'bar' },
+                  right: { table: 'foo', field: 'foo' },
                   operand: '=',
                 },
               ],
@@ -269,9 +254,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          'bar',
-        ],
+        select: ['bar'],
         from: {
           table: 'foo',
         },
@@ -280,8 +263,8 @@ describe('sql-query-builder', () => {
             from: 'bar',
             type: 'left',
             on: {
-              left: {table: 'bar', field: 'bar'},
-              right: {table: 'foo', field: 'foo'},
+              left: { table: 'bar', field: 'bar' },
+              right: { table: 'foo', field: 'foo' },
               operand: '=',
             },
           },
@@ -298,7 +281,7 @@ describe('sql-query-builder', () => {
           table: 'foo',
         },
         where: {
-          left: {field: 'bar'},
+          left: { field: 'bar' },
           operand: 'in',
           value: [1, 2],
         },
@@ -314,7 +297,7 @@ describe('sql-query-builder', () => {
           table: 'foo',
         },
         where: {
-          left: {field: 'bar'},
+          left: { field: 'bar' },
           operand: 'not in',
           value: ['bar'],
         },
@@ -330,10 +313,10 @@ describe('sql-query-builder', () => {
           table: 'foo',
         },
         where: {
-          left: {field: 'bar'},
+          left: { field: 'bar' },
           operand: 'not in',
           value: {
-            select: [{field: 'id'}],
+            select: [{ field: 'id' }],
             from: 'foo',
           },
         },
@@ -344,9 +327,7 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          'bar',
-        ],
+        select: ['bar'],
         from: {
           table: 'foo',
         },
@@ -355,22 +336,21 @@ describe('sql-query-builder', () => {
             from: 'bar',
             type: 'cross',
             on: {
-              left: {table: 'bar', field: 'bar'},
-              right: {table: 'foo', field: 'foo'},
+              left: { table: 'bar', field: 'bar' },
+              right: { table: 'foo', field: 'foo' },
               operand: '>=',
             },
           },
         ],
       },
-      sql: 'SELECT $1 FROM "foo" CROSS JOIN "bar" ON "bar"."bar" >= "foo"."foo"',
+      sql:
+        'SELECT $1 FROM "foo" CROSS JOIN "bar" ON "bar"."bar" >= "foo"."foo"',
       values: ['bar'],
     });
 
     testQuery({
       query: {
-        select: [
-          'bar',
-        ],
+        select: ['bar'],
         from: {
           table: 'foo',
         },
@@ -379,22 +359,21 @@ describe('sql-query-builder', () => {
             from: 'bar',
             type: 'right',
             on: {
-              left: {table: 'bar', field: 'bar'},
-              right: {table: 'foo', field: 'foo'},
+              left: { table: 'bar', field: 'bar' },
+              right: { table: 'foo', field: 'foo' },
               operand: '>=',
             },
           },
         ],
       },
-      sql: 'SELECT $1 FROM "foo" RIGHT JOIN "bar" ON "bar"."bar" >= "foo"."foo"',
+      sql:
+        'SELECT $1 FROM "foo" RIGHT JOIN "bar" ON "bar"."bar" >= "foo"."foo"',
       values: ['bar'],
     });
 
     testQuery({
       query: {
-        select: [
-          'bar',
-        ],
+        select: ['bar'],
         from: {
           table: 'foo',
         },
@@ -403,8 +382,8 @@ describe('sql-query-builder', () => {
             from: 'bar',
             type: 'full',
             on: {
-              left: {table: 'bar', field: 'bar'},
-              right: {table: 'foo', field: 'foo'},
+              left: { table: 'bar', field: 'bar' },
+              right: { table: 'foo', field: 'foo' },
               operand: '>=',
             },
           },
@@ -416,16 +395,14 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          'bar',
-        ],
+        select: ['bar'],
         from: {
           table: 'foo',
         },
         where: {
-          left: {field: 'foo'},
+          left: { field: 'foo' },
           operand: '!=',
-          right: {field: 'bar'},
+          right: { field: 'bar' },
         },
       },
       sql: 'SELECT $1 FROM "foo" WHERE "foo" != "bar"',
@@ -434,26 +411,23 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          'bar',
-        ],
+        select: ['bar'],
         from: {
           table: 'foo',
         },
         where: {
           or: [
             {
-              left: {field: 'foo'},
+              left: { field: 'foo' },
               operand: '>',
-              right: {field: 'bar'},
+              right: { field: 'bar' },
             },
             {
-              left: {field: 'foo'},
+              left: { field: 'foo' },
               operand: '<',
-              right: {field: 'bar'},
+              right: { field: 'bar' },
             },
           ],
-
         },
       },
       sql: 'SELECT $1 FROM "foo" WHERE "foo" > "bar" OR "foo" < "bar"',
@@ -462,81 +436,77 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        select: [
-          'bar',
-        ],
+        select: ['bar'],
         from: {
           table: 'foo',
         },
         where: {
           and: [
             {
-              left: {field: 'foo'},
+              left: { field: 'foo' },
               operand: '!=',
-              right: {field: 'bar'},
+              right: { field: 'bar' },
             },
             {
               or: [
                 {
-                  left: {field: 'foo'},
+                  left: { field: 'foo' },
                   operand: '<',
-                  right: {field: 'bar'},
+                  right: { field: 'bar' },
                 },
                 {
-                  left: {field: 'foo'},
+                  left: { field: 'foo' },
                   operand: '>',
-                  right: {field: 'bar'},
+                  right: { field: 'bar' },
                 },
               ],
             },
           ],
         },
       },
-      sql: 'SELECT $1 FROM "foo" WHERE "foo" != "bar" AND ("foo" < "bar" OR "foo" > "bar")',
+      sql:
+        'SELECT $1 FROM "foo" WHERE "foo" != "bar" AND ("foo" < "bar" OR "foo" > "bar")',
       values: ['bar'],
     });
 
     testQuery({
       query: {
-        select: [
-          'bar',
-        ],
+        select: ['bar'],
         from: {
           table: 'foo',
         },
         where: {
           or: [
             {
-              left: {field: 'foo'},
+              left: { field: 'foo' },
               operand: '!=',
-              right: {field: 'bar'},
+              right: { field: 'bar' },
             },
             {
               and: [
                 {
-                  left: {field: 'foo'},
+                  left: { field: 'foo' },
                   operand: '<',
-                  right: {field: 'bar'},
+                  right: { field: 'bar' },
                 },
                 {
-                  left: {field: 'foo'},
+                  left: { field: 'foo' },
                   operand: '>',
-                  right: {field: 'bar'},
+                  right: { field: 'bar' },
                 },
               ],
             },
           ],
         },
       },
-      sql: 'SELECT $1 FROM "foo" WHERE "foo" != "bar" OR ("foo" < "bar" AND "foo" > "bar")',
+      sql:
+        'SELECT $1 FROM "foo" WHERE "foo" != "bar" OR ("foo" < "bar" AND "foo" > "bar")',
       values: ['bar'],
     });
 
     testQuery({
       query: {
-        select: [
-          1,
-        ],
+        select: [1],
         from: {
           schema: 'public',
           table: 'foo',
@@ -544,13 +514,13 @@ describe('sql-query-builder', () => {
         },
         joins: [
           {
-            from: {table: 'bar', alias: 'b'},
+            from: { table: 'bar', alias: 'b' },
             type: 'inner',
             on: {
               and: [
                 {
-                  left: {table: 'b', field: 'bar'},
-                  right: {table: 'f', field: 'foo'},
+                  left: { table: 'b', field: 'bar' },
+                  right: { table: 'f', field: 'foo' },
                   operand: '=',
                 },
               ],
@@ -558,32 +528,31 @@ describe('sql-query-builder', () => {
           },
         ],
       },
-      sql: 'SELECT $1 FROM "public"."foo" AS "f" JOIN "bar" AS "b" ON "b"."bar" = "f"."foo"',
+      sql:
+        'SELECT $1 FROM "public"."foo" AS "f" JOIN "bar" AS "b" ON "b"."bar" = "f"."foo"',
       values: [1],
     });
 
     testQuery({
       query: {
         select: [
-          {count: {table: 'f', field: 'bar'}},
-          {avg: {table: 'f', field: 'foo'}},
+          { count: { table: 'f', field: 'bar' } },
+          { avg: { table: 'f', field: 'foo' } },
         ],
         from: {
           table: 'foo',
         },
-        groupBy: [
-          {table: 'f', field: 'id'},
-        ],
+        groupBy: [{ table: 'f', field: 'id' }],
         having: {
-          left: {count: {table: 'f', field: 'id'}},
+          left: { count: { table: 'f', field: 'id' } },
           operand: '>',
           right: 3,
         },
       },
-      sql: 'SELECT count("f"."bar"), avg("f"."foo") FROM "foo" GROUP BY "f"."id" HAVING count("f"."id") > $1',
+      sql:
+        'SELECT count("f"."bar"), avg("f"."foo") FROM "foo" GROUP BY "f"."id" HAVING count("f"."id") > $1',
       values: [3],
     });
-
 
     testQuery({
       query: {
@@ -591,9 +560,9 @@ describe('sql-query-builder', () => {
           {
             concat: [
               'bar',
-              {field: 'foobar'},
-              {table: 'foo', field: 'bar'},
-              {select: [1]},
+              { field: 'foobar' },
+              { table: 'foo', field: 'bar' },
+              { select: [1] },
             ],
           },
         ],
@@ -620,12 +589,12 @@ describe('sql-query-builder', () => {
 
     testQuery({
       query: {
-        update: {schema: 'public', table: 'foo'},
+        update: { schema: 'public', table: 'foo' },
         set: {
           bar: 1,
         },
         where: {
-          left: {field: 'foo'},
+          left: { field: 'foo' },
           operand: '=',
           right: 1,
         },
@@ -662,7 +631,7 @@ describe('sql-query-builder', () => {
     testQuery({
       query: {
         insert: 'foo',
-        values: [{bar: 1,foo: 2}],
+        values: [{ bar: 1, foo: 2 }],
       },
       sql: 'INSERT INTO "foo" ("bar", "foo") VALUES ($1, $2)',
       values: [1, 2],
@@ -671,7 +640,10 @@ describe('sql-query-builder', () => {
     testQuery({
       query: {
         insert: 'foo',
-        values: [{bar:1, foo:2}, {bar:1, foo:1}],
+        values: [
+          { bar: 1, foo: 2 },
+          { bar: 1, foo: 1 },
+        ],
       },
       sql: 'INSERT INTO "foo" ("bar", "foo") VALUES ($1, $2), ($1, $1)',
       values: [1, 2],
@@ -681,7 +653,7 @@ describe('sql-query-builder', () => {
       query: {
         insert: 'foo',
         values: {
-          select: [{field: 'bar'}, {field: 'bar'}],
+          select: [{ field: 'bar' }, { field: 'bar' }],
           from: 'bar',
         },
       },

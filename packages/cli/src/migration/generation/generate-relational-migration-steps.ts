@@ -53,7 +53,7 @@ export function generateRelationalMigrationSteps(
       const newPermissions = newSchema.tablePermissions(currentTable.name);
 
       mergeList(currentPermissions, newPermissions, {
-        compare: (first, second) => getPermissionId(first) === getPermissionId(second),
+        compare: (first, second) => comparePermissions(first, second),
         remove: permission => {
           steps.push({kind: 'drop_table_permission', table: currentTable.name, permission});
         },
@@ -71,8 +71,4 @@ export function generateRelationalMigrationSteps(
   });
 
   return steps;
-}
-
-function getPermissionId(permission: TablePermission<any>) {
-  return JSON.stringify(permission);
 }

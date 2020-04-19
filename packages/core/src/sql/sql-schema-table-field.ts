@@ -1,8 +1,9 @@
-import {isKind} from '../utils/is-kind';
+import { isKind } from '../utils/is-kind';
 
 export interface SqlSchemaTableField {
-  field: string,
+  field: string;
   table?: string;
   schema?: string;
 }
-export const isSqlSchemaTableField = (val: any): val is SqlSchemaTableField => isKind<SqlSchemaTableField>(val, ['field']);
+export const isSqlSchemaTableField = (val: any): val is SqlSchemaTableField =>
+  isKind<SqlSchemaTableField>(val, ['field']);

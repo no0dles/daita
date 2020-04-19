@@ -1,15 +1,11 @@
 module.exports = {
-    "moduleFileExtensions": [
-        "ts",
-        "js"
+    moduleFileExtensions: [
+        'ts',
+        'js',
     ],
-    "coverageReporters": [
-        "json",
-        "html"
-    ],
-    "transform": {
-        "^.+\\.ts$": "ts-jest"
+    transform: {
+        '^.+\\.ts$': 'ts-jest',
     },
-    "testRegex": "src/.*.spec.ts",
-    testEnvironment: "node"
+    testRegex: 'src/.*.spec.ts',
+    testEnvironment: 'node',
 };

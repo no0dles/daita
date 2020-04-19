@@ -1,8 +1,7 @@
-import {User} from '../test/schemas/blog/models/user';
-import {RelationalDataAdapterFactory, SchemaTest} from '../test/test-utils';
-import {RelationalTransactionAdapter} from '../adapter';
-import {blogAdminUser} from '../test/schemas/blog/users';
-import {blogSchema} from '../test/schemas/blog/schema';
+import {getTestAdapter, userA, userB} from './seed';
+import {blogSchema} from '../schema';
+import {blogAdminUser} from '../users';
+import {User} from '../models/user';
 
 function sleep(timeout: number) {
   return new Promise(resolve => {
@@ -11,9 +10,10 @@ function sleep(timeout: number) {
 }
 
 describe('relational-transaction', () => {
+  const dataAdapter = getTestAdapter();
 
   it('should timeout trx', async () => {
-    const adminContext = await schema.getTransactionContext({user: blogAdminUser});
+    const adminContext = await blogSchema.transactionContext(dataAdapter, {user: blogAdminUser});
     try {
       await adminContext
         .transaction(async trx => {
@@ -35,10 +35,12 @@ describe('relational-transaction', () => {
 
 
 describe('relational-transaction', () => {
+  const dataAdapter = getTestAdapter();
+
   it('should not get mixed up with parallel calls outside of trx', async () => {
     let promise: PromiseLike<any> | null = null;
 
-    const adminContext = await schema.getTransactionContext({user: blogAdminUser});
+    const adminContext = await blogSchema.transactionContext(dataAdapter, {user: blogAdminUser});
     try {
       await adminContext
         .transaction(async trx => {
@@ -64,7 +66,7 @@ describe('relational-transaction', () => {
   });
 
   it('should not be visible outside of trx', async () => {
-    const adminContext = await schema.getTransactionContext({user: blogAdminUser});
+    const adminContext = await blogSchema.transactionContext(dataAdapter, {user: blogAdminUser});
     await adminContext
       .transaction(async trx => {
         await trx.delete(User)
@@ -82,7 +84,7 @@ describe('relational-transaction', () => {
   });
 
   it('should rollback trx', async () => {
-    const adminContext = await schema.getTransactionContext({user: blogAdminUser});
+    const adminContext = await blogSchema.transactionContext(dataAdapter, {user: blogAdminUser});
     try {
       await adminContext
         .transaction(async trx => {
@@ -99,7 +101,7 @@ describe('relational-transaction', () => {
   });
 
   it('should commit trx', async () => {
-    const adminContext = await schema.getTransactionContext({user: blogAdminUser});
+    const adminContext = await blogSchema.transactionContext(dataAdapter, {user: blogAdminUser});
     await adminContext
       .transaction(async trx => {
         await trx.delete(User)

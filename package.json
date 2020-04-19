@@ -4,7 +4,6 @@
   "description": "",
   "private": true,
   "dependencies": {
-    "lerna": "^3.16.5",
     "jest": "^25.2.4"
   },
   "scripts": {

@@ -1,5 +1,5 @@
 {
-  "name": "@daita/testing",
+  "name": "@daita/node-blog-example",
   "version": "0.1.1-alpha.1",
   "description": "",
   "main": "dist/index.js",
@@ -9,9 +9,6 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "prepare" : "npm run build",
-    "prepublishOnly" : "npm test && npm run lint",
-    "preversion" : "npm run lint",
     "test": "jest",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
@@ -22,10 +19,9 @@
   "license": "MIT",
   "dependencies": {
     "@daita/core": "^0.1.1-alpha.0",
-    "debug": "^4.1.1"
+    "@daita/pg": "0.1.1-alpha.1"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.5",
     "@daita/tslint": "^0.1.1-alpha.0",
     "tslint": "^5.20.1",
     "typescript": "~3.7.5",

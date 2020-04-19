@@ -1,9 +1,16 @@
-import {User} from '../test/schemas/blog/models/user';
-import {blogAdminUser} from '../test/schemas/blog/users';
+import {getTestAdapter, migrate, seed, userA, userB} from './seed';
+import {blogSchema} from '../schema';
+import {blogAdminUser} from '../users';
+import {User} from '../models/user';
 
 describe('relational-delete-context', () => {
+  const dataAdapter = getTestAdapter();
+
+  beforeAll(() => migrate(dataAdapter, blogSchema));
+  beforeEach(async () => await seed(dataAdapter, blogSchema).clear(User).table(User, [userA, userB]));
+
   it('should execute delete(User).where(id: b)', async () => {
-    const adminContext = await schema.getContext({user: blogAdminUser});
+    const adminContext = await blogSchema.context(dataAdapter, {user: blogAdminUser});
     const result = await adminContext
       .delete(User)
       .where({id: 'b'});

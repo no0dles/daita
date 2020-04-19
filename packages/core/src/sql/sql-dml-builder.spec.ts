@@ -1,6 +1,6 @@
-import {SqlDmlBuilder, SqlDmlQuery} from './sql-dml-builder';
+import { SqlDmlBuilder, SqlDmlQuery } from './sql-dml-builder';
 
-function testQuery(options: { query: SqlDmlQuery, sql: string }) {
+function testQuery(options: { query: SqlDmlQuery; sql: string }) {
   it(`should "${options.sql}"`, () => {
     const builder = new SqlDmlBuilder(options.query);
     expect(builder.sql).toBe(options.sql);
@@ -13,39 +13,37 @@ describe('sql-dml-builder', () => {
       query: {
         createTable: 'foo',
         ifNotExist: true,
-        fields: [
-          {name: 'foo', type: 'string', primaryKey: true},
-        ],
+        fields: [{ name: 'foo', type: 'string', primaryKey: true }],
       },
-      sql: 'CREATE TABLE IF NOT EXISTS "foo" ("foo" VARCHAR, PRIMARY KEY ("foo"))',
+      sql:
+        'CREATE TABLE IF NOT EXISTS "foo" ("foo" VARCHAR, PRIMARY KEY ("foo"))',
     });
 
     testQuery({
       query: {
-        createTable: {table: 'foo', schema: 'public'},
-        fields: [
-          {name: 'foo', type: 'number'},
-        ],
+        createTable: { table: 'foo', schema: 'public' },
+        fields: [{ name: 'foo', type: 'number' }],
       },
       sql: 'CREATE TABLE "public"."foo" ("foo" NUMERIC)',
     });
 
     testQuery({
       query: {
-        createTable: {table: 'foo', schema: 'public'},
+        createTable: { table: 'foo', schema: 'public' },
         fields: [
-          {name: 'foo', type: 'number', primaryKey: true},
-          {name: 'bar', type: 'boolean', primaryKey: false, notNull: true},
-          {name: 'foobar', type: 'string'},
-          {name: 'created', type: 'date', primaryKey: true},
+          { name: 'foo', type: 'number', primaryKey: true },
+          { name: 'bar', type: 'boolean', primaryKey: false, notNull: true },
+          { name: 'foobar', type: 'string' },
+          { name: 'created', type: 'date', primaryKey: true },
         ],
       },
-      sql: 'CREATE TABLE "public"."foo" ("foo" NUMERIC, "bar" BOOLEAN NOT NULL, "foobar" VARCHAR, "created" TIME WITH TIMEZONE, PRIMARY KEY ("foo", "created"))',
+      sql:
+        'CREATE TABLE "public"."foo" ("foo" NUMERIC, "bar" BOOLEAN NOT NULL, "foobar" VARCHAR, "created" TIME WITH TIMEZONE, PRIMARY KEY ("foo", "created"))',
     });
 
     testQuery({
       query: {
-        alterTable: {table: 'foo', schema: 'public'},
+        alterTable: { table: 'foo', schema: 'public' },
         add: {
           column: 'foo',
           type: 'number',
@@ -67,7 +65,7 @@ describe('sql-dml-builder', () => {
 
     testQuery({
       query: {
-        alterTable: {table: 'foo', schema: 'public'},
+        alterTable: { table: 'foo', schema: 'public' },
         drop: {
           column: 'foo',
         },
@@ -77,30 +75,32 @@ describe('sql-dml-builder', () => {
 
     testQuery({
       query: {
-        alterTable: {table: 'foo', schema: 'public'},
+        alterTable: { table: 'foo', schema: 'public' },
         add: {
-          references: {table: 'bar', primaryKeys: 'id'},
+          references: { table: 'bar', primaryKeys: 'id' },
           foreignKey: 'barId',
         },
       },
-      sql: 'ALTER TABLE "public"."foo" ADD FOREIGN KEY ("barId") REFERENCES "bar" ("id")',
+      sql:
+        'ALTER TABLE "public"."foo" ADD FOREIGN KEY ("barId") REFERENCES "bar" ("id")',
     });
 
     testQuery({
       query: {
-        alterTable: {table: 'foo', schema: 'public'},
+        alterTable: { table: 'foo', schema: 'public' },
         add: {
-          references: {table: 'bar', primaryKeys: ['id']},
+          references: { table: 'bar', primaryKeys: ['id'] },
           foreignKey: ['barId'],
           constraint: 'fk_bar',
         },
       },
-      sql: 'ALTER TABLE "public"."foo" ADD CONSTRAINT "fk_bar" FOREIGN KEY ("barId") REFERENCES "bar" ("id")',
+      sql:
+        'ALTER TABLE "public"."foo" ADD CONSTRAINT "fk_bar" FOREIGN KEY ("barId") REFERENCES "bar" ("id")',
     });
 
     testQuery({
       query: {
-        alterTable: {table: 'foo', schema: 'public'},
+        alterTable: { table: 'foo', schema: 'public' },
         drop: {
           constraint: 'fk_bar',
         },
@@ -117,7 +117,7 @@ describe('sql-dml-builder', () => {
 
     testQuery({
       query: {
-        dropTable: {table: 'foo', schema: 'public'},
+        dropTable: { table: 'foo', schema: 'public' },
         ifExist: true,
       },
       sql: 'DROP TABLE IF EXISTS "public"."foo"',
@@ -125,7 +125,7 @@ describe('sql-dml-builder', () => {
 
     testQuery({
       query: {
-        dropTable: {table: 'foo', schema: 'public'},
+        dropTable: { table: 'foo', schema: 'public' },
       },
       sql: 'DROP TABLE "public"."foo"',
     });

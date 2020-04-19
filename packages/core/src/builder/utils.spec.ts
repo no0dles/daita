@@ -1,11 +1,10 @@
-import {deepClone} from './utils';
+import { deepClone } from './utils';
 
 describe('builder/utils', () => {
   describe('deepClone', () => {
     it('should clone and keep prototype', () => {
       class Foo {
-        constructor(protected name: string) {
-        }
+        constructor(protected name: string) {}
 
         hello() {
           return this.name;
@@ -25,7 +24,6 @@ describe('builder/utils', () => {
       const foo = new Foo('test');
       const clone = deepClone(foo);
       expect(clone.hello()).toEqual('test');
-
 
       const fooSuper = new SuperFoo('test');
       const cloneSuper = deepClone(fooSuper);

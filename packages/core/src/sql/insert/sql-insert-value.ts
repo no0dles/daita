@@ -1,5 +1,5 @@
-import {SqlRawValue} from '../sql-raw-value';
+import { SqlRawValue } from '../sql-raw-value';
 
-export type SqlInsertValue  = {
+export type SqlInsertValue = {
   [key: string]: SqlRawValue;
 };

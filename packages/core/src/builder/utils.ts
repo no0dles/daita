@@ -1,19 +1,20 @@
-import {SqlSchemaTableField} from '../sql/sql-schema-table-field';
-import {TableInformation} from '../context/table-information';
-import {isSqlSchemaTable, SqlSchemaTable} from '../sql/sql-schema-table';
-
+import { SqlSchemaTableField } from '../sql/sql-schema-table-field';
+import { isSqlSchemaTable, SqlSchemaTable } from '../sql/sql-schema-table';
 
 export function getPathFromSelector(selector: (value: any) => any): string[] {
   const selectorValue = getSelectorPath();
   return selector(selectorValue)._path;
 }
 
-
-export function getTableFromSelector(selector: (value: any) => any): string | null {
+export function getTableFromSelector(
+  selector: (value: any) => any,
+): string | null {
   return getPathFromSelector(selector).join('.');
 }
 
-export function getFieldFromSelector(selector: (value: any) => any): SqlSchemaTableField {
+export function getFieldFromSelector(
+  selector: (value: any) => any,
+): SqlSchemaTableField {
   const path = getPathFromSelector(selector);
   const field = path.splice(path.length - 1, 1)[0];
   const table = path.join('.');
@@ -46,15 +47,15 @@ export function getSelectorPath(path: string[] = []): any {
 
 export function getSqlTable(type: TableInformation<any>): SqlSchemaTable {
   if (typeof type === 'string') {
-    return {table: type};
+    return { table: type };
   } else if (isSqlSchemaTable(type)) {
     if (type.schema) {
-      return {table: type.table, schema: type.schema};
+      return { table: type.table, schema: type.schema };
     } else {
-      return {table: type.table};
+      return { table: type.table };
     }
   } else {
-    return {table: type.name};
+    return { table: type.name };
   }
 }
 
@@ -62,7 +63,14 @@ export function deepClone<T extends object>(value: T): T {
   const clone: any = Object.create(value);
   for (const key of Object.keys(value)) {
     const prop = (value as any)[key];
-    if (typeof prop === 'string' || typeof prop === 'number' || typeof prop === 'boolean' || prop instanceof Date || prop === undefined || prop === null) {
+    if (
+      typeof prop === 'string' ||
+      typeof prop === 'number' ||
+      typeof prop === 'boolean' ||
+      prop instanceof Date ||
+      prop === undefined ||
+      prop === null
+    ) {
       clone[key] = prop;
     } else if (prop instanceof Array) {
       const cloneArray: any[] = [];
