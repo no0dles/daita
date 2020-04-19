@@ -1,12 +1,14 @@
 {
+   name: "core",
+   depends_on: ["eslint-config"],
    build: {
-       steps: [
+       commands: [
            'npm install',
            'npm run build'
        ]
    },
    test: {
-       steps: [
+       commands: [
            'npm test'
        ]
    }

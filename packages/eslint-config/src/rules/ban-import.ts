@@ -1,6 +1,6 @@
 import { ESLintUtils } from '@typescript-eslint/experimental-utils';
 
-ESLintUtils.RuleCreator(name => `https://...`)({
+export default ESLintUtils.RuleCreator(name => `https://...`)({
   name: 'ban-import',
   meta: {
     docs: {
@@ -40,6 +40,7 @@ ESLintUtils.RuleCreator(name => `https://...`)({
         //     }
         //   });
         // }
+        return false;
       }
     }
   }
