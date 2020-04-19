@@ -1,6 +1,13 @@
-import {RelationalDataAdapter, RelationalTransactionAdapter} from '../adapter';
-import {isRelationalRawResult, RelationalRawResult} from '../adapter/relational-raw-result';
-import {SqlDelete, SqlInsert, SqlQuery, SqlSelect, SqlUpdate} from '../sql';
+import {
+  isRelationalRawResult,
+  RelationalDataAdapter, RelationalRawResult,
+  RelationalTransactionAdapter,
+  SqlDelete,
+  SqlInsert,
+  SqlQuery,
+  SqlSelect,
+  SqlUpdate,
+} from '@daita/core';
 
 export class RelationalAdapterMock implements RelationalTransactionAdapter {
   private mockResult: RelationalRawResult | null = null;
