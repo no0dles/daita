@@ -1,5 +1,5 @@
-local eslint = import 'packages/eslint-config/drone.libsonnet';
-local core = import 'packages/core/drone.libsonnet';
+local eslint = import './packages/eslint-config/drone.libsonnet';
+local core = import './packages/core/drone.libsonnet';
 
 local image = 'node:12';
 local packages = [eslint, core];
