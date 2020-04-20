@@ -1,24 +1,37 @@
-import {RelationalTableFieldDescription} from './relational-table-field-description';
-import {ArrayMap} from './array-map';
-import {RelationalTableReferenceDescription} from './relational-table-reference-description';
-import {SqlInsert} from '../../sql/insert';
-import {removeEmptySchema} from '../../utils/remove-empty-schema';
-import {SqlUpdate} from '../../sql/update';
-import {SqlDelete} from '../../sql/delete';
-import {SqlSelect} from '../../sql/select';
+import { RelationalTableFieldDescription } from "./relational-table-field-description";
+import { ArrayMap } from "./array-map";
+import { RelationalTableReferenceDescription } from "./relational-table-reference-description";
+import { arrayClone, removeEmptySchema, SqlDelete, SqlInsert, SqlSelect, SqlUpdate } from "@daita/core";
 
 export class RelationalTableDescription {
+  private primaryKeysArray: string[] = [];
   private fieldArrayMap: ArrayMap<RelationalTableFieldDescription>;
   private referenceArrayMap: ArrayMap<RelationalTableReferenceDescription>;
 
-  constructor(public name: string,
+  constructor(public key: string,
+              public name: string,
               public schema?: string) {
     this.fieldArrayMap = new ArrayMap<RelationalTableFieldDescription>();
     this.referenceArrayMap = new ArrayMap<RelationalTableReferenceDescription>();
   }
 
   get fields() {
-    return this.fieldArrayMap.array;
+    return arrayClone(this.fieldArrayMap.array);
+  }
+
+  get primaryKeys() {
+    return arrayClone(this.primaryKeysArray);
+  }
+
+  get references() {
+    return arrayClone(this.referenceArrayMap.array);
+  }
+
+  addPrimaryKey(keys: string[]) {
+    this.primaryKeysArray.push(...keys);
+    for (const key of keys) {
+      this.field(key).setPrimaryKey();
+    }
   }
 
   addField(name: string, field: RelationalTableFieldDescription) {
@@ -56,27 +69,27 @@ export class RelationalTableDescription {
   getSqlSelect(): SqlSelect {
     return {
       select: [],
-      from: removeEmptySchema({schema: this.schema, table: this.name, alias: 'base'}),
+      from: removeEmptySchema({ schema: this.schema, table: this.name, alias: "base" })
     };
   }
 
   getSqlDelete(): SqlDelete {
     return {
-      delete: removeEmptySchema({schema: this.schema, table: this.name}),
+      delete: removeEmptySchema({ schema: this.schema, table: this.name })
     };
   }
 
   getSqlUpdate(): SqlUpdate {
     return {
-      update: removeEmptySchema({schema: this.schema, table: this.name}),
-      set: {},
+      update: removeEmptySchema({ schema: this.schema, table: this.name }),
+      set: {}
     };
   }
 
   getSqlInsert(): SqlInsert {
     return {
-      insert: removeEmptySchema({schema: this.schema, table: this.name}),
-      values: [],
+      insert: removeEmptySchema({ schema: this.schema, table: this.name }),
+      values: []
     };
   }
 }

@@ -1,11 +1,6 @@
-export { DocumentCollectionSchema } from './document-collection-schema';
-export { DocumentCollectionSchemaCollection } from './document-collection-schema-collection';
-export { DocumentCollectionSchemaCollectionField } from './document-collection-schema-collection-field';
-export { DocumentCollectionSchemaCollectionFieldType } from './document-collection-schema-collection-field-type';
 export { RelationalTableSchema } from './relational-table-schema';
 export { RelationalTableSchemaTable } from './relational-table-schema-table';
 export { RelationalTableSchemaTableField } from './relational-table-schema-table-field';
 export { RelationalTableSchemaTableFieldType } from './relational-table-schema-table-field-type';
 export * from './schema';
-export * from './document-schema';
 export * from './relational-schema';

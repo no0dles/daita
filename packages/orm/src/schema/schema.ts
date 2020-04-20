@@ -4,8 +4,8 @@ import {
   GreaterThanQuery, InQuery,
   LowerThanEqualQuery,
   LowerThanQuery,
-  NotEqualQuery, NotInQuery,
-} from '../query';
+  NotEqualQuery, NotInQuery
+} from "@daita/core";
 
 export type Condition<T> = ValueCondition<T> | AndCondition<T> | OrCondition<T>;
 

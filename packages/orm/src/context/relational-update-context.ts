@@ -1,10 +1,7 @@
-import {RootFilter} from '../query/root-filter';
-import {PrimitivePartial} from './types/primitive-partial';
 import {TableInformation} from './table-information';
 import {RelationalSchemaBaseContext} from './relational-schema-base-context';
-import {RelationalUpdateBuilder} from '../builder/relational-update-builder';
-import {SqlUpdateResult} from '../sql/update';
 import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
+import { PrimitivePartial, RelationalUpdateBuilder, RootFilter, SqlUpdateResult } from "@daita/core";
 
 export class RelationalUpdateContext<T> extends RelationalSchemaBaseContext<RelationalUpdateBuilder<T>, SqlUpdateResult> {
   constructor(

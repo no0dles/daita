@@ -1,6 +1,5 @@
-import {RelationalMigrationAdapter} from '../adapter/relational-migration-adapter';
-import {getMigrationSchema} from '../schema/migration-schema-builder';
 import {MigrationExecution, MigrationTree} from '../migration';
+import { RelationalMigrationAdapter } from "@daita/core";
 
 export class RelationalSchemaMigrationContext  {
   constructor(private relationalMigrationAdapter: RelationalMigrationAdapter,
@@ -26,8 +25,7 @@ export class RelationalSchemaMigrationContext  {
 
       const currentMigration = currentMigrations[0];
       if (!(await exec.exists(currentMigration.id, this.relationalMigrationAdapter))) {
-        const migrationPath = this.migrationTree.path(currentMigration.id);
-        const migrationSchema = getMigrationSchema(migrationPath);
+        const migrationSchema = this.migrationTree.defaultBackwardDescription(currentMigration.id);
         await exec.apply(
           currentMigration,
           migrationSchema,

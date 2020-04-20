@@ -18,16 +18,15 @@
   "license": "MIT",
   "dependencies": {
     "debug": "^4.1.1",
-    "@daita/core": "0.1.1-alpha.1",
+    "@daita/common": "file:../../common",
+    "@daita/document": "file:../../document",
     "mongodb": "^3.3.3",
     "uuid": "^7.0.2"
   },
   "devDependencies": {
     "@types/debug": "^4.1.5",
     "@types/uuid": "^7.0.2",
-    "@daita/tslint": "^0.1.1-alpha.0",
     "@types/mongodb": "^3.3.7",
-    "tslint": "^5.20.1",
     "typescript": "~3.7.5",
     "@types/jest": "^25.1.1",
     "jest": "^25.1.0",

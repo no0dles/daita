@@ -1,1 +1,1 @@
-export { MongoDataAdapter } from './mongo.data-adapter';
+// export { MongoDataAdapter } from './mongo.data-adapter';

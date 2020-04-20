@@ -1,4 +1,4 @@
-import {TablePermission} from '../../permission';
+import { TablePermission } from "@daita/core";
 
 export interface RelationalAddPermissionMigrationStep {
   kind: 'add_table_permission';

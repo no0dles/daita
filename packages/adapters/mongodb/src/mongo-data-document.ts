@@ -1,5 +1,5 @@
-export interface MongoDataDocument {
-  _id: string;
-  data: any;
-  operationId: string;
-}
+// export interface MongoDataDocument {
+//   _id: string;
+//   data: any;
+//   operationId: string;
+// }

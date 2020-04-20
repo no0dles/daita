@@ -1,56 +1,30 @@
-import {RelationalDataAdapter, RelationalTransactionAdapter} from '../adapter';
-import {isSqlSchemaTable, SqlSchemaTable} from '../sql/sql-schema-table';
-import {RelationalUpdateBuilder} from '../builder/relational-update-builder';
-import {RelationalInsertBuilder} from '../builder/relational-insert-builder';
-import {RelationalDeleteBuilder} from '../builder/relational-delete-builder';
-import {getSqlTable} from '../builder/utils';
-import {RelationalSelectBuilder} from '../builder/relational-select-builder';
-import {SqlSelect} from '../sql/select';
-import {TablePermission} from './table-permission';
-import {isAnonymousPermission} from './anonymous-permission';
-import {isRolePermission} from './role-permission';
-import {isAuthorizedPermission} from './authorized-permission';
-import {isPermissionPermission} from './permission-permission';
-import {SqlUpdate, SqlUpdateResult} from '../sql/update';
-import {SqlDelete, SqlDeleteResult} from '../sql/delete';
-import {SqlInsert, SqlInsertResult} from '../sql/insert';
-import {SqlExpression, SqlQuery, SqlTable} from '../sql';
-import {isSqlSelect} from '../sql/select/sql-select';
-import {isSqlUpdate} from '../sql/update/sql-update';
-import {isSqlDelete} from '../sql/delete/sql-delete';
-import {isSqlInsert} from '../sql/insert/sql-insert';
-import {isSqlCompareExpression} from '../sql/expression/sql-compare-expression';
-import {isSqlInExpression} from '../sql/expression/sql-in-expression';
-import {isSqlAndExpression} from '../sql/expression/sql-and-expression';
-import {isSqlOrExpression} from '../sql/expression/sql-or-expression';
 import {
-  isSqlAlterTable,
-  isSqlCreateTable,
-  isSqlDropTable, SqlAlterTableAdd, SqlAlterTableDrop,
-  SqlCreateTableQuery,
-  SqlDmlQuery, SqlDropTableQuery,
-} from '../sql/sql-dml-builder';
-import {RelationalSelectFirstBuilder} from '../builder';
-import {comparePermissions} from './compare-permissions';
-import {TableInformation} from '../types/table-information';
-
-function getTableIdentifier(type: TableInformation<any>): string {
-  const table = getSqlTable(type);
-  return tableIdentifier(table);
-}
-
-function tableIdentifier(table: SqlSchemaTable) {
-  if (table.schema) {
-    return `${table.schema}.${table.table}`;
-  }
-  return table.table;
-}
+  comparePermissions,
+  getSqlTableIdentifier, isAnonymousPermission, isAuthorizedPermission, isPermissionPermission, isRolePermission,
+  RelationalDataAdapter,
+  RelationalDeleteBuilder,
+  RelationalInsertBuilder,
+  RelationalSelectBuilder, RelationalSelectFirstBuilder, RelationalTransactionAdapter, RelationalUpdateBuilder,
+  SqlDeleteResult,
+  SqlInsertResult,
+  SqlPermissions, SqlUpdateResult,
+  TableInformation,
+  TablePermission
+} from "@daita/core";
+import {
+  RelationalDataContext,
+  RelationalDeleteContext,
+  RelationalInsertContext,
+  RelationalSelectContext, RelationalTransactionContext, RelationalUpdateContext
+} from "./context";
+import { RelationalSchemaDescription } from "./schema/description/relational-schema-description";
+import { ContextUser } from "./auth";
 
 export class SchemaPermissions {
   private permissions: { [key: string]: TablePermission<any>[] } = {};
 
   add<T>(table: TableInformation<T>, permissions: TablePermission<T>[]) {
-    const identifier = getTableIdentifier(table);
+    const identifier = getSqlTableIdentifier(table);
     if (!this.permissions[identifier]) {
       this.permissions[identifier] = [];
     }
@@ -58,7 +32,7 @@ export class SchemaPermissions {
   }
 
   remove<T>(table: TableInformation<T>, permissions: TablePermission<T>[]) {
-    const identifier = getTableIdentifier(table);
+    const identifier = getSqlTableIdentifier(table);
     const currentPermissions = this.permissions[identifier];
     for (const permission of permissions) {
       for (let i = 0; i < currentPermissions.length; i++) {
@@ -92,145 +66,6 @@ export class SchemaPermissions {
       }
     }
     return new UserPermissions(userPermissions);
-  }
-}
-
-export class SqlPermissions {
-  constructor(private permissions: { [key: string]: TablePermission<any>[] }) {
-
-  }
-
-  isSelectAuthorized(query: SqlSelect): boolean {
-    if (!this.hasPermissionForTable(query.from, perm => perm.select === true)) {
-      return false;
-    }
-
-    if (!this.isFilterAuthorized(query.where)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  isUpdateAuthorized(query: SqlUpdate): boolean {
-    if (!this.hasPermissionForTable(query.update, perm => perm.update === true)) {
-      return false;
-    }
-
-    if (!this.isFilterAuthorized(query.where)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  isDeleteAuthorized(query: SqlDelete): boolean {
-    if (!this.hasPermissionForTable(query.delete, perm => perm.delete === true)) {
-      return false;
-    }
-
-    if (!this.isFilterAuthorized(query.where)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  isInsertAuthorized(query: SqlInsert): boolean {
-    if (!this.hasPermissionForTable(query.insert, perm => perm.insert === true)) {
-      return false;
-    }
-
-    if (isSqlSelect(query.values) && !this.isSelectAuthorized(query.values)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  private isFilterAuthorized(expression: SqlExpression | null | undefined): boolean {
-    if (!expression) {
-      return true;
-    }
-
-    if (isSqlCompareExpression(expression)) {
-      return true;
-    } else if (isSqlInExpression(expression)) {
-      return true;
-    } else if (isSqlAndExpression(expression)) {
-      for (const subExpression of expression.and) {
-        if (!this.isFilterAuthorized(subExpression)) {
-          return false;
-        }
-      }
-      return true;
-    } else if (isSqlOrExpression(expression)) {
-      for (const subExpression of expression.or) {
-        if (!this.isFilterAuthorized(subExpression)) {
-          return false;
-        }
-      }
-      return true;
-    }
-
-    fail(expression, 'unknown expression');
-  }
-
-  private hasPermissionForTable(table: SqlSelect | SqlTable | null | undefined, filter: (perm: TablePermission<any>) => boolean): boolean {
-    if (!table) {
-      return true;
-    }
-
-    if (typeof table === 'string') {
-      return this.hasPermissionForTableName(table, filter);
-    } else if (isSqlSchemaTable(table)) {
-      return this.hasPermissionForTableName(tableIdentifier(table), filter);
-    } else if (isSqlSelect(table)) {
-      return this.isSelectAuthorized(table);
-    }
-
-    fail(table, 'unknown table');
-  }
-
-  private hasPermissionForTableName(table: string, filter: (perm: TablePermission<any>) => boolean): boolean {
-    for (const permission of this.permissions[table] || []) {
-      if (filter(permission)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  isQueryAuthorized(query: SqlQuery | SqlDmlQuery) {
-    if (isSqlSelect(query)) {
-      return this.isSelectAuthorized(query);
-    } else if (isSqlUpdate(query)) {
-      return this.isUpdateAuthorized(query);
-    } else if (isSqlDelete(query)) {
-      return this.isDeleteAuthorized(query);
-    } else if (isSqlInsert(query)) {
-      return this.isInsertAuthorized(query);
-    } else if (isSqlCreateTable(query)) {
-      return this.isSqlCreateTableAuthorized(query);
-    } else if (isSqlDropTable(query)) {
-      return this.isSqlDropTableAuthorized(query);
-    } else if (isSqlAlterTable(query)) {
-      return this.isSqlAlterTableAuthorized(query);
-    }
-
-    return false;
-  }
-
-  private isSqlCreateTableAuthorized(query: SqlCreateTableQuery) {
-    return false;
-  }
-
-  private isSqlDropTableAuthorized(query: SqlDropTableQuery) {
-    return false;
-  }
-
-  private isSqlAlterTableAuthorized(query: SqlAlterTableAdd | SqlAlterTableDrop) {
-    return false;
   }
 }
 

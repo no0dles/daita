@@ -13,10 +13,10 @@
       "path": "../web/tsconfig.build.json"
     },
     {
-      "path": "../pg/tsconfig.build.json"
+      "path": "../adapters/pg/tsconfig.build.json"
     },
     {
-      "path": "../mongodb/tsconfig.build.json"
+      "path": "../adapters/mongodb/tsconfig.build.json"
     }
   ],
   "exclude": [

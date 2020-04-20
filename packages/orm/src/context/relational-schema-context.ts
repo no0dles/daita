@@ -1,15 +1,15 @@
-import {RelationalDataAdapter} from '../adapter/relational-data-adapter';
 import {RelationalInsertContext} from './relational-insert-context';
-import {DefaultConstructable} from '../constructable';
 import {RelationalSelectContext} from './relational-select-context';
 import {RelationalUpdateContext} from './relational-update-context';
 import {RelationalDeleteContext} from './relational-delete-context';
 import {RelationalDataContext} from './relational-data-context';
-import {RelationalUpdateBuilder} from '../builder/relational-update-builder';
-import {RelationalInsertBuilder} from '../builder/relational-insert-builder';
-import {RelationalDeleteBuilder} from '../builder/relational-delete-builder';
-import {RelationalSelectBuilder} from '../builder/relational-select-builder';
 import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
+import {
+  DefaultConstructable,
+  RelationalDataAdapter, RelationalDeleteBuilder,
+  RelationalInsertBuilder,
+  RelationalSelectBuilder, RelationalUpdateBuilder
+} from "@daita/core";
 
 export class RelationalSchemaContext implements RelationalDataContext {
   constructor(protected relationalDataAdapter: RelationalDataAdapter,

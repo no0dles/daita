@@ -4,6 +4,7 @@ import {RelationalTableFieldDescription} from './description/relational-table-fi
 import {RelationalTableDescription} from './description/relational-table-description';
 import {SchemaMapper} from './description/schema-mapper';
 import {RelationalSchemaDescription} from './description/relational-schema-description';
+import { failNever } from "@daita/core";
 
 export function getSchemaDescription(schemaMapper: SchemaMapper, paths: MigrationDescription[]): RelationalSchemaDescription {
   const schema = new RelationalSchemaDescription();
@@ -12,14 +13,15 @@ export function getSchemaDescription(schemaMapper: SchemaMapper, paths: Migratio
     for (const step of path.steps) {
       if (step.kind === 'add_table') {
         const tableName = schemaMapper.add(step.table, path.id);
-        schema.addTable(step.table, new RelationalTableDescription(tableName, step.schema));
+        schema.addTable(step.table, new RelationalTableDescription(step.table, tableName, step.schema));
       } else if (step.kind === 'add_table_field') {
         const fieldMapper = schemaMapper.field(step.table);
         const fieldName = fieldMapper.add(step.fieldName, path.id);
         const table = schema.table({table: step.table, schema: step.schema});
         table.addField(step.fieldName, new RelationalTableFieldDescription(step.fieldName, fieldName, step.type, step.required, step.defaultValue));
       } else if (step.kind === 'add_table_primary_key') {
-        //TODO
+        const table = schema.table({table: step.table, schema: step.schema});
+        table.addPrimaryKey(step.fieldNames);
       } else if (step.kind === 'add_table_foreign_key') {
         const table = schema.table({schema: step.schema, table: step.table});
         const foreignTable = schema.table({
@@ -52,13 +54,6 @@ export function getSchemaDescription(schemaMapper: SchemaMapper, paths: Migratio
       } else if (step.kind === 'drop_table') {
         schemaMapper.drop(step.table);
         schema.removeTable(step.table, step.schema);
-      } else if (step.kind === 'modify_collection_field' ||
-        step.kind === 'rename_collection_field' ||
-        step.kind === 'drop_collection_field' ||
-        step.kind === 'add_collection_field' ||
-        step.kind === 'drop_collection' ||
-        step.kind === 'add_collection') {
-        continue;
       } else {
         failNever(step, 'unknown migration step');
       }

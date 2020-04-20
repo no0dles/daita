@@ -1,9 +1,3 @@
-export { AddCollectionFieldMigrationStep } from './document-add-collection-field.migration-step';
-export { AddCollectionMigrationStep } from './document-add-collection.migration-step';
-export { DropCollectionFieldMigrationStep } from './document-drop-collection-field.migration-step';
-export { DropCollectionMigrationStep } from './document-drop-collection.migration-step';
-export { ModifyCollectionFieldMigrationStep } from './document-modify-collection-field.migration-step';
-export { RenameCollectionFieldMigrationStep } from './document-rename-collection-field.migration-step';
 export { RelationalAddTableMigrationStep } from './relational-add-table.migration-step';
 export { RelationalAddTableFieldMigrationStep } from './relational-add-table-field.migration-step';
 export { RelationalAddTableForeignKey } from './relational-add-table-foreign-key.migration-step';

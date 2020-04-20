@@ -10,8 +10,9 @@
   },
   "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
-    "@daita/core": "^0.1.1-alpha.1",
-    "@daita/web": "^0.1.1-alpha.1",
+    "@daita/common": "file:../common",
+    "@daita/relational": "file:../relational",
+    "@daita/http-server": "file:../http-server",
     "@oclif/config": "^1.14.0",
     "@oclif/plugin-help": "^2.2.3",
     "chokidar": "^3.3.1",
@@ -22,9 +23,8 @@
     "nomnoml": "^0.6.2"
   },
   "devDependencies": {
-    "@daita/tslint": "^0.1.1-alpha.0",
-    "@daita/pg": "^0.1.1-alpha.1",
-    "@daita/mongodb": "^0.1.1-alpha.1",
+    "@daita/pg": "file:../adapters/pg",
+    "@daita/mongodb": "file:../adapters/mongodb",
     "@oclif/dev-cli": "^1.22.2",
     "@types/chokidar": "^2.1.3",
     "@types/config": "^0.0.36",
@@ -34,7 +34,6 @@
     "jest": "^25.1.0",
     "jest-extended": "^0.11.5",
     "ts-jest": "^25.1.0",
-    "tslint": "^5.20.1",
     "typescript": "~3.7.5"
   },
   "engines": {

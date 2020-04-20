@@ -1,5 +1,5 @@
 import { RelationalTableSchemaTable } from './relational-table-schema-table';
-import {TablePermission} from '../permission';
+import { TablePermission } from "@daita/core";
 
 export interface RelationalTableSchema {
   tableNames: string[];

@@ -1,11 +1,13 @@
 import {TableInformation} from './table-information';
-import {RelationalDataAdapter, RelationalTransactionAdapter} from '../adapter';
-import {Constructable} from '../constructable';
-import {RelationalSelectBuilder} from '../builder/relational-select-builder';
-import {RelationalInsertBuilder} from '../builder/relational-insert-builder';
-import {RelationalUpdateBuilder} from '../builder/relational-update-builder';
-import {RelationalDeleteBuilder} from '../builder/relational-delete-builder';
-import {getSqlTable} from '../builder/utils';
+import {
+  Constructable, getSqlSchemaTable,
+  RelationalDataAdapter,
+  RelationalDeleteBuilder,
+  RelationalInsertBuilder,
+  RelationalSelectBuilder,
+  RelationalTransactionAdapter,
+  RelationalUpdateBuilder
+} from "@daita/core";
 
 export interface RelationalCtx extends RelationalSelectCtx, RelationalDeleteCtx, RelationalUpdateCtx, RelationalInsertCtx {
 
@@ -70,7 +72,7 @@ function getContext<TBase extends Constructable<any>>(base: TBase, dataAdapter: 
 function getDeleteContext<TBase extends Constructable<any>>(base: TBase, dataAdapter: RelationalDataAdapter) {
   return class extends base {
     delete<T>(type: TableInformation<T>) {
-      return new RelationalDeleteBuilder<T>(dataAdapter, {delete: getSqlTable(type)});
+      return new RelationalDeleteBuilder<T>(dataAdapter, {delete: getSqlSchemaTable(type)});
     }
   };
 }
@@ -78,7 +80,7 @@ function getDeleteContext<TBase extends Constructable<any>>(base: TBase, dataAda
 export function getSelectContext<TBase extends Constructable<any>>(base: TBase, dataAdapter: RelationalDataAdapter) {
   return class extends base {
     select<T>(type: TableInformation<T>): RelationalSelectBuilder<T> {
-      return new RelationalSelectBuilder<T>(dataAdapter, {select: [], from: getSqlTable(type)});
+      return new RelationalSelectBuilder<T>(dataAdapter, {select: [], from: getSqlSchemaTable(type)});
     }
   };
 }
@@ -86,7 +88,7 @@ export function getSelectContext<TBase extends Constructable<any>>(base: TBase, 
 export function getUpdateContext<TBase extends Constructable<any>>(base: TBase, dataAdapter: RelationalDataAdapter) {
   return class extends base {
     update<T>(type: TableInformation<T>): RelationalUpdateBuilder<T> {
-      return new RelationalUpdateBuilder<T>(dataAdapter, {update: getSqlTable(type), set: {}});
+      return new RelationalUpdateBuilder<T>(dataAdapter, {update: getSqlSchemaTable(type), set: {}});
     }
   };
 }
@@ -94,7 +96,7 @@ export function getUpdateContext<TBase extends Constructable<any>>(base: TBase, 
 export function getInsertContext<TBase extends Constructable<any>>(base: TBase, dataAdapter: RelationalDataAdapter) {
   return class extends base {
     insert<T>(type: TableInformation<T>): RelationalInsertBuilder<T> {
-      return new RelationalInsertBuilder<T>(dataAdapter, {insert: getSqlTable(type), values: []});
+      return new RelationalInsertBuilder<T>(dataAdapter, {insert: getSqlSchemaTable(type), values: []});
     }
   };
 }

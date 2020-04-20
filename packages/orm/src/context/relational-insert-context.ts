@@ -1,9 +1,7 @@
-import {ExcludeNonPrimitive} from './types/exclude-non-primitive';
 import {RelationalSchemaBaseContext} from './relational-schema-base-context';
-import {RelationalInsertBuilder} from '../builder/relational-insert-builder';
-import {SqlInsertResult} from '../sql/insert';
 import {TableInformation} from './table-information';
 import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
+import { ExcludeNonPrimitive, RelationalInsertBuilder, SqlInsertResult } from "@daita/core";
 
 export class RelationalInsertContext<T> extends RelationalSchemaBaseContext<RelationalInsertBuilder<T>, SqlInsertResult> {
   constructor(

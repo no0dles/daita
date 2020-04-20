@@ -1,23 +1,16 @@
-import {SqlSchemaTable} from '../../sql';
 import {TableInformation} from '../../context/table-information';
-import {getSqlTable} from '../../builder/utils';
 import {ArrayMap} from './array-map';
 import {RelationalTableDescription} from './relational-table-description';
-import {SchemaPermissions} from '../../permission/permission-builder';
 import {ContextUser} from '../../auth';
-import {TablePermission} from '../../permission';
+import { arrayClone, getSqlTableIdentifier, TablePermission } from "@daita/core";
+import { SchemaPermissions } from "../../permission-builder";
 
 export class RelationalSchemaDescription {
   private readonly tableArrayMap = new ArrayMap<RelationalTableDescription>();
   private readonly schemaPermissions = new SchemaPermissions();
 
-  private getKey(table: SqlSchemaTable) {
-    return table.schema ? `${table.schema}.${table.table}` : table.table;
-  }
-
   table(table: TableInformation<any>): RelationalTableDescription {
-    const sqlTable = getSqlTable(table);
-    const key = this.getKey(sqlTable);
+    const key = getSqlTableIdentifier(table);
     const tableDescription = this.tableArrayMap.get(key);
     if (!tableDescription) {
       throw new Error(`Unable to get table ${key} from schema`);
@@ -25,12 +18,16 @@ export class RelationalSchemaDescription {
     return tableDescription;
   }
 
+  get tables() {
+    return arrayClone(this.tableArrayMap.array);
+  }
+
   addTable(name: string, table: RelationalTableDescription) {
     this.tableArrayMap.add(name, table);
   }
 
   removeTable(table: string, schema?: string) {
-    this.tableArrayMap.remove(this.getKey({table, schema}));
+    this.tableArrayMap.remove(getSqlTableIdentifier({table, schema}));
   }
 
   userPermissions(user: ContextUser) {

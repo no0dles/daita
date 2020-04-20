@@ -1,5 +1,4 @@
 import {MigrationDescription} from './migration-description';
-import {getMigrationSchema} from '../schema/migration-schema-builder';
 import {getSchemaDescription} from '../schema/relational-schema-description';
 import {SchemaMapper} from '../schema/description/schema-mapper';
 import {BackwardCompatibleMapper} from '../schema/description/backward-compatible-mapper';
@@ -80,9 +79,9 @@ export class MigrationTree {
     return this.migrationMap[id] || null;
   }
 
-  schema(id: string) {
-    return getMigrationSchema(this.path(id));
-  }
+  // schema(id: string) {
+  //   return getMigrationSchema(this.path(id));
+  // }
 
   defaultPath(id?: string) {
     if (id) {
@@ -99,9 +98,9 @@ export class MigrationTree {
     }
   }
 
-  defaultSchema(id?: string) {
-    return getMigrationSchema(this.defaultPath(id));
-  }
+  // defaultSchema(id?: string) {
+  //   return getMigrationSchema(this.defaultPath(id));
+  // }
 
   defaultBackwardDescription(id?: string) {
     return getSchemaDescription(new SchemaMapper(() => new BackwardCompatibleMapper()), this.defaultPath(id));

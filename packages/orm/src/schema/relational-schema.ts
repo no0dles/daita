@@ -1,20 +1,24 @@
 import {MigrationDescription, MigrationTree} from '../migration';
-import {Constructable, DefaultConstructable} from '../constructable';
 import {SchemaTableOptions} from './schema-table-options';
-import {RelationalDataAdapter, RelationalTransactionAdapter} from '../adapter';
 import {RelationalSchemaContext, RelationalTransactionContext} from '../context';
 import {RelationalSchemaOptions} from './relational-schema-options';
 import {RelationalSchemaContextOptions} from '../context/relational-schema-context-options';
 import {RelationalDataContext} from '../context/relational-data-context';
-import {RelationalMigrationAdapter} from '../adapter/relational-migration-adapter';
 import {RelationalSchemaMigrationContext} from '../context/relational-schema-migration-context';
 import {RelationalSchemaTransactionContext} from '../context/relational-schema-transaction-context';
+import {RelationalSchemaDescription} from './description/relational-schema-description';
 import {
   RelationalAuthSchemaContext,
-  RelationalAuthTransactionSchemaContext, SchemaPermissions,
-} from '../permission/permission-builder';
-import {RelationalSchemaDescription} from './description/relational-schema-description';
-import {TablePermission} from '../permission';
+  RelationalAuthTransactionSchemaContext,
+  SchemaPermissions
+} from "../permission-builder";
+import {
+  Constructable,
+  DefaultConstructable,
+  RelationalDataAdapter, RelationalMigrationAdapter,
+  RelationalTransactionAdapter,
+  TablePermission
+} from "@daita/core";
 
 export class RelationalSchema {
   private migrationTree = new MigrationTree();
