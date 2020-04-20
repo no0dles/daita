@@ -21,8 +21,6 @@ steps:
   - cd packages/common
   - npm install
   - npm run build
-  depends_on:
-  - install:@daita/eslint-config
 
 - name: install:@daita/relational
   image: node:12
@@ -30,9 +28,6 @@ steps:
   - cd packages/relational
   - npm install
   - npm run build
-  depends_on:
-  - install:@daita/common
-  - install:@daita/eslint-config
 
 - name: install:@daita/document
   image: node:12
@@ -40,9 +35,6 @@ steps:
   - cd packages/document
   - npm install
   - npm run build
-  depends_on:
-  - install:@daita/common
-  - install:@daita/eslint-config
 
 - name: install:@daita/orm
   image: node:12
@@ -50,10 +42,6 @@ steps:
   - cd packages/orm
   - npm install
   - npm run build
-  depends_on:
-  - install:@daita/common
-  - install:@daita/relational
-  - install:@daita/eslint-config
 
 - name: install:@daita/odm
   image: node:12
@@ -61,10 +49,6 @@ steps:
   - cd packages/odm
   - npm install
   - npm run build
-  depends_on:
-  - install:@daita/common
-  - install:@daita/document
-  - install:@daita/eslint-config
 
 - name: install:@daita/mongodb
   image: node:12
@@ -72,9 +56,6 @@ steps:
   - cd packages/adapters/mongodb
   - npm install
   - npm run build
-  depends_on:
-  - install:@daita/common
-  - install:@daita/document
 
 - name: install:@daita/pg
   image: node:12
@@ -82,9 +63,6 @@ steps:
   - cd packages/adapters/pg
   - npm install
   - npm run build
-  depends_on:
-  - install:@daita/common
-  - install:@daita/relational
 
 - name: install:@daita/http-server
   image: node:12
@@ -92,9 +70,6 @@ steps:
   - cd packages/http-server
   - npm install
   - npm run build
-  depends_on:
-  - install:@daita/common
-  - install:@daita/relational
 
 - name: install:@daita/http
   image: node:12
@@ -102,11 +77,6 @@ steps:
   - cd packages/adapters/http
   - npm install
   - npm run build
-  depends_on:
-  - install:@daita/common
-  - install:@daita/relational
-  - install:@daita/http-server
-  - install:@daita/pg
 
 - name: install:@daita/websocket
   image: node:12
@@ -114,11 +84,6 @@ steps:
   - cd packages/adapters/websocket
   - npm install
   - npm run build
-  depends_on:
-  - install:@daita/common
-  - install:@daita/relational
-  - install:@daita/http-server
-  - install:@daita/pg
 
 - name: install:@daita/cli
   image: node:12
@@ -126,12 +91,6 @@ steps:
   - cd packages/cli
   - npm install
   - npm run build
-  depends_on:
-  - install:@daita/common
-  - install:@daita/http-server
-  - install:@daita/relational
-  - install:@daita/mongodb
-  - install:@daita/pg
 
 ---
 kind: pipeline
