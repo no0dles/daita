@@ -1,4 +1,4 @@
-import { SqlPermissions } from "@daita/core";
+import { SqlPermissions } from "@daita/relational";
 
 export interface TokenProvider {
   verify(token: string): Promise<TokenVerifyResult>;

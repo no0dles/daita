@@ -1,6 +1,6 @@
 import { TokenProvider, TokenVerifyResult } from "./token-provider";
 import * as openid from "openid-client";
-import { Defer } from "@daita/core";
+import { Defer } from "@daita/common";
 import { jwksTokenProvider } from "./jwks-token-provider";
 import { PayloadTransformer } from "./payload-provider";
 

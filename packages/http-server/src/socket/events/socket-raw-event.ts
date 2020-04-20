@@ -1,5 +1,4 @@
-import {SqlQuery} from '@daita/core';
-import {SqlDmlQuery} from '@daita/core/dist/sql/sql-dml-builder';
+import { SqlDmlQuery, SqlQuery } from "@daita/relational";
 
 export interface SocketRawEvent {
   sql: SqlQuery | SqlDmlQuery;

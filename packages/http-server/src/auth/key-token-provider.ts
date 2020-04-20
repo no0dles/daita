@@ -1,5 +1,5 @@
 import { TokenProvider, TokenVerifyResult } from "./token-provider";
-import { Defer, TablePermission } from "@daita/core";
+import { Defer } from "@daita/common";
 import * as jws from "jws";
 import { payloadTransform, PayloadTransformer } from "./payload-provider";
 

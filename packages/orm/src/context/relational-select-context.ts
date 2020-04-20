@@ -3,13 +3,13 @@ import {TableInformation} from './table-information';
 import {RelationalTableReferenceDescription} from '../schema/description/relational-table-reference-description';
 import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
 import {
-  ExcludePrimitive,
-  Full, getTableFromSelector, isSqlAlias, isSqlAndExpression,
+  getTableFromSelector, isSqlAlias, isSqlAndExpression,
   isSqlCompareExpression, isSqlInExpression, isSqlOrExpression, isSqlSchemaTableField, RelationalExpressionBuilder,
   RelationalSelectBuilder, removeEmptySchema,
   RootFilter, SqlExpression,
   SqlRawValue
-} from "@daita/core";
+} from "@daita/relational";
+import { ExcludePrimitive, Full } from "@daita/common";
 
 export class RelationalSelectContext<T> extends RelationalSchemaBaseContext<RelationalSelectBuilder<T>, T[]> {
   private readonly shouldMapResult: boolean;

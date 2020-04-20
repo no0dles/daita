@@ -5,11 +5,11 @@ import {RelationalDeleteContext} from './relational-delete-context';
 import {RelationalDataContext} from './relational-data-context';
 import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
 import {
-  DefaultConstructable,
   RelationalDataAdapter, RelationalDeleteBuilder,
   RelationalInsertBuilder,
   RelationalSelectBuilder, RelationalUpdateBuilder
-} from "@daita/core";
+} from "@daita/relational";
+import { DefaultConstructable } from "@daita/common";
 
 export class RelationalSchemaContext implements RelationalDataContext {
   constructor(protected relationalDataAdapter: RelationalDataAdapter,

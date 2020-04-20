@@ -1,4 +1,4 @@
-import {RelationalTableSchemaTableFieldType} from '../../schema';
+import { RelationalTableSchemaTableFieldType } from "../../schema/relational-table-schema-table-field-type";
 
 export interface RelationalAddTableFieldMigrationStep {
   kind: 'add_table_field';

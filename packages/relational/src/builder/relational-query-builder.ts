@@ -1,7 +1,8 @@
 import { RelationalDataAdapter } from '../adapter/relational-data-adapter';
 import { deepClone } from '@daita/common';
 
-export abstract class RelationalQueryBuilder<TQuery extends object, Result> {
+export abstract class RelationalQueryBuilder<TQuery extends object, Result>
+  implements Promise<Result> {
   [Symbol.toStringTag]: 'Promise';
 
   constructor(

@@ -20,7 +20,7 @@
     "@angular/platform-browser-dynamic": "~9.0.1",
     "@angular/router": "~9.0.1",
     "@daita/core": "^0.1.1-alpha.1",
-    "@daita/web-client": "^0.1.1-alpha.1",
+    "@daita/websocket": "^0.1.1-alpha.1",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
     "uuid": "^3.3.3",

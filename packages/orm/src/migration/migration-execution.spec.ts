@@ -1,6 +1,6 @@
 import {MigrationExecution} from './migration-execution';
 import {MigrationDescription} from './migration-description';
-import { SqlDmlQuery } from "@daita/core";
+import { SqlDmlQuery } from "@daita/relational";
 import { getSchemaDescription } from "../schema/relational-schema-description";
 import { SchemaMapper } from "../schema/description/schema-mapper";
 import { BackwardCompatibleMapper } from "../schema/description/backward-compatible-mapper";
@@ -11,11 +11,9 @@ function testMigrations(
   expectedSqls: SqlDmlQuery[],
 ) {
   const exec = new MigrationExecution();
-  const migrationSchema = getSchemaDescription(new SchemaMapper(() => new BackwardCompatibleMapper()), migrationBefore);
-  const sql = exec.plan(
-    migration,
-    migrationSchema
-  );
+  const current = getSchemaDescription(new SchemaMapper(() => new BackwardCompatibleMapper()), migrationBefore);
+  const target = getSchemaDescription(new SchemaMapper(() => new BackwardCompatibleMapper()), [...migrationBefore, migration]);
+  const sql = exec.plan(current, target);
   expect(sql).toEqual(expectedSqls);
 }
 

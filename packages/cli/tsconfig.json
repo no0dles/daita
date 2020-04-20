@@ -1,5 +1,14 @@
 {
   "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "paths": {
+      "@daita/relational": ["relational/src"],
+      "@daita/http-server": ["http-server/src"],
+      "@daita/pg": ["adapters/pg/src"],
+      "@daita/mongodb": ["adapters/mongodb/src"]
+    }
+  },
   "exclude": [
     "node_modules",
     "dist",

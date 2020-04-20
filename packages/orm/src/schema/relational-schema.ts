@@ -13,12 +13,11 @@ import {
   SchemaPermissions
 } from "../permission-builder";
 import {
-  Constructable,
-  DefaultConstructable,
   RelationalDataAdapter, RelationalMigrationAdapter,
   RelationalTransactionAdapter,
   TablePermission
-} from "@daita/core";
+} from "@daita/relational";
+import { Constructable, DefaultConstructable } from "@daita/common";
 
 export class RelationalSchema {
   private migrationTree = new MigrationTree();

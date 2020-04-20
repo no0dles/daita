@@ -3,7 +3,7 @@ local eslint = import 'packages/eslint-config/package.json';
 local relational = import 'packages/relational/package.json';
 local document = import 'packages/document/package.json';
 local orm = import 'packages/orm/package.json';
-local docs = import 'packages/docs/package.json';
+//local docs = import 'packages/docs/package.json';
 local odm = import 'packages/odm/package.json';
 local http_adapter = import 'packages/adapters/http/package.json';
 local pg_adapter = import 'packages/adapters/pg/package.json';
@@ -15,16 +15,16 @@ local cli = import 'packages/cli/package.json';
 local image = 'node:12';
 local packages = [
     { dir: "packages/eslint-config", config: eslint },
-    { dir: "packages/docs", config: docs},
+    //{ dir: "packages/docs", config: docs},
     { dir: "packages/common", config: common},
     { dir: "packages/relational", config: relational},
     { dir: "packages/document", config: document},
     { dir: "packages/orm", config: orm},
     { dir: "packages/odm", config: odm},
-    { dir: "packages/http-server", config: http_server},
-    { dir: "packages/adapters/http", config: http_adapter},
     { dir: "packages/adapters/mongodb", config: mongodb_adapter},
     { dir: "packages/adapters/pg", config: pg_adapter},
+    { dir: "packages/http-server", config: http_server},
+    { dir: "packages/adapters/http", config: http_adapter},
     { dir: "packages/adapters/websocket", config: websocket_adapter},
     { dir: "packages/cli", config: cli},
 ];

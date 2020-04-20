@@ -1,13 +1,7 @@
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
-import {
-  RelationalDataAdapter,
-  SqlQuery,
-} from '@daita/core';
-import * as debug from 'debug';
-import {AuthProvider} from '../auth/auth-provider';
-import {IdGenerator} from '../id-generator';
-import {RelationalRawResult} from '@daita/core/dist/adapter/relational-raw-result';
-import {SqlDmlQuery} from '@daita/core/dist/sql/sql-dml-builder';
+import { RelationalDataAdapter, RelationalRawResult, SqlDmlQuery, SqlQuery } from "@daita/relational";
+import { AuthProvider } from "./auth/auth-provider";
+import { IdGenerator } from "./id-generator";
 
 export class ApiRelationalDataAdapter implements RelationalDataAdapter {
   protected idGenerator: IdGenerator;
@@ -28,7 +22,6 @@ export class ApiRelationalDataAdapter implements RelationalDataAdapter {
       const reqQuery: any = {...query || {}, ...this.globalQuery};
       const qs = Object.keys(reqQuery).map(key => `${key}=${reqQuery[key]}`).join('&');
       const reqUrl = `${this.baseUrl}/api/table/${url}${qs.length > 0 ? '?' + qs : ''}`;
-      debug('daita:api:adapter')('send post request to ' + reqUrl);
       const config: AxiosRequestConfig = {};
       if (this.auth?.kind === 'userpass') {
         config.auth = {

@@ -1,7 +1,7 @@
 import {TableInformation} from './table-information';
 import {RelationalSchemaBaseContext} from './relational-schema-base-context';
 import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
-import { RelationalDeleteBuilder, RootFilter, SqlDeleteResult } from "@daita/core";
+import { RelationalDeleteBuilder, RootFilter, SqlDeleteResult } from "@daita/relational";
 
 export class RelationalDeleteContext<T> extends RelationalSchemaBaseContext<RelationalDeleteBuilder<T>, SqlDeleteResult> {
   constructor(

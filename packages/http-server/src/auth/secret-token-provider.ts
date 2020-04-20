@@ -1,7 +1,7 @@
 import { TokenProvider, TokenVerifyResult } from "./token-provider";
 import * as jws from "jws";
-import { Defer } from "@daita/core";
 import { payloadTransform, PayloadTransformer } from "./payload-provider";
+import { Defer } from "@daita/common";
 
 export interface AuthSecretProviderOptions<T> {
   secret: string;

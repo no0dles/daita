@@ -1,6 +1,6 @@
 import * as express from "express";
 import { TokenProvider } from "../auth/token-provider";
-import { SqlPermissions } from "@daita/core";
+import { SqlPermissions } from "@daita/relational";
 
 declare global {
   namespace Express {

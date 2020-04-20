@@ -1,7 +1,8 @@
 import { RelationalTableFieldDescription } from "./relational-table-field-description";
 import { ArrayMap } from "./array-map";
 import { RelationalTableReferenceDescription } from "./relational-table-reference-description";
-import { arrayClone, removeEmptySchema, SqlDelete, SqlInsert, SqlSelect, SqlUpdate } from "@daita/core";
+import { removeEmptySchema, SqlDelete, SqlInsert, SqlSelect, SqlUpdate } from "@daita/relational";
+import { arrayClone } from "@daita/common";
 
 export class RelationalTableDescription {
   private primaryKeysArray: string[] = [];

@@ -1,10 +1,13 @@
 import {Pool, PoolClient, types} from 'pg';
 import {ensureDatabaseExists} from './postgres.util';
-import {RelationalDataAdapter, SqlQuery} from '@daita/core';
-import {RelationalMigrationAdapter} from '@daita/core/dist/adapter/relational-migration-adapter';
 import {PostgresDataAdapter} from './postgres-data-adapter';
-import {RelationalRawResult} from '@daita/core/dist/adapter/relational-raw-result';
-import {SqlDmlQuery} from '@daita/core/dist/sql/sql-dml-builder';
+import {
+  RelationalDataAdapter,
+  RelationalMigrationAdapter,
+  RelationalRawResult,
+  SqlDmlQuery,
+  SqlQuery
+} from "@daita/relational";
 
 export class PostgresAdapter implements RelationalMigrationAdapter {
 

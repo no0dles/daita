@@ -1,5 +1,5 @@
 {
-  "name": "@daita/http",
+  "name": "@daita/websocket",
   "version": "0.1.1-alpha.1",
   "author": "Pascal Bertschi @no0dles",
   "publishConfig": {
@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@types/socket.io-client": "^1.4.32",
-    "@daita/web": "file:../../http-server",
+    "@daita/http-server": "file:../../http-server",
     "@daita/pg": "file:../pg",
     "typescript": "~3.7.5",
     "@types/jest": "^25.1.1",

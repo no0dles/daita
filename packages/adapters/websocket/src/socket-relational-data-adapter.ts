@@ -1,12 +1,7 @@
-import {
-  Defer,
-  RelationalDataAdapter,
-  SqlQuery,
-} from '@daita/core';
-import * as debug from 'debug';
-import {IdGenerator} from '../id-generator';
-import {RelationalRawResult} from '@daita/core/dist/adapter/relational-raw-result';
-import {SqlDmlQuery} from '@daita/core/dist/sql/sql-dml-builder';
+import { RelationalDataAdapter, RelationalRawResult, SqlDmlQuery, SqlQuery } from "@daita/relational";
+import { IdGenerator } from "../../http/src/id-generator";
+import { Defer } from "@daita/common";
+
 
 export class SocketRelationalDataAdapter implements RelationalDataAdapter {
   protected authDefer = new Defer();
@@ -28,7 +23,6 @@ export class SocketRelationalDataAdapter implements RelationalDataAdapter {
       await this.authDefer.promise;
     }
     this.defers[cid] = defer;
-    debug('web:socket')('emit event ' + event + ' with cid ' + cid);
     this.socket.emit(event, {...data, cid, ...this.globalEmitValue});
     return defer.promise;
   }

@@ -1,7 +1,5 @@
-import {
-  RelationalDataAdapter,
-} from '@daita/core';
-import {TokenProvider} from './auth/token-provider';
+import { TokenProvider } from "./auth/token-provider";
+import { RelationalDataAdapter } from "@daita/relational";
 
 export interface AppOptions {
   dataAdapter: RelationalDataAdapter;

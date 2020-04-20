@@ -10,7 +10,7 @@ import {
   SqlPermissions, SqlUpdateResult,
   TableInformation,
   TablePermission
-} from "@daita/core";
+} from "@daita/relational";
 import {
   RelationalDataContext,
   RelationalDeleteContext,

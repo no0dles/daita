@@ -1,7 +1,8 @@
 import {TableInformation} from './table-information';
 import {RelationalSchemaBaseContext} from './relational-schema-base-context';
 import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
-import { PrimitivePartial, RelationalUpdateBuilder, RootFilter, SqlUpdateResult } from "@daita/core";
+import { RelationalUpdateBuilder, RootFilter, SqlUpdateResult } from "@daita/relational";
+import { PrimitivePartial } from "@daita/common";
 
 export class RelationalUpdateContext<T> extends RelationalSchemaBaseContext<RelationalUpdateBuilder<T>, SqlUpdateResult> {
   constructor(

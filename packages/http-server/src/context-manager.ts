@@ -1,16 +1,16 @@
 import {
-  Debouncer,
-  Defer,
-  RelationalDataAdapter, RelationalTransactionAdapter, SqlPermissions
-} from "@daita/core";
-import {
   AppOptions
 } from "./app-options";
 import * as debug from "debug";
-import { RelationalMigrationAdapter } from "@daita/core/dist/adapter/relational-migration-adapter";
-import { isRelationalTransactionAdapter } from "@daita/core/dist/adapter/relational-transaction-adapter";
 import { SocketRawEvent } from "./socket/events/socket-raw-event";
-import { isSqlQuery } from "@daita/core/dist/sql/sql-query";
+import {
+  isRelationalTransactionAdapter,
+  isSqlQuery, RelationalDataAdapter,
+  RelationalMigrationAdapter,
+  RelationalTransactionAdapter,
+  SqlPermissions
+} from "@daita/relational";
+import { Debouncer, Defer } from "@daita/common";
 
 interface ContextTransaction {
   adapter: RelationalDataAdapter | RelationalTransactionAdapter | RelationalMigrationAdapter;

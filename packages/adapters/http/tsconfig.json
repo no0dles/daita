@@ -1,7 +1,13 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "lib": ["dom", "es2016"]
+    "lib": ["dom", "es2016"],
+    "rootDir": "src",
+    "paths": {
+      "@daita/common": ["common/src"],
+      "@daita/relational": ["relational/src"],
+      "@daita/http-server": ["http-server/src"]
+    }
   },
   "exclude": [
     "node_modules",

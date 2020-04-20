@@ -1,13 +1,14 @@
 import {TableInformation} from './table-information';
 import {
-  Constructable, getSqlSchemaTable,
+  getSqlSchemaTable,
   RelationalDataAdapter,
   RelationalDeleteBuilder,
   RelationalInsertBuilder,
   RelationalSelectBuilder,
   RelationalTransactionAdapter,
   RelationalUpdateBuilder
-} from "@daita/core";
+} from "@daita/relational";
+import { Constructable } from "@daita/common";
 
 export interface RelationalCtx extends RelationalSelectCtx, RelationalDeleteCtx, RelationalUpdateCtx, RelationalInsertCtx {
 

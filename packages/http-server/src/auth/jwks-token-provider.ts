@@ -1,7 +1,7 @@
 import * as JwksClient from "jwks-rsa";
 import * as jws from "jws";
 import { TokenProvider, TokenVerifyResult } from "./token-provider";
-import { Defer } from "@daita/core";
+import { Defer } from "@daita/common";
 import { payloadTransform, PayloadTransformer } from "./payload-provider";
 
 export interface AuthJwksProviderOptions<T = any> {

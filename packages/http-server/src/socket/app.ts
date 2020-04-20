@@ -8,7 +8,7 @@ import { SocketRollbackTransaction } from "./events/socket-rollback-transaction"
 import { SocketCommitTransaction } from "./events/socket-commit-transaction";
 import * as debug from "debug";
 import { SocketAuthEvent } from "./events/socket-auth-event";
-import { SqlPermissions } from "@daita/core";
+import { SqlPermissions } from "@daita/relational";
 
 function handle<T>(
   socket: socketIo.Socket,

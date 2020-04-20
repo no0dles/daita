@@ -7,10 +7,10 @@
   },
   "references": [
     {
-      "path": "../core/tsconfig.build.json"
+      "path": "../relational/tsconfig.build.json"
     },
     {
-      "path": "../web/tsconfig.build.json"
+      "path": "../http-server/tsconfig.build.json"
     },
     {
       "path": "../adapters/pg/tsconfig.build.json"

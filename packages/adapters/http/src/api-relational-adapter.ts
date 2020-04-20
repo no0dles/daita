@@ -1,8 +1,7 @@
-import {
-  Defer, RelationalDataAdapter, RelationalTransactionAdapter,
-} from '@daita/core';
 import {ApiRelationalDataAdapter} from './api-relational-data-adapter';
-import {AuthProvider} from '../auth/auth-provider';
+import { RelationalDataAdapter, RelationalTransactionAdapter } from "@daita/relational";
+import { AuthProvider } from "./auth/auth-provider";
+import { Defer } from "@daita/common";
 
 export class ApiRelationalAdapter extends ApiRelationalDataAdapter implements RelationalTransactionAdapter {
 

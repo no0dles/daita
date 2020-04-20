@@ -2,8 +2,9 @@ import {TableInformation} from '../../context/table-information';
 import {ArrayMap} from './array-map';
 import {RelationalTableDescription} from './relational-table-description';
 import {ContextUser} from '../../auth';
-import { arrayClone, getSqlTableIdentifier, TablePermission } from "@daita/core";
+import { getSqlTableIdentifier, TablePermission } from "@daita/relational";
 import { SchemaPermissions } from "../../permission-builder";
+import { arrayClone } from "@daita/common";
 
 export class RelationalSchemaDescription {
   private readonly tableArrayMap = new ArrayMap<RelationalTableDescription>();

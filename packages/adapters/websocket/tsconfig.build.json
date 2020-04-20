@@ -7,11 +7,11 @@
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
   "references": [{
-    "path": "../../core/tsconfig.build.json"
+    "path": "../../relational/tsconfig.build.json"
   }, {
     "path": "../pg/tsconfig.build.json"
   }, {
-    "path": "../../web/tsconfig.build.json"
+    "path": "../../http-server/tsconfig.build.json"
   }],
   "exclude": [
     "node_modules",

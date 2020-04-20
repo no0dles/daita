@@ -1,13 +1,14 @@
 import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
 import {TableInformation} from './table-information';
 import {
-  failNever, isSqlAndExpression,
+  isSqlAndExpression,
   isSqlCompareExpression, isSqlInExpression,
   isSqlOrExpression, isSqlSchemaTableField, RelationalQueryBuilder,
   SqlExpression,
   SqlSchemaTableField,
   SqlValue
-} from "@daita/core";
+} from "@daita/relational";
+import { failNever } from "@daita/common";
 
 export class RelationalSchemaBaseContext<Query extends RelationalQueryBuilder<any, Result>, Result> implements Promise<Result> {
   [Symbol.toStringTag]: 'Promise';

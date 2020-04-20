@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "lib": ["ES2016"]
+    "paths": {
+      "@daita/common": ["common/src"],
+      "@daita/relational": ["relational/src"]
+    }
   },
   "exclude": [
     "node_modules",

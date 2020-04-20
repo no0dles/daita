@@ -2,7 +2,7 @@ import {RelationalDataContext} from './relational-data-context';
 import {RelationalSchemaContext} from './relational-schema-context';
 import {RelationalTransactionContext} from './relational-transaction-context';
 import {RelationalSchemaDescription} from '../schema/description/relational-schema-description';
-import { RelationalTransactionAdapter } from "@daita/core";
+import { RelationalTransactionAdapter } from "@daita/relational";
 
 export class RelationalSchemaTransactionContext extends RelationalSchemaContext implements RelationalTransactionContext {
   constructor(protected relationalTransactionAdapter: RelationalTransactionAdapter,

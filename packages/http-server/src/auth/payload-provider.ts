@@ -1,4 +1,4 @@
-import { SqlPermissions } from "@daita/core";
+import { SqlPermissions } from "@daita/relational";
 import { TokenVerifyResult } from "./token-provider";
 
 export type PayloadTransformer<T = any> = (payload: T) => SqlPermissions | undefined | null;

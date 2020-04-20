@@ -1,10 +1,9 @@
-import {
-  Defer, RelationalDataAdapter, RelationalTransactionAdapter,
-} from '@daita/core';
 import * as client from 'socket.io-client';
 import * as debug from 'debug';
 import {SocketRelationalDataAdapter} from './socket-relational-data-adapter';
-import {AuthProvider} from '../auth/auth-provider';
+import { RelationalDataAdapter, RelationalTransactionAdapter } from "@daita/relational";
+import { AuthProvider } from "../../http/src/auth/auth-provider";
+import { Defer } from "@daita/common";
 
 export class SocketRelationalAdapter extends SocketRelationalDataAdapter
   implements RelationalTransactionAdapter {

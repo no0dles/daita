@@ -1,5 +1,5 @@
 // import {UserProvider} from './user-provider';
-// import {RelationalMigrationAdapter} from '@daita/core/dist/adapter/relational-migration-adapter';
+// import {RelationalMigrationAdapter} from '@daita/relational/dist/adapter/relational-migration-adapter';
 // import { RelationalDataContext } from "../context";
 // import { AuthorizedContextUser } from "./index";
 // import { RelationalSchema } from "../schema";

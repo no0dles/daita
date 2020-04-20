@@ -1,5 +1,5 @@
 import { RelationalTableSchemaTableFieldType } from "../relational-table-schema-table-field-type";
-import { failNever } from "@daita/core";
+import { failNever } from "@daita/common";
 
 
 export class RelationalTableFieldDescription {

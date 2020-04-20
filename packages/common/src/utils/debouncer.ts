@@ -1,5 +1,5 @@
 export class Debouncer {
-  private timeoutHandle: NodeJS.Timeout | null = null;
+  private timeoutHandle: number | null = null;
   timeout = 0;
 
   constructor(private trigger: () => any, private wait: number) {

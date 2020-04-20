@@ -1,6 +1,7 @@
-import { mergeList, RelationalMigrationAdapter } from "@daita/core";
-import { SqlDmlQuery } from "@daita/core";
+import { RelationalMigrationAdapter } from "@daita/relational";
+import { SqlDmlQuery } from "@daita/relational";
 import { RelationalSchemaDescription } from "../schema/description/relational-schema-description";
+import { mergeList } from "@daita/common";
 
 export class MigrationExecution {
   async init(dataAdapter: RelationalMigrationAdapter) {
@@ -139,13 +140,14 @@ export class MigrationExecution {
   async apply(
     current: RelationalSchemaDescription,
     target: RelationalSchemaDescription,
+    targetId: string,
     dataAdapter: RelationalMigrationAdapter
   ) {
     const sqls = this.plan(current, target);
 
     await dataAdapter.transaction(async client => {
       await client.raw(`LOCK TABLE "daita"."migrations"`, []); //TODO sqlite support?
-      await client.raw({ insert: { schema: "daita", table: "migrations" }, values: [{ id: migration.id }] });
+      await client.raw({ insert: { schema: "daita", table: "migrations" }, values: [{ id: targetId }] });
 
       for (const sql of sqls) {
         await client.raw(sql);

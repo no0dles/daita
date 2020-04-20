@@ -7,7 +7,7 @@ export * from './update';
 export { SqlBaseBuilder } from './sql-base-builder';
 export { SqlDmlBuilder, SqlDmlQuery } from './sql-dml-builder';
 export { SqlField } from './sql-field';
-export { SqlQuery } from './sql-query';
+export { SqlQuery, isSqlQuery } from './sql-query';
 export { SqlQueryBuilder } from './sql-query-builder';
 export { SqlRawAliasValue } from './sql-raw-alias-value';
 export { SqlRawValue } from './sql-raw-value';
