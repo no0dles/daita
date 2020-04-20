@@ -1,233 +1,317 @@
 ---
 kind: pipeline
 type: docker
-name: install
+name: "@daita/eslint-config"
 
 platform:
   os: linux
   arch: amd64
 
 steps:
-- name: install:@daita/eslint-config
+- name: install
   image: node:12
   commands:
   - cd packages/eslint-config
   - npm install
-  - npm run build
 
-- name: install:@daita/common
+- name: build
   image: node:12
   commands:
-  - cd packages/common
-  - npm install
-  - npm run build
-
-- name: install:@daita/relational
-  image: node:12
-  commands:
-  - cd packages/relational
-  - npm install
-  - npm run build
-
-- name: install:@daita/document
-  image: node:12
-  commands:
-  - cd packages/document
-  - npm install
-  - npm run build
-
-- name: install:@daita/orm
-  image: node:12
-  commands:
-  - cd packages/orm
-  - npm install
-  - npm run build
-
-- name: install:@daita/odm
-  image: node:12
-  commands:
-  - cd packages/odm
-  - npm install
-  - npm run build
-
-- name: install:@daita/mongodb
-  image: node:12
-  commands:
-  - cd packages/adapters/mongodb
-  - npm install
-  - npm run build
-
-- name: install:@daita/pg
-  image: node:12
-  commands:
-  - cd packages/adapters/pg
-  - npm install
-  - npm run build
-
-- name: install:@daita/http-server
-  image: node:12
-  commands:
-  - cd packages/http-server
-  - npm install
-  - npm run build
-
-- name: install:@daita/http
-  image: node:12
-  commands:
-  - cd packages/adapters/http
-  - npm install
-  - npm run build
-
-- name: install:@daita/websocket
-  image: node:12
-  commands:
-  - cd packages/adapters/websocket
-  - npm install
-  - npm run build
-
-- name: install:@daita/cli
-  image: node:12
-  commands:
-  - cd packages/cli
-  - npm install
+  - cd packages/eslint-config
   - npm run build
 
 ---
 kind: pipeline
 type: docker
-name: build
+name: "@daita/common"
 
 platform:
   os: linux
   arch: amd64
 
 steps:
-- name: build:@daita/eslint-config
-  image: node:12
-  commands:
-  - cd packages/eslint-config
-  - npm install
-  - npm run build
-
-- name: build:@daita/common
+- name: install
   image: node:12
   commands:
   - cd packages/common
   - npm install
-  - npm run build
-  depends_on:
-  - build:@daita/eslint-config
 
-- name: build:@daita/relational
+- name: build
+  image: node:12
+  commands:
+  - cd packages/common
+  - npm run build
+
+depends_on:
+- "@daita/eslint-config"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/relational"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
   image: node:12
   commands:
   - cd packages/relational
   - npm install
-  - npm run build
-  depends_on:
-  - build:@daita/common
-  - build:@daita/eslint-config
 
-- name: build:@daita/document
+- name: build
+  image: node:12
+  commands:
+  - cd packages/relational
+  - npm run build
+
+depends_on:
+- "@daita/common"
+- "@daita/eslint-config"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/document"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
   image: node:12
   commands:
   - cd packages/document
   - npm install
-  - npm run build
-  depends_on:
-  - build:@daita/common
-  - build:@daita/eslint-config
 
-- name: build:@daita/orm
+- name: build
+  image: node:12
+  commands:
+  - cd packages/document
+  - npm run build
+
+depends_on:
+- "@daita/common"
+- "@daita/eslint-config"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/orm"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
   image: node:12
   commands:
   - cd packages/orm
   - npm install
-  - npm run build
-  depends_on:
-  - build:@daita/common
-  - build:@daita/relational
-  - build:@daita/eslint-config
 
-- name: build:@daita/odm
+- name: build
+  image: node:12
+  commands:
+  - cd packages/orm
+  - npm run build
+
+depends_on:
+- "@daita/common"
+- "@daita/relational"
+- "@daita/eslint-config"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/odm"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
   image: node:12
   commands:
   - cd packages/odm
   - npm install
-  - npm run build
-  depends_on:
-  - build:@daita/common
-  - build:@daita/document
-  - build:@daita/eslint-config
 
-- name: build:@daita/mongodb
+- name: build
+  image: node:12
+  commands:
+  - cd packages/odm
+  - npm run build
+
+depends_on:
+- "@daita/common"
+- "@daita/document"
+- "@daita/eslint-config"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/mongodb"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
   image: node:12
   commands:
   - cd packages/adapters/mongodb
   - npm install
-  - npm run build
-  depends_on:
-  - build:@daita/common
-  - build:@daita/document
 
-- name: build:@daita/pg
+- name: build
+  image: node:12
+  commands:
+  - cd packages/adapters/mongodb
+  - npm run build
+
+depends_on:
+- "@daita/common"
+- "@daita/document"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/pg"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
   image: node:12
   commands:
   - cd packages/adapters/pg
   - npm install
-  - npm run build
-  depends_on:
-  - build:@daita/common
-  - build:@daita/relational
 
-- name: build:@daita/http-server
+- name: build
+  image: node:12
+  commands:
+  - cd packages/adapters/pg
+  - npm run build
+
+depends_on:
+- "@daita/common"
+- "@daita/relational"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/http-server"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
   image: node:12
   commands:
   - cd packages/http-server
   - npm install
-  - npm run build
-  depends_on:
-  - build:@daita/common
-  - build:@daita/relational
 
-- name: build:@daita/http
+- name: build
+  image: node:12
+  commands:
+  - cd packages/http-server
+  - npm run build
+
+depends_on:
+- "@daita/common"
+- "@daita/relational"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/http"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
   image: node:12
   commands:
   - cd packages/adapters/http
   - npm install
-  - npm run build
-  depends_on:
-  - build:@daita/common
-  - build:@daita/relational
-  - build:@daita/http-server
-  - build:@daita/pg
 
-- name: build:@daita/websocket
+- name: build
+  image: node:12
+  commands:
+  - cd packages/adapters/http
+  - npm run build
+
+depends_on:
+- "@daita/common"
+- "@daita/relational"
+- "@daita/http-server"
+- "@daita/pg"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/websocket"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
   image: node:12
   commands:
   - cd packages/adapters/websocket
   - npm install
-  - npm run build
-  depends_on:
-  - build:@daita/common
-  - build:@daita/relational
-  - build:@daita/http-server
-  - build:@daita/pg
 
-- name: build:@daita/cli
+- name: build
+  image: node:12
+  commands:
+  - cd packages/adapters/websocket
+  - npm run build
+
+depends_on:
+- "@daita/common"
+- "@daita/relational"
+- "@daita/http-server"
+- "@daita/pg"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/cli"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
   image: node:12
   commands:
   - cd packages/cli
   - npm install
+
+- name: build
+  image: node:12
+  commands:
+  - cd packages/cli
   - npm run build
-  depends_on:
-  - build:@daita/common
-  - build:@daita/http-server
-  - build:@daita/relational
-  - build:@daita/mongodb
-  - build:@daita/pg
 
 depends_on:
-- install
+- "@daita/common"
+- "@daita/http-server"
+- "@daita/relational"
+- "@daita/mongodb"
+- "@daita/pg"
 
 ...

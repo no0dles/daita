@@ -29,58 +29,35 @@ local packages = [
     { dir: "packages/cli", config: cli},
 ];
 
-local getDependsOn(prefix, map) = [prefix + ":" + item for item in std.objectFields(map) if std.startsWith(item, "@daita")];
-local getDependencies(prefix, config) =
-    (if std.objectHas(config, "dependencies") then getDependsOn(prefix, config.dependencies) else []) +
-    (if std.objectHas(config, "devDependencies") then getDependsOn(prefix, config.devDependencies) else []);
+local getDependsOn(map) = [item for item in std.objectFields(map) if std.startsWith(item, "@daita")];
+local getDependencies(config) =
+    (if std.objectHas(config, "dependencies") then getDependsOn(config.dependencies) else []) +
+    (if std.objectHas(config, "devDependencies") then getDependsOn(config.devDependencies) else []);
 
-local installStep(image, pkg) =
-    {
-        name: "install:" + pkg.config.name,
-        image: image,
-        commands: [
-            ("cd " + pkg.dir),
-            "npm install",
-            "npm run build"
-        ]
-    };
-
-local buildStep(image, pkg) =
-    {
-        name: "build:" + pkg.config.name,
-        image: image,
-        commands: [
-            ("cd " + pkg.dir),
-            "npm install",
-            "npm run build"
-        ],
-        depends_on: getDependencies("build", pkg.config),
-    };
-
-local testStep(image, pkg) =
-    {
-        name: "test:" + pkg.config.name,
-        image: image,
-        commands: [
-          ("cd " + pkg.dir),
-          "npm test"
-        ],
-    };
-
-[
+local pipeline(pkg) =
     {
         "kind": "pipeline",
         "type": "docker",
-        "name": "install",
-        "steps":
-            [installStep(image, package) for package in packages]
-    },
-    {
-        "kind": "pipeline",
-        "type": "docker",
-        "name": "build",
-        "depends_on": ["install"],
-        "steps":
-            [buildStep(image, package) for package in packages]
-    }
-]
+        "name": pkg.config.name,
+        "steps": [
+            {
+                name: "install",
+                image: image,
+                commands: [
+                  ("cd " + pkg.dir),
+                  "npm install"
+                ],
+            },
+            {
+                name: "build",
+                image: image,
+                commands: [
+                  ("cd " + pkg.dir),
+                  "npm run build"
+                ],
+            }
+        ],
+        "depends_on": getDependencies(pkg.config)
+    };
+
+[pipeline(package) for package in packages]
