@@ -1,0 +1,26 @@
+{
+  "name": "@daita/internal-publish",
+  "version": "1.0.0",
+  "author": "Pascal Bertschi @no0dles",
+  "private": true,
+  "bin": {
+    "npm-publish": "./dist/npm-publish.js",
+    "npm-pack": "./dist/npm-pack.js",
+    "npm-clean": "./dist/npm-clean.js",
+    "npm-bootstrap": "./dist/npm-bootstrap.js",
+    "npm-publish-version": "./dist/npm-publish-version.js"
+  },
+  "bugs": "https://github.com/no0dles/daita/issues",
+  "devDependencies": {
+    "@types/node": "^13.13.2",
+    "typescript": "~3.7.5"
+  },
+  "homepage": "https://github.com/no0dles/daita",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b tsconfig.build.json",
+    "clean": "rm -rf ./dist"
+  },
+  "types": "dist/index.d.ts"
+}

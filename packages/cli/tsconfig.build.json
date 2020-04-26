@@ -10,13 +10,7 @@
       "path": "../relational/tsconfig.build.json"
     },
     {
-      "path": "../http-server/tsconfig.build.json"
-    },
-    {
-      "path": "../adapters/pg/tsconfig.build.json"
-    },
-    {
-      "path": "../adapters/mongodb/tsconfig.build.json"
+      "path": "../pg-adapter/tsconfig.build.json"
     }
   ],
   "exclude": [

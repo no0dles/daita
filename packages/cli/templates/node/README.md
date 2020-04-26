@@ -21,7 +21,7 @@ npx dc migration:apply
 ```
 
 ## 5. Run program
-``npx ts-node src/index.ts``
+``npx ts-node src/npm-publish.ts``
 
 Result
 ```json

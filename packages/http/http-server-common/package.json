@@ -1,0 +1,34 @@
+{
+  "name": "@daita/http-server-common",
+  "version": "0.1.1",
+  "author": "Pascal Bertschi @no0dles",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": "https://github.com/no0dles/daita/issues",
+  "dependencies": {
+    "jwks-rsa": "^1.6.2",
+    "axios": "^0.19.2",
+    "jws": "^4.0.0",
+    "openid-client": "^3.14.2",
+    "@daita/common": "file:../../common",
+    "@daita/relational": "file:../../relational"
+  },
+  "devDependencies": {
+    "@types/jws": "^3.2.1",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.1.0",
+    "typescript": "~3.7.5"
+  },
+  "homepage": "https://github.com/no0dles/daita",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b tsconfig.build.json",
+    "lint": "tslint -c tslint.json src/**/*.ts",
+    "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
+    "clean": "rm -rf ./dist",
+    "prettier": "prettier 'src/**/*.ts' --write"
+  },
+  "types": "dist/index.d.ts"
+}

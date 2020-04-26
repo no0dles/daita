@@ -1,0 +1,15 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "paths": {
+      "@daita/common": ["common/src"],
+      "@daita/relational": ["relational/src"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "test"
+  ]
+}

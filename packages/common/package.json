@@ -1,12 +1,19 @@
 {
   "name": "@daita/common",
-  "version": "0.1.1-alpha.1",
+  "version": "0.0.1",
   "description": "common functionality of daita",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "homepage": "https://daita.ch",
   "publishConfig": {
     "access": "public"
+  },
+  "author": {
+    "name": "Pascal Bertschi"
+  },
+  "keywords": ["daita", "common"],
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
   },
   "repository": {
     "type": "git",

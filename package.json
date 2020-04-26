@@ -4,15 +4,14 @@
   "description": "",
   "private": true,
   "dependencies": {
-    "jest": "^25.2.4"
+    "@daita/internal-npm-publish": "file:./packages/internal/npm-publish"
   },
   "scripts": {
-    "bootstrap": "lerna bootstrap",
-    "build": "lerna run build",
-    "lint": "lerna run lint",
-    "test": "jest --silent",
-    "coverage": "jest",
-    "upload-coverage": "codecov"
+    "publish": "npm-publish",
+    "pack": "npm-pack",
+    "clean": "npm-clean",
+    "bootstrap": "npm-bootstrap",
+    "version": "npm-publish-version"
   },
   "license": "MIT"
 }

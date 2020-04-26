@@ -1,0 +1,19 @@
+{
+  "extends": "../../../tsconfig.build.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
+  },
+  "references": [{
+    "path": "../../common/tsconfig.build.json"
+  }, {
+    "path": "../http-server-common/tsconfig.build.json"
+  }, {
+    "path": "../../relational/tsconfig.build.json"
+  }],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

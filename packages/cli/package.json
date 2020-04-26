@@ -24,7 +24,6 @@
   },
   "devDependencies": {
     "@daita/pg": "file:../adapters/pg",
-    "@daita/mongodb": "file:../adapters/mongodb",
     "@oclif/dev-cli": "^1.22.2",
     "@types/chokidar": "^2.1.3",
     "@types/config": "^0.0.36",

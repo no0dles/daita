@@ -1,0 +1,9 @@
+{
+  "packages": [
+    "packages/common",
+    "packages/relational",
+    "packages/pg-adapter",
+    "packages/eslint-config",
+    "packages/orm"
+  ]
+}

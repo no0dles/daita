@@ -1,0 +1,45 @@
+{
+  "name": "@daita/pg-adapter",
+  "version": "0.0.1",
+  "description": "relational pg adapter for daita",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -b tsconfig.build.json",
+    "test": "jest",
+    "clean": "rm -rf ./dist",
+    "lint": "tslint -c tslint.json src/**/*.ts",
+    "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
+    "prettier": "prettier 'src/**/*.ts' --write"
+  },
+  "author": {
+    "name": "Pascal Bertschi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
+  "keywords": ["pg", "postgres", "daita", "adapter"],
+  "license": "MIT",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "@daita/common": "file:../common",
+    "@daita/relational": "file:../relational",
+    "pg-connection-string": "^2.1.0",
+    "pg": "7.14.0"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.5",
+    "@types/pg": "^7.14.3",
+    "typescript": "~3.7.5",
+    "@types/jest": "^25.1.1",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.1.0"
+  }
+}

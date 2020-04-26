@@ -4,13 +4,17 @@
 
 <p align='center'>
   <a href="https://drone.bertschi.io/no0dles/daita"><img alt='build' src='https://drone.bertschi.io/api/badges/no0dles/daita/status.svg'></a>
-  <img alt='npm' src='https://img.shields.io/npm/dm/@daita/core.svg'>
+  <img alt='npm' src='https://img.shields.io/npm/dm/@daita/common.svg'>
   <img alt='mit' src='https://img.shields.io/badge/License-MIT-blue.svg'>
 </p>
 
-## Motiviation
+## Motivation
 The daita project aims to make the development and deployment of applications easier and faster without sacrifising security. 
 These goals are archived by the key features of daita.
+
+## Documentation and examples
+The Documentation and getting started guide is available [here](https://daita.ch/). 
+Example projects are in the [packages/examples](./packages/examples) folder.
 
 ## Key features
 
@@ -40,28 +44,11 @@ This helps others getting into the project faster.
 
 ### Advanced security
 
-## Usage
-
-```
-npx @daita/cli new getting-started
-cd getting-started
-docker-compuse up -d
-npx dc migration:add init
-npx dc migration:apply
-npm start
-```
-
-
-## Documentation and examples
-The Documentation and getting started guide is available [here](https://docs.daita.ch/). 
-Example projects are in the [packages/examples](./packages/examples) folder.
-
 ## Contributing
 As I use this for my own projects, I know this might not be the perfect approach for all the projects out there. 
 If you have any ideas, just open an issue and tell me what you think.
 
-
-## Open todos
+## Roadmap
 
 - [ ] validation for update
 - [ ] logging

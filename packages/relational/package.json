@@ -1,16 +1,23 @@
 {
   "name": "@daita/relational",
-  "version": "0.1.1-alpha.1",
-  "description": "core functionality of daita",
+  "version": "0.0.1",
+  "description": "relational functionality of daita",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "homepage": "https://daita.ch",
   "publishConfig": {
     "access": "public"
   },
+  "author": {
+    "name": "Pascal Bertschi"
+  },
+  "keywords": ["daita", "relational"],
   "repository": {
     "type": "git",
     "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",

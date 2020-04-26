@@ -1,0 +1,33 @@
+{
+  "name": "@daita/websocket-server",
+  "version": "0.1.1",
+  "author": "Pascal Bertschi @no0dles",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bugs": "https://github.com/no0dles/daita/issues",
+  "dependencies": {
+    "@daita/common": "file:../../common",
+    "@daita/relational": "file:../../relational",
+    "socket.io": "^2.3.0"
+  },
+  "devDependencies": {
+    "@types/socket.io": "^2.1.4",
+    "typescript": "~3.7.5",
+    "@types/jest": "^25.1.1",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.1.0"
+  },
+  "homepage": "https://github.com/no0dles/daita",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b tsconfig.build.json",
+    "test": "jest",
+    "clean": "rm -rf ./dist",
+    "lint": "tslint -c tslint.json src/**/*.ts",
+    "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
+    "prettier": "prettier 'src/**/*.ts' --write"
+  },
+  "types": "dist/index.d.ts"
+}
