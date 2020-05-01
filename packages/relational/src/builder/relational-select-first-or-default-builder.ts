@@ -13,7 +13,7 @@ export class RelationalSelectFirstOrDefaultBuilder<
   protected async execute(): Promise<T | null> {
     const query = deepClone(this.query);
     query.limit = 1;
-    const result = await this.dataAdapter.raw(query);
+    const result = await this.dataAdapter.exec(query);
     if (result.rows.length === 1) {
       //TODO map
       return result.rows[0];

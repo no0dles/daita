@@ -6,6 +6,9 @@
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
     "lib": ["dom"]
   },
+  "references": [{
+    "path": "../../common/tsconfig.build.json"
+  }],
   "exclude": [
     "node_modules",
     "dist"

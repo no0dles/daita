@@ -7,8 +7,6 @@ export class PasswordGrantTokenProvider implements TokenAuthProvider {
   private clearTimeout: number | null = null;
   private refreshTimeout: number | null = null;
 
-  kind: 'token' = 'token';
-
   constructor(private tokenUrl: string,
               private clientId: string,
               private username: string,

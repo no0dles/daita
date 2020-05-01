@@ -1,0 +1,46 @@
+{
+  "name": "@daita/sqlite-adapter",
+  "version": "0.0.1",
+  "description": "relational sqlite adapter for daita",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "tslint -c tslint.json src/**/*.ts",
+    "fixlint": "tslint -c tslint.json --fix src/**/*.ts",
+    "prettier": "prettier 'src/**/*.ts' --write"
+  },
+  "author": {
+    "name": "Pascal Bertschi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
+  "keywords": [
+    "pg",
+    "postgres",
+    "daita",
+    "adapter"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@daita/common": "file:../common",
+    "@daita/relational": "file:../relational",
+    "sqlite3": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/sqlite3": "^3.1.6",
+    "typescript": "~3.7.5",
+    "@types/jest": "^25.1.1",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.1.0"
+  }
+}

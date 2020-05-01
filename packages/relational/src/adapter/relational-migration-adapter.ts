@@ -5,15 +5,16 @@ import { RelationalDataAdapter } from "./relational-data-adapter";
 
 export interface RelationalMigrationAdapter
   extends RelationalDataAdapter {
-  raw(sql: string, values: any[]): Promise<RelationalRawResult>;
-  raw(sql: SqlQuery | SqlDmlQuery): Promise<RelationalRawResult>;
+  execRaw(sql: string, values: any[]): Promise<RelationalRawResult>;
+  exec(sql: SqlQuery | SqlDmlQuery): Promise<RelationalRawResult>;
   transaction<T>(
     action: (adapter: RelationalMigrationTransactionAdapter) => Promise<T>,
   ): Promise<T>;
+  close(): Promise<void>;
 }
 
 export interface RelationalMigrationTransactionAdapter
   extends RelationalDataAdapter {
-  raw(sql: string, values: any[]): Promise<RelationalRawResult>;
-  raw(sql: SqlQuery | SqlDmlQuery): Promise<RelationalRawResult>;
+  execRaw(sql: string, values: any[]): Promise<RelationalRawResult>;
+  exec(sql: SqlQuery | SqlDmlQuery): Promise<RelationalRawResult>;
 }

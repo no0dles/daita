@@ -33,7 +33,7 @@ export class RelationalInsertBuilder<T> extends RelationalQueryBuilder<SqlInsert
   }
 
   protected async execute(): Promise<SqlInsertResult> {
-    const result = await this.dataAdapter.raw(this.query);
+    const result = await this.dataAdapter.exec(this.query);
     return { affectedRows: result.rowCount };
   }
 }

@@ -1,147 +1,66 @@
 import {
-  isRelationalTransactionAdapter,
-  isSqlQuery, RelationalDataAdapter,
-  RelationalMigrationAdapter,
-  RelationalTransactionAdapter, SqlDmlQuery,
-  SqlPermissions, SqlQuery
-} from "@daita/relational";
-import { Debouncer, Defer } from "@daita/common";
-import { ContextTransaction } from "./context-transaction";
-import { ContextTransactionTimeoutEmitter } from "./context-transaction-timeout-emitter";
-import { AppOptions } from "./app-options";
-
+  isSqlQuery, RelationalDataAdapter, SqlDmlQuery,
+  SqlPermissions, SqlQuery,
+} from '@daita/relational';
+import {AppDataOptions, AppOptions, AppTransactionOptions} from './app-options';
+import {TransactionManager} from './transaction-manager';
+import {TokenProvider} from './auth';
 
 export class ContextManager {
+
+  constructor(private dataAdapter: RelationalDataAdapter,
+              private permissions: SqlPermissions | null | undefined) {
+  }
+
+  async exec(sql: SqlQuery | SqlDmlQuery, validateAuth: boolean) {
+    if (validateAuth) {
+      if (!this.permissions) {
+        throw new Error('no permissions');
+      }
+
+      if (!this.permissions.isQueryAuthorized(sql)) {
+        throw new Error('not authorized');
+      }
+    }
+
+    if (!isSqlQuery(sql)) {
+      throw new Error('invalid sql');
+    } else {
+      return this.dataAdapter.exec(sql);
+    }
+  }
+}
+
+export class TransactionContextManager {
   private readonly transactionTimeout: number;
-  private readonly transactions: { [key: string]: ContextTransaction } = {};
+  private readonly transactions: { [key: string]: TransactionManager } = {};
 
-  constructor(private appOptions: AppOptions,
-              private timeoutEmitter?: ContextTransactionTimeoutEmitter) {
-    this.transactionTimeout = appOptions.transactionTimeout || 5000;
+  constructor(private options: AppTransactionOptions) {
+    this.transactionTimeout = options.transactionTimeout || 5000;
   }
 
-  close() {
-    for (const id of Object.keys(this.transactions)) {
-      this.transactions[id].commitDefer.reject("canceled");
-    }
-  }
-
-  getTransactionTimeout(transactionId: string) {
-    const transaction = this.transactions[transactionId];
-    if (transaction) {
-      return transaction.debouncer.timeout;
-    }
-    return 0;
-  }
-
-  getDataAdapter(
-    transactionId?: string
-  ): RelationalTransactionAdapter | RelationalDataAdapter | RelationalMigrationAdapter {
-    if (transactionId) {
-      const transaction = this.transactions[transactionId];
-      if (transaction) {
-        transaction.debouncer.bounce();
-        return transaction.adapter;
-      }
-      throw new Error("could not find transaction for " + transactionId);
-    } else {
-      return this.appOptions.dataAdapter;
+  async close() {
+    for (const id in this.transactions) {
+      await this.transactions[id].close();
     }
   }
 
-  async beginTransaction(transactionId: string) {
-    const transactionDefer = new Defer<RelationalDataAdapter>();
-    const commitDefer = new Defer<void>();
-    const resultDefer = new Defer<void>();
-
-    if (!isRelationalTransactionAdapter(this.appOptions.dataAdapter)) {
-      throw new Error("transaction not supported by the data adapter");
+  create(transactionId: string, permissions: SqlPermissions | null | undefined) {
+    if (this.transactions[transactionId]) {
+      throw new Error('transaction already exists');
     }
-
-    const transactionAdapter = this.appOptions.dataAdapter as RelationalTransactionAdapter;
-
-    transactionAdapter
-      .transaction(async adapter => {
-        transactionDefer.resolve(adapter);
-        await commitDefer.promise;
-      })
-      .then(() => {
-        resultDefer.resolve();
-      })
-      .catch(err => {
-        if (err.message === "canceled" || err.message === "timeout") {
-          resultDefer.resolve();
-        } else {
-          resultDefer.reject(err);
-        }
-      });
-
-    await Promise.race([transactionDefer.promise, resultDefer.promise]);
-
-    if (resultDefer.isRejected) {
-      throw resultDefer.rejectedError;
-    }
-
-    if (resultDefer.isResolved) {
-      throw new Error("transaction closed");
-    }
-
-    const timeoutTransaction = () => {
+    const transaction = new TransactionManager(this.options.dataAdapter, permissions, this.transactionTimeout);
+    this.transactions[transactionId] = transaction;
+    transaction.result.finally(() => {
       delete this.transactions[transactionId];
-      if (!commitDefer.isRejected && !commitDefer.isResolved) {
-        commitDefer.reject(new Error("timeout"));
-        if (this.timeoutEmitter) {
-          this.timeoutEmitter.emit("trxTimeout", { tid: transactionId });
-        }
-      }
-    };
-
-    this.transactions[transactionId] = {
-      adapter: await transactionDefer.promise,
-      commitDefer,
-      resultDefer,
-      debouncer: new Debouncer(timeoutTransaction, this.transactionTimeout)
-    };
+    });
+    return transaction;
   }
 
-  async commitTransaction(transactionId: string) {
-    const transaction = this.transactions[transactionId];
-    if (!transaction) {
-      throw new Error("could not find transaction for " + transactionId);
+  get(transactionId: string): TransactionManager {
+    if (this.transactions[transactionId]) {
+      return this.transactions[transactionId];
     }
-
-    transaction.debouncer.clear();
-    delete this.transactions[transactionId];
-    transaction.commitDefer.resolve();
-    await transaction.resultDefer.promise;
-  }
-
-  async rollbackTransaction(transactionId: string) {
-    const transaction = this.transactions[transactionId];
-    if (transaction) {
-      transaction.debouncer.clear();
-      delete this.transactions[transactionId];
-      transaction.commitDefer.reject(new Error("canceled"));
-      await transaction.resultDefer.promise;
-    }
-  }
-
-  async raw(transactionId: string, sql: SqlQuery | SqlDmlQuery, permissions?: SqlPermissions | null) {
-    const dataAdapter = this.getDataAdapter(transactionId);
-    if (this.appOptions.auth) {
-      if(!permissions) {
-        throw new Error('no permissions')
-      }
-
-      if (!permissions.isQueryAuthorized(sql)) {
-        throw new Error("not authorized");
-      }
-    }
-
-    if (isSqlQuery(sql)) {
-      return dataAdapter.raw(sql);
-    } else {
-      throw new Error("invalid sql");
-    }
+    throw new Error('could not find transaction for ' + transactionId);
   }
 }

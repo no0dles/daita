@@ -20,11 +20,11 @@
     "url": "https://github.com/no0dles/daita"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc",
     "test": "jest",
+    "coverage": "jest --coverage",
     "lint": "eslint src --ext .ts",
-    "fixlint": "eslint src --ext .ts --fix",
-    "clean": "rm -rf ./dist"
+    "fixlint": "eslint src --ext .ts --fix"
   },
   "license": "MIT",
   "devDependencies": {

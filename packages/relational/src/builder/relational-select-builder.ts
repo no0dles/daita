@@ -239,7 +239,7 @@ export class RelationalSelectBuilder<T> extends RelationalWhereBuilder<
   }
 
   protected async execute(): Promise<T[]> {
-    const result = await this.dataAdapter.raw(this.toSql());
+    const result = await this.dataAdapter.exec(this.toSql());
     return result.rows;
   }
 

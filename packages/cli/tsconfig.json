@@ -1,7 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "outDir": "dist",
     "rootDir": "src",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
     "paths": {
       "@daita/relational": ["relational/src"],
       "@daita/http-server": ["http-server/src"],
@@ -9,6 +11,14 @@
       "@daita/mongodb": ["adapters/mongodb/src"]
     }
   },
+  "references": [
+    {
+      "path": "../relational/tsconfig.json"
+    },
+    {
+      "path": "../pg-adapter/tsconfig.json"
+    }
+  ],
   "exclude": [
     "node_modules",
     "dist",

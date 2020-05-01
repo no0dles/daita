@@ -1,0 +1,27 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "paths": {
+      "@daita/common": ["common/src"],
+      "@daita/relational": ["relational/src"],
+      "@daita/pg-adapter": ["pg-adapter/src"],
+      "@daita/sqlite-adapter": ["sqlite-adapter/src"]
+    }
+  },
+  "references": [{
+    "path": "../../common/tsconfig.json"
+  }, {
+    "path": "../../relational/tsconfig.json"
+  }, {
+    "path": "../../pg-adapter/tsconfig.json"
+  }, {
+    "path": "../../sqlite-adapter/tsconfig.json"
+  }],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

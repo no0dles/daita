@@ -1,4 +1,4 @@
-import { OmitByValue } from './omit-by-value';
+import { OmitByValue } from "./omit-by-value";
 
 export type ExcludePrimitive<T> = OmitByValue<
   T,

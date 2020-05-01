@@ -2,7 +2,10 @@
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "src",
-    "lib": ["dom"]
+    "lib": ["dom"],
+    "paths": {
+      "@daita/common": ["common/src"]
+    }
   },
   "exclude": [
     "node_modules",

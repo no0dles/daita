@@ -1,5 +1,4 @@
 import {Pool, PoolClient, types} from 'pg';
-import {ensureDatabaseExists} from './postgres.util';
 import {PostgresDataAdapter} from './postgres-data-adapter';
 import {
   RelationalDataAdapter,
@@ -13,7 +12,6 @@ export class PostgresAdapter implements RelationalMigrationAdapter {
 
   private readonly pool: Pool;
   private readonly connectionString: string | undefined;
-  private initalized = false;
 
   constructor(private poolOrUrl: string | Pool) {
     types.setTypeParser(1700, val => parseFloat(val));
@@ -33,27 +31,9 @@ export class PostgresAdapter implements RelationalMigrationAdapter {
     await this.pool.end();
   }
 
-  async initalize() {
-    if (this.initalized) {
-      return;
-    }
-
-    if (!this.connectionString) {
-      return;
-    }
-
-    await ensureDatabaseExists(this.connectionString);
-    this.initalized = true;
-  }
-
   private async run<T>(action: (client: PoolClient) => Promise<T>): Promise<T> {
     let client: PoolClient | null = null;
     try {
-      if (!this.initalized) {
-        await this.initalize();
-        this.initalized = true;
-      }
-
       client = await this.pool.connect();
       const result = await action(client);
       if (client) {
@@ -87,12 +67,17 @@ export class PostgresAdapter implements RelationalMigrationAdapter {
     });
   }
 
-  raw(sql: string, values: any[]): Promise<RelationalRawResult>;
-  raw(sql: SqlQuery | SqlDmlQuery): Promise<RelationalRawResult>;
-  raw(sql: string | SqlQuery | SqlDmlQuery, values?: any[]): Promise<RelationalRawResult> {
+  execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
     return this.run(async client => {
       const adapter = new PostgresDataAdapter(client);
-      return adapter.raw(sql as any, values || []);
+      return adapter.execRaw(sql, values);
+    });
+  }
+
+  exec(sql: SqlQuery | SqlDmlQuery): Promise<RelationalRawResult> {
+    return this.run(async client => {
+      const adapter = new PostgresDataAdapter(client);
+      return adapter.exec(sql as any);
     });
   }
 }

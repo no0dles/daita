@@ -5,7 +5,7 @@ export * from './insert';
 export * from './select';
 export * from './update';
 export { SqlBaseBuilder } from './sql-base-builder';
-export { SqlDmlBuilder, SqlDmlQuery } from './sql-dml-builder';
+export { SqlDmlBuilder, SqlDmlQuery, SqlCreateTableQuery, SqlFieldType, SqlAlterTableDrop, SqlAlterTableQuery } from './sql-dml-builder';
 export { SqlField } from './sql-field';
 export { SqlQuery, isSqlQuery } from './sql-query';
 export { SqlQueryBuilder } from './sql-query-builder';

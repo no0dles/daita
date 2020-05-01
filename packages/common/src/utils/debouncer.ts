@@ -2,7 +2,9 @@ export class Debouncer {
   private timeoutHandle: number | null = null;
   timeout = 0;
 
-  constructor(private trigger: () => any, private wait: number) {
+  constructor(private trigger: () => any, private wait: number) {}
+
+  start() {
     this.bounce();
   }
 

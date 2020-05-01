@@ -5,8 +5,8 @@
     "rootDir": "src",
     "paths": {
       "@daita/common": ["common/src"],
-      "@daita/relational": ["relational/src"],
-      "@daita/http-server": ["http-server/src"]
+      "@daita/http-server": ["http/http-server/src"],
+      "@daita/http-server-common": ["http/http-server-common/src"]
     }
   },
   "exclude": [

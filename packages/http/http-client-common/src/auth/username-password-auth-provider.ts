@@ -1,5 +1,8 @@
+import {isKind} from '@daita/common';
+
 export interface UsernamePasswordAuthProvider {
-  kind:'userpass'
   username: string;
   password: string;
 }
+
+export const isUsernamePasswordAuthProvider = (val: any): val is UsernamePasswordAuthProvider => isKind(val, ['username', 'password']);

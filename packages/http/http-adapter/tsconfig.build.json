@@ -11,9 +11,9 @@
   }, {
     "path": "../../relational/tsconfig.build.json"
   }, {
-    "path": "../pg/tsconfig.build.json"
+    "path": "../http-client-common/tsconfig.build.json"
   }, {
-    "path": "../../http-server/tsconfig.build.json"
+    "path": "../http-server/tsconfig.build.json"
   }],
   "exclude": [
     "node_modules",

@@ -239,9 +239,9 @@ export class SqlDmlBuilder extends SqlBaseBuilder {
       case 'string[]':
         return 'VARCHAR[]';
       case 'date':
-        return 'TIME WITH TIMEZONE';
+        return 'TIMESTAMPTZ';
       case 'date[]':
-        return 'TIME WITH TIMEZONE[]';
+        return 'TIMESTAMPTZ[]';
       case 'number':
         return 'NUMERIC';
       case 'number[]':

@@ -1,15 +1,15 @@
 import { RelationalMigrationAdapter } from "@daita/relational";
 import { SqlDmlQuery } from "@daita/relational";
 import { RelationalSchemaDescription } from "../schema/description/relational-schema-description";
-import { mergeList } from "@daita/common";
+import { merge } from "@daita/common";
 
 export class MigrationExecution {
   async init(dataAdapter: RelationalMigrationAdapter) {
-    await dataAdapter.raw(
+    await dataAdapter.execRaw(
       `CREATE SCHEMA IF NOT EXISTS "daita";`,
       []
     );
-    await dataAdapter.raw({
+    await dataAdapter.exec({
       createTable: { schema: "daita", table: "migrations" },
       ifNotExist: true,
       fields: [
@@ -19,7 +19,7 @@ export class MigrationExecution {
   }
 
   async exists(id: string, dataAdapter: RelationalMigrationAdapter) {
-    const result = await dataAdapter.raw({
+    const result = await dataAdapter.exec({
       select: ["id"],
       from: { schema: "daita", table: "migrations" },
       where: {
@@ -38,7 +38,7 @@ export class MigrationExecution {
   ): SqlDmlQuery[] {
     const queries: SqlDmlQuery[] = [];
 
-    const tables = mergeList(current.tables, target.tables, (first, second) => first.key === second.key);
+    const tables = merge(current.tables, target.tables, (first, second) => first.key === second.key);
     for (const addedTable of tables.added) {
       queries.push({
         createTable: addedTable.name,
@@ -53,7 +53,7 @@ export class MigrationExecution {
     }
 
     for (const mergedTable of tables.merge) {
-      const primaryKeys = mergeList(mergedTable.current.primaryKeys, mergedTable.target.primaryKeys, (first, second) => first === second);
+      const primaryKeys = merge(mergedTable.current.primaryKeys, mergedTable.target.primaryKeys, (first, second) => first === second);
       for (const addedPrimaryKey of primaryKeys.added) {
         throw new Error("cant add primary key after creation of table");
       }
@@ -61,7 +61,7 @@ export class MigrationExecution {
         throw new Error("cant drop primary key after creation of table");
       }
 
-      const fields = mergeList(mergedTable.current.fields, mergedTable.target.fields, (first, second) => first.key === second.key);
+      const fields = merge(mergedTable.current.fields, mergedTable.target.fields, (first, second) => first.key === second.key);
 
       for (const addedField of fields.added) {
         queries.push({
@@ -92,7 +92,7 @@ export class MigrationExecution {
         });
       }
 
-      const references = mergeList(mergedTable.current.references, mergedTable.target.references, (first, second) => first.name === second.name);
+      const references = merge(mergedTable.current.references, mergedTable.target.references, (first, second) => first.name === second.name);
       for (const addedReference of references.added) {
         queries.push({
           alterTable: mergedTable.current.name,
@@ -146,11 +146,11 @@ export class MigrationExecution {
     const sqls = this.plan(current, target);
 
     await dataAdapter.transaction(async client => {
-      await client.raw(`LOCK TABLE "daita"."migrations"`, []); //TODO sqlite support?
-      await client.raw({ insert: { schema: "daita", table: "migrations" }, values: [{ id: targetId }] });
+      await client.execRaw(`LOCK TABLE "daita"."migrations"`, []); //TODO sqlite support?
+      await client.exec({ insert: { schema: "daita", table: "migrations" }, values: [{ id: targetId }] });
 
       for (const sql of sqls) {
-        await client.raw(sql);
+        await client.exec(sql);
       }
     });
   }

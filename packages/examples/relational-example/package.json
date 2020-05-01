@@ -1,0 +1,28 @@
+{
+  "name": "@daita/relational-example",
+  "private": true,
+  "version": "0.0.1",
+  "description": "examples and tests for relational and adapters",
+  "scripts": {
+    "build": "tsc -b tsconfig.build.json",
+    "test": "env DATABASE_URL=postgres://postgres:postgres@localhost jest",
+    "lint": "tslint -c tslint.json src/**/*.ts",
+    "fixlint": "tslint -c tslint.json --fix src/**/*.ts",
+    "prettier": "prettier 'src/**/*.ts' --write"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@daita/common": "file:../../common",
+    "@daita/relational": "file:../../relational",
+    "@daita/pg-adapter": "file:../../pg-adapter",
+    "@daita/sqlite-adapter": "file:../../sqlite-adapter"
+  },
+  "devDependencies": {
+    "@types/pg": "^7.14.3",
+    "typescript": "~3.7.5",
+    "@types/jest": "^25.1.1",
+    "jest": "^25.1.0",
+    "ts-node": "^8.9.1",
+    "ts-jest": "^25.1.0"
+  }
+}

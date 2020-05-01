@@ -1,4 +1,4 @@
-import { PickByValue } from './pick-by-value';
+import { PickByValue } from "./pick-by-value";
 
 export type ExcludeNonPrimitive<T> = PickByValue<
   T,

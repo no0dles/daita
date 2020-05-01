@@ -1,1 +1,2 @@
-export { ApiRelationalAdapter } from './api-relational-adapter';
+export {HttpTransactionAdapter} from './http-transaction-adapter';
+export {HttpDataAdapter} from './http-data-adapter';

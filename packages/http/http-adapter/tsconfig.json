@@ -6,7 +6,8 @@
     "paths": {
       "@daita/common": ["common/src"],
       "@daita/relational": ["relational/src"],
-      "@daita/http-server": ["http-server/src"]
+      "@daita/http-server": ["http/http-server/src"],
+      "@daita/http-client-common": ["http/http-client-common/src"]
     }
   },
   "exclude": [

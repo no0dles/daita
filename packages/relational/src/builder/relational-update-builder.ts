@@ -33,7 +33,7 @@ export class RelationalUpdateBuilder<T> extends RelationalSubQueryWhereBuilder<T
   }
 
   protected async execute(): Promise<SqlUpdateResult> {
-    const result = await this.dataAdapter.raw(this.query);
+    const result = await this.dataAdapter.exec(this.query);
     return { affectedRows: result.rowCount };
   }
 

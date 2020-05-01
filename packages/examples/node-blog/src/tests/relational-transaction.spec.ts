@@ -3,11 +3,6 @@ import {blogSchema} from '../schema';
 import {blogAdminUser} from '../users';
 import {User} from '../models/user';
 
-function sleep(timeout: number) {
-  return new Promise(resolve => {
-    setTimeout(() => resolve(), timeout);
-  });
-}
 
 describe('relational-transaction', () => {
   const dataAdapter = getTestAdapter();

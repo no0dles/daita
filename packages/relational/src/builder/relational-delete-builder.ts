@@ -14,7 +14,7 @@ export class RelationalDeleteBuilder<T> extends RelationalSubQueryWhereBuilder<
   }
 
   protected async execute(): Promise<SqlDeleteResult> {
-    const result = await this.dataAdapter.raw(this.query);
+    const result = await this.dataAdapter.exec(this.query);
     return { affectedRows: result.rowCount };
   }
 

@@ -12,6 +12,6 @@ export = {
     sourceType: "module"
   },
   rules: {
-    "ban-import": banImportRule
+    //"ban-import": banImportRule
   }
 };

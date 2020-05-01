@@ -9,6 +9,7 @@
   "dependencies": {
     "@daita/common": "file:../../common",
     "@daita/relational": "file:../../relational",
+    "@daita/http-server-common": "file:../http-server-common",
     "socket.io": "^2.3.0"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import {PoolClient} from 'pg';
+import { PoolClient, QueryResult } from "pg";
 import {
   isSqlQuery,
   RelationalDataAdapter,
@@ -15,24 +15,24 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
 
   }
 
-  async raw(sql: SqlQuery | SqlDmlQuery | string, values?: any[]): Promise<RelationalRawResult> {
-    if (typeof sql === 'string') {
-      return await this.mapError(this.client.query(sql, values || []));
+  async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
+    return await this.mapError(this.client.query(sql, values));
+  }
+  
+  async exec(sql: SqlQuery | SqlDmlQuery): Promise<RelationalRawResult> {
+    if (isSqlQuery(sql)) {
+      const sqlBuilder = new SqlQueryBuilder(sql);
+      return await this.execRaw(sqlBuilder.sql, sqlBuilder.values);
     } else {
-      if (isSqlQuery(sql)) {
-        const sqlBuilder = new SqlQueryBuilder(sql);
-        return await this.mapError(this.client.query(sqlBuilder.sql, sqlBuilder.values));
-      } else {
-        const sqlBuilder = new SqlDmlBuilder(sql);
-        return await this.mapError(this.client.query(sqlBuilder.sql, []));
-      }
+      const sqlBuilder = new SqlDmlBuilder(sql);
+      return await this.execRaw(sqlBuilder.sql, []);
     }
   }
 
-  private async mapError<T>(run: Promise<T>): Promise<T> {
+  private async mapError(run: Promise<QueryResult<any>>): Promise<RelationalRawResult> {
     try {
       const result = await run;
-      return result;
+      return {rows: result.rows, rowCount: result.rowCount };
     } catch (e) {
       if (e.code === '23505') {
         throw new Error('primary key already exists');

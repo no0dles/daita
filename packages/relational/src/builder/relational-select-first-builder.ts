@@ -14,7 +14,7 @@ export class RelationalSelectFirstBuilder<T> extends RelationalQueryBuilder<
   protected async execute(): Promise<T> {
     const query = deepClone(this.query);
     query.limit = 1;
-    const result = await this.dataAdapter.raw(query);
+    const result = await this.dataAdapter.exec(query);
     if (result.rows.length === 1) {
       return result.rows[0];
     }

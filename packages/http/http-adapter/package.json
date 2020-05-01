@@ -9,11 +9,11 @@
   "dependencies": {
     "@daita/common": "file:../../common",
     "@daita/relational": "file:../../relational",
+    "@daita/http-client-common": "file:../http-client-common",
     "axios": "^0.19.0"
   },
   "devDependencies": {
-    "@daita/http-server": "file:../../http-server",
-    "@daita/pg": "file:../pg",
+    "@daita/http-server": "file:../http-server",
     "typescript": "~3.7.5",
     "@types/jest": "^25.1.1",
     "jest": "^25.1.0",
