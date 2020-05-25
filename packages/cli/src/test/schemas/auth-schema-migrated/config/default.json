@@ -2,7 +2,7 @@
   "daita": {
     "context": {
       "default": {
-        "type": "pg",
+        "module": "@daita/pg-adapter",
         "uri": "postgres://daita:daita@localhost/daita"
       }
     }

@@ -254,7 +254,7 @@ export function writeMigration(
         [ts.createImportSpecifier(undefined, ts.createIdentifier('MigrationDescription'))],
       ),
     ),
-    ts.createStringLiteral('@daita/core'),
+    ts.createStringLiteral('@daita/orm'),
   );
 
   const properties: ts.PropertyAssignment[] = [

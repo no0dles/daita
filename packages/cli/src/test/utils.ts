@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cli from '../index';
-import {Defer} from '@daita/common';
+import * as childProcess from 'child_process';
+import { Defer } from '@daita/common';
 
 export function isNotNull<T>(value: T): asserts value is NonNullable<T> {
   expect(value).not.toBeUndefined();
@@ -17,10 +17,10 @@ function removeDirectory(target: string) {
     return;
   }
 
-  for (const file of fs.readdirSync(target, {withFileTypes: true})) {
+  for (const file of fs.readdirSync(target, { withFileTypes: true })) {
     const filePath = path.join(target, file.name);
     if (file.isDirectory()) {
-      removeDirectory(filePath)
+      removeDirectory(filePath);
     } else {
       fs.unlinkSync(filePath);
     }
@@ -30,8 +30,8 @@ function removeDirectory(target: string) {
 }
 
 function deepClone(sourceDir: string, targetDir: string) {
-  fs.mkdirSync(targetDir, {recursive: true});
-  for (const file of fs.readdirSync(sourceDir, {withFileTypes: true})) {
+  fs.mkdirSync(targetDir, { recursive: true });
+  for (const file of fs.readdirSync(sourceDir, { withFileTypes: true })) {
     if (file.isDirectory()) {
       deepClone(path.join(sourceDir, file.name), path.join(targetDir, file.name));
     } else {
@@ -42,13 +42,21 @@ function deepClone(sourceDir: string, targetDir: string) {
 
 export interface CliEnvironment {
   env: (name: string, value: string) => void;
-  run: (args: string) => PromiseLike<any>;
-
-  expectConsoleOutput(expectedOutput: string): Promise<void>;
+  run: (args: string) => RunResult;
 
   exists(dir: string, file?: RegExp): Promise<void>;
 
   contains(dir: string, files: string[]): Promise<void>;
+}
+
+export interface RunResult {
+  onStdOut(callback: (text: string) => void): void;
+
+  onStdErr(callback: (text: string) => void): void;
+
+  finished: Promise<any>;
+
+  cancel(): void;
 }
 
 export type CliEnvironmentCallback = (ctx: CliEnvironment) => Promise<any>;
@@ -57,28 +65,12 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
   const scenarioResultRoot = path.join(__dirname, '../../test/tmp/scenario');
   const resultPath = path.join(scenarioResultRoot, testName);
 
-  const originalStdoutWrite = process.stdout.write.bind(process.stdout);
-  const consoleOutputDefers: { text: string, defer: Defer<void> }[] = [];
-
-  process.stdout.write = (chunk: Uint8Array | string, encoding?: string | ((err?: Error) => void), cb?: (err?: Error) => void) => {
-    if (typeof chunk === 'string') {
-      for (let i = 0; i < consoleOutputDefers.length; i++) {
-        if (chunk.indexOf(consoleOutputDefers[i].text) >= 0) {
-          consoleOutputDefers[i].defer.resolve();
-          consoleOutputDefers.splice(i, 1);
-          i--;
-        }
-      }
-    }
-    return (<any>originalStdoutWrite)(chunk, encoding, cb);
-  };
-
   return async () => {
     removeDirectory(resultPath);
-    fs.mkdirSync(resultPath, {recursive: true});
+    fs.mkdirSync(resultPath, { recursive: true });
 
     if (options && options.schema) {
-      const schemaRoot = path.join(__dirname, '../../test/schemas');
+      const schemaRoot = path.join(__dirname, './schemas');
       const schemaPath = path.join(schemaRoot, options.schema);
       cloneDirectory(schemaPath, resultPath);
     }
@@ -87,17 +79,50 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
       env: (name: string, value: string) => {
         process.env[name] = value;
       },
-      run:args => {
-        return cli.run([...args.split(' '), '--cwd', resultPath]);
-      },
-      expectConsoleOutput: (expectedOutput: string, timeout?: number) => {
-        const defer = new Defer<void>();
-        consoleOutputDefers.push({text: expectedOutput, defer});
-        return defer.promise;
+      run: args => {
+        const proc = childProcess.spawn(`${path.join(__dirname, '../../bin/run')}`, args.split(' '), {
+          cwd: resultPath,
+        });
+        const finishedDefer = new Defer();
+        proc.on('exit', code => {
+          finishedDefer.resolve(code);
+        });
+        proc.stdout.on('data', (data) => {
+          if (typeof data === 'string') {
+            for (const callback of stdOutCallback) {
+              callback(data);
+            }
+          }
+        });
+
+        proc.stderr.on('data', (data) => {
+          if (typeof data === 'string') {
+            for (const callback of stdErrCallback) {
+              callback(data);
+            }
+          }
+        });
+
+        const stdOutCallback: ((text: string) => void)[] = [];
+        const stdErrCallback: ((text: string) => void)[] = [];
+
+        return {
+          onStdOut: (callback: (text: string) => void) => {
+            stdOutCallback.push(callback);
+          },
+          onStdErr: (callback: (text: string) => void) => {
+            stdErrCallback.push(callback);
+          },
+          cancel: () => {
+            proc.kill('SIGINT');
+          },
+          finished: finishedDefer.promise,
+        };
+        // return cli.run([...args.split(' '), '--cwd', resultPath]);
       },
       contains(dir: string, expectedFiles: string[]): Promise<void> {
         return new Promise<void>(resolve => {
-          fs.readdir(path.join(resultPath, dir), {withFileTypes: true}, (e, listedFiles) => {
+          fs.readdir(path.join(resultPath, dir), { withFileTypes: true }, (e, listedFiles) => {
             if (e) {
               expect(e).toBeUndefined();
               //.fail(`could not list files in ${path.join(resultPath, dir)}`);
@@ -116,7 +141,7 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
               expect(err).toBeUndefined();
               //assert.fail(null, dir, `expected path ${dir} to exist`);
             } else if (file) {
-              fs.readdir(path.join(resultPath, dir), {withFileTypes: true}, (e, listedFiles) => {
+              fs.readdir(path.join(resultPath, dir), { withFileTypes: true }, (e, listedFiles) => {
                 if (e) {
                   expect(e).toBeUndefined();
                   //assert.fail(`could not list files in ${path.join(resultPath, dir)}`);
@@ -140,10 +165,6 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
         });
       },
     };
-    const result = await callback(context);
-
-    process.stdout.write = originalStdoutWrite;
-
-    return result;
-  }
+    return await callback(context);
+  };
 }

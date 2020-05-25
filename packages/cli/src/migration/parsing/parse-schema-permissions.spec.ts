@@ -6,7 +6,7 @@ import { RelationalSchemaDescription } from '@daita/orm';
 describe('parse-schema-permissions', () => {
   it('should parse permission', () => {
     const context = new AstContext();
-    const sourceFile = context.get('../../test/schemas/auth-schema/src/schema.ts')
+    const sourceFile = context.get('./src/test/schemas/auth-schema/src/schema.ts')
     isNotNull(sourceFile);
     const schemaVariable = sourceFile.getVariable('schema');
     isNotNull(schemaVariable);

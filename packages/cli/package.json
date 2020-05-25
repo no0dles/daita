@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@daita/pg-adapter": "file:../pg-adapter",
+    "@daita/http-adapter": "file:../http/http-adapter",
     "@oclif/dev-cli": "^1.22.2",
     "@types/chokidar": "^2.1.3",
     "@types/config": "^0.0.36",

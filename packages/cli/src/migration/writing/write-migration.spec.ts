@@ -67,7 +67,7 @@ describe('write-migration', () => {
       {kind: 'add_table', table: 'User'},
     ]);
     expect(migration).toEqual(
-      'import { MigrationDescription } from "@daita/core";\n' +
+      'import { MigrationDescription } from "@daita/orm";\n' +
       '\n' +
       'export const InitMigration: MigrationDescription = {\n' +
       '    id: "init",\n' +
@@ -82,7 +82,7 @@ describe('write-migration', () => {
       {kind: 'drop_table', table: 'User'},
     ]);
     expect(migration).toEqual(
-      'import { MigrationDescription } from "@daita/core";\n' +
+      'import { MigrationDescription } from "@daita/orm";\n' +
       '\n' +
       'export const InitMigration: MigrationDescription = {\n' +
       '    id: "init",\n' +

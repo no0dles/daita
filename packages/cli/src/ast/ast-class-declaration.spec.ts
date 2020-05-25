@@ -4,7 +4,7 @@ import {isNotNull} from '../test/utils';
 describe('ast-class-declaration', () => {
   const context = new MockAstContext();
   context.mock('schema.ts', `
-    import {RelationalSchema} from '@daita/core';
+    import {RelationalSchema} from '@daita/orm';
     import {User} from './user';
     const schema = new RelationalSchema();
     schema.table(User);

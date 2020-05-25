@@ -1,12 +1,7 @@
 import {Command, flags} from '@oclif/command';
-import {getSchemaInformation, getSchemaLocation} from '../utils/path';
 import {getRelationalDataAdapter} from '../utils/data-adapter';
-import * as fs from 'fs';
-import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as http from 'http';
-import {AstContext} from '../ast/ast-context';
-import { Debouncer } from '@daita/common';
 import {createHttpServer } from '@daita/http-server';
 
 export default class Serve extends Command {
@@ -37,8 +32,6 @@ export default class Serve extends Command {
 
   async run() {
     const parsed = this.parse(Serve);
-    const schemaLocation = await getSchemaLocation(parsed.flags, this);
-
 
     process.env.SUPPRESS_NO_CONFIG_WARNING = 'true';
     if (parsed.flags.cwd) {
@@ -50,62 +43,59 @@ export default class Serve extends Command {
       throw new Error('no relational adapter');
     }
 
+    const app = createHttpServer({
+      dataAdapter,
+    });
+
+    const port = parsed.flags.port || 8765;
+    this.server = app.listen(port, () => {
+      console.log('listening')
+      this.log(`listening on http://localhost:${port}`);
+    });
+
+    process.on('SIGINT', () => {
+      this.log("stopping http server");
+      this.server?.close();
+    });
+
+    //const schemaLocation = await getSchemaLocation(parsed.flags, this);
     //const tokenProvider = getTokenProvider(parsed.flags, this);
 
-    const watchPaths = [schemaLocation.sourceDirectory];
+    // const watchPaths = [schemaLocation.sourceDirectory];
+    //
+    // let currentPath = parsed.flags.cwd ? path.resolve(parsed.flags.cwd) : process.cwd();
+    // const pathParts = path.dirname(currentPath).split(path.sep);
+    // for (let i = 0; i < pathParts.length + 1; i++) {
+    //   const nodePath = path.join(currentPath, 'node_modules');
+    //   if (fs.existsSync(nodePath)) {
+    //     watchPaths.push(nodePath);
+    //   }
+    //   currentPath = path.resolve(currentPath, '..');
+    // }
+    //
 
-    let currentPath = parsed.flags.cwd ? path.resolve(parsed.flags.cwd) : process.cwd();
-    const pathParts = path.dirname(currentPath).split(path.sep);
-    for (let i = 0; i < pathParts.length + 1; i++) {
-      const nodePath = path.join(currentPath, 'node_modules');
-      if (fs.existsSync(nodePath)) {
-        watchPaths.push(nodePath);
-      }
-      currentPath = path.resolve(currentPath, '..');
-    }
-
-    const debouncer = new Debouncer(async () => {
-      if (this.server) {
-        this.server.close();
-      }
-
-      const astContext = new AstContext();
-      const schemaInfo = await getSchemaInformation(astContext, schemaLocation, this);
-      if (!schemaInfo) {
-        this.warn(`could not load schema`);
-        return;
-      }
-
-      const migrationTree = schemaInfo.getMigrationTree();
-
-      // const userProvider = {
-      //   get: async (token: AccessToken) => {
-      //     throw new Error('not found');
-      //   },
-      // };
-
-      const app = createHttpServer({
-        dataAdapter,
-      });
-
-      const port = parsed.flags.port || 8765;
-      this.server = app.listen(port, () => {
-        this.log(`listening on http://localhost:${port}`);
-      });
-    }, 200);
-
-    const watcher = chokidar.watch(watchPaths, {
-      followSymlinks: true,
-      ignored: /^(.[ts|js])$/,
-    });
-    watcher.on('change', () => {
-      debouncer.bounce();
-    });
-    watcher.on('add', () => {
-      debouncer.bounce();
-    });
-    watcher.on('unlink', () => {
-      debouncer.bounce();
-    });
+    // const debouncer = new Debouncer(async () => {
+    //   // const userProvider = {
+    //   //   get: async (token: AccessToken) => {
+    //   //     throw new Error('not found');
+    //   //   },
+    //   // };
+    //
+    //
+    // }, 200);
+    //
+    // const watcher = chokidar.watch(watchPaths, {
+    //   followSymlinks: true,
+    //   ignored: /^(.[ts|js])$/,
+    // });
+    // watcher.on('change', () => {
+    //   debouncer.bounce();
+    // });
+    // watcher.on('add', () => {
+    //   debouncer.bounce();
+    // });
+    // watcher.on('unlink', () => {
+    //   debouncer.bounce();
+    // });
   }
 }

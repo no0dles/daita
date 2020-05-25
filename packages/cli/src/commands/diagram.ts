@@ -38,14 +38,7 @@ export default class Diagram extends Command {
     for (const table of relationalSchema.tables) {
       content += `[${table.name}|${table.fields.map(f => `${f.name}${f.required ? '!' : ''}:${f.type}`).join(';')}]\n`;
       for (const foreignKey of table.references) {
-        let required = true;
-        for (const key of foreignKey.keys) {
-          if (!key.field.required) {
-            required = false;
-          }
-        }
-
-        content += `[${table.name}] ${foreignKey.name}${required ? '+' : 'o'}-> [${foreignKey.table}]\n`;
+        content += `[${table.name}] ${foreignKey.name}${foreignKey.required ? '+' : 'o'}-> [${foreignKey.table.name}]\n`;
       }
     }
 
