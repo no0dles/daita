@@ -5,13 +5,9 @@ import * as fs from 'fs';
 import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as http from 'http';
-import {getApp} from '@daita/web';
-import {Debouncer} from '@daita/core';
-import {getTokenProvider} from '../utils/token-provider';
-import {AccessToken} from '@daita/web/dist/auth/token-provider';
 import {AstContext} from '../ast/ast-context';
-import {RelationalSchemaMigrationContext} from '@daita/core/dist/context/relational-schema-migration-context';
-import {SchemaPermissions} from '@daita/core/dist/permission/permission-builder';
+import { Debouncer } from '@daita/common';
+import {createHttpServer } from '@daita/http-server';
 
 export default class Serve extends Command {
   private server: http.Server | null = null;
@@ -49,12 +45,12 @@ export default class Serve extends Command {
       process.env.NODE_CONFIG_DIR = path.join(parsed.flags.cwd, 'config');
     }
 
-    const dataAdapter = getRelationalDataAdapter(parsed.flags, this);
+    const dataAdapter = await getRelationalDataAdapter(parsed.flags, this);
     if (!dataAdapter) {
       throw new Error('no relational adapter');
     }
 
-    const tokenProvider = getTokenProvider(parsed.flags, this);
+    //const tokenProvider = getTokenProvider(parsed.flags, this);
 
     const watchPaths = [schemaLocation.sourceDirectory];
 
@@ -82,24 +78,14 @@ export default class Serve extends Command {
 
       const migrationTree = schemaInfo.getMigrationTree();
 
-      const context = new RelationalSchemaMigrationContext(
-        dataAdapter,
-        migrationTree,
-      );
-      await context.apply();
-      const userProvider = {
-        get: async (token: AccessToken) => {
-          throw new Error('not found');
-        },
-      };
+      // const userProvider = {
+      //   get: async (token: AccessToken) => {
+      //     throw new Error('not found');
+      //   },
+      // };
 
-      const app = getApp({
+      const app = createHttpServer({
         dataAdapter,
-        auth: tokenProvider ? {
-          tokenProvider,
-          userProvider,
-          permissions: new SchemaPermissions() //TODO use permissions from source code
-        } : undefined,
       });
 
       const port = parsed.flags.port || 8765;

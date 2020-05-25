@@ -2,7 +2,6 @@ import {Debouncer, Defer} from '@daita/common';
 import {
   RelationalDataAdapter,
   RelationalTransactionAdapter,
-  SqlDmlQuery,
   SqlPermissions,
   SqlQuery,
 } from '@daita/relational';
@@ -64,7 +63,7 @@ export class TransactionManager {
     return this.debouncer.timeout;
   }
 
-  async exec(sql: SqlQuery | SqlDmlQuery, validateAuth: boolean) {
+  async exec(sql: SqlQuery, validateAuth: boolean) {
     const dataAdapter = await this.getDataAdapter();
     const context = new ContextManager(dataAdapter, this.sqlPermissions);
     return await context.exec(sql, validateAuth);

@@ -3,13 +3,13 @@ import * as fs from 'fs';
 import cli from 'cli-ux';
 import {Command} from '@oclif/command';
 import * as inquirer from 'inquirer';
-import {RelationalTableSchema} from '@daita/core';
 import {AstContext} from '../ast/ast-context';
 import {parseSchemas} from '../migration/parsing/parse-schemas';
 import {SchemaDeclaration} from '../migration/parsing/schema-declaration';
 import {parseSchemaMigrations} from '../migration/parsing/parse-schema-migrations';
 import {parseRelationalSchema} from '../migration/parsing/parse-relational-schema';
 import {parseSchemaMigrationVariables} from '../migration/parsing/parse-schema-migration-variables';
+import { RelationalSchemaDescription } from '@daita/orm/dist/schema/description/relational-schema-description';
 
 export function getMigrationRelativePath(
   schemaFilePath: string,
@@ -152,7 +152,7 @@ export class SchemaInformation {
     return parseSchemaMigrations(this.schemaDeclaration.variable);
   }
 
-  getRelationalSchema(): RelationalTableSchema {
+  getRelationalSchema(): RelationalSchemaDescription {
     return parseRelationalSchema(this.schemaDeclaration.variable);
   }
 

@@ -6,11 +6,11 @@ import {
 import { RelationalExpressionBuilder } from './relational-expression-builder';
 import { SqlSchemaTableField } from '../sql/sql-schema-table-field';
 import { isSqlSchemaTable } from '../sql/sql-schema-table';
-import { isSqlCompareExpression } from '../sql/expression/sql-compare-expression';
-import { SqlExpression } from '../sql/expression';
-import { SqlSelectFrom } from '../sql/select';
-import { isSqlInExpression } from '../sql/expression/sql-in-expression';
-import { isSqlAndExpression } from '../sql/expression/sql-and-expression';
+import { isSqlCompareExpression } from '../sql/dml/expression/sql-compare-expression';
+import { SqlExpression } from '../sql/dml/expression';
+import { SqlSelectFrom } from '../sql/dml/select';
+import { isSqlInExpression } from '../sql/dml/expression/sql-in-expression';
+import { isSqlAndExpression } from '../sql/dml/expression/sql-and-expression';
 
 export class RelationalEmptyExpressionBuilderImpl<T>
   implements RelationalEmptyExpressionBuilder<T> {

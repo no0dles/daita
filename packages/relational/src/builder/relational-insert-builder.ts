@@ -1,7 +1,7 @@
 import { RelationalDataAdapter } from "../adapter";
 import { RelationalQueryBuilder } from "./relational-query-builder";
-import { SqlInsert, SqlInsertResult } from "../sql/insert";
-import { isSqlSelect } from "../sql/select/sql-select";
+import { SqlInsert, SqlInsertResult } from "../sql/dml/insert";
+import { isSqlSelect } from "../sql/dml/select/sql-select";
 import { deepClone, ExcludeNonPrimitive } from "@daita/common";
 
 export class RelationalInsertBuilder<T> extends RelationalQueryBuilder<SqlInsert,

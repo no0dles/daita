@@ -37,11 +37,10 @@ export default class Diagram extends Command {
     const relationalSchema = schemaInfo.getRelationalSchema();
     for (const table of relationalSchema.tables) {
       content += `[${table.name}|${table.fields.map(f => `${f.name}${f.required ? '!' : ''}:${f.type}`).join(';')}]\n`;
-      for (const foreignKey of table.foreignKeys) {
+      for (const foreignKey of table.references) {
         let required = true;
         for (const key of foreignKey.keys) {
-          const field = table.field(key);
-          if (field && !field.required) {
+          if (!key.field.required) {
             required = false;
           }
         }

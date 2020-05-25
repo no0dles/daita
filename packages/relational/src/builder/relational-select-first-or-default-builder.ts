@@ -1,6 +1,6 @@
 import { RelationalDataAdapter } from '../adapter';
 import { RelationalQueryBuilder } from './relational-query-builder';
-import { SqlSelect } from '../sql/select';
+import { SqlSelect } from '../sql/dml/select';
 import { deepClone } from '@daita/common';
 
 export class RelationalSelectFirstOrDefaultBuilder<

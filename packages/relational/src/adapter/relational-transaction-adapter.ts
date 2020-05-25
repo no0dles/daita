@@ -9,5 +9,4 @@ export interface RelationalTransactionAdapter extends RelationalDataAdapter {
 
 export const isRelationalTransactionAdapter = (
   val: any,
-): val is RelationalTransactionAdapter =>
-  isKind<RelationalTransactionAdapter>(val, ['transaction']);
+): val is RelationalTransactionAdapter => typeof val.transaction === 'function';;

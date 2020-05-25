@@ -1,6 +1,6 @@
 import { RelationalDataAdapter } from '../adapter';
 import { RelationalSubQueryWhereBuilder } from './relational-sub-query-where-builder';
-import { SqlDelete, SqlDeleteResult } from '../sql/delete';
+import { SqlDelete, SqlDeleteResult } from '../sql/dml/delete';
 import { SqlSchemaTable } from '../sql';
 import { RootFilter } from '../query';
 

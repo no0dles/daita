@@ -4,8 +4,8 @@ import {AuthProvider} from '@daita/http-client-common';
 import {HttpBase} from './http-base';
 import {Countdown} from './countdown';
 
-export class HttpTransactionDataAdapter<T> extends HttpBase implements RelationalDataAdapter {
-  private resultDefer = new Defer<T>();
+export class HttpTransactionDataAdapter extends HttpBase implements RelationalDataAdapter {
+  private resultDefer = new Defer<any>();
   private countDown = new Countdown(() => this.timeout());
 
   constructor(private transactionId: string,
@@ -14,9 +14,20 @@ export class HttpTransactionDataAdapter<T> extends HttpBase implements Relationa
     super(baseUrl, authProvider);
   }
 
-  raw(sql: string, values: any[]): Promise<RelationalRawResult>;
-  raw(sql: SqlQuery): Promise<RelationalRawResult>;
-  async raw(sql: string | SqlQuery, values?: any[]): Promise<RelationalRawResult> {
+  async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
+    if (this.resultDefer.isRejected || this.resultDefer.isResolved) {
+      throw new Error('transaction already closed');
+    }
+
+    const response = await this.send(`trx/${this.transactionId}/exec`, {sql, values});
+    const timeout = response.headers['x-transaction-timeout'];
+    if (timeout && timeout > 0) {
+      this.countDown.setExpire(timeout);
+    }
+    return response.data;
+  }
+
+  async exec(sql: any): Promise<RelationalRawResult> {
     if (this.resultDefer.isRejected || this.resultDefer.isResolved) {
       throw new Error('transaction already closed');
     }
@@ -29,7 +40,15 @@ export class HttpTransactionDataAdapter<T> extends HttpBase implements Relationa
     return response.data;
   }
 
-  async run(action: () => Promise<T>): Promise<T> {
+  supportsQuery(sql: any): boolean {
+    throw new Error("Method not implemented.");
+  }
+
+  async close(): Promise<void> {
+    
+  }
+
+  async run(action: () => Promise<any>): Promise<any> {
     await this.send(`trx/${this.transactionId}`);
     action().then(async result => {
       this.resultDefer.resolve(result);

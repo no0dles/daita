@@ -11,7 +11,11 @@
   "author": {
     "name": "Pascal Bertschi"
   },
-  "keywords": ["daita", "orm", "relational"],
+  "keywords": [
+    "daita",
+    "orm",
+    "relational"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/no0dles/daita"
@@ -20,7 +24,7 @@
     "url": "https://github.com/no0dles/daita/issues"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "test": "jest",
     "lint": "eslint src --ext .ts",
     "fixlint": "eslint src --ext .ts --fix",
@@ -42,6 +46,6 @@
     "jest": "^25.3.0",
     "prettier": "^2.0.4",
     "ts-jest": "^25.4.0",
-    "typescript": "~3.7.5"
+    "typescript": "~3.9.3"
   }
 }

@@ -1,13 +1,13 @@
 import {AstType} from '../../ast/ast-type';
 import {parseRelationalType} from './parse-relational-type';
-import {DocumentCollectionSchemaCollectionFieldType} from '@daita/core';
 import {AstObjectValue} from '../../ast/ast-object-value';
 import * as ts from 'typescript';
+import { RelationalTableSchemaTableFieldType } from '@daita/orm';
 
-function testCollectionPropertyType(
+function testRelationalPropertyType(
   type: AstType | null,
   initializer: AstObjectValue | null,
-  result: DocumentCollectionSchemaCollectionFieldType,
+  result: RelationalTableSchemaTableFieldType,
 ) {
   const relationalType = parseRelationalType({type, initializer} as any);
   expect(relationalType).toEqual(result);
@@ -15,7 +15,7 @@ function testCollectionPropertyType(
 
 describe('parse-relational-type', () => {
   it('should parse type boolean initalizer false', () => {
-    testCollectionPropertyType(
+    testRelationalPropertyType(
       null,
       new AstObjectValue(ts.createFalse()),
       'boolean',
@@ -23,7 +23,7 @@ describe('parse-relational-type', () => {
   });
 
   it('should parse type boolean initalizer true', () => {
-    testCollectionPropertyType(
+    testRelationalPropertyType(
       null,
       new AstObjectValue(ts.createTrue()),
       'boolean',
@@ -31,7 +31,7 @@ describe('parse-relational-type', () => {
   });
 
   it('should parse type string initalizer', () => {
-    testCollectionPropertyType(
+    testRelationalPropertyType(
       null,
       new AstObjectValue(ts.createStringLiteral('foo')),
       'string',
@@ -39,21 +39,21 @@ describe('parse-relational-type', () => {
   });
 
   it('should parse type string', () => {
-    testCollectionPropertyType(
+    testRelationalPropertyType(
       {kind: 'string', allowUndefined: false},
       null,
       'string',
     );
   });
   it('should parse type number', () => {
-    testCollectionPropertyType(
+    testRelationalPropertyType(
       {kind: 'number', allowUndefined: false},
       null,
       'number',
     );
   });
   it('should parse type string | null', () => {
-    testCollectionPropertyType(<AstType>{
+    testRelationalPropertyType(<AstType>{
         kind: 'union',
         allowUndefined: false,
         types: [
@@ -66,7 +66,7 @@ describe('parse-relational-type', () => {
     );
   });
   it('should parse type number | null', () => {
-    testCollectionPropertyType(<AstType>{
+    testRelationalPropertyType(<AstType>{
         kind: 'union',
         types: [
           {kind: 'number'},
@@ -80,7 +80,7 @@ describe('parse-relational-type', () => {
   });
   it('should not parse type number | string', () => {
     try {
-      testCollectionPropertyType(<AstType>{
+      testRelationalPropertyType(<AstType>{
           kind: 'union',
           types: [
             {kind: 'number'},
@@ -96,7 +96,7 @@ describe('parse-relational-type', () => {
     }
   });
   it('should parse type number[]', () => {
-    testCollectionPropertyType(<AstType>{
+    testRelationalPropertyType(<AstType>{
         kind: 'array',
         allowUndefined: false,
         elementType: {kind: 'number'},
@@ -106,7 +106,7 @@ describe('parse-relational-type', () => {
     );
   });
   it('should parse type string[]', () => {
-    testCollectionPropertyType(<AstType>{
+    testRelationalPropertyType(<AstType>{
         kind: 'array',
         allowUndefined: false,
         elementType: {kind: 'string'},

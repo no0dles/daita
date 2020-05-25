@@ -3,17 +3,20 @@ import { ArrayMap } from "./array-map";
 import { RelationalTableReferenceDescription } from "./relational-table-reference-description";
 import { removeEmptySchema, SqlDelete, SqlInsert, SqlSelect, SqlUpdate } from "@daita/relational";
 import { arrayClone } from "@daita/common";
+import {RelationalSchemaDescription} from './relational-schema-description';
 
 export class RelationalTableDescription {
-  private primaryKeysArray: string[] = [];
+  private primaryKeysArray: ArrayMap<RelationalTableFieldDescription>;
   private fieldArrayMap: ArrayMap<RelationalTableFieldDescription>;
   private referenceArrayMap: ArrayMap<RelationalTableReferenceDescription>;
 
-  constructor(public key: string,
+  constructor(private schemaDescription: RelationalSchemaDescription,
+              public key: string,
               public name: string,
               public schema?: string) {
     this.fieldArrayMap = new ArrayMap<RelationalTableFieldDescription>();
     this.referenceArrayMap = new ArrayMap<RelationalTableReferenceDescription>();
+    this.primaryKeysArray = new ArrayMap<RelationalTableFieldDescription>();
   }
 
   get fields() {
@@ -21,18 +24,15 @@ export class RelationalTableDescription {
   }
 
   get primaryKeys() {
-    return arrayClone(this.primaryKeysArray);
+    return arrayClone(this.primaryKeysArray.array);
   }
 
   get references() {
     return arrayClone(this.referenceArrayMap.array);
   }
 
-  addPrimaryKey(keys: string[]) {
-    this.primaryKeysArray.push(...keys);
-    for (const key of keys) {
-      this.field(key).setPrimaryKey();
-    }
+  addPrimaryKey(field: RelationalTableFieldDescription) {
+    this.primaryKeysArray.add(field.key, field);
   }
 
   addField(name: string, field: RelationalTableFieldDescription) {
@@ -59,12 +59,20 @@ export class RelationalTableDescription {
     return fieldDescription;
   }
 
+  containsField(name: string): boolean {
+    return this.fieldArrayMap.exists(name);
+  }
+
   reference(alias: string): RelationalTableReferenceDescription {
     const reference = this.referenceArrayMap.get(alias);
     if (!reference) {
       throw new Error(`Unable to get reference ${alias} from table ${this.name}`);
     }
     return reference;
+  }
+
+  permissions<T>() {
+    return this.schemaDescription.schemaPermissions.tablePermissions({table: this.name, schema: this.schema});
   }
 
   getSqlSelect(): SqlSelect {

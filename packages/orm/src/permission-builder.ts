@@ -21,7 +21,7 @@ import { RelationalSchemaDescription } from "./schema/description/relational-sch
 import { ContextUser } from "./auth";
 
 export class SchemaPermissions {
-  private permissions: { [key: string]: TablePermission<any>[] } = {};
+  permissions: { [key: string]: TablePermission<any>[] } = {};
 
   add<T>(table: TableInformation<T>, permissions: TablePermission<T>[]) {
     const identifier = getSqlTableIdentifier(table);
@@ -42,6 +42,11 @@ export class SchemaPermissions {
         }
       }
     }
+  }
+
+  tablePermissions<T>(table: TableInformation<T>) {
+    const identifier = getSqlTableIdentifier(table);
+    return this.permissions[identifier] || [];
   }
 
   userPermissions(user: ContextUser): UserPermissions {
@@ -187,8 +192,4 @@ export class RelationalAuthTransactionSchemaContext extends RelationalAuthSchema
       return await action(new RelationalAuthSchemaContext(adapter, this.schema, this.sqlPermissions));
     });
   }
-}
-
-function fail(value: never, message: string): never {
-  throw new Error(message);
 }

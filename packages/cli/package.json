@@ -12,7 +12,8 @@
   "dependencies": {
     "@daita/common": "file:../common",
     "@daita/relational": "file:../relational",
-    "@daita/http-server": "file:../http-server",
+    "@daita/orm": "file:../orm",
+    "@daita/http-server": "file:../http/http-server",
     "@oclif/config": "^1.14.0",
     "@oclif/plugin-help": "^2.2.3",
     "chokidar": "^3.3.1",
@@ -23,7 +24,7 @@
     "nomnoml": "^0.6.2"
   },
   "devDependencies": {
-    "@daita/pg": "file:../adapters/pg",
+    "@daita/pg-adapter": "file:../pg-adapter",
     "@oclif/dev-cli": "^1.22.2",
     "@types/chokidar": "^2.1.3",
     "@types/config": "^0.0.36",
@@ -33,7 +34,7 @@
     "jest": "^25.1.0",
     "jest-extended": "^0.11.5",
     "ts-jest": "^25.1.0",
-    "typescript": "~3.7.5"
+    "typescript": "~3.9.3"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -64,7 +65,7 @@
     }
   },
   "scripts": {
-    "build": "tsc -b tsconfig.build.json",
+    "build": "tsc -b tsconfig.json",
     "test": "jest",
     "clean": "rm -rf ./dist",
     "postpack": "rm -f oclif.manifest.json",

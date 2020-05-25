@@ -1,6 +1,6 @@
-import {MigrationDescription, MigrationStep} from '@daita/core';
 import {AstVariable} from '../../ast/ast-variable';
 import {parseSchemaMigrationStep} from './parse-schema-migration-step';
+import { MigrationDescription, MigrationStep } from '@daita/orm';
 
 export function parseSchemaMigration(
   migrationVariable: AstVariable,

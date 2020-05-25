@@ -1,8 +1,8 @@
 import { SqlTable } from '../sql/sql-table';
 import { RelationalAdapterMock } from '../testing/relational-adapter-mock';
 import { RelationalSelectBuilder } from './relational-select-builder';
-import { SqlSelect } from '../sql/select';
-import { isSqlSelect } from '../sql/select/sql-select';
+import { SqlSelect } from '../sql/dml/select';
+import { isSqlSelect } from '../sql/dml/select/sql-select';
 
 async function testSelect<T = any>(
   sqlTable: SqlTable,

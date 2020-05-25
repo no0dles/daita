@@ -1,12 +1,18 @@
 import {
   SqlAlterTableQuery,
-  SqlCreateTableQuery, SqlFieldType,
-  RelationalMigrationAdapter, createMigrationAdapter, SqlSelect, SqlInsert, RelationalDataAdapter
+  SqlCreateTableQuery,
+  SqlFieldType,
+  RelationalTransactionAdapter,
+  SqlSelect,
+  SqlInsert,
+  SqlDmlQuery,
+  SqlQuery, createTransactionAdapter
 } from "@daita/relational";
 import * as pg from "@daita/pg-adapter";
 import * as sqlite from "@daita/sqlite-adapter";
+import { DdlLockQuery, PostgresQuery } from "@daita/pg-adapter";
 
-async function testValue(adapter: RelationalMigrationAdapter, type: SqlFieldType, value: any) {
+async function testValue(adapter: RelationalTransactionAdapter<SqlDmlQuery | SqlQuery>, type: SqlFieldType, value: any) {
   const query: SqlCreateTableQuery = {
     createTable: "foo",
     fields: [
@@ -28,14 +34,41 @@ async function testValue(adapter: RelationalMigrationAdapter, type: SqlFieldType
   expect(result.rows[0].val).toBe(value);
 }
 
-describe("pg/select", () => {
-  let adapter: RelationalMigrationAdapter;
+describe('pg/lock', () => {
+  let adapter: RelationalTransactionAdapter<PostgresQuery>;
 
   beforeEach(async () => {
-    adapter = await createMigrationAdapter({
+    adapter = await createTransactionAdapter({
       database: "test-select",
-      connectionString: ':memory:', //"postgres://postgres:postgres@localhost",
-      adapter: sqlite, //pg
+      connectionString: "postgres://postgres:postgres@localhost",
+      adapter: pg,
+      createIfNotExists: true,
+      dropIfExists: true
+    });
+  });
+
+  afterEach(async () => {
+    await adapter.close();
+  });
+
+  it('should create table and lock it', async () => {
+    await adapter.transaction(async (trx) => {
+      const lockSql: DdlLockQuery = {
+        lockTable: 'foo',
+      };
+      await trx.exec(lockSql);
+    });
+  });
+});
+
+describe("pg/select", () => {
+  let adapter: RelationalTransactionAdapter<SqlDmlQuery | SqlQuery>;
+
+  beforeEach(async () => {
+    adapter = await createTransactionAdapter({
+      database: "test-select",
+      connectionString: "postgres://postgres:postgres@localhost",
+      adapters: [sqlite, pg],
       createIfNotExists: true,
       dropIfExists: true
     });
@@ -89,10 +122,10 @@ describe("pg/select", () => {
         { name: "num", type: "number" },
         { name: "bool", type: "boolean" },
         { name: "date", type: "date" },
-        { name: "textArray", type: "string[]" },
-        { name: "numArray", type: "number[]" },
-        { name: "boolArray", type: "boolean[]" },
-        { name: "dateArray", type: "date[]" }
+        // { name: "textArray", type: "string[]" },
+        // { name: "numArray", type: "number[]" },
+        // { name: "boolArray", type: "boolean[]" },
+        // { name: "dateArray", type: "date[]" }
       ]
     };
     await adapter.exec(query);
@@ -106,10 +139,10 @@ describe("pg/select", () => {
         { name: "num", type: "number" },
         { name: "bool", type: "boolean" },
         { name: "date", type: "date" },
-        { name: "textArray", type: "string[]" },
-        { name: "numArray", type: "number[]" },
-        { name: "boolArray", type: "boolean[]" },
-        { name: "dateArray", type: "date[]" }
+        // { name: "textArray", type: "string[]" },
+        // { name: "numArray", type: "number[]" },
+        // { name: "boolArray", type: "boolean[]" },
+        // { name: "dateArray", type: "date[]" }
       ]
     };
     await adapter.exec(query);
@@ -118,10 +151,10 @@ describe("pg/select", () => {
       num: 1000,
       bool: true,
       date: new Date(),
-      textArray: ["foo", "bar"],
-      numArray: [1, 2],
-      boolArray: [true, false],
-      dateArray: [new Date()]
+      // textArray: ["foo", "bar"],
+      // numArray: [1, 2],
+      // boolArray: [true, false],
+      // dateArray: [new Date()]
     };
     await adapter.exec({
       insert: "foo",

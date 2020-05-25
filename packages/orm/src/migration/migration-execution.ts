@@ -1,14 +1,10 @@
-import { RelationalMigrationAdapter } from "@daita/relational";
-import { SqlDmlQuery } from "@daita/relational";
+import { RelationalTransactionAdapter, SqlDdlQuery } from "@daita/relational";
 import { RelationalSchemaDescription } from "../schema/description/relational-schema-description";
 import { merge } from "@daita/common";
 
 export class MigrationExecution {
-  async init(dataAdapter: RelationalMigrationAdapter) {
-    await dataAdapter.execRaw(
-      `CREATE SCHEMA IF NOT EXISTS "daita";`,
-      []
-    );
+  async init(dataAdapter: RelationalTransactionAdapter) {
+    await dataAdapter.exec({createSchema: 'daita', ifNotExists: true});
     await dataAdapter.exec({
       createTable: { schema: "daita", table: "migrations" },
       ifNotExist: true,
@@ -18,7 +14,7 @@ export class MigrationExecution {
     });
   }
 
-  async exists(id: string, dataAdapter: RelationalMigrationAdapter) {
+  async exists(id: string, dataAdapter: RelationalTransactionAdapter) {
     const result = await dataAdapter.exec({
       select: ["id"],
       from: { schema: "daita", table: "migrations" },
@@ -35,8 +31,8 @@ export class MigrationExecution {
   plan(
     current: RelationalSchemaDescription,
     target: RelationalSchemaDescription
-  ): SqlDmlQuery[] {
-    const queries: SqlDmlQuery[] = [];
+  ): SqlDdlQuery[] {
+    const queries: SqlDdlQuery[] = [];
 
     const tables = merge(current.tables, target.tables, (first, second) => first.key === second.key);
     for (const addedTable of tables.added) {
@@ -68,7 +64,7 @@ export class MigrationExecution {
           alterTable: mergedTable.current.name,
           add: {
             column: addedField.name,
-            type: addedField.type
+            type: addedField.type as any //TODO type support check
           }
         });
       }
@@ -141,12 +137,12 @@ export class MigrationExecution {
     current: RelationalSchemaDescription,
     target: RelationalSchemaDescription,
     targetId: string,
-    dataAdapter: RelationalMigrationAdapter
+    dataAdapter: RelationalTransactionAdapter
   ) {
     const sqls = this.plan(current, target);
 
     await dataAdapter.transaction(async client => {
-      await client.execRaw(`LOCK TABLE "daita"."migrations"`, []); //TODO sqlite support?
+      await client.exec( {lockTable: { schema: "daita", table: "migrations" } }); //TODO sqlite support?
       await client.exec({ insert: { schema: "daita", table: "migrations" }, values: [{ id: targetId }] });
 
       for (const sql of sqls) {

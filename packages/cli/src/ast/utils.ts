@@ -94,6 +94,10 @@ export function isKind(
 ): ts.TypeLiteralNode | null;
 export function isKind(
   node: ts.Node | undefined,
+  kind: ts.SyntaxKind.NamedExports,
+): ts.NamedExports | null;
+export function isKind(
+  node: ts.Node | undefined,
   kind: ts.SyntaxKind.NumericLiteral,
 ): ts.NumericLiteral | null;
 export function isKind(
@@ -196,9 +200,14 @@ export function getBooleanValue(literal: ts.BooleanLiteral): boolean {
   throw new Error('not a bool');
 }
 
-export function getIdentifierName(identifier: ts.BindingName | ts.StringLiteral | ts.NumericLiteral | ts.ComputedPropertyName | ts.Expression | ts.QualifiedName) {
+export function getIdentifierName(identifier: ts.PrivateIdentifier | ts.BindingName | ts.StringLiteral | ts.NumericLiteral | ts.ComputedPropertyName | ts.Expression | ts.QualifiedName) {
   if (identifier.kind === ts.SyntaxKind.Identifier) {
     const identfier = <ts.Identifier>identifier;
+    return identfier.text;
+  }
+
+  if (identifier.kind === ts.SyntaxKind.PrivateIdentifier) {
+    const identfier = <ts.PrivateIdentifier>identifier;
     return identfier.text;
   }
 

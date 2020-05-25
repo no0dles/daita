@@ -1,6 +1,6 @@
 import {
   DefaultConstructable,
-  RelationalDataAdapter, RelationalMigrationAdapter, RelationalSchema,
+  RelationalDataAdapter, RelationalSchema,
   RelationalTransactionAdapter,
 } from '@daita/core';
 import {PostgresAdapter} from '@daita/pg';
@@ -28,7 +28,7 @@ export function seed(dataAdapter: RelationalDataAdapter, schema: RelationalSchem
   return new SeedBuilder(dataAdapter, schema);
 }
 
-export async function migrate(dataAdapter: RelationalMigrationAdapter, schema: RelationalSchema) {
+export async function migrate(dataAdapter: RelationalTransactionAdapter, schema: RelationalSchema) {
   const context = schema.migrationContext(dataAdapter);
   await context.apply();
 }

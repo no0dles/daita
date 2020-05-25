@@ -1,8 +1,8 @@
-import { isSqlRawValue, SqlRawValue } from '../sql/sql-raw-value';
+import { isSqlRawValue, SqlRawValue } from '../sql/dml/sql-raw-value';
 import { isAndRootFilter } from '../query/and-root-filter';
 import { isOrRootFilter } from '../query/or-root-filter';
 import { deepClone } from '@daita/common';
-import { SqlWhereQuery } from '../sql/sql-where-query';
+import { SqlWhereQuery } from '../sql/dml/sql-where-query';
 import { RelationalQueryBuilder } from './relational-query-builder';
 import { QueryFilter, RootFilter } from '../query';
 import { SqlSchemaTableField } from '../sql/sql-schema-table-field';
@@ -12,9 +12,9 @@ import {
   SqlInExpression,
   SqlInOperand,
   SqlOperand,
-} from '../sql/expression';
-import { isSqlOrExpression } from '../sql/expression/sql-or-expression';
-import { isSqlAndExpression } from '../sql/expression/sql-and-expression';
+} from '../sql/dml/expression';
+import { isSqlOrExpression } from '../sql/dml/expression/sql-or-expression';
+import { isSqlAndExpression } from '../sql/dml/expression/sql-and-expression';
 import { SqlSchemaTable } from '../sql';
 
 export abstract class RelationalWhereBuilder<

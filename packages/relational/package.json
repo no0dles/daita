@@ -23,8 +23,9 @@
     "url": "https://github.com/no0dles/daita/issues"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "test": "jest",
+    "coverage": "jest --coverage",
     "lint": "eslint src --ext .ts",
     "fixlint": "eslint src --ext .ts --fix",
     "clean": "rm -rf ./dist"
@@ -34,7 +35,6 @@
     "@daita/common": "file:../common",
     "@daita/eslint-config": "file:../eslint-config",
     "@types/jest": "^25.2.1",
-    "@types/node": "^13.13.4",
     "eslint": "^6.8.0",
     "@typescript-eslint/eslint-plugin": "^2.28.0",
     "@typescript-eslint/parser": "^2.28.0",
@@ -43,6 +43,6 @@
     "jest": "^25.3.0",
     "prettier": "^2.0.4",
     "ts-jest": "^25.4.0",
-    "typescript": "~3.7.5"
+    "typescript": "~3.9.3"
   }
 }

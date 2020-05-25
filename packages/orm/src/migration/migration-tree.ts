@@ -2,6 +2,8 @@ import {MigrationDescription} from './migration-description';
 import {getSchemaDescription} from '../schema/relational-schema-description';
 import {SchemaMapper} from '../schema/description/schema-mapper';
 import {BackwardCompatibleMapper} from '../schema/description/backward-compatible-mapper';
+import { MigrationExecution } from './migration-execution';
+import { RelationalTransactionAdapter } from '@daita/relational';
 
 export class MigrationTree {
   private migrationMap: { [id: string]: MigrationDescription } = {};
@@ -117,5 +119,44 @@ export class MigrationTree {
       current = current.after ? this.migrationMap[current.after] : null;
     }
     return migrations;
+  }
+
+  async applyMigrations(relationalTransactionAdapter: RelationalTransactionAdapter) {
+    const exec = new MigrationExecution();
+
+    //TODO warn if things are not migrated
+
+    await exec.init(relationalTransactionAdapter);
+
+    let currentMigrations = this.roots();
+
+    const migrationDescriptions: MigrationDescription[] = [];
+    let currentSchema = this.getSchemaDesc(migrationDescriptions);
+
+    while (currentMigrations.length > 0) {
+      if (currentMigrations.length > 1) {
+        throw new Error("multiple possible next migrations");
+      }
+
+      const currentMigration = currentMigrations[0];
+
+      migrationDescriptions.push(currentMigration);
+      const targetSchema = this.getSchemaDesc(migrationDescriptions);
+      if (!(await exec.exists(currentMigration.id, relationalTransactionAdapter))) {
+        await exec.apply(
+          currentSchema,
+          targetSchema,
+          currentMigration.id,
+          relationalTransactionAdapter
+        );
+      }
+
+      currentSchema = targetSchema;
+      currentMigrations = this.next(currentMigration.id);
+    }
+  }
+
+  private getSchemaDesc(paths: MigrationDescription[]) {
+    return getSchemaDescription(new SchemaMapper(() => new BackwardCompatibleMapper()), paths);
   }
 }

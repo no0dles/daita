@@ -1,30 +1,30 @@
-import {AstVariable} from '../../ast/ast-variable';
-import {TablePermission} from '@daita/core';
-import {parsePermissionBuilder} from './parse-permission-builder';
+import { AstVariable } from '../../ast/ast-variable';
+import { RelationalSchemaDescription } from '@daita/orm';
 
-export function parseSchemaPermissions(schemaVariable: AstVariable) {
-  const result: { [key: string]: TablePermission<any>[] } = {};
-
-  for (const permissionCalls of schemaVariable.getCalls({name: 'permission'})) {
-    const builderArgument = permissionCalls.argument(0);
-
-    if (!builderArgument) {
-      throw new Error('invalid permission call');
+export function parseSchemaPermissions(schema: RelationalSchemaDescription,schemaVariable: AstVariable) {
+  for (const permissionCalls of schemaVariable.getCalls({ name: 'permission' })) {
+    const clsArg = permissionCalls.argument(0);
+    const objArg = permissionCalls.argument(1);
+    if (!clsArg || !objArg) {
+      throw new Error('invalid push call');
     }
 
-    const variable = builderArgument.variable;
-    if (!variable) {
-      throw new Error('invalid variable');
+    const objVal = objArg.objectValue;
+    if (!objVal) {
+      throw new Error('invalid obj');
     }
 
-    const permissions = parsePermissionBuilder(variable)
-    for (const key of Object.keys(permissions)) {
-      if (!result[key]) {
-        result[key] = [];
-      }
-      result[key].push(...permissions[key]);
+    const classDeclaration = clsArg.classDeclaration;
+    if (!classDeclaration) {
+      throw new Error('invalid cls');
     }
+
+    if (!classDeclaration.name) {
+      throw new Error('missing cls name');
+    }
+
+    const permission = objVal.anyValue;
+    schema.addPermission(undefined, classDeclaration.name, classDeclaration.name, permission); //TODO static schema
   }
 
-  return result;
 }

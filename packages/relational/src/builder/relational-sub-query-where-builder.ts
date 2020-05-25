@@ -1,4 +1,4 @@
-import { SqlWhereQuery } from '../sql/sql-where-query';
+import { SqlWhereQuery } from '../sql/dml/sql-where-query';
 import { QueryFilter } from '../query';
 import { RelationalWhereBuilder } from './relational-where-builder';
 import {
@@ -6,7 +6,7 @@ import {
   SqlCompareExpression,
   SqlInExpression,
   SqlOrExpression,
-} from '../sql/expression';
+} from '../sql/dml/expression';
 
 export abstract class RelationalSubQueryWhereBuilder<
   T,

@@ -1,7 +1,7 @@
-import {AstType} from '../../ast/ast-type';
-import {RelationalTableSchemaTableFieldType} from '@daita/core';
-import {AstPropertyDeclaration} from '../../ast/ast-property-declaration';
-import {AstObjectValue} from '../../ast/ast-object-value';
+import { AstType } from '../../ast/ast-type';
+import { AstPropertyDeclaration } from '../../ast/ast-property-declaration';
+import { AstObjectValue } from '../../ast/ast-object-value';
+import { RelationalTableSchemaTableFieldType } from '@daita/orm';
 
 export function parseRelationalType(
   property: AstPropertyDeclaration,

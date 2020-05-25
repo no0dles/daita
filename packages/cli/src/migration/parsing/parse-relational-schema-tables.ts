@@ -1,12 +1,16 @@
-import {AstVariable} from '../../ast/ast-variable';
-import {SchemaTable} from './schema-table';
+import { AstVariable } from '../../ast/ast-variable';
+import { RelationalSchemaDescription, RelationalTableDescription } from '@daita/orm';
+import { parseRelationalSchemaTableFields } from './parse-relational-schema-table-fields';
+import { parseRelationalSchemaTablePrimaryKeys } from './parse-relational-schema-table-primary-keys';
+import { AstClassDeclaration } from '../../ast/ast-class-declaration';
+import { parseRelationalSchemaTableReferences } from './parse-relational-schema-table-references';
 
 export function parseRelationalSchemaTables(
-  schemaVariable: AstVariable,
+  schema: RelationalSchemaDescription, schemaVariable: AstVariable,
 ) {
-  const schemaTableMap: { [key: string]: SchemaTable } = {};
+  const calls = schemaVariable.getCalls({ name: 'table' });
+  const classDeclarations: { [key: string]: AstClassDeclaration } = {};
 
-  const calls = schemaVariable.getCalls({name: 'table'});
   for (const call of calls) {
     const classArgument = call.argument(0);
     const optionsArgument = call.argument(1);
@@ -23,45 +27,29 @@ export function parseRelationalSchemaTables(
       throw new Error('missing class name');
     }
 
-    if (schemaTableMap[classDeclaration.name]) {
+    if (schema.containsTable(classDeclaration.name)) {
       throw new Error('name already registered');
     }
 
-    const key = optionsArgument?.objectValue?.property('key');
-    if (key) {
-      if (key.stringValue) {
-        schemaTableMap[classDeclaration.name] = {
-          classDeclaration,
-          options: {
-            key: [key.stringValue],
-          },
-        };
-      } else if (key.arrayValue) {
-        const keys = new Array<string>();
-        for (const item of key.arrayValue) {
-          if (item.stringValue) {
-            keys.push(item.stringValue);
-          } else {
-            throw new Error('not all keys are valid');
-          }
-        }
-
-        schemaTableMap[classDeclaration.name] = {
-          classDeclaration,
-          options: {
-            key: keys,
-          },
-        };
-      }
-    } else {
-      schemaTableMap[classDeclaration.name] = {
-        classDeclaration,
-        options: {
-          key: ['id'],
-        },
-      };
+    if (!classDeclaration.name) {
+      throw new Error(`missing table class name`);
     }
+
+    const table = new RelationalTableDescription(
+      schema,
+      classDeclaration.name,
+      classDeclaration.name,
+      undefined, //TODO schema static
+    );
+
+    parseRelationalSchemaTableFields(table, classDeclaration);
+    parseRelationalSchemaTablePrimaryKeys(table, optionsArgument);
+
+    schema.addTable(classDeclaration.name, table);
+    classDeclarations[classDeclaration.name] = classDeclaration;
   }
 
-  return schemaTableMap;
+  for(const table of schema.tables) {
+    parseRelationalSchemaTableReferences(schema, table, classDeclarations[table.name]);
+  }
 }

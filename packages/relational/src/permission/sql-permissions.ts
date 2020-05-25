@@ -1,23 +1,21 @@
-import { isSqlCompareExpression } from "../sql/expression/sql-compare-expression";
-import { isSqlDelete, SqlDelete } from "../sql/delete/sql-delete";
-import {
-  isSqlAlterTable,
-  isSqlCreateTable, isSqlDropTable,
-  SqlAlterTableAdd,
-  SqlAlterTableDrop, SqlCreateTableQuery, SqlDmlQuery,
-  SqlDropTableQuery
-} from "../sql/sql-dml-builder";
-import { isSqlSelect, SqlSelect } from "../sql/select/sql-select";
-import { isSqlOrExpression } from "../sql/expression/sql-or-expression";
+import { isSqlCompareExpression } from "../sql/dml/expression/sql-compare-expression";
+import { isSqlDelete, SqlDelete } from "../sql/dml/delete/sql-delete";
+import { isSqlSelect, SqlSelect } from "../sql/dml/select/sql-select";
+import { isSqlOrExpression } from "../sql/dml/expression/sql-or-expression";
 import { TablePermission } from "./table-permission";
-import { SqlExpression } from "../sql/expression";
-import { isSqlUpdate, SqlUpdate } from "../sql/update/sql-update";
-import { isSqlInsert, SqlInsert } from "../sql/insert/sql-insert";
-import { SqlQuery, SqlTable } from "../sql";
-import { isSqlInExpression } from "../sql/expression/sql-in-expression";
-import { isSqlAndExpression } from "../sql/expression/sql-and-expression";
+import { SqlExpression } from "../sql/dml/expression";
+import { isSqlUpdate, SqlUpdate } from "../sql/dml/update/sql-update";
+import { isSqlInsert, SqlInsert } from "../sql/dml/insert/sql-insert";
+import { SqlTable, SqlQuery } from "../sql";
+import { isSqlInExpression } from "../sql/dml/expression/sql-in-expression";
+import { isSqlAndExpression } from "../sql/dml/expression/sql-and-expression";
 import { getSqlTableIdentifier, isSqlTable } from "../sql/sql-table";
 import { failNever } from "@daita/common";
+import { isSqlCreateTable, SqlCreateTableQuery } from "../sql/ddl/create-table/create-table-query";
+import { SqlAlterTableAdd } from "../sql/ddl/alter-table/alter-table-add-query";
+import { isSqlAlterTable, SqlAlterTableQuery } from "../sql/ddl/alter-table/alter-table-query";
+import { isSqlDropTable, SqlDropTableQuery } from "../sql/ddl/drop-table/drop-table-query";
+import { SqlAlterTableDrop } from "../sql/ddl/alter-table/alter-table-query-drop";
 
 export class SqlPermissions {
   constructor(private permissions: { [key: string]: TablePermission<any>[] }) {
@@ -123,7 +121,7 @@ export class SqlPermissions {
     return false;
   }
 
-  isQueryAuthorized(query: SqlQuery | SqlDmlQuery) {
+  isQueryAuthorized(query: SqlQuery) {
     if (isSqlSelect(query)) {
       return this.isSelectAuthorized(query);
     } else if (isSqlUpdate(query)) {
@@ -143,7 +141,7 @@ export class SqlPermissions {
     return false;
   }
 
-  private isSqlCreateTableAuthorized(query: SqlCreateTableQuery) {
+  private isSqlCreateTableAuthorized(query: SqlCreateTableQuery<any>) {
     return false;
   }
 
@@ -151,7 +149,7 @@ export class SqlPermissions {
     return false;
   }
 
-  private isSqlAlterTableAuthorized(query: SqlAlterTableAdd | SqlAlterTableDrop) {
+  private isSqlAlterTableAuthorized(query: SqlAlterTableAdd<any> | SqlAlterTableDrop) {
     return false;
   }
 }

@@ -13,7 +13,7 @@ import {
   SchemaPermissions
 } from "../permission-builder";
 import {
-  RelationalDataAdapter, RelationalMigrationAdapter,
+  RelationalDataAdapter,
   RelationalTransactionAdapter,
   TablePermission
 } from "@daita/relational";
@@ -22,7 +22,7 @@ import { Constructable, DefaultConstructable } from "@daita/common";
 export class RelationalSchema {
   private migrationTree = new MigrationTree();
   private permissions = new SchemaPermissions();
-  private tables: Constructable[] = [];
+  private tables: Constructable<any>[] = [];
 
   schema: string | null = null;
 
@@ -85,7 +85,7 @@ export class RelationalSchema {
     return new RelationalSchemaTransactionContext(dataAdapter, schema);
   }
 
-  migrationContext(dataAdapter: RelationalMigrationAdapter) {
+  migrationContext(dataAdapter: RelationalTransactionAdapter) {
     return new RelationalSchemaMigrationContext(dataAdapter, this.migrationTree);
   }
 }

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cli from '../index';
-import {Defer} from '@daita/core';
+import {Defer} from '@daita/common';
 
 export function isNotNull<T>(value: T): asserts value is NonNullable<T> {
   expect(value).not.toBeUndefined();

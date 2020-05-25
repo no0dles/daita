@@ -2,8 +2,8 @@ import { SqlTable } from '../sql/sql-table';
 import { RelationalAdapterMock } from '../testing/relational-adapter-mock';
 import { User } from './relational-insert-builder.spec';
 import { RelationalUpdateBuilder } from './relational-update-builder';
-import { SqlUpdate } from '../sql/update';
-import { isSqlUpdate } from '../sql/update/sql-update';
+import { SqlUpdate } from '../sql/dml/update';
+import { isSqlUpdate } from '../sql/dml/update/sql-update';
 
 async function testUpdate<T>(
   sqlTable: SqlTable,

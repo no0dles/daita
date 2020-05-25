@@ -4,11 +4,13 @@
   "description": "",
   "private": true,
   "dependencies": {
+    "typescript": "^3.9.3",
     "@daita/internal-npm-publish": "file:./packages/internal/npm-publish"
   },
   "scripts": {
     "publish": "npm-publish",
     "pack": "npm-pack",
+    "build": "tsc -b",
     "clean": "npm-clean",
     "bootstrap": "npm-bootstrap",
     "version": "npm-publish-version"

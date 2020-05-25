@@ -1,10 +1,10 @@
-import { SqlDelete, SqlInsert, SqlQuery, SqlSelect, SqlUpdate } from "../sql";
 import {
   isRelationalRawResult,
   RelationalDataAdapter,
   RelationalRawResult,
   RelationalTransactionAdapter
 } from "../adapter";
+import { SqlQuery } from '../sql';
 
 export class RelationalAdapterMock implements RelationalTransactionAdapter {
   private mockResult: RelationalRawResult | null = null;
@@ -71,5 +71,9 @@ export class RelationalAdapterMock implements RelationalTransactionAdapter {
   async close() {
     this.mockResult = null;
     this.expected = null;
+  }
+
+  supportsQuery(sql: any): boolean {
+    return true;
   }
 }

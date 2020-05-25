@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "test": "jest",
-    "build": "tsc"
+    "build": "tsc -b"
   },
   "author": "",
   "license": "MIT",
@@ -20,7 +20,7 @@
     "@types/node": "^12.12.17",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.4.1",
-    "typescript": "~3.7.5",
+    "typescript": "~3.9.3",
     "@types/jest": "^25.1.1",
     "jest": "^25.1.0",
     "ts-jest": "^25.1.0"

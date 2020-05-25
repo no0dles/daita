@@ -1,14 +1,14 @@
-import {TableInformation} from '../../context/table-information';
-import {ArrayMap} from './array-map';
-import {RelationalTableDescription} from './relational-table-description';
-import {ContextUser} from '../../auth';
-import { getSqlTableIdentifier, TablePermission } from "@daita/relational";
-import { SchemaPermissions } from "../../permission-builder";
-import { arrayClone } from "@daita/common";
+import { TableInformation } from '../../context/table-information';
+import { ArrayMap } from './array-map';
+import { RelationalTableDescription } from './relational-table-description';
+import { ContextUser } from '../../auth';
+import { getSqlTableIdentifier, TablePermission } from '@daita/relational';
+import { SchemaPermissions } from '../../permission-builder';
+import { arrayClone } from '@daita/common';
 
 export class RelationalSchemaDescription {
   private readonly tableArrayMap = new ArrayMap<RelationalTableDescription>();
-  private readonly schemaPermissions = new SchemaPermissions();
+  public readonly schemaPermissions = new SchemaPermissions();
 
   table(table: TableInformation<any>): RelationalTableDescription {
     const key = getSqlTableIdentifier(table);
@@ -23,12 +23,17 @@ export class RelationalSchemaDescription {
     return arrayClone(this.tableArrayMap.array);
   }
 
+  containsTable(table: TableInformation<any>): boolean {
+    const key = getSqlTableIdentifier(table);
+    return this.tableArrayMap.exists(key);
+  }
+
   addTable(name: string, table: RelationalTableDescription) {
     this.tableArrayMap.add(name, table);
   }
 
   removeTable(table: string, schema?: string) {
-    this.tableArrayMap.remove(getSqlTableIdentifier({table, schema}));
+    this.tableArrayMap.remove(getSqlTableIdentifier({ table, schema }));
   }
 
   userPermissions(user: ContextUser) {
@@ -36,11 +41,11 @@ export class RelationalSchemaDescription {
   }
 
   addPermission(schema: string | undefined, table: string, mappedName: string, permission: TablePermission<any>) {
-    this.schemaPermissions.add({table: mappedName, schema}, [permission]);
+    this.schemaPermissions.add({ table: mappedName, schema }, [permission]);
   }
 
   removePermission(schema: string | undefined, table: string, mappedName: string, permission: TablePermission<any>) {
-    this.schemaPermissions.remove({table: mappedName, schema}, [permission]);
+    this.schemaPermissions.remove({ table: mappedName, schema }, [permission]);
   }
 }
 

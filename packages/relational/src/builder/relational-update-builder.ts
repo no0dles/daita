@@ -1,8 +1,8 @@
 import { RelationalDataAdapter } from "../adapter";
 import { deepClone, PrimitivePartial } from "@daita/common";
 import { RelationalSubQueryWhereBuilder } from "./relational-sub-query-where-builder";
-import { isSqlUpdateSet } from "../sql/update/sql-update-set";
-import { SqlUpdate, SqlUpdateResult } from "../sql/update";
+import { isSqlUpdateSet } from "../sql/dml/update/sql-update-set";
+import { SqlUpdate, SqlUpdateResult } from "../sql/dml/update";
 import { SqlSchemaTable } from "../sql";
 import { RootFilter } from "../query";
 

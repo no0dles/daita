@@ -1,0 +1,13 @@
+{
+    "files": [],
+    "references": [{
+      "path": "./http-adapter/tsconfig.json"
+    }, {
+      "path": "./http-client-common/tsconfig.json"
+    }, {
+      "path": "./http-server/tsconfig.json"
+    }, {
+      "path": "./http-server-common/tsconfig.json"
+    }]
+  }
+  

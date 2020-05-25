@@ -12,6 +12,10 @@ export class ArrayMap<T> {
     this.array.push(value);
   }
 
+  exists(key: string): boolean {
+    return key in this.map;
+  }
+
   remove(key: string) {
     const item = this.map[key];
     const index = this.array.indexOf(item);

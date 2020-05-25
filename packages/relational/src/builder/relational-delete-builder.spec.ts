@@ -1,7 +1,7 @@
 import { SqlTable } from '../sql/sql-table';
 import { RelationalAdapterMock } from '../testing/relational-adapter-mock';
 import { RelationalDeleteBuilder } from './relational-delete-builder';
-import { isSqlDelete, SqlDelete } from '../sql/delete/sql-delete';
+import { isSqlDelete, SqlDelete } from '../sql/dml/delete/sql-delete';
 
 async function testDelete<T>(
   sqlTable: SqlTable,

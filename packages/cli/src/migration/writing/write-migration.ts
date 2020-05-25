@@ -2,9 +2,9 @@ import * as ts from 'typescript';
 import {ScriptKind, ScriptTarget} from 'typescript';
 import {getIdentifierName, isKind, parseSourceFile} from '../../ast/utils';
 import * as fs from 'fs';
-import {MigrationStep} from '@daita/core';
-import {writeMigrationStep} from '../steps/write-migration-step';
 import {getMigrationName} from '../utils';
+import { writeRelationalMigrationStep } from '../steps/write-migration-step';
+import { MigrationStep } from '@daita/orm';
 
 export function addMigrationImport(
   schemaFilePath: string,
@@ -286,7 +286,7 @@ export function writeMigration(
     ts.createPropertyAssignment(
       ts.createIdentifier('steps'),
       ts.createArrayLiteral(
-        steps.map(step => writeMigrationStep(step)),
+        steps.map(step => writeRelationalMigrationStep(step)),
         true,
       ),
     ));

@@ -1,5 +1,5 @@
 import {context} from './test';
-import { RelationalAdapterMock } from "@daita/relational";
+import { RelationalAdapterMock } from "@daita/relational/dist/testing";
 
 export class User {
   id!: string;

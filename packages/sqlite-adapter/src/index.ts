@@ -1,14 +1,19 @@
 import * as sqlite from "sqlite3";
 import {
-  CreateAdapterOptions,
-  CreateDataAdapterOptions, CreateMigrationAdapterOptions, CreateTransactionAdapterOptions, DestroyAdapterOptions,
+  CreateAdapterOptions, CreateDataAdapterOptions,
+  CreateTransactionAdapterOptions, DestroyAdapterOptions,
   isSqlQuery, RelationalDataAdapter, RelationalDataAdapterFactory,
-  RelationalMigrationAdapter, RelationalMigrationAdapterFactory,
-  RelationalMigrationTransactionAdapter,
-  RelationalRawResult, RelationalTransactionAdapterFactory, SqlDmlBuilder,
-  SqlQuery, SqlQueryBuilder
-} from "@daita/relational";
+  RelationalRawResult, RelationalTransactionAdapter, RelationalTransactionAdapterFactory, SimpleFormatContext,
+  SqlQuery,
+} from '@daita/relational';
 import { Defer } from "@daita/common";
+import { isSqlDelete } from '@daita/relational/dist/sql/dml/delete/sql-delete';
+import { isSqlSelect } from '@daita/relational/dist/sql/dml/select/sql-select';
+import { isSqlUpdate } from '@daita/relational/dist/sql/dml/update/sql-update';
+import { isSqlInsert } from '@daita/relational/dist/sql/dml/insert/sql-insert';
+import { isSqlCreateTable } from '@daita/relational/dist/sql/ddl/create-table/create-table-query';
+import { isSqlDropTable } from '@daita/relational/dist/sql/ddl/drop-table/drop-table-query';
+import { sqliteFormatter } from './sqlite-formatter';
 
 export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
   constructor(protected db: sqlite.Database) {
@@ -52,13 +57,9 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
   }
 
   async exec(sql: SqlQuery): Promise<RelationalRawResult> {
-    if (isSqlQuery(sql)) {
-      const sqlBuilder = new SqlQueryBuilder(sql);
-      return await this.execRaw(sqlBuilder.sql, sqlBuilder.values);
-    } else {
-      const sqlBuilder = new SqlDmlBuilder(sql);
-      return await this.execRaw(sqlBuilder.sql, []);
-    }
+    const ctx = new SimpleFormatContext('?');
+    const query = sqliteFormatter.format(sql, ctx);
+    return await this.execRaw(query, ctx.getValues());
   }
 
   execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
@@ -80,14 +81,19 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
       return defer.promise;
     });
   }
+
+  supportsQuery(sql: any): boolean {
+    return isSqlDelete(sql) || isSqlSelect(sql) || isSqlUpdate(sql) || 
+      isSqlInsert(sql) || isSqlCreateTable(sql) || isSqlDropTable(sql);
+  }
 }
 
-export class SqliteRelationalAdapter extends SqliteRelationalDataAdapter implements RelationalMigrationAdapter {
+export class SqliteRelationalAdapter extends SqliteRelationalDataAdapter implements RelationalTransactionAdapter {
   constructor(private fileName: string) {
     super(new sqlite.Database(fileName));
   }
 
-  transaction<T>(action: (adapter: RelationalMigrationTransactionAdapter) => Promise<T>): Promise<T> {
+  transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
     return this.serialize<T>(async () => {
       await this.db.run('BEGIN');
       try {
@@ -102,21 +108,21 @@ export class SqliteRelationalAdapter extends SqliteRelationalDataAdapter impleme
   }
 }
 
-export const adapterFactory: RelationalDataAdapterFactory & RelationalTransactionAdapterFactory & RelationalMigrationAdapterFactory = {
-  async createMigrationAdapter(options?: CreateDataAdapterOptions): Promise<RelationalMigrationAdapter> {
+export const adapterFactory: RelationalDataAdapterFactory & RelationalTransactionAdapterFactory = {
+  async createTransactionAdapter(options?: CreateTransactionAdapterOptions): Promise<RelationalTransactionAdapter> {
     const fileName = await getFileName(options);
     return new SqliteRelationalAdapter(fileName);
   },
-  async createTransactionAdapter(options?: CreateTransactionAdapterOptions): Promise<RelationalMigrationAdapter> {
-    const fileName = await getFileName(options);
-    return new SqliteRelationalAdapter(fileName);
-  },
-  async createDataAdapter(options?: CreateMigrationAdapterOptions): Promise<RelationalMigrationAdapter> {
+  async createDataAdapter(options?: CreateDataAdapterOptions): Promise<RelationalDataAdapter> {
     const fileName = await getFileName(options);
     return new SqliteRelationalAdapter(fileName);
   },
   async destroy(options?: DestroyAdapterOptions): Promise<void> {
 
+  },
+  name: "@daita/sqlite-adapter",
+  canCreate(connectionString: string): boolean {
+    return connectionString === ":memory:" || connectionString.startsWith('.' || connectionString.startsWith('sqlite:'));
   }
 };
 

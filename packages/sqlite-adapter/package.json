@@ -8,7 +8,7 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "test": "jest",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fixlint": "tslint -c tslint.json --fix src/**/*.ts",
@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/sqlite3": "^3.1.6",
-    "typescript": "~3.7.5",
+    "typescript": "~3.9.3",
     "@types/jest": "^25.1.1",
     "jest": "^25.1.0",
     "ts-jest": "^25.1.0"

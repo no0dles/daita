@@ -8,7 +8,7 @@ export class HttpTransactionAdapter extends HttpDataAdapter implements Relationa
 
   transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
     const tid = this.idGenerator.next();
-    const transaction = new HttpTransactionDataAdapter<T>(tid, this.baseUrl, this.authProvider);
+    const transaction = new HttpTransactionDataAdapter(tid, this.baseUrl, this.authProvider);
     return transaction.run(() => action(transaction));
   }
 }

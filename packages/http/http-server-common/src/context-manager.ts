@@ -1,10 +1,11 @@
 import {
-  isSqlQuery, RelationalDataAdapter, SqlDmlQuery,
-  SqlPermissions, SqlQuery,
+  RelationalDataAdapter,
+  SqlPermissions,
+  SqlQuery,
+  isSqlQuery,
 } from '@daita/relational';
-import {AppDataOptions, AppOptions, AppTransactionOptions} from './app-options';
+import {AppTransactionOptions} from './app-options';
 import {TransactionManager} from './transaction-manager';
-import {TokenProvider} from './auth';
 
 export class ContextManager {
 
@@ -12,7 +13,7 @@ export class ContextManager {
               private permissions: SqlPermissions | null | undefined) {
   }
 
-  async exec(sql: SqlQuery | SqlDmlQuery, validateAuth: boolean) {
+  async exec(sql: SqlQuery, validateAuth: boolean) {
     if (validateAuth) {
       if (!this.permissions) {
         throw new Error('no permissions');

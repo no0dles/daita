@@ -1,11 +1,11 @@
-import {getChildNodes, getIdentifierName} from './utils';
+import { getChildNodes, getIdentifierName, isKind } from './utils';
 import * as path from 'path';
 import * as ts from 'typescript';
-import {AstClassDeclaration} from './ast-class-declaration';
-import {AstImport} from './ast-import';
-import {AstVariable} from './ast-variable';
-import {AstExport} from './ast-export';
-import {AstContext} from './ast-context';
+import { AstClassDeclaration } from './ast-class-declaration';
+import { AstImport } from './ast-import';
+import { AstVariable } from './ast-variable';
+import { AstExport } from './ast-export';
+import { AstContext } from './ast-context';
 
 export class AstSourceFile {
   constructor(private context: AstContext,
@@ -37,7 +37,7 @@ export class AstSourceFile {
     for (const variableStatement of variableStatements) {
       for (const declaration of variableStatement.declarationList.declarations) {
         const variable = new AstVariable(this, this.sourceFile, variableStatement, declaration);
-        astVariables.push(variable)
+        astVariables.push(variable);
       }
     }
 
@@ -81,7 +81,7 @@ export class AstSourceFile {
     }
 
     if (!options || !options.excludeVariables) {
-      const variables = this.getVariables({includeImported: true})
+      const variables = this.getVariables({ includeImported: true })
         .filter(v => v.exported);
       for (const variable of variables) {
         astExports.push(new AstExport(this, variable.name));
@@ -92,7 +92,7 @@ export class AstSourceFile {
     const exportDeclarations = getChildNodes(this.sourceFile, ts.SyntaxKind.ExportDeclaration);
     for (const exportDeclaration of exportDeclarations) {
       if (!exportDeclaration.moduleSpecifier) {
-        continue
+        continue;
       }
       const exportFile = getIdentifierName(exportDeclaration.moduleSpecifier);
       if (!exportFile.startsWith('.')) {
@@ -106,11 +106,14 @@ export class AstSourceFile {
       }
 
       if (exportDeclaration.exportClause) {
-        for (const element of exportDeclaration.exportClause.elements) {
-          const name = getIdentifierName(element.name);
-          const exportedClass = exportSourceFile.getExport(name);
-          if (exportedClass) {
-            astExports.push(exportedClass);
+        const namedExports = isKind(exportDeclaration.exportClause, ts.SyntaxKind.NamedExports);
+        if (namedExports) {
+          for (const element of namedExports.elements) {
+            const name = getIdentifierName(element.name);
+            const exportedClass = exportSourceFile.getExport(name);
+            if (exportedClass) {
+              astExports.push(exportedClass);
+            }
           }
         }
       } else {

@@ -1,4 +1,4 @@
-import { SqlRawValue } from '../sql/sql-raw-value';
+import { SqlRawValue } from '../sql/dml/sql-raw-value';
 import { RelationalExpressionBuilder } from './relational-expression-builder';
 import { SqlSchemaTableField } from '../sql';
 import { Full } from "@daita/common";

@@ -13,13 +13,13 @@
   "bugs": "https://github.com/no0dles/daita/issues",
   "devDependencies": {
     "@types/node": "^13.13.2",
-    "typescript": "~3.7.5"
+    "typescript": "~3.9.3"
   },
   "homepage": "https://github.com/no0dles/daita",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -b tsconfig.build.json",
+    "build": "tsc -b tsconfig.json",
     "clean": "rm -rf ./dist"
   },
   "types": "dist/index.d.ts"

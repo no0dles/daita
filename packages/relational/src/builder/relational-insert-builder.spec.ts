@@ -1,7 +1,7 @@
 import { RelationalInsertBuilder } from './relational-insert-builder';
 import { RelationalAdapterMock } from '../testing/relational-adapter-mock';
 import { SqlTable } from '../sql/sql-table';
-import { SqlInsert } from '../sql/insert';
+import { SqlInsert } from '../sql/dml/insert';
 
 export class User {
   id!: string;

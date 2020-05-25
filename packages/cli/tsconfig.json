@@ -1,17 +1,14 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
-    "paths": {
-      "@daita/relational": ["relational/src"],
-      "@daita/http-server": ["http-server/src"],
-      "@daita/pg": ["adapters/pg/src"],
-      "@daita/mongodb": ["adapters/mongodb/src"]
-    }
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
   "references": [
+    {
+      "path": "../orm/tsconfig.json"
+    },
     {
       "path": "../relational/tsconfig.json"
     },

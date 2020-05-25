@@ -9,8 +9,10 @@ import {
 
 export function relationalRoute(options: AppOptions) {
   if (isAppTransactionOptions(options)) {
+    console.log('transaction route');
     return relationalTransactionRoute(options);
   } else {
+    console.log('data route');
     return relationalDataRoute(options);
   }
 }
@@ -20,10 +22,10 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
   const manager = new TransactionContextManager(options);
 
   function getTransactionId(req: express.Request, res: express.Response): string | null {
-    if (typeof req.query['tid'] === 'string') {
-      return req.query['tid'];
+    if (typeof req.params['tid'] === 'string') {
+      return req.params['tid'];
     } else {
-      res.status(400).json({message: 'tid query is required'});
+      res.status(400).json({message: 'tid param is required'});
     }
     return null;
   }

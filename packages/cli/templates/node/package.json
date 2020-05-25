@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "mocha",
-    "build": "tsc",
+    "build": "tsc -b",
     "start": "ts-node src/index.ts"
   },
   "license": "{{LICENSE}}",
@@ -23,6 +23,6 @@
     "mocha": "^6.2.2",
     "source-map-support": "^0.5.16",
     "ts-node": "^8.4.1",
-    "typescript": "~3.7.5"
+    "typescript": "~3.9.3"
   }
 }

@@ -1,12 +1,12 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
     "paths": {
-      "@daita/common": ["common/src"],
-      "@daita/relational": ["relational/src"]
+      "@daita/relational": ["relational/src"],
+      "@daita/common": ["common/src"]
     }
   },
   "references": [{

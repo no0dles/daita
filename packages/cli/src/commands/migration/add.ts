@@ -14,8 +14,8 @@ import {
   addMigrationRegistration,
   writeMigration,
 } from '../../migration/writing/write-migration';
-import {generateRelationalMigrationSteps} from '../../migration/generation/generate-relational-migration-steps';
 import {getMigrationName} from '../../migration/utils';
+import { generateRelationalMigrationSteps } from '@daita/orm';
 
 export default class Add extends Command {
   static description = 'adds a new migration';
@@ -50,7 +50,8 @@ export default class Add extends Command {
     }
 
     const migrationTree = schemaInfo.getMigrationTree();
-    const currentSchema = migrationTree.defaultSchema();
+    const lastMigration = migrationTree.last()[0];
+    const currentSchema = migrationTree.defaultBackwardDescription();
 
     const tasks = new Listr([
       {
@@ -74,7 +75,7 @@ export default class Add extends Command {
         task: ctx => {
           const sourceFile = writeMigration(
             name,
-            currentSchema.migrationId ? currentSchema.migrationId : undefined,
+            lastMigration ? lastMigration.id : undefined,
             undefined,
             ctx.steps,
           );

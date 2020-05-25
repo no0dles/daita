@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@daita/http-server": "file:../http-server",
-    "typescript": "~3.7.5",
+    "typescript": "~3.9.3",
     "@types/jest": "^25.1.1",
     "jest": "^25.1.0",
     "ts-jest": "^25.1.0"
@@ -23,7 +23,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -b tsconfig.build.json",
+    "build": "tsc -b",
     "test": "jest",
     "clean": "rm -rf ./dist",
     "lint": "tslint -c tslint.json src/**/*.ts",

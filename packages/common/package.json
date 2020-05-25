@@ -11,7 +11,10 @@
   "author": {
     "name": "Pascal Bertschi"
   },
-  "keywords": ["daita", "common"],
+  "keywords": [
+    "daita",
+    "common"
+  ],
   "bugs": {
     "url": "https://github.com/no0dles/daita/issues"
   },
@@ -20,7 +23,7 @@
     "url": "https://github.com/no0dles/daita"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -b",
     "test": "jest",
     "coverage": "jest --coverage",
     "lint": "eslint src --ext .ts",
@@ -38,6 +41,6 @@
     "jest": "^25.3.0",
     "prettier": "^2.0.4",
     "ts-jest": "^25.4.0",
-    "typescript": "~3.7.5"
+    "typescript": "~3.9.3"
   }
 }

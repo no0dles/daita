@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "description": "examples and tests for relational and adapters",
   "scripts": {
-    "build": "tsc -b tsconfig.build.json",
+    "build": "tsc -b",
     "test": "env DATABASE_URL=postgres://postgres:postgres@localhost jest",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fixlint": "tslint -c tslint.json --fix src/**/*.ts",
@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@types/pg": "^7.14.3",
-    "typescript": "~3.7.5",
+    "typescript": "~3.9.3",
     "@types/jest": "^25.1.1",
     "jest": "^25.1.0",
     "ts-node": "^8.9.1",

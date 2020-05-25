@@ -1,5 +1,5 @@
 import { RelationalDataAdapter } from '../adapter';
-import { SqlRawValue } from '../sql/sql-raw-value';
+import { SqlRawValue } from '../sql/dml/sql-raw-value';
 import { deepClone } from '@daita/common';
 import { RelationalWhereBuilder } from './relational-where-builder';
 import { RelationalSelectFirstBuilder } from './relational-select-first-builder';
@@ -15,8 +15,8 @@ import {
   SqlSelectFrom,
   SqlSelectJoinType,
   SqlSelectOrderBy,
-} from '../sql/select';
-import { isSqlAlias } from '../sql/select/sql-alias';
+} from '../sql/dml/select';
+import { isSqlAlias } from '../sql/dml/select/sql-alias';
 import { RootFilter } from '../query';
 import { TableInformation } from "../types/table-information";
 import { getSqlSchemaTable } from "../sql";
