@@ -99,18 +99,6 @@ export function writeRelationalMigrationStep(migrationStep: MigrationStep): ts.O
       ts.createPropertyAssignment('table', ts.createStringLiteral(migrationStep.table)),
       ts.createPropertyAssignment('fieldName', ts.createStringLiteral(migrationStep.fieldName)),
     ]);
-  } else if (migrationStep.kind === 'drop_table_permission') {
-    return ts.createObjectLiteral([
-      ts.createPropertyAssignment('kind', ts.createStringLiteral(migrationStep.kind)),
-      ts.createPropertyAssignment('table', ts.createStringLiteral(migrationStep.table)),
-      ts.createPropertyAssignment('permission', createObject(migrationStep.permission)),
-    ]);
-  } else if (migrationStep.kind === 'add_table_permission') {
-    return ts.createObjectLiteral([
-      ts.createPropertyAssignment('kind', ts.createStringLiteral(migrationStep.kind)),
-      ts.createPropertyAssignment('table', ts.createStringLiteral(migrationStep.table)),
-      ts.createPropertyAssignment('permission', createObject(migrationStep.permission)),
-    ]);
   }
 
   return fail(migrationStep, `Unknown migration step ${JSON.stringify(migrationStep)}`);

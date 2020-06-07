@@ -4,6 +4,7 @@ import { parseRelationalSchemaTableFields } from './parse-relational-schema-tabl
 import { parseRelationalSchemaTablePrimaryKeys } from './parse-relational-schema-table-primary-keys';
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { parseRelationalSchemaTableReferences } from './parse-relational-schema-table-references';
+import { parseTableDescription } from './parse-table-description';
 
 export function parseRelationalSchemaTables(
   schema: RelationalSchemaDescription, schemaVariable: AstVariable,
@@ -23,11 +24,9 @@ export function parseRelationalSchemaTables(
       throw new Error(`unable to find class ${classArgument.className} in schema ${schemaVariable.name}`);
     }
 
-    if (!classDeclaration.name) {
-      throw new Error('missing class name');
-    }
+    const tableDescription = parseTableDescription(classDeclaration);
 
-    if (schema.containsTable(classDeclaration.name)) {
+    if (schema.containsTable(tableDescription)) {
       throw new Error('name already registered');
     }
 
@@ -37,19 +36,19 @@ export function parseRelationalSchemaTables(
 
     const table = new RelationalTableDescription(
       schema,
-      classDeclaration.name,
-      classDeclaration.name,
-      undefined, //TODO schema static
+      tableDescription.table,
+      tableDescription.table,
+      tableDescription.schema,
     );
 
     parseRelationalSchemaTableFields(table, classDeclaration);
     parseRelationalSchemaTablePrimaryKeys(table, optionsArgument);
 
-    schema.addTable(classDeclaration.name, table);
+    schema.addTable(tableDescription, table);
     classDeclarations[classDeclaration.name] = classDeclaration;
   }
 
-  for(const table of schema.tables) {
+  for (const table of schema.tables) {
     parseRelationalSchemaTableReferences(schema, table, classDeclarations[table.name]);
   }
 }

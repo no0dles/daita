@@ -6,6 +6,7 @@ import {
 } from '@daita/orm';
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { isRequiredProperty } from './parse-relational-schema-table-fields';
+import { parseTableDescription } from './parse-table-description';
 
 export function parseRelationalSchemaTableReferences(schema: RelationalSchemaDescription, table: RelationalTableDescription, classDeclaration: AstClassDeclaration) {
   for (const property of classDeclaration.getProperties({ includedInherited: true })) {
@@ -19,11 +20,8 @@ export function parseRelationalSchemaTableReferences(schema: RelationalSchemaDes
         throw new Error('invalid reference');
       }
 
-      if (!referenceClass.name) {
-        throw new Error('reference name is missing');
-      }
-
-      const referenceTable = schema.table(referenceClass.name);
+      const tableDescription = parseTableDescription(referenceClass)
+      const referenceTable = schema.table(tableDescription);
       if (!referenceTable) {
         throw new Error('reference not registered');
       }

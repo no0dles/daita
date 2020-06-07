@@ -1,7 +1,7 @@
-import { SqlRawValue } from '../dml';
+import { ValueType } from '../description/value-type';
 
 export interface FormatContext {
-  getValues(): SqlRawValue[];
-
-  appendValue(value: SqlRawValue): string;
+  getValues(): ValueType[];
+  escape(value: string): string;
+  appendValue(value: ValueType): string;
 }

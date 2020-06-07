@@ -1,9 +1,10 @@
-import {generateRelationalMigrationSteps} from './generate-relational-migration-steps';
-import {RelationalTableSchemaTableFieldType} from '../../schema/relational-table-schema-table-field-type';
-import {RelationalSchemaDescription} from '../../schema/description/relational-schema-description';
-import {RelationalTableDescription} from '../../schema/description/relational-table-description';
-import {RelationalTableFieldDescription} from '../../schema/description/relational-table-field-description';
-import {TablePermission} from '@daita/relational';
+import { generateRelationalMigrationSteps } from './generate-relational-migration-steps';
+import { RelationalTableSchemaTableFieldType } from '../../schema/relational-table-schema-table-field-type';
+import { RelationalSchemaDescription } from '../../schema/description/relational-schema-description';
+import { RelationalTableDescription } from '../../schema/description/relational-table-description';
+import { RelationalTableFieldDescription } from '../../schema/description/relational-table-field-description';
+import { RelationalTableReferenceDescription } from '../../schema';
+import { table } from '@daita/relational';
 
 describe('get-migration-steps', () => {
   it('should add table', () => {
@@ -11,13 +12,13 @@ describe('get-migration-steps', () => {
     const newSchema = createSchema({
       tables: {
         'User': {
-          fields: {id: {type: 'string', primaryKey: true}},
+          fields: { id: { type: 'string', primaryKey: true } },
         },
       },
     });
     const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
     expect(steps).toEqual([
-      {kind: 'add_table', table: 'User'},
+      { kind: 'add_table', table: 'User' },
       {
         kind: 'add_table_field',
         table: 'User',
@@ -26,7 +27,7 @@ describe('get-migration-steps', () => {
         required: true,
         defaultValue: undefined,
       },
-      {kind: 'add_table_primary_key', table: 'User', fieldNames: ['id']},
+      { kind: 'add_table_primary_key', table: 'User', fieldNames: ['id'] },
     ]);
   });
 
@@ -41,58 +42,14 @@ describe('get-migration-steps', () => {
     const currentSchema = createSchema({
       tables: {
         'User': {
-          fields: {id: {type: 'string', primaryKey: true}},
+          fields: { id: { type: 'string', primaryKey: true } },
         },
       },
     });
     const newSchema = createSchema({});
     const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
     expect(steps).toEqual([
-      {kind: 'drop_table', table: 'User'},
-    ]);
-  });
-
-  it('should add permission', () => {
-    const currentSchema = createSchema({
-      tables: {
-        'User': {
-          fields: {id: {type: 'string', primaryKey: true}},
-        },
-      },
-    });
-    const newSchema = createSchema({
-      tables: {
-        'User': {
-          fields: {id: {type: 'string', primaryKey: true}},
-          permissions: [{role: 'admin', select: true}],
-        },
-      },
-    });
-    const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
-    expect(steps).toEqual([
-      {kind: 'add_table_permission', table: 'User', permission: {role: 'admin', select: true}},
-    ]);
-  });
-
-  it('should drop permission', () => {
-    const currentSchema = createSchema({
-      tables: {
-        'User': {
-          fields: {id: {type: 'string', primaryKey: true}},
-          permissions: [{role: 'admin', select: true}],
-        },
-      },
-    });
-    const newSchema = createSchema({
-      tables: {
-        'User': {
-          fields: {id: {type: 'string', primaryKey: true}},
-        },
-      },
-    });
-    const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
-    expect(steps).toEqual([
-      {kind: 'drop_table_permission', table: 'User', permission: {role: 'admin', select: true}},
+      { kind: 'drop_table', table: 'User' },
     ]);
   });
 
@@ -100,7 +57,7 @@ describe('get-migration-steps', () => {
     const currentSchema = createSchema({
       tables: {
         'User': {
-          fields: {id: {type: 'string', primaryKey: true}},
+          fields: { id: { type: 'string', primaryKey: true } },
         },
       },
     });
@@ -108,8 +65,8 @@ describe('get-migration-steps', () => {
       tables: {
         'User': {
           fields: {
-            id: {type: 'string', primaryKey: true},
-            username: {type: 'string', required: false, defaultValue: 'admin'},
+            id: { type: 'string', primaryKey: true },
+            username: { type: 'string', required: false, defaultValue: 'admin' },
           },
         },
       },
@@ -127,13 +84,56 @@ describe('get-migration-steps', () => {
     ]);
   });
 
+  it('should add foreign key', () => {
+    const currentSchema = createSchema({
+      tables: {
+        'User': {
+          fields: { id: { type: 'string', primaryKey: true } },
+        },
+        'Role': {
+          fields: { id: { type: 'string', primaryKey: true } },
+        },
+      },
+    });
+    const newSchema = createSchema({
+      tables: {
+        'User': {
+          fields: { id: { type: 'string', primaryKey: true }, roleId: { type: 'string', required: true } },
+          references: { role: { table: 'Role', keys: ['roleId'], foreignKeys: ['id'] } },
+        },
+        'Role': {
+          fields: { id: { type: 'string', primaryKey: true } },
+        },
+      },
+    });
+    const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
+    expect(steps).toEqual([
+      {
+        'fieldName': 'roleId',
+        'kind': 'add_table_field',
+        'required': true,
+        'table': 'User',
+        'type': 'string',
+      },
+      {
+        kind: 'add_table_foreign_key',
+        table: 'User',
+        foreignTable: 'Role',
+        name: 'role',
+        fieldNames: ['roleId'],
+        foreignFieldNames: ['id'],
+        required: true,
+      },
+    ]);
+  });
+
   it('should remove table field', () => {
     const currentSchema = createSchema({
       tables: {
         'User': {
           fields: {
-            id: {type: 'string', primaryKey: true},
-            username: {type: 'string', required: false, defaultValue: 'admin'},
+            id: { type: 'string', primaryKey: true },
+            username: { type: 'string', required: false, defaultValue: 'admin' },
           },
         },
       },
@@ -141,7 +141,7 @@ describe('get-migration-steps', () => {
     const newSchema = createSchema({
       tables: {
         'User': {
-          fields: {id: {type: 'string', primaryKey: true}},
+          fields: { id: { type: 'string', primaryKey: true } },
         },
       },
     });
@@ -157,24 +157,36 @@ describe('get-migration-steps', () => {
 });
 
 interface ExpectedSchema {
-  tables?: { [key: string]: { fields: { [key: string]: { primaryKey?: boolean, required?: boolean, type: RelationalTableSchemaTableFieldType, defaultValue?: any } }, permissions?: TablePermission<any>[] } }
+  tables?: { [key: string]: { references?: { [key: string]: { table: string, keys: string[], foreignKeys: string[] } }, fields: { [key: string]: { primaryKey?: boolean, required?: boolean, type: RelationalTableSchemaTableFieldType, defaultValue?: any } } } }
 }
 
 function createSchema(schema: ExpectedSchema) {
   const description = new RelationalSchemaDescription();
   if (schema.tables) {
     for (const tableKey of Object.keys(schema.tables)) {
-      const table = schema.tables[tableKey];
+      const expectedTable = schema.tables[tableKey];
       const tableDescription = new RelationalTableDescription(description, tableKey, tableKey);
-      for (const fieldKey of Object.keys(table.fields)) {
+      for (const fieldKey of Object.keys(expectedTable.fields)) {
         const field = schema.tables[tableKey].fields[fieldKey];
         const fieldDescription = new RelationalTableFieldDescription(tableDescription, fieldKey, fieldKey, field.type, field.required ?? true, field.defaultValue);
         tableDescription.addField(fieldKey, fieldDescription);
-        if (field.required) {
+        if (field.primaryKey) {
           tableDescription.addPrimaryKey(fieldDescription);
         }
       }
-      description.addTable(tableKey, tableDescription);
+      description.addTable(table(tableKey), tableDescription);
+    }
+
+    for (const tableKey of Object.keys(schema.tables)) {
+      const tableDescription = schema.tables[tableKey];
+      if (tableDescription.references) {
+        const tableDescription = description.table(table(tableKey));
+        for (const key of Object.keys(tableDescription.references)) {
+          const ref = tableDescription.reference(key);
+          const refTable = description.table(table(ref.table.name));
+          tableDescription.addReference(key, new RelationalTableReferenceDescription(key, refTable, ref.keys));
+        }
+      }
     }
   }
   return description;

@@ -1,5 +1,16 @@
-import {RelationalDataContext} from './relational-data-context';
+import { TransactionContext } from './transaction-context';
+import { RelationalContext } from './relational-context';
+import { Client, RelationalTransactionAdapter } from '@daita/relational';
+import { RelationalSchema } from '../schema';
 
-export interface RelationalTransactionContext extends RelationalDataContext {
-  transaction<T>(action: (trx: RelationalDataContext) => Promise<T>): Promise<T>;
+export class RelationalTransactionContext extends RelationalContext implements TransactionContext<any> {
+  constructor(private transactionAdapter: RelationalTransactionAdapter, schema: RelationalSchema) {
+    super(transactionAdapter, schema);
+  }
+
+  transaction<R>(action: (trx: Client<any>) => Promise<R>): Promise<R> {
+    return this.transactionAdapter.transaction<R>(async adapter => {
+      return await action(new RelationalContext(adapter, this.schema));
+    });
+  }
 }

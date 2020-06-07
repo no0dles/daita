@@ -4,8 +4,7 @@ import {
   RelationalDataAdapter,
   RelationalRawResult,
 } from '@daita/relational';
-import { isPostgresQuery, PostgresQuery } from '../query/postgres-query';
-import { postgresFormatter } from '../query/postgres-formatter';
+import { postgresFormatter } from './postgres-formatter';
 
 export class PostgresDataAdapter implements RelationalDataAdapter {
 
@@ -21,12 +20,12 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
     return await this.mapError(this.client.query(sql, values));
   }
 
-  async exec(query: PostgresQuery): Promise<RelationalRawResult> {
+  async exec(query: any): Promise<RelationalRawResult> {
     const result = this.formatQuery(query);
     return await this.execRaw(result.sql, result.values);
   }
 
-  private formatQuery(query: PostgresQuery): { sql: string, values: any[] } {
+  private formatQuery(query: any): { sql: string, values: any[] } {
     const formatCtx = new CounterFormatContext('$');
     const sql = postgresFormatter.format(query, formatCtx);
     console.log(sql, formatCtx.getValues());
@@ -46,6 +45,6 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
   }
 
   supportsQuery(sql: any): boolean {
-    return isPostgresQuery(sql);
+    return postgresFormatter.canHandle(sql);
   }
 }

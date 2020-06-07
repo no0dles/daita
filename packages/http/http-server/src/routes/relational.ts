@@ -48,7 +48,7 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
   router.post('/trx/:tid/exec', async (req, res, next) => {
     try {
       await getTransaction(req, res, async transaction => {
-        const result = await transaction.exec(req.body.sql, !!options.authProvider);
+        const result = await transaction.exec(req.body.sql);
         res.status(200).json(result);
       });
     } catch (e) {
@@ -63,7 +63,7 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
         return;
       }
 
-      const transaction = manager.create(tid, req.permissions);
+      const transaction = manager.create(tid);
       await transaction.started;
       res.setHeader('X-Transaction', tid);
       res.status(200).send();
@@ -102,8 +102,8 @@ export function relationalDataRoute(options: AppDataOptions) {
 
   router.post('/exec', async (req, res, next) => {
     try {
-      const context = new ContextManager(options.dataAdapter, req.permissions);
-      const result = await context.exec(req.body.sql, !!options.authProvider);
+      const context = new ContextManager(options.dataAdapter);
+      const result = await context.exec(req.body.sql);
       res.status(200).json(result);
     } catch (e) {
       next(e);

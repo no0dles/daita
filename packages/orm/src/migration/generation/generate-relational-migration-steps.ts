@@ -1,8 +1,7 @@
-import { generateRelationalTableMigrationSteps } from './generate-relational-table-migration-steps';
 import { merge } from '@daita/common';
 import { RelationalSchemaDescription } from '../../schema/description/relational-schema-description';
 import { MigrationStep } from '../migration-step';
-import { comparePermissions } from '@daita/relational';
+import { generateRelationalTableMigrationSteps } from './generate-relational-table-migration-steps';
 
 export function generateRelationalMigrationSteps(
   currentSchema: RelationalSchemaDescription,
@@ -27,6 +26,17 @@ export function generateRelationalMigrationSteps(
     steps.push(
       { kind: 'add_table_primary_key', table: table.name, fieldNames: table.primaryKeys.map(k => k.name) },
     );
+  }
+
+  for (const merge of mergedTables.merge) {
+    steps.push(...generateRelationalTableMigrationSteps(merge.current, merge.target));
+  }
+
+  for (const table of mergedTables.removed) {
+    steps.push({ kind: 'drop_table', table: table.name });
+  }
+
+  for (const table of mergedTables.added) {
     for (const foreignKey of table.references) {
       steps.push({
         kind: 'add_table_foreign_key',
@@ -37,34 +47,6 @@ export function generateRelationalMigrationSteps(
         foreignTable: foreignKey.table.name,
         required: foreignKey.required,
       });
-    }
-
-    const permissions = table.permissions();
-    for (const permission of permissions) {
-      steps.push({ kind: 'add_table_permission', table: table.name, permission });
-    }
-  }
-
-  for (const table of mergedTables.removed) {
-    steps.push({ kind: 'drop_table', table: table.name });
-  }
-
-  for (const table of mergedTables.merge) {
-    steps.push(...generateRelationalTableMigrationSteps(table.current, table.target));
-
-    const currentPermissions = table.current.permissions();
-    const newPermissions = table.target.permissions();
-
-    const mergedPermissions = merge(currentPermissions, newPermissions, (first, second) => comparePermissions(first, second));
-    for (const permission of mergedPermissions.added) {
-      steps.push({
-        kind: 'add_table_permission',
-        table: table.target.name,
-        permission,
-      });
-    }
-    for (const permission of mergedPermissions.removed) {
-      steps.push({ kind: 'drop_table_permission', table: table.target.name, permission });
     }
   }
 

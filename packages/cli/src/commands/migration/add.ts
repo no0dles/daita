@@ -8,13 +8,13 @@ import {
   getSchemaLocation,
   SchemaLocation,
 } from '../../utils/path';
-import {AstContext} from '../../ast/ast-context';
+import { AstContext } from '../../ast/ast-context';
 import {
   addMigrationImport,
   addMigrationRegistration,
   writeMigration,
 } from '../../migration/writing/write-migration';
-import {getMigrationName} from '../../migration/utils';
+import { getMigrationName } from '../../migration/utils';
 import { generateRelationalMigrationSteps } from '@daita/orm';
 
 export default class Add extends Command {
@@ -50,8 +50,8 @@ export default class Add extends Command {
     }
 
     const migrationTree = schemaInfo.getMigrationTree();
+    const currentSchema = migrationTree.getSchemaDescription({backwardCompatible: false});
     const lastMigration = migrationTree.last()[0];
-    const currentSchema = migrationTree.defaultBackwardDescription();
 
     const tasks = new Listr([
       {
@@ -81,7 +81,7 @@ export default class Add extends Command {
           );
           const date = new Date();
           if (!fs.existsSync(schemaLocation.migrationDirectory)) {
-            fs.mkdirSync(schemaLocation.migrationDirectory, {recursive: true});
+            fs.mkdirSync(schemaLocation.migrationDirectory, { recursive: true });
           }
 
           const migrationName = getMigrationName(name);

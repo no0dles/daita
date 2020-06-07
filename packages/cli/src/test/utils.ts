@@ -46,6 +46,8 @@ export interface CliEnvironment {
 
   exists(dir: string, file?: RegExp): Promise<void>;
 
+  notExists(dir: string, file?: RegExp): Promise<void>;
+
   contains(dir: string, files: string[]): Promise<void>;
 }
 
@@ -54,7 +56,7 @@ export interface RunResult {
 
   onStdErr(callback: (text: string) => void): void;
 
-  finished: Promise<any>;
+  finished: Promise<number>;
 
   cancel(): void;
 }
@@ -64,6 +66,37 @@ export type CliEnvironmentCallback = (ctx: CliEnvironment) => Promise<any>;
 export function setupEnv(testName: string, callback: CliEnvironmentCallback, options?: { schema?: string }) {
   const scenarioResultRoot = path.join(__dirname, '../../test/tmp/scenario');
   const resultPath = path.join(scenarioResultRoot, testName);
+
+  function exists(dir: string, file?: RegExp): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      fs.stat(path.join(resultPath, dir), (err, stats) => {
+        if (err) {
+          resolve(false);
+          //assert.fail(null, dir, `expected path ${dir} to exist`);
+        } else if (file) {
+          fs.readdir(path.join(resultPath, dir), { withFileTypes: true }, (e, listedFiles) => {
+            if (e) {
+              resolve(false);
+              //assert.fail(`could not list files in ${path.join(resultPath, dir)}`);
+            } else {
+              for (const listedFile of listedFiles) {
+                if (!listedFile.isDirectory()) {
+                  if (file.test(listedFile.name)) {
+                    resolve(true);
+                    return;
+                  }
+                }
+              }
+              resolve(false);
+              //assert.fail(`could not find matching file for ${file}`);
+            }
+          });
+        } else {
+          resolve(true);
+        }
+      });
+    });
+  }
 
   return async () => {
     removeDirectory(resultPath);
@@ -83,14 +116,22 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
         const proc = childProcess.spawn(`${path.join(__dirname, '../../bin/run')}`, args.split(' '), {
           cwd: resultPath,
         });
-        const finishedDefer = new Defer();
+        const finishedDefer = new Defer<number>();
         proc.on('exit', code => {
-          finishedDefer.resolve(code);
+          if (code !== 0) {
+            finishedDefer.reject(code);
+          } else {
+            finishedDefer.resolve(code);
+          }
         });
         proc.stdout.on('data', (data) => {
           if (typeof data === 'string') {
             for (const callback of stdOutCallback) {
               callback(data);
+            }
+          } else if (data instanceof Buffer) {
+            for (const callback of stdOutCallback) {
+              callback(data.toString());
             }
           }
         });
@@ -99,6 +140,10 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
           if (typeof data === 'string') {
             for (const callback of stdErrCallback) {
               callback(data);
+            }
+          } else if (data instanceof Buffer) {
+            for (const callback of stdErrCallback) {
+              callback(data.toString());
             }
           }
         });
@@ -134,34 +179,18 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
           });
         });
       },
+      notExists(dir: string, file?: RegExp): Promise<void> {
+        return exists(dir, file).then(exists => {
+          if (exists) {
+            expect('').toBe(`could find matching file for ${file}`);
+          }
+        });
+      },
       exists(dir: string, file?: RegExp): Promise<void> {
-        return new Promise<void>(resolve => {
-          fs.stat(path.join(resultPath, dir), (err, stats) => {
-            if (err) {
-              expect(err).toBeUndefined();
-              //assert.fail(null, dir, `expected path ${dir} to exist`);
-            } else if (file) {
-              fs.readdir(path.join(resultPath, dir), { withFileTypes: true }, (e, listedFiles) => {
-                if (e) {
-                  expect(e).toBeUndefined();
-                  //assert.fail(`could not list files in ${path.join(resultPath, dir)}`);
-                } else {
-                  for (const listedFile of listedFiles) {
-                    if (!listedFile.isDirectory()) {
-                      if (file.test(listedFile.name)) {
-                        resolve();
-                        return;
-                      }
-                    }
-                  }
-                  expect('').toBe(`could not find matching file for ${file}`);
-                  //assert.fail(`could not find matching file for ${file}`);
-                }
-              });
-            } else {
-              resolve();
-            }
-          });
+        return exists(dir, file).then(exists => {
+          if (!exists) {
+            expect('').toBe(`could not find matching file for ${file}`);
+          }
         });
       },
     };

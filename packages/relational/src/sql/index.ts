@@ -1,14 +1,13 @@
-import { isSqlDdlQuery, SqlDdlQuery } from './ddl';
-import { isSqlDmlQuery, SqlDmlQuery } from './dml';
-
-export * from './dml';
+export * from './description';
 export * from './formatter';
-export { SqlField } from './sql-field';
-export * from './ddl';
-export { SqlSchemaTable, isSqlSchemaTable } from './sql-schema-table';
-export { SqlSchemaTableField, isSqlSchemaTableField } from './sql-schema-table-field';
-export { SqlTable, isSqlTable, getSqlTableIdentifier, getSqlSchemaTable } from './sql-table';
-
-export type SqlQuery = SqlDdlQuery | SqlDmlQuery;
-
-export const isSqlQuery = (val: any) => isSqlDmlQuery(val) || isSqlDdlQuery(val);
+export * from './function';
+export * from './alter-table-sql';
+export * from './create-schema-sql';
+export * from './create-table-sql';
+export * from './delete-sql';
+export * from './drop-table-sql';
+export * from './insert-sql';
+export * from './lock-table-sql';
+export * from './select-sql';
+export * from './sql';
+export * from './update-sql';

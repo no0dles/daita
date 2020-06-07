@@ -1,27 +1,15 @@
-import {MigrationDescription, MigrationTree} from '../migration';
-import {SchemaTableOptions} from './schema-table-options';
-import {RelationalSchemaContext, RelationalTransactionContext} from '../context';
-import {RelationalSchemaOptions} from './relational-schema-options';
-import {RelationalSchemaContextOptions} from '../context/relational-schema-context-options';
-import {RelationalDataContext} from '../context/relational-data-context';
-import {RelationalSchemaMigrationContext} from '../context/relational-schema-migration-context';
-import {RelationalSchemaTransactionContext} from '../context/relational-schema-transaction-context';
-import {RelationalSchemaDescription} from './description/relational-schema-description';
-import {
-  RelationalAuthSchemaContext,
-  RelationalAuthTransactionSchemaContext,
-  SchemaPermissions
-} from "../permission-builder";
-import {
-  RelationalDataAdapter,
-  RelationalTransactionAdapter,
-  TablePermission
-} from "@daita/relational";
-import { Constructable, DefaultConstructable } from "@daita/common";
+import { MigrationDescription, MigrationTree } from '../migration';
+import { SchemaTableOptions } from './schema-table-options';
+import { RelationalSchemaOptions } from './relational-schema-options';
+import { RelationalSchemaDescription } from './description/relational-schema-description';
+import { Constructable, DefaultConstructable } from '@daita/common';
+import { RuleDescription } from '../permission';
+import { RelationalMapper } from '../context/relational-mapper';
+import { RelationalBackwardCompatibleMapper, RelationalNormalMapper } from '../context/orm-mapper';
 
 export class RelationalSchema {
   private migrationTree = new MigrationTree();
-  private permissions = new SchemaPermissions();
+  private rules: RuleDescription[] = [];
   private tables: Constructable<any>[] = [];
 
   schema: string | null = null;
@@ -42,50 +30,36 @@ export class RelationalSchema {
     options?: SchemaTableOptions<T>,
   ): void {
     this.tables.push(model);
-    if (options?.permissions) {
-      this.permissions.add(model, options.permissions);
+    if (options?.rules) {
+      this.rules.push(...options.rules);
     }
   }
 
-  permission<T>(model: DefaultConstructable<T>, permission: TablePermission<T>) {
-    this.permissions.add(model, [permission]);
+  rule<T>(...rules: RuleDescription[]) {
+    this.rules.push(...rules);
   }
 
   migration(migration: MigrationDescription) {
     this.migrationTree.add(migration);
   }
 
-  // rule<T>(model: DefaultConstructable<T>, condition: TableRule<T>) {
-  //
-  // }
-
-  migrationSchema(options?: RelationalSchemaContextOptions): RelationalSchemaDescription {
-    return this.migrationTree.defaultBackwardDescription(options ? options.migrationId : undefined);
+  getSchemaDescription(): RelationalSchemaDescription {
+    return this.migrationTree.getSchemaDescription({ backwardCompatible: this.options?.backwardCompatible ?? false });
   }
 
-  context(
-    dataAdapter: RelationalDataAdapter,
-    options?: RelationalSchemaContextOptions,
-  ): RelationalDataContext {
-    const schema = this.migrationSchema(options);
-    //TODO compare tables and permissions with migration state, warn for unmigrated
-    if (options?.user) {
-      return new RelationalAuthSchemaContext(dataAdapter, schema, schema.userPermissions(options.user).sqlPermissions());
+  getRules(): RuleDescription[] {
+    return this.rules;
+  }
+
+  getMigrations(): MigrationTree {
+    return this.migrationTree;
+  }
+
+  getMapper(): RelationalMapper {
+    if (this.options?.backwardCompatible) {
+      return new RelationalBackwardCompatibleMapper(this.getSchemaDescription());
+    } else {
+      return new RelationalNormalMapper();
     }
-    return new RelationalSchemaContext(dataAdapter, schema);
-  }
-
-  transactionContext(
-    dataAdapter: RelationalTransactionAdapter,
-    options?: RelationalSchemaContextOptions): RelationalTransactionContext {
-    const schema = this.migrationSchema(options);
-    if (options?.user) {
-      return new RelationalAuthTransactionSchemaContext(dataAdapter, schema, schema.userPermissions(options.user).sqlPermissions());
-    }
-    return new RelationalSchemaTransactionContext(dataAdapter, schema);
-  }
-
-  migrationContext(dataAdapter: RelationalTransactionAdapter) {
-    return new RelationalSchemaMigrationContext(dataAdapter, this.migrationTree);
   }
 }

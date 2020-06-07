@@ -1,14 +1,13 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import cli from 'cli-ux';
-import {Command} from '@oclif/command';
+import { Command } from '@oclif/command';
 import * as inquirer from 'inquirer';
-import {AstContext} from '../ast/ast-context';
-import {parseSchemas} from '../migration/parsing/parse-schemas';
-import {SchemaDeclaration} from '../migration/parsing/schema-declaration';
-import {parseSchemaMigrations} from '../migration/parsing/parse-schema-migrations';
-import {parseRelationalSchema} from '../migration/parsing/parse-relational-schema';
-import {parseSchemaMigrationVariables} from '../migration/parsing/parse-schema-migration-variables';
+import { AstContext } from '../ast/ast-context';
+import { parseSchemas } from '../migration/parsing/parse-schemas';
+import { SchemaDeclaration } from '../migration/parsing/schema-declaration';
+import { parseSchemaMigrationCalls, parseSchemaMigrations } from '../migration/parsing/parse-schema-migrations';
+import { parseRelationalSchema } from '../migration/parsing/parse-relational-schema';
 import { RelationalSchemaDescription } from '@daita/orm/dist/schema/description/relational-schema-description';
 
 export function getMigrationRelativePath(
@@ -156,7 +155,7 @@ export class SchemaInformation {
     return parseRelationalSchema(this.schemaDeclaration.variable);
   }
 
-  getMigrationVariables() {
-    return parseSchemaMigrationVariables(this.schemaDeclaration.variable);
+  getMigrationCalls() {
+    return parseSchemaMigrationCalls(this.schemaDeclaration.variable);
   }
 }

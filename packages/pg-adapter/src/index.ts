@@ -9,7 +9,6 @@ import { parse } from "pg-connection-string";
 import { dropDatabase, ensureDatabaseExists } from "./postgres.util";
 import { Pool } from "pg";
 
-export * from './query';
 export { PostgresAdapter } from "./adapter/postgres.adapter";
 export { dropDatabase, ensureDatabaseExists } from "./postgres.util";
 

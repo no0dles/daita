@@ -1,4 +1,4 @@
-import {RelationalDataAdapter, RelationalRawResult, SqlQuery} from '@daita/relational';
+import {RelationalDataAdapter, RelationalRawResult} from '@daita/relational';
 import {Defer} from '@daita/common';
 import {AuthProvider} from '@daita/http-client-common';
 import {HttpBase} from './http-base';

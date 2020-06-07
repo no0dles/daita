@@ -1,25 +1,45 @@
 import { FormatContext } from './format-context';
 
 export class Formatter {
-  private handlers: FormatterHandler[] = [];
+  private handlers: FormatHandle<any>[] = [];
 
-  add<T>(handler: FormatterHandler) {
+  add<T>(handler: FormatHandle<any>) {
     this.handlers.push(handler);
     return this;
   }
 
+  canHandle(value: any) {
+    const availableFormatters = this.handlers.filter(h => h.canHandle(value));
+    return availableFormatters.length == 1;
+  }
+
   format(value: any, ctx: FormatContext): string {
-    for (const formatter of this.handlers) {
-      const result = formatter.handle(value, ctx, this);
-      if (result !== null) {
-        return result;
-      }
+    const availableFormatters = this.handlers.filter(h => h.canHandle(value));
+    if (availableFormatters.length === 0) {
+      throw new Error(`unable to format ${JSON.stringify(value)}`);
     }
 
-    throw new Error(`unable to format ${JSON.stringify(value)}`);
+    if (availableFormatters.length > 1) {
+      throw new Error(`more than one formatter for ${JSON.stringify(value)}`);
+    }
+
+    return availableFormatters[0].handle(value, ctx, this);
   }
 }
 
-export interface FormatterHandler {
-  handle(param: any, ctx: FormatContext, formatter: Formatter): string | null;
+export enum FormatType {
+  Sql,
+  Value,
+  Condition,
+  Table,
+  Join,
+  OrderBy,
+}
+
+export interface FormatHandle<T> {
+  type: FormatType | FormatType[];
+
+  canHandle(param: any): boolean;
+
+  handle(param: T, ctx: FormatContext, formatter: Formatter): string;
 }

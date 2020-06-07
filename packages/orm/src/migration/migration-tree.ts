@@ -1,9 +1,8 @@
-import {MigrationDescription} from './migration-description';
-import {getSchemaDescription} from '../schema/relational-schema-description';
-import {SchemaMapper} from '../schema/description/schema-mapper';
-import {BackwardCompatibleMapper} from '../schema/description/backward-compatible-mapper';
-import { MigrationExecution } from './migration-execution';
-import { RelationalTransactionAdapter } from '@daita/relational';
+import { MigrationDescription } from './migration-description';
+import { getSchemaDescription } from '../schema/relational-schema-description';
+import { SchemaMapper } from '../schema/description/schema-mapper';
+import { BackwardCompatibleMapper } from '../schema/description/backward-compatible-mapper';
+import { NormalMapper } from '../schema/description/normal-mapper';
 
 export class MigrationTree {
   private migrationMap: { [id: string]: MigrationDescription } = {};
@@ -81,10 +80,6 @@ export class MigrationTree {
     return this.migrationMap[id] || null;
   }
 
-  // schema(id: string) {
-  //   return getMigrationSchema(this.path(id));
-  // }
-
   defaultPath(id?: string) {
     if (id) {
       return this.path(id);
@@ -100,12 +95,12 @@ export class MigrationTree {
     }
   }
 
-  // defaultSchema(id?: string) {
-  //   return getMigrationSchema(this.defaultPath(id));
-  // }
-
-  defaultBackwardDescription(id?: string) {
-    return getSchemaDescription(new SchemaMapper(() => new BackwardCompatibleMapper()), this.defaultPath(id));
+  getSchemaDescription(options: { backwardCompatible: boolean }) {
+    if (options.backwardCompatible) {
+      return getSchemaDescription(new SchemaMapper(() => new BackwardCompatibleMapper()), this.defaultPath());
+    } else {
+      return getSchemaDescription(new SchemaMapper(() => new NormalMapper()), this.defaultPath());
+    }
   }
 
   path(id: string) {
@@ -120,43 +115,6 @@ export class MigrationTree {
     }
     return migrations;
   }
-
-  async applyMigrations(relationalTransactionAdapter: RelationalTransactionAdapter) {
-    const exec = new MigrationExecution();
-
-    //TODO warn if things are not migrated
-
-    await exec.init(relationalTransactionAdapter);
-
-    let currentMigrations = this.roots();
-
-    const migrationDescriptions: MigrationDescription[] = [];
-    let currentSchema = this.getSchemaDesc(migrationDescriptions);
-
-    while (currentMigrations.length > 0) {
-      if (currentMigrations.length > 1) {
-        throw new Error("multiple possible next migrations");
-      }
-
-      const currentMigration = currentMigrations[0];
-
-      migrationDescriptions.push(currentMigration);
-      const targetSchema = this.getSchemaDesc(migrationDescriptions);
-      if (!(await exec.exists(currentMigration.id, relationalTransactionAdapter))) {
-        await exec.apply(
-          currentSchema,
-          targetSchema,
-          currentMigration.id,
-          relationalTransactionAdapter
-        );
-      }
-
-      currentSchema = targetSchema;
-      currentMigrations = this.next(currentMigration.id);
-    }
-  }
-
-  private getSchemaDesc(paths: MigrationDescription[]) {
-    return getSchemaDescription(new SchemaMapper(() => new BackwardCompatibleMapper()), paths);
-  }
 }
+
+export const isMigrationTree = (val: any): val is MigrationTree => typeof val.path === 'function';

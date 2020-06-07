@@ -1,11 +1,10 @@
 import * as express from 'express';
-import {SqlPermissions} from '@daita/relational';
 import {TokenProvider} from '@daita/http-server-common';
 
 declare global {
   namespace Express {
     export interface Request {
-      permissions?: SqlPermissions | null;
+      //rules?: Ruled | null;
     }
   }
 }
@@ -20,7 +19,7 @@ export function authTokenMiddleware(tokenProvider: TokenProvider): express.Reque
     try {
       const token = authorization.substr('Bearer '.length);
       const result = await tokenProvider.verify(token);
-      req.permissions = result.permissions;
+      //req.permissions = result.permissions;
       next();
     } catch (e) {
       next(e);

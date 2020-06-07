@@ -1,7 +1,6 @@
 import { RelationalTableFieldDescription } from "./relational-table-field-description";
 import { ArrayMap } from "./array-map";
 import { RelationalTableReferenceDescription } from "./relational-table-reference-description";
-import { removeEmptySchema, SqlDelete, SqlInsert, SqlSelect, SqlUpdate } from "@daita/relational";
 import { arrayClone } from "@daita/common";
 import {RelationalSchemaDescription} from './relational-schema-description';
 
@@ -54,7 +53,7 @@ export class RelationalTableDescription {
   field(name: string): RelationalTableFieldDescription {
     const fieldDescription = this.fieldArrayMap.get(name);
     if (!fieldDescription) {
-      throw new Error(`Unable to get field ${name} from table ${this.name}`);
+      throw new Error(`Unable to get field ${name} from table ${this.key}`);
     }
     return fieldDescription;
   }
@@ -66,39 +65,8 @@ export class RelationalTableDescription {
   reference(alias: string): RelationalTableReferenceDescription {
     const reference = this.referenceArrayMap.get(alias);
     if (!reference) {
-      throw new Error(`Unable to get reference ${alias} from table ${this.name}`);
+      throw new Error(`Unable to get reference ${alias} from table ${this.key}`);
     }
     return reference;
-  }
-
-  permissions<T>() {
-    return this.schemaDescription.schemaPermissions.tablePermissions({table: this.name, schema: this.schema});
-  }
-
-  getSqlSelect(): SqlSelect {
-    return {
-      select: [],
-      from: removeEmptySchema({ schema: this.schema, table: this.name, alias: "base" })
-    };
-  }
-
-  getSqlDelete(): SqlDelete {
-    return {
-      delete: removeEmptySchema({ schema: this.schema, table: this.name })
-    };
-  }
-
-  getSqlUpdate(): SqlUpdate {
-    return {
-      update: removeEmptySchema({ schema: this.schema, table: this.name }),
-      set: {}
-    };
-  }
-
-  getSqlInsert(): SqlInsert {
-    return {
-      insert: removeEmptySchema({ schema: this.schema, table: this.name }),
-      values: []
-    };
   }
 }

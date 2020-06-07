@@ -1,6 +1,6 @@
-import { TablePermission } from "@daita/relational";
+import { RuleDescription } from '../permission';
 
 export interface SchemaTableOptions<T> {
   key: keyof T | (keyof T)[];
-  permissions?: TablePermission<T>[];
+  rules?: RuleDescription[];
 }

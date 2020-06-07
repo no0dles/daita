@@ -1,4 +1,3 @@
-import { SqlPermissions } from "@daita/relational";
 import {isKind} from '@daita/common';
 
 export interface TokenProvider {
@@ -8,6 +7,5 @@ export interface TokenProvider {
 export const isTokenProvider = (val: any): val is TokenProvider => isKind(val, ['verify']);
 
 export interface TokenVerifyResult {
-  permissions?: SqlPermissions | null;
   expireIn?: number;
 }

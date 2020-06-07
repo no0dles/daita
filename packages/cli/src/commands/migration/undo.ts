@@ -1,25 +1,25 @@
-import {Command, flags} from '@oclif/command';
+import { Command, flags } from '@oclif/command';
 import {
   getMigrationRelativePath,
   getSchemaInformation,
   getSchemaLocation,
 } from '../../utils/path';
-import {AstContext} from '../../ast/ast-context';
-import {removeMigrationImport, removeMigrationRegistration} from '../../migration/writing/write-migration';
+import { AstContext } from '../../ast/ast-context';
+import { removeMigrationImport, removeMigrationRegistration } from '../../migration/writing/write-migration';
 import * as fs from 'fs';
 
 export default class Undo extends Command {
   static description = 'undo last migration';
 
   static flags = {
-    schema: flags.string({char: 's', description: 'name to print'}),
-    cwd: flags.string({description: 'working directory', default: '.'}),
+    schema: flags.string({ char: 's', description: 'name to print' }),
+    cwd: flags.string({ description: 'working directory', default: '.' }),
   };
 
   static args = [];
 
   async run() {
-    const {flags} = this.parse(Undo);
+    const { flags } = this.parse(Undo);
     const astContext = new AstContext();
     const schemaLocation = await getSchemaLocation(flags, this);
     const schemaInfo = await getSchemaInformation(astContext, schemaLocation, this);
@@ -34,18 +34,22 @@ export default class Undo extends Command {
       throw new Error('only possible if one leaf migration');
     }
     const lastMigration = migrations[0];
-    const migrationVariables = schemaInfo.getMigrationVariables();
+    const migrationVariables = schemaInfo.getMigrationCalls();
 
     for (const migrationVariable of migrationVariables) {
-      const id = migrationVariable.initializer?.property('id')?.stringValue;
-      if(id !== lastMigration.id) {
+      const argVariable = migrationVariable.variable;
+      if (!argVariable) {
+        throw new Error('undo only works with imports');
+      }
+      const id = argVariable.initializer?.property('id')?.stringValue;
+      if (id !== lastMigration.id) {
         continue;
       }
 
-      const migrationName = migrationVariable.name;
+      const migrationName = argVariable.name;
       const relativePath = getMigrationRelativePath(
         schemaLocation.fileName,
-        migrationVariable.sourceFile.fileName,
+        argVariable.sourceFile.fileName,
       );
       const successImport = removeMigrationImport(
         schemaLocation.fileName,
@@ -58,8 +62,8 @@ export default class Undo extends Command {
       );
 
       if (successImport && successRegistration) {
-        this.log('delete migration ' + migrationVariable.sourceFile.fileName);
-        fs.unlinkSync(migrationVariable.sourceFile.fileName);
+        this.log('delete migration ' + argVariable.sourceFile.fileName);
+        fs.unlinkSync(argVariable.sourceFile.fileName);
       }
     }
   }

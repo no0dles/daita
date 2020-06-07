@@ -1,18 +1,15 @@
-import {AstVariable} from '../../ast/ast-variable';
 import {parseSchemaMigrationStep} from './parse-schema-migration-step';
 import { MigrationDescription, MigrationStep } from '@daita/orm';
+import { AstObjectValue } from '../../ast/ast-object-value';
 
 export function parseSchemaMigration(
-  migrationVariable: AstVariable,
+  migrationObject: AstObjectValue,
 ): MigrationDescription {
-  if (!migrationVariable.initializer) {
-    throw new Error('missing init for variable');
-  }
 
-  const idProp = migrationVariable.initializer.property('id');
-  const afterProp = migrationVariable.initializer.property('after');
-  const resolveProp = migrationVariable.initializer.property('resolve');
-  const stepsProp = migrationVariable.initializer.property('steps');
+  const idProp = migrationObject.property('id');
+  const afterProp = migrationObject.property('after');
+  const resolveProp = migrationObject.property('resolve');
+  const stepsProp = migrationObject.property('steps');
 
   let after: string | null = null;
   let resolve: string | null = null;

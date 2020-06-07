@@ -1,23 +1,23 @@
-import {AstObjectValue} from '../../ast/ast-object-value';
+import { AstObjectValue } from '../../ast/ast-object-value';
 import { MigrationStep, RelationalTableSchemaTableFieldType } from '@daita/orm';
 
 export function parseSchemaMigrationStep(step: AstObjectValue): MigrationStep {
-  const migrationStep = {kind: step.property('kind')?.stringValue} as MigrationStep;
+  const migrationStep = { kind: step.property('kind')?.stringValue } as MigrationStep;
   if (!migrationStep.kind) {
     throw Error('missing kind in migration step');
   }
 
   if (migrationStep.kind === 'add_table') {
-    return {kind: 'add_table', table: getStringValue(step, 'table')};
+    return { kind: 'add_table', table: getStringValue(step, 'table') };
   } else if (migrationStep.kind === 'drop_table') {
-    return {kind: 'drop_table', table: getStringValue(step, 'table')};
+    return { kind: 'drop_table', table: getStringValue(step, 'table') };
   } else if (migrationStep.kind === 'add_table_field') {
     return {
       kind: 'add_table_field',
       table: getStringValue(step, 'table'),
       fieldName: getStringValue(step, 'fieldName'),
       required: getBooleanValue(step, 'required'),
-      defaultValue: getAnyValue(step, 'defaultValue'),
+      defaultValue: getAnyValue(step, 'defaultValue', undefined),
       type: getStringValue(step, 'type') as RelationalTableSchemaTableFieldType,
     };
   } else if (migrationStep.kind === 'add_table_foreign_key') {
@@ -27,7 +27,7 @@ export function parseSchemaMigrationStep(step: AstObjectValue): MigrationStep {
       foreignTable: getStringValue(step, 'foreignTable'),
       name: getStringValue(step, 'name'),
       fieldNames: getArrayValue(step, 'fieldNames', v => v.stringValue),
-      foreignFieldNames: getArrayValue(step, 'fieldNames', v => v.stringValue),
+      foreignFieldNames: getArrayValue(step, 'foreignFieldNames', v => v.stringValue),
       required: getBooleanValue(step, 'required'),
     };
   } else if (migrationStep.kind === 'add_table_primary_key') {
@@ -42,26 +42,17 @@ export function parseSchemaMigrationStep(step: AstObjectValue): MigrationStep {
       table: getStringValue(step, 'table'),
       fieldName: getStringValue(step, 'fieldName'),
     };
-  } else if(migrationStep.kind === 'add_table_permission') {
-    return {
-      kind: 'add_table_permission',
-      table: getStringValue(step, 'table'),
-      permission: getAnyValue(step, 'permission'),
-    }
-  } else if(migrationStep.kind === 'drop_table_permission') {
-    return {
-      kind: 'drop_table_permission',
-      table: getStringValue(step, 'table'),
-      permission: getAnyValue(step, 'permission'),
-    }
   }
 
   return fail(migrationStep, `Unknown migration step ${JSON.stringify(migrationStep)}`);
 }
 
-function getAnyValue(step: AstObjectValue, key: string) {
+function getAnyValue(step: AstObjectValue, key: string, defaultValue?: any) {
   const property = step.property(key);
   if (!property) {
+    if (arguments.length === 3) {
+      return defaultValue;
+    }
     throw new Error(`missing ${key} in migration step`);
   }
   return property.anyValue;

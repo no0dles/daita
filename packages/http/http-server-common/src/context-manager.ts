@@ -1,30 +1,16 @@
 import {
   RelationalDataAdapter,
-  SqlPermissions,
-  SqlQuery,
-  isSqlQuery,
 } from '@daita/relational';
 import {AppTransactionOptions} from './app-options';
 import {TransactionManager} from './transaction-manager';
 
 export class ContextManager {
 
-  constructor(private dataAdapter: RelationalDataAdapter,
-              private permissions: SqlPermissions | null | undefined) {
+  constructor(private dataAdapter: RelationalDataAdapter) {
   }
 
-  async exec(sql: SqlQuery, validateAuth: boolean) {
-    if (validateAuth) {
-      if (!this.permissions) {
-        throw new Error('no permissions');
-      }
-
-      if (!this.permissions.isQueryAuthorized(sql)) {
-        throw new Error('not authorized');
-      }
-    }
-
-    if (!isSqlQuery(sql)) {
+  async exec(sql: any) {
+    if (!this.dataAdapter.supportsQuery(sql)) {
       throw new Error('invalid sql');
     } else {
       return this.dataAdapter.exec(sql);
@@ -46,11 +32,11 @@ export class TransactionContextManager {
     }
   }
 
-  create(transactionId: string, permissions: SqlPermissions | null | undefined) {
+  create(transactionId: string) {
     if (this.transactions[transactionId]) {
       throw new Error('transaction already exists');
     }
-    const transaction = new TransactionManager(this.options.dataAdapter, permissions, this.transactionTimeout);
+    const transaction = new TransactionManager(this.options.dataAdapter, this.transactionTimeout);
     this.transactions[transactionId] = transaction;
     transaction.result.finally(() => {
       delete this.transactions[transactionId];

@@ -1,7 +1,7 @@
-import {getIdentifierName, isKind} from './utils';
+import { getIdentifierName, isKind } from './utils';
 import * as ts from 'typescript';
-import {AstSourceFile} from './ast-source-file';
-import {AstPropertyDeclaration} from './ast-property-declaration';
+import { AstSourceFile } from './ast-source-file';
+import { AstPropertyDeclaration } from './ast-property-declaration';
 
 export class AstClassDeclaration {
   name: string | null = null;
@@ -18,7 +18,7 @@ export class AstClassDeclaration {
       for (const heritageClass of this.classDeclaration.heritageClauses) {
         for (const type of heritageClass.types) {
           const className = getIdentifierName(type.expression);
-          return this.sourceFile.getClassDeclaration(className, {includeImport: true});
+          return this.sourceFile.getClassDeclaration(className, { includeImport: true });
         }
       }
     }
@@ -37,7 +37,7 @@ export class AstClassDeclaration {
     return false;
   }
 
-  getProperties(options?: { includedInherited?: boolean }): AstPropertyDeclaration[] {
+  getProperties(options?: { includedInherited?: boolean, static?: boolean }): AstPropertyDeclaration[] {
     const astPropertyDeclaration = new Array<AstPropertyDeclaration>();
     for (const member of this.classDeclaration.members) {
       const propertyDeclaration = isKind(member, ts.SyntaxKind.PropertyDeclaration);
@@ -45,6 +45,10 @@ export class AstClassDeclaration {
         continue;
       }
 
+      if (options && options.static && (!propertyDeclaration.modifiers || !propertyDeclaration.modifiers.some(m => m.kind === ts.SyntaxKind.StaticKeyword))) {
+        continue;
+      }
+      
       astPropertyDeclaration.push(new AstPropertyDeclaration(this.sourceFile, propertyDeclaration));
     }
     if (options && options.includedInherited) {
@@ -56,7 +60,7 @@ export class AstClassDeclaration {
     return astPropertyDeclaration;
   }
 
-  getProperty(name: string, options?: { includedInherited?: boolean }): AstPropertyDeclaration | null {
+  getProperty(name: string, options?: { includedInherited?: boolean, static?: boolean }): AstPropertyDeclaration | null {
     const astPropertyDeclarations = this.getProperties(options);
     for (const astPropertyDeclaration of astPropertyDeclarations) {
       if (astPropertyDeclaration.name === name) {

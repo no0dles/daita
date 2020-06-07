@@ -1,4 +1,3 @@
-export * from './schema';
 export * from './relational-schema';
 export * from './relational-table-schema-table-field-type';
 export * from './description/relational-table-description';

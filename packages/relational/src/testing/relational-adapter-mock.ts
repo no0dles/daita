@@ -1,79 +1,38 @@
 import {
-  isRelationalRawResult,
   RelationalDataAdapter,
   RelationalRawResult,
-  RelationalTransactionAdapter
-} from "../adapter";
-import { SqlQuery } from '../sql';
+  RelationalTransactionAdapter,
+} from '../adapter';
 
-export class RelationalAdapterMock implements RelationalTransactionAdapter {
-  private mockResult: RelationalRawResult | null = null;
-  private expected: { sql: string | SqlQuery; values?: any[] } | null = null;
+export class RelationalAdapterMock<T = any> implements RelationalTransactionAdapter<T> {
+  constructor(private handle: (sql: T) => RelationalRawResult | null) {
+  }
 
   execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
-    if (this.expected) {
-      expect(sql).toEqual(this.expected.sql);
-      expect(values).toEqual(this.expected.values);
-    }
-    if (this.mockResult) {
-      return Promise.resolve(this.mockResult);
-    }
-    throw new Error("no result defined");
+    throw new Error('not supported');
   }
 
-  exec(
-    sql: SqlQuery
+  async exec(
+    sql: T,
   ): Promise<RelationalRawResult> {
-    if (this.expected) {
-      expect(sql).toEqual(this.expected.sql);
+    const result = this.handle(sql);
+    if (result) {
+      return result;
     }
-    if (this.mockResult) {
-      return Promise.resolve(this.mockResult);
-    }
-    throw new Error("no result defined");
+    throw new Error('unexpected sql');
   }
 
-  transaction<T>(
-    action: (adapter: RelationalDataAdapter) => Promise<T>
-  ): Promise<T> {
-    return action(new RelationalAdapterMock());
-  }
-
-  expectRaw(sql: string, values: any[], result?: RelationalRawResult): void
-  expectRaw(result: RelationalRawResult): void
-  expectRaw(sqlOrResult: string | RelationalRawResult, values?: any[], result?: RelationalRawResult): void {
-    if (typeof sqlOrResult === "string") {
-      this.expected = { sql: sqlOrResult, values };
-      if (result) {
-        this.mockResult = result;
-      }
-    } else {
-      this.mockResult = sqlOrResult;
-    }
-  }
-
-  expect(sql: SqlQuery, result?: RelationalRawResult): void;
-  expect(result: RelationalRawResult): void;
-  expect(
-    sqlOrResult: SqlQuery | RelationalRawResult,
-    result?: RelationalRawResult
-  ): void {
-    if (isRelationalRawResult(sqlOrResult)) {
-      this.mockResult = sqlOrResult;
-    } else {
-      this.expected = { sql: sqlOrResult };
-      if (result) {
-        this.mockResult = result;
-      }
-    }
+  transaction<R>(
+    action: (adapter: RelationalDataAdapter<T>) => Promise<R>,
+  ): Promise<R> {
+    return action(new RelationalAdapterMock<T>(this.handle));
   }
 
   async close() {
-    this.mockResult = null;
-    this.expected = null;
   }
 
   supportsQuery(sql: any): boolean {
-    return true;
+    const result = this.handle(sql);
+    return result !== null && result !== undefined;
   }
 }

@@ -1,4 +1,4 @@
-import {RelationalDataAdapter, RelationalRawResult, SqlQuery} from '@daita/relational';
+import {RelationalDataAdapter, RelationalRawResult} from '@daita/relational';
 import {HttpBase} from './http-base';
 
 export class HttpDataAdapter extends HttpBase implements RelationalDataAdapter {

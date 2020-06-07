@@ -2,17 +2,10 @@ import * as sqlite from "sqlite3";
 import {
   CreateAdapterOptions, CreateDataAdapterOptions,
   CreateTransactionAdapterOptions, DestroyAdapterOptions,
-  isSqlQuery, RelationalDataAdapter, RelationalDataAdapterFactory,
+  RelationalDataAdapter, RelationalDataAdapterFactory,
   RelationalRawResult, RelationalTransactionAdapter, RelationalTransactionAdapterFactory, SimpleFormatContext,
-  SqlQuery,
 } from '@daita/relational';
 import { Defer } from "@daita/common";
-import { isSqlDelete } from '@daita/relational/dist/sql/dml/delete/sql-delete';
-import { isSqlSelect } from '@daita/relational/dist/sql/dml/select/sql-select';
-import { isSqlUpdate } from '@daita/relational/dist/sql/dml/update/sql-update';
-import { isSqlInsert } from '@daita/relational/dist/sql/dml/insert/sql-insert';
-import { isSqlCreateTable } from '@daita/relational/dist/sql/ddl/create-table/create-table-query';
-import { isSqlDropTable } from '@daita/relational/dist/sql/ddl/drop-table/drop-table-query';
 import { sqliteFormatter } from './sqlite-formatter';
 
 export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
@@ -56,7 +49,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
     return defer.promise;
   }
 
-  async exec(sql: SqlQuery): Promise<RelationalRawResult> {
+  async exec(sql: any): Promise<RelationalRawResult> {
     const ctx = new SimpleFormatContext('?');
     const query = sqliteFormatter.format(sql, ctx);
     return await this.execRaw(query, ctx.getValues());
@@ -83,8 +76,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
   }
 
   supportsQuery(sql: any): boolean {
-    return isSqlDelete(sql) || isSqlSelect(sql) || isSqlUpdate(sql) || 
-      isSqlInsert(sql) || isSqlCreateTable(sql) || isSqlDropTable(sql);
+    return sqliteFormatter.canHandle(sql);
   }
 }
 

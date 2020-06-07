@@ -1,13 +1,13 @@
-import { SqlRawValue } from '../dml';
 import { FormatContext } from './format-context';
+import { ValueType } from '../description/value-type';
 
 export class CounterFormatContext implements FormatContext {
-  private values: SqlRawValue[] = [];
+  private values: ValueType[] = [];
 
   constructor(private prefix: string) {
   }
 
-  appendValue(value: SqlRawValue): string {
+  appendValue(value: ValueType): string {
     const index = this.values.indexOf(value);
     if (index === -1) {
       this.values.push(value);
@@ -17,7 +17,11 @@ export class CounterFormatContext implements FormatContext {
     }
   }
 
-  getValues(): SqlRawValue[] {
+  getValues(): ValueType[] {
     return this.values;
+  }
+
+  escape(value: string): string {
+    return `"${value}"`;
   }
 }

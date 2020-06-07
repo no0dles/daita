@@ -5,10 +5,7 @@ import {
   RelationalTransactionAdapter,
   RelationalRawResult,
 } from "@daita/relational";
-import {
-  isPostgresQuery,
-  PostgresQuery,
-} from "../query/postgres-query";
+import { postgresFormatter } from './postgres-formatter';
 
 export class PostgresAdapter implements RelationalTransactionAdapter {
   private readonly pool: Pool;
@@ -75,7 +72,7 @@ export class PostgresAdapter implements RelationalTransactionAdapter {
     });
   }
 
-  exec(sql: PostgresQuery): Promise<RelationalRawResult> {
+  exec(sql: any): Promise<RelationalRawResult> {
     return this.run(async client => {
       const adapter = new PostgresDataAdapter(client);
       return adapter.exec(sql as any);
@@ -83,6 +80,6 @@ export class PostgresAdapter implements RelationalTransactionAdapter {
   }
 
   supportsQuery(sql: any): boolean {
-    return isPostgresQuery(sql);
+    return postgresFormatter.canHandle(sql);
   }
 }

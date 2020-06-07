@@ -2,8 +2,6 @@ import {Debouncer, Defer} from '@daita/common';
 import {
   RelationalDataAdapter,
   RelationalTransactionAdapter,
-  SqlPermissions,
-  SqlQuery,
 } from '@daita/relational';
 import {ContextManager} from './context-manager';
 
@@ -24,7 +22,6 @@ export class TransactionManager {
   }
 
   constructor(private transactionAdapter: RelationalTransactionAdapter,
-              private sqlPermissions: SqlPermissions | null | undefined,
               private transactionTimeout: number) {
     this.debouncer = new Debouncer(() => this.timeout(), this.transactionTimeout);
     this.transactionAdapter
@@ -63,10 +60,10 @@ export class TransactionManager {
     return this.debouncer.timeout;
   }
 
-  async exec(sql: SqlQuery, validateAuth: boolean) {
+  async exec(sql: any) {
     const dataAdapter = await this.getDataAdapter();
-    const context = new ContextManager(dataAdapter, this.sqlPermissions);
-    return await context.exec(sql, validateAuth);
+    const context = new ContextManager(dataAdapter);
+    return await context.exec(sql);
   }
 
   async commit() {

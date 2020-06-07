@@ -4,5 +4,3 @@ export { RelationalAddTableForeignKey } from './relational-add-table-foreign-key
 export { RelationalAddTablePrimaryKey } from './relational-add-table-primary-key.migration-step';
 export { RelationalDropTableMigrationStep } from './relational-drop-table.migration-step';
 export { RelationalDropTableFieldMigrationStep } from './relational-drop-table-field.migration-step';
-export { RelationalAddPermissionMigrationStep } from './relational-add-permission.migration-step';
-export { RelationalDropPermissionMigrationStep } from './relational-drop-permission.migration-step';
