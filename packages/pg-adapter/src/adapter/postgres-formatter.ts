@@ -23,12 +23,15 @@ import {
   SelectFormatter,
   TableFormatter,
   ValueFormatter,
+  AllFormatter,
+  NotEqualFormatter, SubSelectFormatter,
 } from '@daita/relational';
-import { AllFormatter } from '@daita/relational/dist/sql/formatter/all';
 
 export const postgresFormatter = new Formatter();
 postgresFormatter.add(new AllFormatter());
+postgresFormatter.add(new NotEqualFormatter());
 postgresFormatter.add(new SelectFormatter());
+postgresFormatter.add(new SubSelectFormatter());
 postgresFormatter.add(new ValueFormatter());
 postgresFormatter.add(new TableFormatter());
 postgresFormatter.add(new JoinFormatter());

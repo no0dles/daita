@@ -16,6 +16,7 @@ export * from './join';
 export * from './like';
 export * from './max';
 export * from './min';
+export * from './sub-select';
 export * from './not-between';
 export * from './not-equal';
 export * from './not-in';

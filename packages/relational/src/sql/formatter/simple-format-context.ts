@@ -1,7 +1,7 @@
 import { FormatContext } from './format-context';
 import { ValueType } from '../description/value-type';
 
-export class SimpleFormatContext implements FormatContext {
+export abstract class SimpleFormatContext implements FormatContext {
   private values: ValueType[] = [];
 
   constructor(private paramKey: string) {
@@ -19,4 +19,6 @@ export class SimpleFormatContext implements FormatContext {
   escape(value: string): string {
     return '`';
   }
+
+  abstract getDataType(type: string): string;
 }

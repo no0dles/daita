@@ -1,7 +1,7 @@
 import { FormatContext } from './format-context';
 import { ValueType } from '../description/value-type';
 
-export class CounterFormatContext implements FormatContext {
+export abstract class CounterFormatContext implements FormatContext {
   private values: ValueType[] = [];
 
   constructor(private prefix: string) {
@@ -24,4 +24,6 @@ export class CounterFormatContext implements FormatContext {
   escape(value: string): string {
     return `"${value}"`;
   }
+
+  abstract getDataType(type: string): string;
 }

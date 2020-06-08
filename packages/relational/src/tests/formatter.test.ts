@@ -26,11 +26,21 @@ import { DropTableFormatter } from '../sql/formatter/drop-table';
 import { ValueFormatter } from '../sql/formatter/value';
 import { AliasFormatter } from '../sql/formatter/alias';
 import { AllFormatter } from '../sql/formatter/all';
+import { NotEqualFormatter } from '../sql/formatter/not-equal';
+import { SubSelectFormatter } from '../sql/formatter/sub-select';
+
+export class TestFormatContext extends CounterFormatContext {
+  getDataType(type: string): string {
+    return type;
+  }
+}
 
 
 export function expectedSql(sql: Sql<any>, expected: string, params?: any[]) {
   const formatter = new Formatter();
   formatter.add(new AllFormatter());
+  formatter.add(new NotEqualFormatter());
+  formatter.add(new SubSelectFormatter());
   formatter.add(new SelectFormatter());
   formatter.add(new ValueFormatter());
   formatter.add(new TableFormatter());
@@ -54,7 +64,7 @@ export function expectedSql(sql: Sql<any>, expected: string, params?: any[]) {
   formatter.add(new AlterTableAddForeignKeyFormatter());
   formatter.add(new AlterTableDropColumnFormatter());
   formatter.add(new AlterTableDropConstraintFormatter());
-  const ctx = new CounterFormatContext('$');
+  const ctx = new TestFormatContext('$');
   const result = formatter.format(sql, ctx);
   expect(result).toBe(expected);
   expect(ctx.getValues()).toEqual(params ?? []);

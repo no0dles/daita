@@ -1,10 +1,10 @@
 import { PoolClient, QueryResult } from 'pg';
 import {
-  CounterFormatContext,
   RelationalDataAdapter,
   RelationalRawResult,
 } from '@daita/relational';
 import { postgresFormatter } from './postgres-formatter';
+import { PostgresFormatContext } from './postgres-format-context';
 
 export class PostgresDataAdapter implements RelationalDataAdapter {
 
@@ -26,7 +26,7 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
   }
 
   private formatQuery(query: any): { sql: string, values: any[] } {
-    const formatCtx = new CounterFormatContext('$');
+    const formatCtx = new PostgresFormatContext();
     const sql = postgresFormatter.format(query, formatCtx);
     console.log(sql, formatCtx.getValues());
     return { sql, values: formatCtx.getValues() };
