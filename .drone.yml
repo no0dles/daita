@@ -143,6 +143,7 @@ steps:
   - cd packages/common
   - npm run build
   depends_on:
+  - "@daita/eslint-config:install"
   - "@daita/eslint-config:build"
 
 - name: "@daita/create:build"
@@ -151,6 +152,7 @@ steps:
   - cd packages/create
   - npm run build
   depends_on:
+  - "@daita/eslint-config:install"
   - "@daita/eslint-config:build"
 
 - name: "@daita/relational:build"
@@ -159,6 +161,8 @@ steps:
   - cd packages/relational
   - npm run build
   depends_on:
+  - "@daita/common:install"
+  - "@daita/eslint-config:install"
   - "@daita/common:build"
   - "@daita/eslint-config:build"
 
@@ -168,6 +172,8 @@ steps:
   - cd packages/pg-adapter
   - npm run build
   depends_on:
+  - "@daita/common:install"
+  - "@daita/relational:install"
   - "@daita/common:build"
   - "@daita/relational:build"
 
@@ -177,6 +183,8 @@ steps:
   - cd packages/sqlite-adapter
   - npm run build
   depends_on:
+  - "@daita/common:install"
+  - "@daita/relational:install"
   - "@daita/common:build"
   - "@daita/relational:build"
 
@@ -186,6 +194,7 @@ steps:
   - cd packages/http/http-client-common
   - npm run build
   depends_on:
+  - "@daita/common:install"
   - "@daita/common:build"
 
 - name: "@daita/http-server-common:build"
@@ -194,6 +203,8 @@ steps:
   - cd packages/http/http-server-common
   - npm run build
   depends_on:
+  - "@daita/common:install"
+  - "@daita/relational:install"
   - "@daita/common:build"
   - "@daita/relational:build"
 
@@ -203,6 +214,10 @@ steps:
   - cd packages/http/http-server
   - npm run build
   depends_on:
+  - "@daita/common:install"
+  - "@daita/http-server-common:install"
+  - "@daita/relational:install"
+  - "@daita/pg-adapter:install"
   - "@daita/common:build"
   - "@daita/http-server-common:build"
   - "@daita/relational:build"
@@ -214,6 +229,10 @@ steps:
   - cd packages/http/http-adapter
   - npm run build
   depends_on:
+  - "@daita/common:install"
+  - "@daita/http-client-common:install"
+  - "@daita/relational:install"
+  - "@daita/http-server:install"
   - "@daita/common:build"
   - "@daita/http-client-common:build"
   - "@daita/relational:build"
@@ -225,6 +244,9 @@ steps:
   - cd packages/orm
   - npm run build
   depends_on:
+  - "@daita/common:install"
+  - "@daita/relational:install"
+  - "@daita/eslint-config:install"
   - "@daita/common:build"
   - "@daita/relational:build"
   - "@daita/eslint-config:build"
@@ -235,6 +257,12 @@ steps:
   - cd packages/cli
   - npm run build
   depends_on:
+  - "@daita/common:install"
+  - "@daita/http-server:install"
+  - "@daita/orm:install"
+  - "@daita/relational:install"
+  - "@daita/http-adapter:install"
+  - "@daita/pg-adapter:install"
   - "@daita/common:build"
   - "@daita/http-server:build"
   - "@daita/orm:build"

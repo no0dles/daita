@@ -53,7 +53,7 @@ local buildStep(pkg) =
          ("cd " + pkg.dir),
          "npm run build"
        ],
-       "depends_on": getDependencies(pkg.config, ":build")
+       "depends_on": getDependencies(pkg.config, ":install") + getDependencies(pkg.config, ":build")
    };
 
 [{
