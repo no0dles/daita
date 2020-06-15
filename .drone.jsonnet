@@ -14,61 +14,62 @@ local create = import 'packages/create/package.json';
 
 local image = 'node:12';
 local packages = [
-    { dir: "packages/eslint-config", config: eslint, extraSteps: [] },
-    { dir: "packages/docs", config: docs,
-      extraSteps: [
-      {
-        "name": "publish",
-        "image": "plugins/gh-pages",
-        "settings": {
-          "pages_directory": "packages/docs/build/"
-        },
-        "commands": []
-      }
-      ]
-    },
-    { dir: "packages/common", config: common, extraSteps: []},
-    { dir: "packages/create", config: create, extraSteps: []},
-    { dir: "packages/relational", config: relational, extraSteps: []},
-    { dir: "packages/pg-adapter", config: pg_adapter, extraSteps: []},
-    { dir: "packages/sqlite-adapter", config: sqlite_adapter, extraSteps: []},
-    { dir: "packages/http/http-client-common", config: http_client_common, extraSteps: []},
-    { dir: "packages/http/http-server-common", config: http_server_common, extraSteps: []},
-    { dir: "packages/http/http-server", config: http_server, extraSteps: []},
-    { dir: "packages/http/http-adapter", config: http_adapter, extraSteps: []},
-    { dir: "packages/orm", config: orm, extraSteps: []},
-    { dir: "packages/cli", config: cli, extraSteps: []},
+    { dir: "packages/eslint-config", config: eslint},
+    { dir: "packages/docs", config: docs },
+    { dir: "packages/common", config: common},
+    { dir: "packages/create", config: create},
+    { dir: "packages/relational", config: relational},
+    { dir: "packages/pg-adapter", config: pg_adapter},
+    { dir: "packages/sqlite-adapter", config: sqlite_adapter},
+    { dir: "packages/http/http-client-common", config: http_client_common},
+    { dir: "packages/http/http-server-common", config: http_server_common},
+    { dir: "packages/http/http-server", config: http_server},
+    { dir: "packages/http/http-adapter", config: http_adapter},
+    { dir: "packages/orm", config: orm},
+    { dir: "packages/cli", config: cli},
 ];
 
-local getDependsOn(map) = [item for item in std.objectFields(map) if std.startsWith(item, "@daita")];
+local getDependsOn(map) = [(item + ":build") for item in std.objectFields(map) if std.startsWith(item, "@daita")];
 local getDependencies(config) =
     (if std.objectHas(config, "dependencies") then getDependsOn(config.dependencies) else []) +
     (if std.objectHas(config, "devDependencies") then getDependsOn(config.devDependencies) else []);
 
-local pipeline(pkg) =
-    {
-        "kind": "pipeline",
-        "type": "docker",
-        "name": pkg.config.name,
-        "steps": [
-            {
-                name: "install",
-                image: image,
-                commands: [
-                  ("cd " + pkg.dir),
-                  "npm install"
-                ],
-            },
-            {
-                name: "build",
-                image: image,
-                commands: [
-                  ("cd " + pkg.dir),
-                  "npm run build"
-                ],
-            }
-        ] + pkg.extraSteps,
-        "depends_on": getDependencies(pkg.config)
-    };
+local installStep(pkg) =
+   {
+       name: pkg.config.name + ":install",
+       image: image,
+       commands: [
+         ("cd " + pkg.dir),
+         "npm install"
+       ],
+       "depends_on": getDependencies(pkg.config)
+   };
 
-[pipeline(package) for package in packages]
+local buildStep(pkg) =
+   {
+       name: pkg.config.name + ":build",
+       image: image,
+       commands: [
+         ("cd " + pkg.dir),
+         "npm run build"
+       ],
+       "depends_on": getDependencies(pkg.config)
+   };
+
+[{
+     "kind": "pipeline",
+     "type": "docker",
+     "name": "daita",
+     "steps": [installStep(package) for package in packages] +
+            [buildStep(package) for package in packages] +
+            [
+              {
+                 "name": "publish",
+                 "image": "plugins/gh-pages",
+                 "settings": {
+                   "pages_directory": "packages/docs/build/"
+                 },
+                 "commands": []
+              }
+            ]
+ }]
