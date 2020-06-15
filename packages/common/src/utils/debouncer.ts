@@ -1,5 +1,5 @@
 export class Debouncer {
-  private timeoutHandle: number | null = null;
+  private timeoutHandle: any = null;
   timeout = 0;
 
   constructor(private trigger: () => any, private wait: number) {}
