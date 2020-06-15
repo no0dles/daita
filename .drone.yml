@@ -126,33 +126,6 @@ depends_on:
 ---
 kind: pipeline
 type: docker
-name: "@daita/orm"
-
-platform:
-  os: linux
-  arch: amd64
-
-steps:
-- name: install
-  image: node:12
-  commands:
-  - cd packages/orm
-  - npm install
-
-- name: build
-  image: node:12
-  commands:
-  - cd packages/orm
-  - npm run build
-
-depends_on:
-- "@daita/common"
-- "@daita/relational"
-- "@daita/eslint-config"
-
----
-kind: pipeline
-type: docker
 name: "@daita/pg-adapter"
 
 platform:
@@ -196,6 +169,57 @@ steps:
   image: node:12
   commands:
   - cd packages/sqlite-adapter
+  - npm run build
+
+depends_on:
+- "@daita/common"
+- "@daita/relational"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/http-client-common"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
+  image: node:12
+  commands:
+  - cd packages/http/http-client-common
+  - npm install
+
+- name: build
+  image: node:12
+  commands:
+  - cd packages/http/http-client-common
+  - npm run build
+
+depends_on:
+- "@daita/common"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/http-server-common"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
+  image: node:12
+  commands:
+  - cd packages/http/http-server-common
+  - npm install
+
+- name: build
+  image: node:12
+  commands:
+  - cd packages/http/http-server-common
   - npm run build
 
 depends_on:
@@ -257,6 +281,33 @@ depends_on:
 - "@daita/http-client-common"
 - "@daita/relational"
 - "@daita/http-server"
+
+---
+kind: pipeline
+type: docker
+name: "@daita/orm"
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: install
+  image: node:12
+  commands:
+  - cd packages/orm
+  - npm install
+
+- name: build
+  image: node:12
+  commands:
+  - cd packages/orm
+  - npm run build
+
+depends_on:
+- "@daita/common"
+- "@daita/relational"
+- "@daita/eslint-config"
 
 ---
 kind: pipeline

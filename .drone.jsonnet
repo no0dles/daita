@@ -4,6 +4,8 @@ local relational = import 'packages/relational/package.json';
 local orm = import 'packages/orm/package.json';
 local docs = import 'packages/docs/package.json';
 local http_adapter = import 'packages/http/http-adapter/package.json';
+local http_server_common = import 'packages/http/http-server-common/package.json';
+local http_client_common = import 'packages/http/http-client-common/package.json';
 local pg_adapter = import 'packages/pg-adapter/package.json';
 local sqlite_adapter = import 'packages/sqlite-adapter/package.json';
 local http_server = import 'packages/http/http-server/package.json';
@@ -28,11 +30,13 @@ local packages = [
     { dir: "packages/common", config: common, extraSteps: []},
     { dir: "packages/create", config: create, extraSteps: []},
     { dir: "packages/relational", config: relational, extraSteps: []},
-    { dir: "packages/orm", config: orm, extraSteps: []},
     { dir: "packages/pg-adapter", config: pg_adapter, extraSteps: []},
     { dir: "packages/sqlite-adapter", config: sqlite_adapter, extraSteps: []},
+    { dir: "packages/http/http-client-common", config: http_client_common, extraSteps: []},
+    { dir: "packages/http/http-server-common", config: http_server_common, extraSteps: []},
     { dir: "packages/http/http-server", config: http_server, extraSteps: []},
     { dir: "packages/http/http-adapter", config: http_adapter, extraSteps: []},
+    { dir: "packages/orm", config: orm, extraSteps: []},
     { dir: "packages/cli", config: cli, extraSteps: []},
 ];
 
