@@ -9,11 +9,9 @@
     "**/*.spec.ts",
     "coverage/**",
     "node_modules/**",
-    "packages/cli/templates",
     "packages/examples",
-    "packages/tslint",
-    "packages/test",
-    "packages/website"
+    "packages/experimental",
+    "packages/docs"
   ],
   "reporter": [
     "json",
