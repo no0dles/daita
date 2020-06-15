@@ -1,9 +1,5 @@
-@daita/cli
-==========
+# @daita/cli
 
-
-
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
 [![Version](https://img.shields.io/npm/v/@daita/cli.svg)](https://npmjs.org/package/@daita/cli)
 [![Downloads/week](https://img.shields.io/npm/dw/@daita/cli.svg)](https://npmjs.org/package/@daita/cli)
 [![License](https://img.shields.io/npm/l/@daita/cli.svg)](https://github.com/no0dles/cli/blob/master/package.json)
@@ -12,6 +8,7 @@
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+
 # Usage
 <!-- usage -->
 ```sh-session
@@ -100,7 +97,6 @@ USAGE
 
 OPTIONS
   -c, --context=context      [default: default] name of context
-  -m, --migration=migration  migration id
   -s, --schema=schema        [default: src/schema.ts] path to schema
 ```
 
@@ -116,22 +112,6 @@ OPTIONS
   -s, --schema=schema  name to print
 ```
 
-## `dc new [NAME]`
-
-creates a new project
-
-```
-USAGE
-  $ dc new [NAME]
-
-OPTIONS
-  -d, --database=postgres|mysql|mongodb  database
-  -l, --license=license                  license of project
-  -p, --path=path                        path of project
-  --npm-client=yarn|npm                  [default: npm] npm client to install dependencies
-  --skip-install                         skip install of dependencies
-```
-
 ## `dc serve`
 
 serve daita api
@@ -142,9 +122,7 @@ USAGE
 
 OPTIONS
   -c, --context=context      [default: default] name of context
-  -m, --migration=migration  migration id
   -p, --port=port            [default: 8765] application port
   -s, --schema=schema        [default: src/schema.ts] path to schema
-  -w, --watch                watch for reload
 ```
 <!-- commandsstop -->

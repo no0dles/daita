@@ -52,14 +52,8 @@ If you have any ideas, just open an issue and tell me what you think.
 
 - [ ] validation for update
 - [ ] logging
-- [ ] ast mess generation cleanup
 - [ ] data type abstraction cleanup
-- [ ] migration adapter abstraction
-- [ ] include resolve select
-- [ ] nested include and path resolve
 - [ ] more tests
 - [ ] test field name with underscore
 - [ ] perf test for mapping of data
-- [ ] get extend fields from ast
-- [ ] allow constants in insert, update
 
