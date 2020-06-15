@@ -1,7 +1,7 @@
 {
   "name": "@daita/orm",
   "description": "orm of daita",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "homepage": "https://daita.ch",
@@ -32,15 +32,15 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "0.2.8",
-    "@daita/relational": "0.2.8"
+    "@daita/common": "^0.2.9",
+    "@daita/relational": "^0.2.9"
   },
   "devDependencies": {
-    "@daita/eslint-config": "0.2.8",
+    "@daita/eslint-config": "^0.2.9",
     "@types/jest": "^25.2.1",
-    "eslint": "^6.8.0",
     "@typescript-eslint/eslint-plugin": "^2.28.0",
     "@typescript-eslint/parser": "^2.28.0",
+    "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-prettier": "^3.1.3",
     "jest": "^25.3.0",

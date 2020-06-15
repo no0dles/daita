@@ -1,18 +1,18 @@
 {
   "name": "@daita/http-server-common",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "author": "Pascal Bertschi @no0dles",
   "publishConfig": {
     "access": "public"
   },
   "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
-    "jwks-rsa": "^1.6.2",
+    "@daita/common": "^0.2.9",
+    "@daita/relational": "^0.2.9",
     "axios": "^0.19.2",
+    "jwks-rsa": "^1.6.2",
     "jws": "^4.0.0",
-    "openid-client": "^3.14.2",
-    "@daita/common": "0.2.8",
-    "@daita/relational": "0.2.8"
+    "openid-client": "^3.14.2"
   },
   "devDependencies": {
     "@types/jws": "^3.2.1",

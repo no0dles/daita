@@ -1,7 +1,7 @@
 {
   "name": "@daita/cli",
   "description": "awesome cli for the daita orm",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "author": "Pascal Bertschi @no0dles",
   "bin": {
     "daita": "dist/index.js"
@@ -11,19 +11,19 @@
   },
   "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
-    "@daita/common": "0.2.8",
-    "@daita/relational": "0.2.8",
-    "@daita/orm": "0.2.8",
-    "@daita/http-server": "0.2.8",
+    "@daita/common": "^0.2.9",
+    "@daita/http-server": "^0.2.9",
+    "@daita/orm": "^0.2.9",
+    "@daita/relational": "^0.2.9",
+    "cli-ux": "^5.4.6",
+    "commander": "^5.1.0",
     "config": "^3.2.4",
     "inquirer": "^7.0.1",
-    "nomnoml": "^0.6.2",
-    "cli-ux": "^5.4.6",
-    "commander": "^5.1.0"
+    "nomnoml": "^0.6.2"
   },
   "devDependencies": {
-    "@daita/pg-adapter": "0.2.8",
-    "@daita/http-adapter": "0.2.8",
+    "@daita/http-adapter": "^0.2.9",
+    "@daita/pg-adapter": "^0.2.9",
     "@types/config": "^0.0.36",
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^25.1.1",
@@ -40,9 +40,6 @@
     "build": "tsc -b tsconfig.json",
     "test": "jest",
     "clean": "rm -rf ./dist",
-    "postpack": "rm -f oclif.manifest.json",
-    "prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "version": "oclif-dev readme && git add README.md",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
     "prettier": "prettier 'src/**/*.ts' --write"
