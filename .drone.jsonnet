@@ -41,7 +41,7 @@ local installStep(pkg) =
        commands: [
          ("cd " + pkg.dir),
          "rm package-lock.json || true",
-         "npm install"
+         "npm ci"
        ],
        "depends_on": getDependencies(pkg.config, ":install")
    };
