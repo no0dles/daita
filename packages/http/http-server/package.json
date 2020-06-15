@@ -19,7 +19,7 @@
     "openid-client": "^3.12.1"
   },
   "devDependencies": {
-    "@daita/pg-adapter": "../../pg-adapter",
+    "@daita/pg-adapter": "0.2.10",
     "@types/body-parser": "^1.17.1",
     "@types/config": "^0.0.36",
     "@types/cors": "^2.8.6",
