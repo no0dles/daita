@@ -41,8 +41,7 @@ local installStep(pkg) =
        commands: [
          ("cd " + pkg.dir),
          "npm install"
-       ],
-       "depends_on": getDependencies(pkg.config)
+       ]
    };
 
 local buildStep(pkg) =
@@ -69,7 +68,8 @@ local buildStep(pkg) =
                  "settings": {
                    "pages_directory": "packages/docs/build/"
                  },
-                 "commands": []
+                 "commands": [],
+                 "depends_on": ["@daita/docs:build"]
               }
             ]
  }]

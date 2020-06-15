@@ -25,105 +25,66 @@ steps:
   commands:
   - cd packages/common
   - npm install
-  depends_on:
-  - "@daita/eslint-config:build"
 
 - name: "@daita/create:install"
   image: node:12
   commands:
   - cd packages/create
   - npm install
-  depends_on:
-  - "@daita/eslint-config:build"
 
 - name: "@daita/relational:install"
   image: node:12
   commands:
   - cd packages/relational
   - npm install
-  depends_on:
-  - "@daita/common:build"
-  - "@daita/eslint-config:build"
 
 - name: "@daita/pg-adapter:install"
   image: node:12
   commands:
   - cd packages/pg-adapter
   - npm install
-  depends_on:
-  - "@daita/common:build"
-  - "@daita/relational:build"
 
 - name: "@daita/sqlite-adapter:install"
   image: node:12
   commands:
   - cd packages/sqlite-adapter
   - npm install
-  depends_on:
-  - "@daita/common:build"
-  - "@daita/relational:build"
 
 - name: "@daita/http-client-common:install"
   image: node:12
   commands:
   - cd packages/http/http-client-common
   - npm install
-  depends_on:
-  - "@daita/common:build"
 
 - name: "@daita/http-server-common:install"
   image: node:12
   commands:
   - cd packages/http/http-server-common
   - npm install
-  depends_on:
-  - "@daita/common:build"
-  - "@daita/relational:build"
 
 - name: "@daita/http-server:install"
   image: node:12
   commands:
   - cd packages/http/http-server
   - npm install
-  depends_on:
-  - "@daita/common:build"
-  - "@daita/http-server-common:build"
-  - "@daita/relational:build"
-  - "@daita/pg-adapter:build"
 
 - name: "@daita/http-adapter:install"
   image: node:12
   commands:
   - cd packages/http/http-adapter
   - npm install
-  depends_on:
-  - "@daita/common:build"
-  - "@daita/http-client-common:build"
-  - "@daita/relational:build"
-  - "@daita/http-server:build"
 
 - name: "@daita/orm:install"
   image: node:12
   commands:
   - cd packages/orm
   - npm install
-  depends_on:
-  - "@daita/common:build"
-  - "@daita/relational:build"
-  - "@daita/eslint-config:build"
 
 - name: "@daita/cli:install"
   image: node:12
   commands:
   - cd packages/cli
   - npm install
-  depends_on:
-  - "@daita/common:build"
-  - "@daita/http-server:build"
-  - "@daita/orm:build"
-  - "@daita/relational:build"
-  - "@daita/http-adapter:build"
-  - "@daita/pg-adapter:build"
 
 - name: "@daita/eslint-config:build"
   image: node:12
@@ -246,5 +207,7 @@ steps:
   image: plugins/gh-pages
   settings:
     pages_directory: packages/docs/build/
+  depends_on:
+  - "@daita/docs:build"
 
 ...
