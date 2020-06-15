@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "typescript": "^3.9.3",
+    "jest": "^26.0.1",
     "@daita/internal-npm-publish": "file:./packages/internal/npm-publish"
   },
   "scripts": {

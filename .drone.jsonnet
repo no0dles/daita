@@ -14,19 +14,19 @@ local create = import 'packages/create/package.json';
 
 local image = 'node:14';
 local packages = [
-    { dir: "packages/eslint-config", config: eslint},
-    { dir: "packages/docs", config: docs },
-    { dir: "packages/common", config: common},
-    { dir: "packages/create", config: create},
-    { dir: "packages/relational", config: relational},
-    { dir: "packages/pg-adapter", config: pg_adapter},
-    { dir: "packages/sqlite-adapter", config: sqlite_adapter},
-    { dir: "packages/http/http-client-common", config: http_client_common},
-    { dir: "packages/http/http-server-common", config: http_server_common},
-    { dir: "packages/http/http-server", config: http_server},
-    { dir: "packages/http/http-adapter", config: http_adapter},
-    { dir: "packages/orm", config: orm},
-    { dir: "packages/cli", config: cli},
+    { dir: "packages/eslint-config", config: eslint, hasTests: true},
+    { dir: "packages/docs", config: docs, hasTests: false },
+    { dir: "packages/common", config: common, hasTests: true},
+    { dir: "packages/create", config: create, hasTests: true},
+    { dir: "packages/relational", config: relational, hasTests: true},
+    { dir: "packages/pg-adapter", config: pg_adapter, hasTests: true},
+    { dir: "packages/sqlite-adapter", config: sqlite_adapter, hasTests: true},
+    { dir: "packages/http/http-client-common", config: http_client_common, hasTests: false},
+    { dir: "packages/http/http-server-common", config: http_server_common, hasTests: false},
+    { dir: "packages/http/http-server", config: http_server, hasTests: false},
+    { dir: "packages/http/http-adapter", config: http_adapter, hasTests: false},
+    { dir: "packages/orm", config: orm, hasTests: true},
+    { dir: "packages/cli", config: cli, hasTests: true},
 ];
 
 local getDependsOn(map, suffix) = [(item + suffix) for item in std.objectFields(map) if std.startsWith(item, "@daita")];
@@ -40,7 +40,7 @@ local installStep(pkg) =
        image: image,
        commands: [
          ("cd " + pkg.dir),
-         "rm package-lock.json",
+         "rm package-lock.json || true",
          "npm install"
        ],
        "depends_on": getDependencies(pkg.config, ":install")
@@ -54,7 +54,18 @@ local buildStep(pkg) =
          ("cd " + pkg.dir),
          "npm run build"
        ],
-       "depends_on": getDependencies(pkg.config, ":install") + getDependencies(pkg.config, ":build") + [(pkg.config.name + ":install")]
+       "depends_on": getDependencies(pkg.config, ":build") + [(pkg.config.name + ":install")]
+   };
+
+local testStep(pkg) =
+   {
+       name: pkg.config.name + ":test",
+       image: image,
+       commands: [
+         ("cd " + pkg.dir),
+         "npm test"
+       ],
+       "depends_on": getDependencies(pkg.config, ":build")
    };
 
 [{
@@ -63,6 +74,7 @@ local buildStep(pkg) =
      "name": "daita",
      "steps": [installStep(package) for package in packages] +
             [buildStep(package) for package in packages] +
+            [testStep(package) for package in packages if package.hasTests] +
             [
               {
                  "name": "publish",
