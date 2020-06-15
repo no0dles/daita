@@ -14,8 +14,7 @@
     "build": "tsc -b",
     "clean": "npm-clean",
     "bump": "npm-bump",
-    "bootstrap": "npm-bootstrap",
-    "version": "npm-publish-version"
+    "bootstrap": "npm-bootstrap"
   },
   "license": "MIT"
 }
