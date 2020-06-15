@@ -2,7 +2,7 @@ name: common
 on: [push]
 
 jobs:
-  build:common:
+  build_common:
     name: Build common
     runs-on: ubuntu-latest
     steps:
