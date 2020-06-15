@@ -4,5 +4,5 @@ import { iteratePackage } from "./package";
 import { execute } from "./exec";
 
 iteratePackage(async packagePath => {
-  await execute('npm install', packagePath);
+  await execute('npm ci', packagePath);
 });
