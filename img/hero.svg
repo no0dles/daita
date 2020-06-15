@@ -1,109 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="293px" height="203px" viewBox="0 0 293 203" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="683px" height="683px" viewBox="0 0 683 683" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <rect id="Rectangle" stroke="#EBCB8B" fill="#EBCB8B" x="-68.5" y="-70.5" width="439" height="353"></rect>
-        <g id="Knife" transform="translate(0.000000, -3.000000)">
-            <rect id="Rectangle" fill-opacity="0.4" fill="#434343" x="7" y="79" width="286" height="74" rx="37"></rect>
-            <g id="USB-C" transform="translate(237.000000, 62.000000) rotate(-20.000000) translate(-237.000000, -62.000000) translate(218.000000, 20.000000)">
-                <rect id="Rectangle" fill-opacity="0.4" fill="#000000" x="8.01040764" y="12.8829906" width="29" height="63"></rect>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#DDD9D5" x="1" y="5" width="31" height="78"></rect>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#D8D8D8" x="1" y="1" width="31" height="7" rx="3.5"></rect>
-                <line x1="7.5" y1="4.5" x2="7.5" y2="7.5" id="Line-4" stroke="#592720" stroke-width="2" stroke-linecap="square"></line>
-                <line x1="10.5" y1="4.5" x2="10.5" y2="7.5" id="Line-4" stroke="#592720" stroke-width="2" stroke-linecap="square"></line>
-                <line x1="13.5" y1="4.5" x2="13.5" y2="7.5" id="Line-4" stroke="#592720" stroke-width="2" stroke-linecap="square"></line>
-                <line x1="16.5" y1="4.5" x2="16.5" y2="7.5" id="Line-4" stroke="#592720" stroke-width="2" stroke-linecap="square"></line>
-                <line x1="19.5" y1="4.5" x2="19.5" y2="7.5" id="Line-4" stroke="#592720" stroke-width="2" stroke-linecap="square"></line>
-                <line x1="22.5" y1="4.5" x2="22.5" y2="7.5" id="Line-4" stroke="#592720" stroke-width="2" stroke-linecap="square"></line>
-                <line x1="25.5" y1="4.5" x2="25.5" y2="7.5" id="Line-4" stroke="#592720" stroke-width="2" stroke-linecap="square"></line>
-            </g>
-            <g id="LAN" transform="translate(137.000000, 20.000000)">
-                <path d="M37.0104076,8.88299064 L37.0104076,11.8339906 L45.3760424,34.8177698 L37.8585015,37.553931 L37.0104076,35.2229906 L37.0104076,51.8829906 L8.01040764,51.8829906 L8.01040764,8.88299064 L37.0104076,8.88299064 Z" id="Combined-Shape" fill-opacity="0.4" fill="#000000"></path>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#D8D8D8" transform="translate(33.000000, 15.500000) rotate(-20.000000) translate(-33.000000, -15.500000) " x="30" y="3" width="6" height="25"></rect>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#DDD9D5" x="1" y="1" width="31" height="41" rx="2"></rect>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#DDD9D5" x="5" y="42" width="23" height="9"></rect>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#D8D8D8" x="9" y="1" width="3" height="7"></rect>
-                <line x1="13.5" y1="2.5" x2="13.5" y2="40.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
-                <line x1="9.5" y1="9.5" x2="9.5" y2="40.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
-                <line x1="11.5" y1="9.5" x2="11.5" y2="40.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
-                <line x1="15.5" y1="9.5" x2="15.5" y2="40.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
-                <line x1="17.5" y1="9.5" x2="17.5" y2="40.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
-                <line x1="21.5" y1="9.5" x2="21.5" y2="40.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
-                <line x1="23.5" y1="9.5" x2="23.5" y2="40.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
-                <line x1="19.5" y1="2.5" x2="19.5" y2="40.5" id="Line-5" stroke="#979797" stroke-linecap="square"></line>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#D8D8D8" x="21" y="1" width="3" height="7"></rect>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#D8D8D8" x="15" y="1" width="3" height="7"></rect>
-            </g>
-            <g id="Lighting" transform="translate(64.500000, 51.000000) rotate(20.000000) translate(-64.500000, -51.000000) translate(41.000000, 6.000000)">
-                <rect id="Rectangle" fill-opacity="0.4" fill="#000000" x="5.74239744" y="34.2241906" width="41" height="55"></rect>
-                <rect id="Rectangle" fill-opacity="0.4" fill="#000000" x="11.4191181" y="6.69180931" width="28" height="55" rx="2"></rect>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#DDD9D5" x="7" y="1" width="26" height="36" rx="4"></rect>
-                <line x1="16" y1="7" x2="16" y2="16" id="Line" stroke="#592720" stroke-linecap="square"></line>
-                <line x1="13" y1="7" x2="13" y2="16" id="Line" stroke="#592720" stroke-linecap="square"></line>
-                <line x1="19" y1="7" x2="19" y2="16" id="Line" stroke="#592720" stroke-linecap="square"></line>
-                <line x1="22" y1="7" x2="22" y2="16" id="Line" stroke="#592720" stroke-linecap="square"></line>
-                <line x1="28" y1="7" x2="28" y2="16" id="Line" stroke="#592720" stroke-linecap="square"></line>
-                <line x1="25" y1="7" x2="25" y2="16" id="Line" stroke="#592720" stroke-linecap="square"></line>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#DDD9D5" x="1" y="27" width="39" height="53"></rect>
-            </g>
-            <g id="USB-Micro" transform="translate(241.554489, 155.862262) rotate(200.000000) translate(-241.554489, -155.862262) translate(220.054489, 113.362262)">
-                <path d="M31.0615917,0.636485758 L31.0622548,23.2629075 C31.8310131,23.5417563 32.3802231,24.2785416 32.3802231,25.1436017 L32.3802231,74.1436017 C32.3802231,75.2481712 31.4847926,76.1436017 30.3802231,76.1436017 L2.3802231,76.1436017 C1.2756536,76.1436017 0.3802231,75.2481712 0.3802231,74.1436017 L0.3802231,25.1436017 C0.3802231,24.0390322 1.2756536,23.1436017 2.3802231,23.1436017 L7.0612231,23.1434858 L7.06159171,0.636485758 L31.0615917,0.636485758 Z" id="Combined-Shape" fill-opacity="0.4" fill="#000000"></path>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#DDD9D5" x="13.8071532" y="6.38412227" width="22" height="30"></rect>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#DDD9D5" x="8" y="27" width="34" height="57" rx="4"></rect>
-                <rect id="Rectangle" stroke="#979797" fill="#D8D8D8" x="30.9686326" y="9.36284623" width="2" height="14" rx="1"></rect>
-                <rect id="Rectangle" stroke="#979797" fill="#D8D8D8" x="16.6521218" y="9.55654262" width="2" height="14" rx="1"></rect>
-            </g>
-            <g id="USB-A" transform="translate(89.159471, 154.203254) rotate(130.000000) translate(-89.159471, -154.203254) translate(66.659471, 95.703254)">
-                <rect id="Rectangle" fill-opacity="0.4" fill="#000000" x="0.669570905" y="0.986072878" width="40" height="116"></rect>
-                <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#DDD9D5" x="6" y="8" width="38" height="108"></rect>
-                <path d="M34.1188303,21.0945962 L29.2721743,25.9412522 L33.5970912,30.2661691 L38.4437472,25.4195131 L34.1188303,21.0945962 Z" id="Rectangle" stroke="#592720" stroke-width="2" fill="#FFFFFF" transform="translate(33.857961, 25.680383) rotate(-45.000000) translate(-33.857961, -25.680383) "></path>
-                <path d="M17.0895889,21.0243463 L12.2429329,25.8710023 L16.5678497,30.1959192 L21.4145057,25.3492632 L17.0895889,21.0243463 Z" id="Rectangle" stroke="#592720" stroke-width="2" fill="#FFFFFF" transform="translate(16.828719, 25.610133) rotate(-45.000000) translate(-16.828719, -25.610133) "></path>
-                <path d="M16.0908673,31.246265 L13.969547,33.3675854 L17.5050809,36.9031193 L19.6264012,34.7817989 L16.0908673,31.246265 Z" id="Rectangle" stroke="#592720" fill="#D8D8D8" transform="translate(16.797974, 34.074692) rotate(-45.000000) translate(-16.797974, -34.074692) "></path>
-                <rect id="Rectangle" stroke="#592720" fill="#D8D8D8" x="31.2612074" y="33.3994194" width="5" height="3"></rect>
-            </g>
-            <rect id="Rectangle" stroke="#592720" stroke-width="3" fill="#FE4248" x="1.5" y="71.5" width="283" height="71" rx="35.5"></rect>
-            <rect id="Rectangle" stroke="#592720" stroke-width="2" fill="#592720" x="80" y="86" width="3" height="2"></rect>
-            <path d="M51,84 L51,100 L69,100 L69,112 L51,112 L51,129 L39,129 L39,112 L21,112 L21,100 L39,100 L39,84 L51,84 Z" id="Combined-Shape" stroke="#592720" stroke-width="2" fill="#FFFFFF"></path>
-            <circle id="Oval" stroke="#592720" stroke-width="2" fill="#FFFFFF" cx="250" cy="105" r="9"></circle>
-            <g id="Board" transform="translate(79.000000, 75.000000)" stroke="#592720" stroke-width="2">
-                <circle id="Oval" cx="174.5" cy="7.5" r="4.5"></circle>
-                <circle id="Oval" cx="153.5" cy="18.5" r="4.5"></circle>
-                <circle id="Oval" cx="131.5" cy="5.5" r="4.5"></circle>
-                <circle id="Oval" cx="54.5" cy="58.5" r="4.5"></circle>
-                <circle id="Oval" cx="103.5" cy="6.5" r="4.5"></circle>
-                <circle id="Oval" cx="145.5" cy="52.5" r="4.5"></circle>
-                <circle id="Oval" cx="92.5" cy="56.5" r="4.5"></circle>
-                <circle id="Oval" cx="171.5" cy="56.5" r="4.5"></circle>
-                <line x1="145" y1="8" x2="127" y2="24" id="Line-2" stroke-linecap="round"></line>
-                <line x1="128" y1="9" x2="118" y2="19" id="Line-2" stroke-linecap="round"></line>
-                <line x1="96" y1="42" x2="110" y2="53" id="Line-2" stroke-linecap="round"></line>
-                <line x1="112" y1="36" x2="123" y2="44" id="Line-2" stroke-linecap="round"></line>
-                <line x1="83" y1="48" x2="89" y2="53" id="Line-2" stroke-linecap="round"></line>
-                <line x1="26" y1="54" x2="32" y2="59" id="Line-2" stroke-linecap="round"></line>
-                <line x1="82" y1="7" x2="76" y2="12" id="Line-2" stroke-linecap="round"></line>
-                <line x1="96" y1="42" x2="1" y2="42" id="Line-2" stroke-linecap="round"></line>
-                <line x1="83" y1="48" x2="1" y2="48" id="Line-2" stroke-linecap="round"></line>
-                <line x1="25" y1="54" x2="1" y2="54" id="Line-2" stroke-linecap="round"></line>
-                <line x1="49" y1="59" x2="32" y2="59" id="Line-2" stroke-linecap="round"></line>
-                <line x1="141" y1="31" x2="1" y2="30" id="Line-2" stroke-linecap="round"></line>
-                <line x1="126" y1="25" x2="1" y2="24" id="Line-2" stroke-linecap="round"></line>
-                <line x1="118" y1="19" x2="1" y2="18" id="Line-2" stroke-linecap="round"></line>
-                <line x1="76" y1="12" x2="1" y2="12" id="Line-2" stroke-linecap="round"></line>
-                <line x1="98" y1="7" x2="82" y2="7" id="Line-2" stroke-linecap="round"></line>
-                <line x1="112" y1="36" x2="1" y2="36" id="Line-2" stroke-linecap="round"></line>
-                <line x1="170" y1="8" x2="145" y2="8" id="Line-2" stroke-linecap="round"></line>
-                <line x1="141" y1="53" x2="110" y2="53" id="Line-2" stroke-linecap="round"></line>
-                <line x1="156" y1="44" x2="123" y2="44" id="Line-2" stroke-linecap="round"></line>
-                <line x1="150.123705" y1="22" x2="140.707902" y2="31" id="Line-2" stroke-linecap="round"></line>
-                <line x1="166.938147" y1="53" x2="156.646049" y2="44" id="Line-2" stroke-linecap="round"></line>
-                <rect id="Rectangle" fill="#592720" x="1" y="23" width="3" height="2"></rect>
-                <rect id="Rectangle" fill="#592720" x="1" y="29" width="3" height="2"></rect>
-                <rect id="Rectangle" fill="#592720" x="1" y="41" width="3" height="2"></rect>
-                <rect id="Rectangle" fill="#592720" x="1" y="47" width="3" height="2"></rect>
-                <rect id="Rectangle" fill="#592720" x="1" y="35" width="3" height="2"></rect>
-                <rect id="Rectangle" fill="#592720" x="1" y="17" width="3" height="2"></rect>
-                <rect id="Rectangle" fill="#592720" x="1" y="53" width="3" height="2"></rect>
-            </g>
-            <line x1="80" y1="72" x2="80" y2="141" id="Line-3" stroke="#592720" stroke-width="2" stroke-linecap="square"></line>
+        <g id="Red">
+            <rect id="Rectangle" fill="#DC3E3E" x="0" y="0" width="683" height="683"></rect>
+            <path d="M140,248 L543,248 L543,403 C543,451.048773 452.785377,490 341.5,490 C230.214623,490 140,451.048773 140,403 L140,403 L140,248 Z" id="Combined-Shape" fill="#FFFFFF"></path>
+            <path d="M139,180 L544,180 L544,335 C544,383.048773 453.337662,422 341.5,422 C229.662338,422 139,383.048773 139,335 L139,335 L139,180 Z" id="Combined-Shape" fill="#DC3E3E"></path>
+            <path d="M140,149 L543,149 L543,304 C543,352.048773 452.785377,391 341.5,391 C230.214623,391 140,352.048773 140,304 L140,304 L140,149 Z" id="Combined-Shape" fill="#FFFFFF"></path>
+            <path d="M139,99 L544,99 L544,254 C544,302.048773 453.337662,341 341.5,341 C229.662338,341 139,302.048773 139,254 L139,254 L139,99 Z" id="Combined-Shape" fill="#DC3E3E"></path>
+            <ellipse id="Oval" fill="#FFFFFF" cx="341.5" cy="221" rx="201.5" ry="87"></ellipse>
+            <rect id="Rectangle" fill="#FFFFFF" x="140" y="157" width="403" height="64"></rect>
+            <ellipse id="Oval" stroke="#DC3E3E" stroke-width="3" fill="#FFFFFF" cx="340.5" cy="149" rx="201.5" ry="87"></ellipse>
         </g>
     </g>
 </svg>
