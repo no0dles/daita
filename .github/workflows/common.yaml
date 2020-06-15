@@ -20,7 +20,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
+        working-directory: packages/internal/npm-publish
       - run: npm run build
         working-directory: packages/internal/npm-publish
+      - run: npm ci
       - run: npm run bootstrap
       - run: npm run build
