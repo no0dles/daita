@@ -12,7 +12,7 @@ local http_server = import 'packages/http/http-server/package.json';
 local cli = import 'packages/cli/package.json';
 local create = import 'packages/create/package.json';
 
-local image = 'node:12';
+local image = 'node:14';
 local packages = [
     { dir: "packages/eslint-config", config: eslint},
     { dir: "packages/docs", config: docs },
