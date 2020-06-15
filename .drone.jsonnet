@@ -1,32 +1,39 @@
 local common = import 'packages/common/package.json';
 local eslint = import 'packages/eslint-config/package.json';
 local relational = import 'packages/relational/package.json';
-local document = import 'packages/document/package.json';
 local orm = import 'packages/orm/package.json';
 local docs = import 'packages/docs/package.json';
-local odm = import 'packages/odm/package.json';
-local http_adapter = import 'packages/adapters/http/package.json';
-local pg_adapter = import 'packages/adapters/pg/package.json';
-local mongodb_adapter = import 'packages/adapters/mongodb/package.json';
-local websocket_adapter = import 'packages/adapters/websocket/package.json';
-local http_server = import 'packages/http-server/package.json';
+local http_adapter = import 'packages/http/http-adapter/package.json';
+local pg_adapter = import 'packages/pg-adapter/package.json';
+local sqlite_adapter = import 'packages/sqlite-adapter/package.json';
+local http_server = import 'packages/http/http-server/package.json';
 local cli = import 'packages/cli/package.json';
+local create = import 'packages/create/package.json';
 
 local image = 'node:12';
 local packages = [
-    { dir: "packages/eslint-config", config: eslint },
-    { dir: "packages/docs", config: docs},
-    { dir: "packages/common", config: common},
-    { dir: "packages/relational", config: relational},
-    { dir: "packages/document", config: document},
-    { dir: "packages/orm", config: orm},
-    { dir: "packages/odm", config: odm},
-    { dir: "packages/adapters/mongodb", config: mongodb_adapter},
-    { dir: "packages/adapters/pg", config: pg_adapter},
-    { dir: "packages/http-server", config: http_server},
-    { dir: "packages/adapters/http", config: http_adapter},
-    { dir: "packages/adapters/websocket", config: websocket_adapter},
-    { dir: "packages/cli", config: cli},
+    { dir: "packages/eslint-config", config: eslint, extraSteps: [] },
+    { dir: "packages/docs", config: docs,
+      extraSteps: [
+      {
+        "name": "publish",
+        "image": "plugins/gh-pages",
+        "settings": {
+          "pages_directory": "packages/docs/build/"
+        },
+        "commands": []
+      }
+      ]
+    },
+    { dir: "packages/common", config: common, extraSteps: []},
+    { dir: "packages/create", config: create, extraSteps: []},
+    { dir: "packages/relational", config: relational, extraSteps: []},
+    { dir: "packages/orm", config: orm, extraSteps: []},
+    { dir: "packages/pg-adapter", config: pg_adapter, extraSteps: []},
+    { dir: "packages/sqlite-adapter", config: sqlite_adapter, extraSteps: []},
+    { dir: "packages/http/http-server", config: http_server, extraSteps: []},
+    { dir: "packages/http/http-adapter", config: http_adapter, extraSteps: []},
+    { dir: "packages/cli", config: cli, extraSteps: []},
 ];
 
 local getDependsOn(map) = [item for item in std.objectFields(map) if std.startsWith(item, "@daita")];
@@ -56,7 +63,7 @@ local pipeline(pkg) =
                   "npm run build"
                 ],
             }
-        ],
+        ] + pkg.extraSteps,
         "depends_on": getDependencies(pkg.config)
     };
 
