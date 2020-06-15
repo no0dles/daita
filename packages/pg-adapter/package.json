@@ -32,8 +32,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "file:../common",
-    "@daita/relational": "file:../relational",
+    "@daita/common": "0.2.8",
+    "@daita/relational": "0.2.8",
     "pg-connection-string": "^2.1.0",
     "pg": "7.14.0"
   },

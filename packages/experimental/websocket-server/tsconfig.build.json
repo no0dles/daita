@@ -1,0 +1,20 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "lib": ["dom", "es2016"],
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
+  },
+  "references": [{
+    "path": "../../common/tsconfig.json"
+  }, {
+    "path": "../http-server-common/tsconfig.json"
+  }, {
+    "path": "../http-server/tsconfig.json"
+  }],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

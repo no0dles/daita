@@ -39,7 +39,7 @@
     "yaml": "^1.10.0"
   },
   "devDependencies": {
-    "@daita/eslint-config": "file:../eslint-config",
+    "@daita/eslint-config": "0.2.8",
     "@types/jest": "^25.2.1",
     "@types/inquirer": "^6.5.0",
     "@types/yaml": "^1.9.7",

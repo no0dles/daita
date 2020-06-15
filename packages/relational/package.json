@@ -32,10 +32,10 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "file:../common"
+    "@daita/common": "0.2.8"
   },
   "devDependencies": {
-    "@daita/eslint-config": "file:../eslint-config",
+    "@daita/eslint-config": "0.2.8",
     "@types/jest": "^25.2.1",
     "eslint": "^6.8.0",
     "@typescript-eslint/eslint-plugin": "^2.28.0",

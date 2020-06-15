@@ -1,0 +1,6 @@
+*.spec.js
+*.spec.d.ts
+*.ts.map
+*.js.map
+tsconfig.tsbuildinfo
+*.tgz

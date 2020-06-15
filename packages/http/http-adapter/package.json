@@ -7,13 +7,13 @@
   },
   "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
-    "@daita/common": "file:../../common",
-    "@daita/relational": "file:../../relational",
-    "@daita/http-client-common": "file:../http-client-common",
+    "@daita/common": "0.2.8",
+    "@daita/relational": "0.2.8",
+    "@daita/http-client-common": "0.2.8",
     "axios": "^0.19.0"
   },
   "devDependencies": {
-    "@daita/http-server": "file:../http-server",
+    "@daita/http-server": "0.2.8",
     "typescript": "~3.9.3",
     "@types/jest": "^25.1.1",
     "jest": "^25.1.0",

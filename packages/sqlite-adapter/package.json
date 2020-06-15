@@ -32,8 +32,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "file:../common",
-    "@daita/relational": "file:../relational",
+    "@daita/common": "0.2.8",
+    "@daita/relational": "0.2.8",
     "sqlite3": "^4.2.0"
   },
   "devDependencies": {
