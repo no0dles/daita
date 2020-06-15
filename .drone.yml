@@ -12,18 +12,21 @@ steps:
   image: node:14
   commands:
   - cd packages/eslint-config
+  - rm package-lock.json
   - npm install
 
 - name: "@daita/docs:install"
   image: node:14
   commands:
   - cd packages/docs
+  - rm package-lock.json
   - npm install
 
 - name: "@daita/common:install"
   image: node:14
   commands:
   - cd packages/common
+  - rm package-lock.json
   - npm install
   depends_on:
   - "@daita/eslint-config:install"
@@ -32,6 +35,7 @@ steps:
   image: node:14
   commands:
   - cd packages/create
+  - rm package-lock.json
   - npm install
   depends_on:
   - "@daita/eslint-config:install"
@@ -40,6 +44,7 @@ steps:
   image: node:14
   commands:
   - cd packages/relational
+  - rm package-lock.json
   - npm install
   depends_on:
   - "@daita/common:install"
@@ -49,6 +54,7 @@ steps:
   image: node:14
   commands:
   - cd packages/pg-adapter
+  - rm package-lock.json
   - npm install
   depends_on:
   - "@daita/common:install"
@@ -58,6 +64,7 @@ steps:
   image: node:14
   commands:
   - cd packages/sqlite-adapter
+  - rm package-lock.json
   - npm install
   depends_on:
   - "@daita/common:install"
@@ -67,6 +74,7 @@ steps:
   image: node:14
   commands:
   - cd packages/http/http-client-common
+  - rm package-lock.json
   - npm install
   depends_on:
   - "@daita/common:install"
@@ -75,6 +83,7 @@ steps:
   image: node:14
   commands:
   - cd packages/http/http-server-common
+  - rm package-lock.json
   - npm install
   depends_on:
   - "@daita/common:install"
@@ -84,6 +93,7 @@ steps:
   image: node:14
   commands:
   - cd packages/http/http-server
+  - rm package-lock.json
   - npm install
   depends_on:
   - "@daita/common:install"
@@ -95,6 +105,7 @@ steps:
   image: node:14
   commands:
   - cd packages/http/http-adapter
+  - rm package-lock.json
   - npm install
   depends_on:
   - "@daita/common:install"
@@ -106,6 +117,7 @@ steps:
   image: node:14
   commands:
   - cd packages/orm
+  - rm package-lock.json
   - npm install
   depends_on:
   - "@daita/common:install"
@@ -116,6 +128,7 @@ steps:
   image: node:14
   commands:
   - cd packages/cli
+  - rm package-lock.json
   - npm install
   depends_on:
   - "@daita/common:install"

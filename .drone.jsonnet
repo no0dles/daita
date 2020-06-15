@@ -40,6 +40,7 @@ local installStep(pkg) =
        image: image,
        commands: [
          ("cd " + pkg.dir),
+         "rm package-lock.json",
          "npm install"
        ],
        "depends_on": getDependencies(pkg.config, ":install")
