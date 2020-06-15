@@ -65,7 +65,7 @@ local testStep(pkg) =
          ("cd " + pkg.dir),
          "npm test"
        ],
-       "depends_on": getDependencies(pkg.config, ":build")
+       "depends_on": getDependencies(pkg.config, ":build") + [(pkg.config.name + ":install")]
    };
 
 [{

@@ -275,6 +275,8 @@ steps:
   commands:
   - cd packages/eslint-config
   - npm test
+  depends_on:
+  - "@daita/eslint-config:install"
 
 - name: "@daita/common:test"
   image: node:14
@@ -283,6 +285,7 @@ steps:
   - npm test
   depends_on:
   - "@daita/eslint-config:build"
+  - "@daita/common:install"
 
 - name: "@daita/create:test"
   image: node:14
@@ -291,6 +294,7 @@ steps:
   - npm test
   depends_on:
   - "@daita/eslint-config:build"
+  - "@daita/create:install"
 
 - name: "@daita/relational:test"
   image: node:14
@@ -300,6 +304,7 @@ steps:
   depends_on:
   - "@daita/common:build"
   - "@daita/eslint-config:build"
+  - "@daita/relational:install"
 
 - name: "@daita/pg-adapter:test"
   image: node:14
@@ -309,6 +314,7 @@ steps:
   depends_on:
   - "@daita/common:build"
   - "@daita/relational:build"
+  - "@daita/pg-adapter:install"
 
 - name: "@daita/sqlite-adapter:test"
   image: node:14
@@ -318,6 +324,7 @@ steps:
   depends_on:
   - "@daita/common:build"
   - "@daita/relational:build"
+  - "@daita/sqlite-adapter:install"
 
 - name: "@daita/orm:test"
   image: node:14
@@ -328,6 +335,7 @@ steps:
   - "@daita/common:build"
   - "@daita/relational:build"
   - "@daita/eslint-config:build"
+  - "@daita/orm:install"
 
 - name: "@daita/cli:test"
   image: node:14
@@ -341,6 +349,7 @@ steps:
   - "@daita/relational:build"
   - "@daita/http-adapter:build"
   - "@daita/pg-adapter:build"
+  - "@daita/cli:install"
 
 - name: publish
   image: plugins/gh-pages
