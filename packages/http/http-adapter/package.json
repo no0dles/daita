@@ -1,6 +1,6 @@
 {
-  "name": "@daita/http",
-  "version": "0.1.1-alpha.1",
+  "name": "@daita/http-adapter",
+  "version": "0.2.8",
   "author": "Pascal Bertschi @no0dles",
   "publishConfig": {
     "access": "public"

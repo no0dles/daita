@@ -1,7 +1,7 @@
 {
   "name": "@daita/eslint-config",
   "description": "eslint config and rules for daita",
-  "version": "0.0.1",
+  "version": "0.2.8",
   "publishConfig": {
     "access": "public"
   },
@@ -12,7 +12,11 @@
     "type": "git",
     "url": "https://github.com/no0dles/daita"
   },
-  "keywords": ["daita", "eslint", "lint"],
+  "keywords": [
+    "daita",
+    "eslint",
+    "lint"
+  ],
   "bugs": {
     "url": "https://github.com/no0dles/daita/issues"
   },

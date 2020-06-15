@@ -1,5 +1,5 @@
 {
-  "name": "@daita/websocket",
+  "name": "@daita/websocket-adapter",
   "version": "0.1.1-alpha.1",
   "author": "Pascal Bertschi @no0dles",
   "publishConfig": {

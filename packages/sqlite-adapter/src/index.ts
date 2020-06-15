@@ -7,6 +7,7 @@ import {
 } from '@daita/relational';
 import { Defer } from "@daita/common";
 import { sqliteFormatter } from './sqlite-formatter';
+import { SqliteFormatContext } from './sqlite-format-context';
 
 export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
   constructor(protected db: sqlite.Database) {
@@ -50,7 +51,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
   }
 
   async exec(sql: any): Promise<RelationalRawResult> {
-    const ctx = new SimpleFormatContext('?');
+    const ctx = new SqliteFormatContext();
     const query = sqliteFormatter.format(sql, ctx);
     return await this.execRaw(query, ctx.getValues());
   }

@@ -24,7 +24,7 @@ import {
   TableFormatter,
   ValueFormatter,
   AllFormatter,
-  NotEqualFormatter, SubSelectFormatter,
+  NotEqualFormatter, SubSelectFormatter, InFormatter,
 } from '@daita/relational';
 
 export const postgresFormatter = new Formatter();
@@ -42,6 +42,7 @@ postgresFormatter.add(new OrderByFormatter());
 postgresFormatter.add(new EqualFormatter());
 postgresFormatter.add(new OrFormatter());
 postgresFormatter.add(new AndFormatter());
+postgresFormatter.add(new InFormatter());
 postgresFormatter.add(new GreaterThanFormatter());
 postgresFormatter.add(new AliasFormatter());
 postgresFormatter.add(new DeleteFormatter());

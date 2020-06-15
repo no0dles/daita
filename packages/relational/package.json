@@ -1,6 +1,6 @@
 {
   "name": "@daita/relational",
-  "version": "0.0.1",
+  "version": "0.2.8",
   "description": "relational functionality of daita",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,8 +31,10 @@
     "clean": "rm -rf ./dist"
   },
   "license": "MIT",
+  "dependencies": {
+    "@daita/common": "file:../common"
+  },
   "devDependencies": {
-    "@daita/common": "file:../common",
     "@daita/eslint-config": "file:../eslint-config",
     "@types/jest": "^25.2.1",
     "eslint": "^6.8.0",

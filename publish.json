@@ -4,6 +4,12 @@
     "packages/relational",
     "packages/pg-adapter",
     "packages/eslint-config",
-    "packages/orm"
+    "packages/orm",
+    "packages/cli",
+    "packages/http/http-server",
+    "packages/http/http-adapter",
+    "packages/http/http-client-common",
+    "packages/http/http-server-common",
+    "packages/create"
   ]
 }

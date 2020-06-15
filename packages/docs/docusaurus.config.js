@@ -1,6 +1,6 @@
 module.exports = {
-  title: 'Swiss Army Knife for Data',
-  tagline: 'Daita is a framework to manage and share data with backwards compatibility and security in mind',
+  title: 'Daita',
+  tagline: '... is the Swiss Army Knife for Data',
   url: 'https://daita.ch',
   baseUrl: '/',
   favicon: 'img/favicon.ico',
@@ -18,7 +18,7 @@ module.exports = {
           to: 'docs/daita/getting-started',
           activeBasePath: 'docs',
           label: 'Docs',
-          position: 'left',
+          position: 'right',
         },
         //{to: 'blog', label: 'Blog', position: 'left'},
         {
@@ -56,10 +56,6 @@ module.exports = {
         {
           title: 'Social',
           items: [
-            {
-              label: 'Blog',
-              to: 'blog',
-            },
             {
               label: 'GitHub',
               href: 'https://github.com/no0dles/daita',

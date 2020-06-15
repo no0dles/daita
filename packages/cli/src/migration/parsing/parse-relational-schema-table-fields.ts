@@ -1,7 +1,7 @@
 import { parseRelationalType } from './parse-relational-type';
 import { AstPropertyDeclaration } from '../../ast/ast-property-declaration';
 import { RelationalTableDescription } from '@daita/orm';
-import { RelationalTableFieldDescription } from '@daita/orm/dist/schema/description/relational-table-field-description';
+import { RelationalTableFieldDescription } from '@daita/orm';
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 
 export function parseRelationalSchemaTableFields(table: RelationalTableDescription, classDeclaration: AstClassDeclaration) {

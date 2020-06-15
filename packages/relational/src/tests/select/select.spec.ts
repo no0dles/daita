@@ -3,6 +3,7 @@ import { field } from '../../sql/function/field';
 import { table } from '../../sql/function/table';
 import { expectedSql } from '../formatter.test';
 import { User } from '../schema/user';
+import { all, count, equal } from '../../sql/function';
 
 describe('select', () => {
   it('should select 1', () => {
@@ -38,6 +39,23 @@ describe('select', () => {
       offset: 10
     }, 'SELECT "auth"."user"."id" FROM "auth"."user" OFFSET $1', [10]);
   });
+
+  it('should select count distinct', () => {
+    expectedSql({
+      select: count(field(User, 'id'), true),
+      from: table(User),
+      offset: 10
+    }, 'SELECT count(DISTINCT "auth"."user"."id") FROM "auth"."user" OFFSET $1', [10]);
+  });
+
+  // it('should not allow object', () => {
+  //   expect(() => expectedSql({
+  //     select: all(),
+  //     from: table(User),
+  //     // @ts-expect-error
+  //     where: equal(field(User, 'id'), { foo: 'bar'})
+  //   }, 'SELECT * FROM "auth"."user" WHERE "auth"."user"."id" = $1')).toThrow(Error);
+  // })
 
   it('should select limit and offset', () => {
     expectedSql({

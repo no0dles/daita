@@ -14,49 +14,16 @@ export class InsertFormatter implements FormatHandle<InsertSql<any>> {
   handle(param: InsertSql<any>, ctx: FormatContext, formatter: Formatter): string {
     let sql = `INSERT INTO ${formatter.format(param.into, ctx)}`;
 
-    const into: string[] = [];
-    const rows: ValueType[][] = [];
-
-    if (param.insert instanceof Array) {
-      for (const item of param.insert) {
-        const row: ValueType[] = [];
-        const keys = Object.keys(item);
-        for (const existingKey of into) {
-          const value = item[existingKey];
-          row.push(value);
-          const index = keys.indexOf(existingKey as string);
-          if (index !== -1) {
-            keys.splice(index, 1);
-          }
-        }
-        for (const key of keys) {
-          into.push(key);
-          row.push(item[key]);
-        }
-        rows.push(row);
-      }
-      sql += ` (${into.map((field) => ctx.escape(field)).join(', ')}) VALUES `;
-      sql += rows
-        .map(
-          (row) =>
-            `(${row.map((value) => formatter.format(value, ctx)).join(', ')})`,
-        )
-        .join(', ');
-    } else if (isSelectSql(param.insert)) {
-      sql += ' ' + formatter.format(param.insert, ctx);
+    if (isSelectSql(param.insert)) {
+      sql += ` (${Object.keys(param.insert.select).map(field => ctx.escape(field)).join(', ')}) ` + formatter.format(param.insert, ctx);
     } else {
-      const keys = Object.keys(param.insert);
-      const values: ValueType[] = [];
-      for (const key of keys) {
-        into.push(key);
-        values.push((param.insert as any)[key]);
-      }
-      rows.push(values);
-      sql += ` (${into.map((field) => ctx.escape(field)).join(', ')}) VALUES `;
+      const rows = param.insert instanceof Array ? param.insert : [param.insert];
+      const fields = this.getValues(rows);
+      sql += ` (${fields.map((field) => ctx.escape(field)).join(', ')}) VALUES `;
       sql += rows
         .map(
           (row) =>
-            `(${row.map((value) => formatter.format(value, ctx)).join(', ')})`,
+            `(${fields.map(field => formatter.format(row[field], ctx)).join(', ')})`,
         )
         .join(', ');
     }
@@ -64,4 +31,16 @@ export class InsertFormatter implements FormatHandle<InsertSql<any>> {
     return sql;
   }
 
+  private getValues(items: ValueType[][]): string[] {
+    const fields: string[] = [];
+    for (const item of items) {
+      for (const field of Object.keys(item)) {
+        if (fields.indexOf(field) === -1) {
+          fields.push(field);
+        }
+      }
+    }
+
+    return fields;
+  }
 }

@@ -108,12 +108,13 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
       cloneDirectory(schemaPath, resultPath);
     }
 
+    const cliPath = path.join(__dirname, '../index.ts');
     const context: CliEnvironment = {
       env: (name: string, value: string) => {
         process.env[name] = value;
       },
       run: args => {
-        const proc = childProcess.spawn(`${path.join(__dirname, '../../bin/run')}`, args.split(' '), {
+        const proc = childProcess.spawn(`node`, ['-r', 'ts-node/register', cliPath, ...args.split(' ')], {
           cwd: resultPath,
         });
         const finishedDefer = new Defer<number>();

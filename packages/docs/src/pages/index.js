@@ -12,16 +12,16 @@ const features = [
         description: (
             <>
                 Daita lets you focus on your business, and we&apos;ll do the chores. Go
-                ahead and move your docs into the <code>docs</code> directory.
+                ahead check out our demos and docs.
             </>
         ),
     },
     {
-        title: <>Easy to Use</>,
+        title: <>Lightweight</>,
         description: (
             <>
-                Daita was designed from the ground up to be easily installed and
-                used to get your website up and running quickly.
+              Daita was designed from the ground up to be as lightweight as possible
+              and have a minimum of external dependencies.
             </>
         ),
     },
@@ -29,28 +29,34 @@ const features = [
         title: <>Compile Safe</>,
         description: (
             <>
-                Extend or customize your website layout by reusing React. Docusaurus can
-                be extended while reusing the same header and footer.
+              Catch errors early during compile time, but keep flexibility without adding more build tools.
+              Everything works with plain typescript and requires no additional build steps.
             </>
         ),
     },
     {
-        title: <>Keep Flexibility</>,
-        description: (
-            <>
-                Extend or customize your website layout by reusing React. Docusaurus can
-                be extended while reusing the same header and footer.
-            </>
-        ),
+      title: <>Full SQL capabilities</>,
+      description: (
+        <>
+          Take advantage of the complete set of SQL capabilities with additional type checks and linting rules.
+        </>
+      ),
     },
     {
         title: <>Stay Secure</>,
         description: (
             <>
-                Extend or customize your website layout by reusing React. Docusaurus can
-                be extended while reusing the same header and footer.
+              Take more control over the way it's allowed to execute a query and which data can be accessed.
             </>
         ),
+    },
+    {
+      title: <>Migrations</>,
+      description: (
+        <>
+          Generate sql migrations with the powerfull daita cli with support for backward compatible schema changes.
+        </>
+      ),
     },
 ];
 
@@ -65,31 +71,42 @@ function Feature({title, description}) {
 
 function Home() {
     const context = useDocusaurusContext();
-    const {siteConfig = {}} = context;
-    const heroImage = useBaseUrl('img/hero.svg');
     return (
         <Layout
-            title={`Hello from ${siteConfig.title}`}
+            title={`Daita`}
             description="Description will go into a meta tag in <head />">
             <header className={classnames('hero hero--primary', styles.heroBanner)}>
                 <div className={classnames('container')}>
-                    <div className={classnames('row')}>
-                        <div className={classnames('col padding-top--lg padding-bottom--lg')}>
-                            <h1 className="hero__title">{siteConfig.title}</h1>
-                            <p className="hero__subtitle">{siteConfig.tagline}</p>
-                            <div className={styles.buttons}>
-                                <Link
-                                    className={classnames(
-                                        'button button--outline button--secondary button--lg',
-                                        styles.getStarted,
-                                    )}
-                                    to={useBaseUrl('docs/daita/getting-started')}>
-                                    Get Started
-                                </Link>
-                            </div>
+                    <div className={classnames('row revrow')}>
+                      <div className="col text--center align--center" style={{'align-items': 'center', display: 'flex', 'flex-direction': 'column', 'justify-content': 'center', padding: '0 32px'}}>
+                        <pre style={{color: '#fff', background: '#ae2020', padding: '16px', 'border-radius': '4px', width: '378px', height: '100px'}}>
+
+                          {/*<MarkdownBlock>{meta.rawContent}</MarkdownBlock>*/}
+                        </pre>
+                        <div className={styles.buttons}>
+                          <Link
+                            className={classnames(
+                              'button button--outline button--secondary button--lg',
+                              styles.getStarted,
+                            )}
+                            style={{'margin-right': '16px'}}
+                            to={useBaseUrl('docs')}>
+                            Documentation
+                          </Link>
+                          <Link
+                            className={classnames(
+                              'button button--outline button--secondary button--lg',
+                              styles.getStarted,
+                            )}
+                            to={useBaseUrl('docs/daita/getting-started')}>
+                            Get Started
+                          </Link>
                         </div>
-                        <div className="col text--center align--center" style={{'align-items': 'center', display: 'flex', 'justify-content': 'center'}}>
-                            <img src={heroImage}></img>
+                      </div>
+                        <div className={classnames('col title-div')} style={{'text-align': 'left'}}>
+                          <h1 style={{'font-size': '3em', 'margin-bottom': 0}}>Daita</h1>
+                          <h2>The Swiss army knife for data</h2>
+                          <p></p>
                         </div>
                     </div>
                 </div>

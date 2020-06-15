@@ -1,41 +1,51 @@
 import {
   CreateAdapterOptions, CreateDataAdapterOptions, CreateTransactionAdapterOptions,
-  DestroyAdapterOptions, RelationalDataAdapter,
-  RelationalDataAdapterFactory, RelationalTransactionAdapter,
-  RelationalTransactionAdapterFactory
-} from "@daita/relational";
-import { PostgresAdapter } from "./adapter/postgres.adapter";
-import { parse } from "pg-connection-string";
-import { dropDatabase, ensureDatabaseExists } from "./postgres.util";
-import { Pool } from "pg";
+  DestroyAdapterOptions,
+  RelationalDataAdapterFactory,
+  RelationalTransactionAdapterFactory,
+} from '@daita/relational';
+import { PostgresAdapter } from './adapter/postgres.adapter';
+import { parse } from 'pg-connection-string';
+import { dropDatabase, ensureDatabaseExists } from './postgres.util';
+import { Pool } from 'pg';
 
-export { PostgresAdapter } from "./adapter/postgres.adapter";
-export { dropDatabase, ensureDatabaseExists } from "./postgres.util";
+export { PostgresAdapter } from './adapter/postgres.adapter';
+export { dropDatabase, ensureDatabaseExists } from './postgres.util';
 
 export const adapterFactory: RelationalDataAdapterFactory & RelationalTransactionAdapterFactory = {
-  async createTransactionAdapter(options?: CreateTransactionAdapterOptions): Promise<RelationalTransactionAdapter> {
-    const pool = await getPool(options);
-    return new PostgresAdapter(pool);
+  async createTransactionAdapter(options?: CreateTransactionAdapterOptions): Promise<PostgresAdapter> {
+    return getPostgresAdapter(options);
   },
-  async createDataAdapter(options?: CreateDataAdapterOptions): Promise<RelationalDataAdapter> {
-    const pool = await getPool(options);
-    return new PostgresAdapter(pool);
+  async createDataAdapter(options?: CreateDataAdapterOptions): Promise<PostgresAdapter> {
+    return getPostgresAdapter(options);
   },
   async destroy(options?: DestroyAdapterOptions): Promise<void> {
 
   },
-  name: "@daita/pg-adapter",
+  name: '@daita/pg-adapter',
   canCreate(connectionString: string): boolean {
-    return connectionString.startsWith("postgres:");
-  }
+    return connectionString.startsWith('postgres:');
+  },
 };
 
-
-async function getPool(options?: CreateAdapterOptions): Promise<Pool> {
+export function getPostgresAdapter(options?: CreateAdapterOptions): PostgresAdapter {
   const connectionString = options?.connectionString ?? process.env.DATABASE_URL;
   if (!connectionString) {
-    throw new Error("missing connection string");
+    throw new Error('missing connection string');
   }
+
+  return new PostgresAdapter(new Promise((resolve, reject) => {
+    prepareDatabase(connectionString, options).then(() => {
+      resolve(new Pool({
+        connectionString: connectionString,
+      }));
+    }).catch(err => {
+      reject(err);
+    });
+  }));
+}
+
+async function prepareDatabase(connectionString: string, options?: CreateAdapterOptions) {
   const config = parse(connectionString);
   if (options?.database) {
     config.database = options.database;
@@ -46,13 +56,4 @@ async function getPool(options?: CreateAdapterOptions): Promise<Pool> {
   if (options?.createIfNotExists) {
     await ensureDatabaseExists(config);
   }
-  return new Pool({
-    user: config.user ?? undefined,
-    host: config.host ?? undefined,
-    port: config.port !== undefined && config.port !== null && config.port !== "" ? parseInt(config.port, 0) : undefined,
-    database: config.database ?? undefined,
-    ssl: config.ssl !== undefined && config.ssl !== null ? config.ssl === "true" || config.ssl === "1" : undefined,
-    password: config.password ?? undefined,
-    application_name: config.application_name ?? config.fallback_application_name ?? undefined
-  });
 }

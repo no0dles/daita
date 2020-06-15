@@ -1,6 +1,6 @@
 {
   "name": "@daita/pg-adapter",
-  "version": "0.0.1",
+  "version": "0.2.8",
   "description": "relational pg adapter for daita",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,7 +24,12 @@
   "bugs": {
     "url": "https://github.com/no0dles/daita/issues"
   },
-  "keywords": ["pg", "postgres", "daita", "adapter"],
+  "keywords": [
+    "pg",
+    "postgres",
+    "daita",
+    "adapter"
+  ],
   "license": "MIT",
   "dependencies": {
     "@daita/common": "file:../common",

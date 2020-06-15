@@ -1,14 +1,13 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import cli from 'cli-ux';
-import { Command } from '@oclif/command';
 import * as inquirer from 'inquirer';
 import { AstContext } from '../ast/ast-context';
 import { parseSchemas } from '../migration/parsing/parse-schemas';
 import { SchemaDeclaration } from '../migration/parsing/schema-declaration';
 import { parseSchemaMigrationCalls, parseSchemaMigrations } from '../migration/parsing/parse-schema-migrations';
 import { parseRelationalSchema } from '../migration/parsing/parse-relational-schema';
-import { RelationalSchemaDescription } from '@daita/orm/dist/schema/description/relational-schema-description';
+import { RelationalSchemaDescription } from '@daita/orm';
 
 export function getMigrationRelativePath(
   schemaFilePath: string,
@@ -26,10 +25,9 @@ export interface SchemaLocation {
 }
 
 export async function getSchemaLocation(
-  flags: { schema: string | undefined, cwd: string | undefined },
-  cmd: Command | null,
+  opts: { schema: string | undefined, cwd: string | undefined }
 ): Promise<SchemaLocation> {
-  const cwd = flags.cwd ? path.resolve(flags.cwd) : process.cwd();
+  const cwd = opts.cwd ? path.resolve(opts.cwd) : process.cwd();
   let sourceDirectory = path.join(cwd, 'src');
   const tsconfigFileName = path.join(cwd, 'tsconfig.json');
   if (fs.existsSync(tsconfigFileName)) {
@@ -45,8 +43,8 @@ export async function getSchemaLocation(
   const migrationDirectory = path.join(sourceDirectory, 'migrations');
 
   let fileName = '';
-  if (flags.schema) {
-    fileName = path.join(cwd, flags.schema);
+  if (opts.schema) {
+    fileName = path.join(cwd, opts.schema);
 
     if (fs.existsSync(fileName)) {
       return resolveSchemaLocation(
@@ -54,9 +52,8 @@ export async function getSchemaLocation(
         sourceDirectory,
         migrationDirectory,
       );
-    } else if (cmd) {
-      cmd.warn(`schema not found at ${fileName}`);
     }
+    console.warn(`schema not found at ${fileName}`);
   } else {
     fileName = path.join(sourceDirectory, 'schema.ts');
     if (fs.existsSync(fileName)) {
@@ -78,9 +75,7 @@ export async function getSchemaLocation(
       default: fileName,
     });
     if (!fs.existsSync(path.join(cwd, fileName))) {
-      if (cmd) {
-        cmd.warn(`schema not found at ${fileName}`);
-      }
+      console.warn(`schema not found at ${fileName}`);
       continue;
     }
 
@@ -107,8 +102,7 @@ function resolveSchemaLocation(
 
 export async function getSchemaInformation(
   astContext: AstContext,
-  location: SchemaLocation,
-  cmd: Command,
+  location: SchemaLocation
 ): Promise<SchemaInformation | null> {
   const sourceFile = astContext.get(location.fileName);
   if (!sourceFile) {
@@ -118,7 +112,7 @@ export async function getSchemaInformation(
   const schemas = parseSchemas(sourceFile);
 
   if (schemas.length === 0) {
-    cmd.warn(`No schema found in ${location.fileName}`);
+    console.warn(`No schema found in ${location.fileName}`);
     return null;
   }
 

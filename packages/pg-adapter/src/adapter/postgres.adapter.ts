@@ -8,31 +8,34 @@ import {
 import { postgresFormatter } from './postgres-formatter';
 
 export class PostgresAdapter implements RelationalTransactionAdapter {
-  private readonly pool: Pool;
+  private readonly pool: Promise<Pool>;
   private readonly connectionString: string | undefined;
 
-  constructor(private poolOrUrl: string | Pool) {
+  constructor(private poolOrUrl: string | Promise<Pool> | Pool) {
     types.setTypeParser(1700, val => parseFloat(val));
     types.setTypeParser(20, val => parseInt(val));
 
     if (typeof poolOrUrl === 'string') {
       this.connectionString = poolOrUrl;
-      this.pool = new Pool({
+      this.pool = Promise.resolve(new Pool({
         connectionString: poolOrUrl,
-      });
-    } else {
+      }));
+    } else if(poolOrUrl instanceof Promise) {
       this.pool = poolOrUrl;
+    } else {
+      this.pool = Promise.resolve(poolOrUrl);
     }
   }
 
   async close() {
-    await this.pool.end();
+    const pool = await this.pool;
+    await pool.end();
   }
 
   private async run<T>(action: (client: PoolClient) => Promise<T>): Promise<T> {
     let client: PoolClient | null = null;
     try {
-      client = await this.pool.connect();
+      client = await (await this.pool).connect();
       const result = await action(client);
       if (client) {
         client.release();

@@ -7,7 +7,7 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #EBCB8B;
+  --ifm-color-primary: #DC3E3E;
   --ifm-color-primary-dark: rgb(33, 175, 144);
   --ifm-color-primary-darker: rgb(31, 165, 136);
   --ifm-color-primary-darkest: rgb(26, 136, 112);
@@ -17,10 +17,14 @@
   --ifm-code-font-size: 95%;
 
   --ifm-footer-background-color: #333;
-  --ifm-navbar-background-color: #EBCB8B;
+  --ifm-navbar-background-color: #DC3E3E;
   --ifm-navbar-shadow: none;
   --ifm-container-width: 900px;
   --ifm-navbar-link-hover-color: #333;
+  --ifm-navbar-link-color: #fff;
+  --ifm-font-weight-bold: normal;
+  #--ifm-menu-color: #fff;
+  --ifm-navbar-sidebar-width: 200px;
 }
 
 .hero {
@@ -50,4 +54,36 @@ main {
   display: block;
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
+}
+
+@media screen and (max-width: 966px) {
+  .revrow {
+    flex-direction: column-reverse;
+    align-items: center;
+  }
+
+  .title-div {
+    width: 378px !important;
+
+    h1 {
+      margin-top: 0;
+      padding-top: 0;
+    }
+  }
+
+  .navbar .navbar__brand {
+    display: none;
+  }
+
+  .navbar-sidebar .menu .menu__link {
+    color: #fff;
+  }
+}
+
+.revrow {
+  padding-bottom: 32px;
+}
+
+.markdown button {
+  color: #fff;
 }

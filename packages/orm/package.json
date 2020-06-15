@@ -1,7 +1,7 @@
 {
   "name": "@daita/orm",
   "description": "orm of daita",
-  "version": "0.0.1",
+  "version": "0.2.8",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "homepage": "https://daita.ch",
