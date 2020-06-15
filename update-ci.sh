@@ -1,1 +1,0 @@
-drone jsonnet --stream
