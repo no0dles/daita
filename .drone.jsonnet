@@ -29,10 +29,10 @@ local packages = [
     { dir: "packages/cli", config: cli},
 ];
 
-local getDependsOn(map) = [(item + ":build") for item in std.objectFields(map) if std.startsWith(item, "@daita")];
-local getDependencies(config) =
-    (if std.objectHas(config, "dependencies") then getDependsOn(config.dependencies) else []) +
-    (if std.objectHas(config, "devDependencies") then getDependsOn(config.devDependencies) else []);
+local getDependsOn(map, suffix) = [(item + suffix) for item in std.objectFields(map) if std.startsWith(item, "@daita")];
+local getDependencies(config, suffix) =
+    (if std.objectHas(config, "dependencies") then getDependsOn(config.dependencies, suffix) else []) +
+    (if std.objectHas(config, "devDependencies") then getDependsOn(config.devDependencies, suffix) else []);
 
 local installStep(pkg) =
    {
@@ -41,7 +41,8 @@ local installStep(pkg) =
        commands: [
          ("cd " + pkg.dir),
          "npm install"
-       ]
+       ],
+       "depends_on": getDependencies(pkg.config, ":install")
    };
 
 local buildStep(pkg) =
@@ -52,7 +53,7 @@ local buildStep(pkg) =
          ("cd " + pkg.dir),
          "npm run build"
        ],
-       "depends_on": getDependencies(pkg.config)
+       "depends_on": getDependencies(pkg.config, ":build")
    };
 
 [{
