@@ -130,12 +130,16 @@ steps:
   commands:
   - cd packages/eslint-config
   - npm run build
+  depends_on:
+  - "@daita/eslint-config:install"
 
 - name: "@daita/docs:build"
   image: node:12
   commands:
   - cd packages/docs
   - npm run build
+  depends_on:
+  - "@daita/docs:install"
 
 - name: "@daita/common:build"
   image: node:12
@@ -145,6 +149,7 @@ steps:
   depends_on:
   - "@daita/eslint-config:install"
   - "@daita/eslint-config:build"
+  - "@daita/common:install"
 
 - name: "@daita/create:build"
   image: node:12
@@ -154,6 +159,7 @@ steps:
   depends_on:
   - "@daita/eslint-config:install"
   - "@daita/eslint-config:build"
+  - "@daita/create:install"
 
 - name: "@daita/relational:build"
   image: node:12
@@ -165,6 +171,7 @@ steps:
   - "@daita/eslint-config:install"
   - "@daita/common:build"
   - "@daita/eslint-config:build"
+  - "@daita/relational:install"
 
 - name: "@daita/pg-adapter:build"
   image: node:12
@@ -176,6 +183,7 @@ steps:
   - "@daita/relational:install"
   - "@daita/common:build"
   - "@daita/relational:build"
+  - "@daita/pg-adapter:install"
 
 - name: "@daita/sqlite-adapter:build"
   image: node:12
@@ -187,6 +195,7 @@ steps:
   - "@daita/relational:install"
   - "@daita/common:build"
   - "@daita/relational:build"
+  - "@daita/sqlite-adapter:install"
 
 - name: "@daita/http-client-common:build"
   image: node:12
@@ -196,6 +205,7 @@ steps:
   depends_on:
   - "@daita/common:install"
   - "@daita/common:build"
+  - "@daita/http-client-common:install"
 
 - name: "@daita/http-server-common:build"
   image: node:12
@@ -207,6 +217,7 @@ steps:
   - "@daita/relational:install"
   - "@daita/common:build"
   - "@daita/relational:build"
+  - "@daita/http-server-common:install"
 
 - name: "@daita/http-server:build"
   image: node:12
@@ -222,6 +233,7 @@ steps:
   - "@daita/http-server-common:build"
   - "@daita/relational:build"
   - "@daita/pg-adapter:build"
+  - "@daita/http-server:install"
 
 - name: "@daita/http-adapter:build"
   image: node:12
@@ -237,6 +249,7 @@ steps:
   - "@daita/http-client-common:build"
   - "@daita/relational:build"
   - "@daita/http-server:build"
+  - "@daita/http-adapter:install"
 
 - name: "@daita/orm:build"
   image: node:12
@@ -250,6 +263,7 @@ steps:
   - "@daita/common:build"
   - "@daita/relational:build"
   - "@daita/eslint-config:build"
+  - "@daita/orm:install"
 
 - name: "@daita/cli:build"
   image: node:12
@@ -269,6 +283,7 @@ steps:
   - "@daita/relational:build"
   - "@daita/http-adapter:build"
   - "@daita/pg-adapter:build"
+  - "@daita/cli:install"
 
 - name: publish
   image: plugins/gh-pages
