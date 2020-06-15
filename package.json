@@ -12,9 +12,7 @@
     "publish": "npm-publish",
     "pack": "npm-pack",
     "build": "tsc -b",
-    "clean": "npm-clean",
-    "bump": "npm-bump",
-    "bootstrap": "npm-bootstrap"
+    "clean": "npm-clean"
   },
   "license": "MIT"
 }

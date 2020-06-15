@@ -7,8 +7,6 @@
     "npm-publish": "./dist/npm-publish.js",
     "npm-pack": "./dist/npm-pack.js",
     "npm-clean": "./dist/npm-clean.js",
-    "npm-bootstrap": "./dist/npm-bootstrap.js",
-    "npm-bump": "./dist/npm-bump.js",
     "npm-publish-version": "./dist/npm-publish-version.js"
   },
   "bugs": "https://github.com/no0dles/daita/issues",
