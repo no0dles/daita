@@ -39,6 +39,7 @@
   "scripts": {
     "build": "tsc -b tsconfig.json",
     "test": "jest",
+    "coverage": "jest --coverage",
     "clean": "rm -rf ./dist",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",

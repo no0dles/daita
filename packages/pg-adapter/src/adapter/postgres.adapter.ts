@@ -13,6 +13,7 @@ export class PostgresAdapter implements RelationalTransactionAdapter {
 
   constructor(private poolOrUrl: string | Promise<Pool> | Pool) {
     types.setTypeParser(1700, val => parseFloat(val));
+    types.setTypeParser(701, val => parseFloat(val));
     types.setTypeParser(20, val => parseInt(val));
 
     if (typeof poolOrUrl === 'string') {

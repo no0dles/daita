@@ -12,7 +12,9 @@
     "publish": "npm-publish",
     "pack": "npm-pack",
     "build": "tsc -b",
-    "clean": "npm-clean"
+    "clean": "npm-clean",
+    "test": "jest",
+    "coverage": "jest --coverage"
   },
   "license": "MIT"
 }

@@ -1,4 +1,4 @@
-import {setupEnv} from '../../test/utils';
+import {setupEnv} from '../../test/utils.test';
 
 describe('cli migration:undo', () => {
   it(`should undo migration`, setupEnv('undo-migration', async (ctx) => {
@@ -11,5 +11,5 @@ describe('cli migration:undo', () => {
     await ctx.run('migration:add init').finished;
     await ctx.run('migration:undo').finished;
     await ctx.exists('src/migrations');
-  }, {schema: 'auth-schema'}));
+  }, {schema: 'auth-schema'}), 10000);
 });

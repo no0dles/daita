@@ -1,4 +1,4 @@
-import { setupEnv } from '../test/utils';
+import { setupEnv } from '../test/utils.test';
 import { Defer } from '@daita/common';
 import { HttpTransactionAdapter } from '@daita/http-adapter';
 
@@ -11,7 +11,7 @@ describe('cli serve', () => {
     serve.onStdOut(async text => {
       if (text.indexOf('listening on http://localhost:8765') >= 0) {
         const client = new HttpTransactionAdapter('http://localhost:8765', null);
-        const result = await client.exec({ select: [{value: 'test', alias: 'date'}] });
+        const result = await client.exec({ select: { date: 'test' }});
         expect(result.rowCount).toEqual(1);
         expect(result.rows[0].date).not.toBeNull();
         expect(result.rows[0].date).not.toBeUndefined();

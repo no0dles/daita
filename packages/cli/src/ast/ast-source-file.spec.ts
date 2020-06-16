@@ -1,5 +1,5 @@
 import {MockAstContext} from './ast-context';
-import {isNotNull} from '../test/utils';
+import {isNotNull} from '../test/utils.test';
 
 describe('ast-source-file', () => {
   describe('variable', () => {

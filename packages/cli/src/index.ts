@@ -95,6 +95,7 @@ program.command('migration:apply')
     const client = getClient(dataAdapter);
     const context = getMigrationContext(client, migrationTree);
     await context.update();
+    await dataAdapter.close();
   });
 
 program.command('migration:add <name>')
@@ -237,6 +238,7 @@ program.command('serve')
     process.on('SIGINT', () => {
       console.log('stopping http server');
       server?.close();
+      dataAdapter?.close();
     });
   });
 

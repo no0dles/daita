@@ -60,4 +60,14 @@ describe('alter-table', () => {
       },
     }, 'ALTER TABLE "user" ADD CONSTRAINT "createdFrom" FOREIGN KEY ("createdFromId") REFERENCES "user" ("id")');
   });
+
+
+  it('should drop constraint', () => {
+    expectedSql({
+      alterTable: table('user'),
+      drop: {
+        constraint: 'foo'
+      },
+    }, 'ALTER TABLE "user" DROP CONSTRAINT "foo"');
+  });
 });

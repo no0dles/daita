@@ -17,7 +17,7 @@ export abstract class SimpleFormatContext implements FormatContext {
   }
 
   escape(value: string): string {
-    return '`';
+    return '`' + value + '`';
   }
 
   abstract getDataType(type: string): string;

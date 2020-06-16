@@ -12,7 +12,7 @@ export interface SelectSql<T> {
   where?: Condition
   groupBy?: ValueType[] | ValueType;
   having?: Condition
-  orderBy?: ValueType[] | ValueType | OrderByDescription | OrderByDescription[];
+  orderBy?: ValueType | OrderByDescription | (OrderByDescription | ValueType)[];
   limit?: number | null;
   offset?: number | null;
 }

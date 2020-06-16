@@ -1,6 +1,6 @@
 import { MockAstContext } from '../../ast/ast-context';
 import { parseRelationalSchema } from './parse-relational-schema';
-import { isNotNull } from '../../test/utils';
+import { isNotNull } from '../../test/utils.test';
 import 'jest-extended';
 import { table } from '@daita/relational';
 import { RelationalSchemaDescription } from '@daita/orm';

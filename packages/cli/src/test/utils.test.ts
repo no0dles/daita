@@ -98,6 +98,8 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
     });
   }
 
+  const envs: { [key: string]: string } = {};
+
   return async () => {
     removeDirectory(resultPath);
     fs.mkdirSync(resultPath, { recursive: true });
@@ -111,11 +113,12 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
     const cliPath = path.join(__dirname, '../index.ts');
     const context: CliEnvironment = {
       env: (name: string, value: string) => {
-        process.env[name] = value;
+        envs[name] = value;
       },
       run: args => {
         const proc = childProcess.spawn(`node`, ['-r', 'ts-node/register', cliPath, ...args.split(' ')], {
           cwd: resultPath,
+          env: { ...process.env, ...envs },
         });
         const finishedDefer = new Defer<number>();
         proc.on('exit', code => {

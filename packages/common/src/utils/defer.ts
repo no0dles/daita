@@ -40,9 +40,7 @@ export class Defer<T> {
     }
 
     this.promiseResolved = true;
-    if (value) {
-      this.promiseResult = value;
-    }
+    this.promiseResult = value ?? null;
     if (this.resolveFn) {
       this.resolveFn(value);
     }

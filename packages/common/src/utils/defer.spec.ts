@@ -12,6 +12,7 @@ describe('utils/defer', () => {
     expect(defer.isResolved).toBeTruthy();
     expect(defer.isRejected).toBeFalsy();
   });
+
   it('should reject', async () => {
     const defer = new Defer<string>();
     expect(defer.isResolved).toBeFalsy();
@@ -26,5 +27,35 @@ describe('utils/defer', () => {
       expect(e.message).toEqual('err');
     }
     expect(defer.rejectedError).toEqual(new Error('err'));
+  });
+
+  it('should throw on second resolve', async () => {
+    const defer = new Defer<string>();
+    defer.resolve('foo');
+    expect(() => defer.resolve('bar')).toThrow();
+  });
+
+  it('should have result null if none defined', async () => {
+    const defer = new Defer<string>();
+    defer.resolve();
+    expect(defer.resolvedResult).toBe(null);
+  });
+
+  it('should throw on resolve after reject', async () => {
+    const defer = new Defer<string>();
+    defer.reject(new Error('test'));
+    expect(() => defer.resolve('bar')).toThrow();
+  });
+
+  it('should throw on second reject', async () => {
+    const defer = new Defer<string>();
+    defer.reject(new Error('test'));
+    expect(() => defer.reject(new Error('test2'))).toThrow();
+  });
+
+  it('should throw on reject after resolve', async () => {
+    const defer = new Defer<string>();
+    defer.resolve('foo');
+    expect(() => defer.reject(new Error('test'))).toThrow();
   });
 });
