@@ -11,5 +11,5 @@ describe('cli migration:undo', () => {
     await ctx.run('migration:add init').finished;
     await ctx.run('migration:undo').finished;
     await ctx.exists('src/migrations');
-  }, {schema: 'auth-schema'}), 10000);
+  }, {schema: 'auth-schema'}));
 });

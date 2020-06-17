@@ -244,7 +244,6 @@ export function writeMigration(
   resolve: string | undefined,
   steps: MigrationStep[],
 ): string {
-  console.log(`create migration ${name}, after: ${after}, resolve: ${resolve}`);
   const importStmt = ts.createImportDeclaration(
     undefined,
     undefined,

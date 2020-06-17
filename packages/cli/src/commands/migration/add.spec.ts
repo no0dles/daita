@@ -12,7 +12,7 @@ describe('cli migration:add', () => {
     const add = ctx.run('migration:add second');
     add.onStdErr(err => console.log(err));
     add.onStdOut(err => console.log(err));
-    console.log(await add.finished);
+    await add.finished;
     await ctx.exists('src/migrations');
     await ctx.exists('src/migrations', /[0-9]+\-second.ts/);
   }, { schema: 'inline-migration' }));
