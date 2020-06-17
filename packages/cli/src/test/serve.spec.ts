@@ -1,4 +1,4 @@
-import { setupEnv } from '../test/utils.test';
+import { setupEnv } from './utils.test';
 import { Defer } from '@daita/common';
 import { HttpTransactionAdapter } from '@daita/http-adapter';
 

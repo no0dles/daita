@@ -43,6 +43,7 @@ function deepClone(sourceDir: string, targetDir: string) {
 export interface CliEnvironment {
   env: (name: string, value: string) => void;
   run: (args: string) => RunResult;
+  cwd: string;
 
   exists(dir: string, file?: RegExp): Promise<void>;
 
@@ -112,6 +113,7 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
 
     const cliPath = path.join(__dirname, '../index.ts');
     const context: CliEnvironment = {
+      cwd: resultPath,
       env: (name: string, value: string) => {
         envs[name] = value;
       },

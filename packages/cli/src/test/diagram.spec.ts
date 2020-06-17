@@ -1,4 +1,4 @@
-import {setupEnv} from '../test/utils.test';
+import {setupEnv} from './utils.test';
 
 describe('cli diagram', () => {
   it(`should create diagram`, setupEnv('create-diagram', async ctx => {

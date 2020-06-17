@@ -25,7 +25,7 @@ export interface SchemaLocation {
 }
 
 export async function getSchemaLocation(
-  opts: { schema: string | undefined, cwd: string | undefined }
+  opts: { schema?: string, cwd?: string }
 ): Promise<SchemaLocation> {
   const cwd = opts.cwd ? path.resolve(opts.cwd) : process.cwd();
   let sourceDirectory = path.join(cwd, 'src');
