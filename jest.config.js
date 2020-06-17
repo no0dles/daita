@@ -15,6 +15,7 @@ module.exports = {
   roots: [
     '/'
   ],
+  testTimeout: 15000,
   moduleNameMapper: {
     '@daita/common': '<rootDir>/packages/common/src',
     '@daita/relational': '<rootDir>/packages/relational/src',
