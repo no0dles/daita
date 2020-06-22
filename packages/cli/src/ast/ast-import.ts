@@ -33,7 +33,7 @@ export class AstImport {
       if (namedImport) {
         const astExports = new Array<AstExport>();
         for (const element of namedImport.elements) {
-          const importName = getIdentifierName(element.name);
+          const importName = element.propertyName ? getIdentifierName(element.propertyName) : getIdentifierName(element.name);
           const exportedValue = importSourceFile.getExport(importName);
           if (exportedValue) {
             astExports.push(exportedValue);

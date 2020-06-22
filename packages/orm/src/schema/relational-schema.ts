@@ -3,13 +3,13 @@ import { SchemaTableOptions } from './schema-table-options';
 import { RelationalSchemaOptions } from './relational-schema-options';
 import { RelationalSchemaDescription } from './description/relational-schema-description';
 import { Constructable, DefaultConstructable } from '@daita/common';
-import { RuleDescription } from '../permission';
 import { RelationalMapper } from '../context/relational-mapper';
 import { RelationalBackwardCompatibleMapper, RelationalNormalMapper } from '../context/orm-mapper';
+import { Rule } from '@daita/relational';
 
 export class RelationalSchema {
   private migrationTree = new MigrationTree();
-  private rules: RuleDescription[] = [];
+  private rules: Rule[] = [];
   private tables: Constructable<any>[] = [];
 
   schema: string | null = null;
@@ -35,7 +35,7 @@ export class RelationalSchema {
     }
   }
 
-  rule<T>(...rules: RuleDescription[]) {
+  rule<T>(...rules: Rule[]) {
     this.rules.push(...rules);
   }
 
@@ -47,7 +47,7 @@ export class RelationalSchema {
     return this.migrationTree.getSchemaDescription({ backwardCompatible: this.options?.backwardCompatible ?? false });
   }
 
-  getRules(): RuleDescription[] {
+  getRules(): Rule[] {
     return this.rules;
   }
 

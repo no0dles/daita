@@ -27,3 +27,6 @@ export * from './right-join';
 export * from './sub-select';
 export * from './sum';
 export * from './table';
+export * from './select';
+export * from './update';
+export * from './insert';

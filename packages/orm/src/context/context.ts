@@ -1,5 +1,5 @@
-import { ContextAuthorization } from './context-authorization';
+import { RuleContext } from '@daita/relational';
 
 export interface Context<T> {
-  authorize(auth: ContextAuthorization): void;
+  authorize(auth: RuleContext): void;
 }
