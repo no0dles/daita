@@ -1,6 +1,6 @@
 {
   "name": "@daita/internal-publish",
-  "version": "0.2.11",
+  "version": "0.2.13",
   "author": "Pascal Bertschi @no0dles",
   "private": true,
   "bin": {
