@@ -5,8 +5,6 @@
   }, {
     "path": "./packages/relational/tsconfig.json"
   }, {
-    "path": "./packages/document/tsconfig.json"
-  }, {
     "path": "./packages/pg-adapter/tsconfig.json"
   }, {
     "path": "./packages/sqlite-adapter/tsconfig.json"
