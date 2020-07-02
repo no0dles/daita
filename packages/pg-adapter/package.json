@@ -1,6 +1,6 @@
 {
   "name": "@daita/pg-adapter",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "description": "relational pg adapter for daita",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,12 +33,12 @@
   "license": "MIT",
   "dependencies": {
     "@daita/common": "^0.2.13",
-    "@daita/relational": "^0.2.13",
+    "@daita/relational": "^0.2.14",
     "pg": "7.14.0",
     "pg-connection-string": "^2.1.0"
   },
   "devDependencies": {
-    "@daita/relational-test": "^0.2.13",
+    "@daita/relational-test": "^0.2.14",
     "@types/jest": "^25.1.1",
     "@types/pg": "^7.14.3",
     "jest": "^25.1.0",

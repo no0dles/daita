@@ -1,7 +1,7 @@
 {
   "name": "@daita/orm",
   "description": "orm of daita",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "homepage": "https://daita.ch",
@@ -33,7 +33,7 @@
   "license": "MIT",
   "dependencies": {
     "@daita/common": "^0.2.13",
-    "@daita/relational": "^0.2.13"
+    "@daita/relational": "^0.2.14"
   },
   "devDependencies": {
     "@daita/eslint-config": "^0.2.13",

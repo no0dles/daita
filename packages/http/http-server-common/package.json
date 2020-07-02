@@ -1,6 +1,6 @@
 {
   "name": "@daita/http-server-common",
-  "version": "0.2.13",
+  "version": "0.2.14",
   "author": "Pascal Bertschi @no0dles",
   "publishConfig": {
     "access": "public"
@@ -8,7 +8,7 @@
   "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
     "@daita/common": "^0.2.13",
-    "@daita/relational": "^0.2.13",
+    "@daita/relational": "^0.2.14",
     "axios": "^0.19.2",
     "jwks-rsa": "^1.6.2",
     "jws": "^4.0.0",
