@@ -11,9 +11,9 @@ import { RuleContext } from './description';
 export function matchesObject(ruleContext: RuleContext, authSql: any, ctxSql: any, path: string[]): string | null {
   if (isAnything(authSql)) {
     return null;
-  } else if(isRequestContext(authSql)) {
+  } else if (isRequestContext(authSql)) {
     const contextValue = authSql.getContextValue(ruleContext);
-    if(ctxSql === contextValue) {
+    if (ctxSql === contextValue) {
       return null;
     }
     return `${path.join('.')} does not match request context`;
@@ -28,12 +28,27 @@ export function matchesObject(ruleContext: RuleContext, authSql: any, ctxSql: an
     }
   } else if (typeof authSql === 'string' || typeof ctxSql === 'string' ||
     typeof authSql === 'boolean' || typeof ctxSql === 'boolean' ||
-    typeof authSql === 'number' || typeof ctxSql === 'number' ||
-    authSql instanceof Array || ctxSql instanceof Array) {
+    typeof authSql === 'number' || typeof ctxSql === 'number') {
     if (authSql === ctxSql) {
       return null;
     } else {
       return `${path.join('.')} ${ctxSql} should be ${authSql}`;
+    }
+  } else if (authSql instanceof Array || ctxSql instanceof Array) {
+    if (authSql instanceof Array && !(ctxSql instanceof Array)) {
+      return `${path.join('.')} expected an array`;
+    }
+    if (!(authSql instanceof Array) && ctxSql instanceof Array) {
+      return `${path.join('.')} unexpected array`;
+    }
+    if (authSql.length !== ctxSql.length) {
+      return `${path.join('.')} array length does not match`;
+    }
+    for (let i = 0; i < authSql.length; i++) {
+      const res = matchesObject(ruleContext, authSql[i], ctxSql[i], [...path, '0']);
+      if (res) {
+        return res;
+      }
     }
   }
 

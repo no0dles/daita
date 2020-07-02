@@ -11,7 +11,7 @@
   },
   "scripts": {
     "publish": "ts-node packages/internal/npm-publish/src/npm-publish.ts",
-    "release": "lerna version",
+    "release": "lerna version --force-publish",
     "build": "tsc -b",
     "clean": "npm-clean",
     "test": "jest",

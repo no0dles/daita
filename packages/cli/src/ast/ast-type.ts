@@ -1,7 +1,7 @@
 import * as ts from 'typescript';
-import {getIdentifierName, isKind} from './utils';
-import {AstClassDeclaration} from './ast-class-declaration';
-import {AstSourceFile} from './ast-source-file';
+import { getIdentifierName, isKind } from './utils';
+import { AstClassDeclaration } from './ast-class-declaration';
+import { AstSourceFile } from './ast-source-file';
 
 export type AstType =
   AstUnionType
@@ -79,31 +79,40 @@ export function parsePropertyType(sourceFile: AstSourceFile, propertyDeclaration
 
 export function parseType(sourceFile: AstSourceFile, typeNode: ts.TypeNode, allowUndefined: boolean): AstType {
   if (typeNode.kind === ts.SyntaxKind.StringKeyword) {
-    return {kind: 'string', allowUndefined}
+    return { kind: 'string', allowUndefined };
   }
   if (typeNode.kind === ts.SyntaxKind.NumberKeyword) {
-    return {kind: 'number', allowUndefined}
+    return { kind: 'number', allowUndefined };
   }
   if (typeNode.kind === ts.SyntaxKind.AnyKeyword) {
-    return {kind: 'any', allowUndefined}
+    return { kind: 'any', allowUndefined };
   }
   if (typeNode.kind === ts.SyntaxKind.UndefinedKeyword) {
-    return {kind: 'undefined', allowUndefined}
+    return { kind: 'undefined', allowUndefined };
   }
   if (typeNode.kind === ts.SyntaxKind.NullKeyword) {
-    return {kind: 'null', allowUndefined}
+    return { kind: 'null', allowUndefined };
   }
   if (typeNode.kind === ts.SyntaxKind.BooleanKeyword) {
-    return {kind: 'boolean', allowUndefined}
+    return { kind: 'boolean', allowUndefined };
   }
   const union = isKind(typeNode, ts.SyntaxKind.UnionType);
   if (union) {
-    return {kind: 'union', allowUndefined, types: union.types.map(type => parseType(sourceFile, type, false))};
+    return { kind: 'union', allowUndefined, types: union.types.map(type => parseType(sourceFile, type, false)) };
   }
   const array = isKind(typeNode, ts.SyntaxKind.ArrayType);
   if (array) {
-    return {kind: 'array', allowUndefined, elementType: parseType(sourceFile, array.elementType, false)};
+    return { kind: 'array', allowUndefined, elementType: parseType(sourceFile, array.elementType, false) };
   }
+  const literalType = isKind(typeNode, ts.SyntaxKind.LiteralType);
+  if (literalType) {
+    if (literalType.isNumberLiteral()) {
+      return { kind: 'number', allowUndefined };
+    } else if (literalType.isStringLiteral()) {
+      return { kind: 'string', allowUndefined };
+    }
+  }
+
   const typeLiteral = isKind(typeNode, ts.SyntaxKind.TypeLiteral);
   if (typeLiteral) {
     return {
@@ -123,7 +132,7 @@ export function parseType(sourceFile: AstSourceFile, typeNode: ts.TypeNode, allo
         return {
           name: getIdentifierName(member.name),
           type: parseType(sourceFile, propertySignature.type, !!member.questionToken),
-        }
+        };
       }),
     };
   }
@@ -131,7 +140,7 @@ export function parseType(sourceFile: AstSourceFile, typeNode: ts.TypeNode, allo
   const reference = isKind(typeNode, ts.SyntaxKind.TypeReference);
   if (reference) {
     const referenceName = getIdentifierName(reference.typeName);
-    const referenceClassDeclaration = sourceFile.getClassDeclaration(referenceName, {includeImport: true});
+    const referenceClassDeclaration = sourceFile.getClassDeclaration(referenceName, { includeImport: true });
     return {
       kind: 'reference',
       allowUndefined,
