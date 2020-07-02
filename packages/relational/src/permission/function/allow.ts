@@ -15,7 +15,7 @@ export function allow(auth: AuthDescription[] | AuthDescription, sql: Sql<any>):
         return { type: 'next' };
       }
 
-      const error = matchesObject(sql, ctxSql, []);
+      const error = matchesObject(ctx, sql, ctxSql, []);
       if (!error) {
         return { type: 'allow' };
       }

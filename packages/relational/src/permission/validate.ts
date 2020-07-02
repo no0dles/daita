@@ -1,16 +1,22 @@
 import { isAnything } from './function/anything';
 import { AuthDescription } from './description/auth-description';
-import { RuleContext } from './description/rule-context';
 import { Sql } from '../sql';
 import { Rule } from './description/rule';
 import { RuleValidateAllowResult } from './description/rule-validation-allow-result';
 import { RuleValidateForbidResult } from './description/rule-validation-forbid-result';
 import { failNever } from '@daita/common';
-import { isAllowRegex } from './function';
+import { isAllowRegex, isRequestContext } from './function';
+import { RuleContext } from './description';
 
-export function matchesObject(authSql: any, ctxSql: any, path: string[]): string | null {
+export function matchesObject(ruleContext: RuleContext, authSql: any, ctxSql: any, path: string[]): string | null {
   if (isAnything(authSql)) {
     return null;
+  } else if(isRequestContext(authSql)) {
+    const contextValue = authSql.getContextValue(ruleContext);
+    if(ctxSql === contextValue) {
+      return null;
+    }
+    return `${path.join('.')} does not match request context`;
   } else if (isAllowRegex(authSql)) {
     if (typeof ctxSql !== 'string') {
       return `${path.join('.')} should be a string`;
@@ -47,7 +53,7 @@ export function matchesObject(authSql: any, ctxSql: any, path: string[]): string
   }
 
   for (const key of authKeys) {
-    const error = matchesObject(authSql[key], ctxSql[key], [...path, key]);
+    const error = matchesObject(ruleContext, authSql[key], ctxSql[key], [...path, key]);
     if (error) {
       return error;
     }

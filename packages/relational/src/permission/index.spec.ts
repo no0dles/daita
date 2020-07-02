@@ -1,4 +1,4 @@
-import { allow, anything, authorized, matchesRules, RuleContext } from './index';
+import { allow, anything, authorized, matchesRules, requestContext, RuleContext } from './index';
 import { equal, insert, select, update } from '../sql/function';
 import { field } from '../sql/function/field';
 import { table } from '../sql/function/table';
@@ -87,6 +87,62 @@ describe('permission', () => {
           password: 'foo',
         },
         where: equal(field(User, 'username'), 'foo'),
+      }), rules, ctx);
+      expect(isAllowed).toBeFalsy();
+    });
+  });
+
+  describe('update request context with fn', () => {
+    const rules = [
+      allow(authorized(), update({
+        update: table(User),
+        set: { password: anything() },
+        where: equal(field(User, 'username'), requestContext().user.username.toLowerCase()),
+      })),
+    ];
+    const ctx: RuleContext = { isAuthorized: true, user: {username: 'FOO'} };
+
+    it('should allow update own user ignoring case', () => {
+      const isAllowed = matchesRules(update({
+        update: table(User),
+        set: {
+          password: 'foo'
+        },
+        where: equal(field(User, 'username'), 'foo'),
+      }), rules, ctx);
+      expect(isAllowed).toBeTruthy();
+    });
+  });
+
+  describe('update request context', () => {
+    const rules = [
+      allow(authorized(), update({
+        update: table(User),
+        set: { password: anything() },
+        where: equal(field(User, 'username'), requestContext().user.username),
+      })),
+    ];
+    const ctx: RuleContext = { isAuthorized: true, user: {username: 'foo'} };
+
+
+    it('should allow update own user', () => {
+      const isAllowed = matchesRules(update({
+        update: table(User),
+        set: {
+          password: 'foo'
+        },
+        where: equal(field(User, 'username'), 'foo'),
+      }), rules, ctx);
+      expect(isAllowed).toBeTruthy();
+    });
+
+    it('should not allow update other users', () => {
+      const isAllowed = matchesRules(update({
+        update: table(User),
+        set: {
+          password: 'abc',
+        },
+        where: equal(field(User, 'username'), 'bar'),
       }), rules, ctx);
       expect(isAllowed).toBeFalsy();
     });

@@ -1,16 +1,4 @@
-
-export interface RuleContext {
+export interface RuleContext<T = any> {
   isAuthorized: boolean
-  token?: {
-    header: {
-      alg: string;
-      typ: string;
-    },
-    payload: {
-      iss: string;
-      aud: string;
-      sub: string;
-      jti: string;
-    }
-  }
+  user?: T;
 }
