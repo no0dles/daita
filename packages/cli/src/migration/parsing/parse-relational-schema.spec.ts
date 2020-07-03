@@ -14,8 +14,8 @@ describe('parse-relational-schema', () => {
       import {UserRole} from './user-role';
       import {RolePermission} from './role-permission';
       const schema = new RelationalSchema();
-      schema.table(User);
-      schema.table(Role, {key: 'name'});
+      schema.table(User, {indices: {username: {unique: true, columns: ['username']}}});
+      schema.table(Role, {key: 'name', indices: { desc: ['description']}});
       schema.table(Permission, {key: ['name']});
       schema.table(UserRole, {key: ['roleName', 'userId']});
       schema.table(RolePermission, {key: ['roleName', 'permissionName']});
@@ -104,6 +104,7 @@ describe('parse-relational-schema', () => {
     name: 'User',
     foreignKeys: [],
     primaryKeys: ['id'],
+    indices: { username: { columns: ['username'], unique: true } },
     fields: [
       {
         required: true,
@@ -145,6 +146,7 @@ describe('parse-relational-schema', () => {
       { name: 'parentRole', table: 'Role', keys: ['parentRoleName'], foreignKeys: ['name'], required: false },
     ],
     primaryKeys: ['name'],
+    indices: { desc: { columns: ['description'], unique: false } },
     fields: [
       {
         required: true,
@@ -241,6 +243,21 @@ function shouldHaveTable(relationalSchema: RelationalSchemaDescription, options:
       expect(roleTable.primaryKeys.map(k => k.name)).toIncludeAllMembers(options.primaryKeys);
     });
 
+    if (options.indices) {
+      for (const name of Object.keys(options.indices)) {
+        const expectedIndex = options.indices[name];
+        it(`should parse index ${name}`, () => {
+          const index = roleTable.getIndex(name);
+          expect(index).not.toBeNull();
+          if(index) {
+            expect(index.name).toEqual(name);
+            expect(index.unique).toEqual(expectedIndex.unique);
+            expect(index.fields.map(f => f.name)).toEqual(expectedIndex.columns);
+          }
+        });
+      }
+    }
+
     for (const foreignKey of options.foreignKeys) {
       it(`should parse ${foreignKey.name} foreign key`, () => {
         const tableForeignKey = roleTable.reference(foreignKey.name);
@@ -276,6 +293,7 @@ function shouldHaveTable(relationalSchema: RelationalSchemaDescription, options:
 interface ExpectedTable {
   name: string,
   primaryKeys: string[],
+  indices?: { [key: string]: { columns: string[], unique: boolean } };
   foreignKeys: { name: string, table: string, keys: string[], foreignKeys: string[], required: boolean }[],
   fields: ExpectedTableField[],
 }

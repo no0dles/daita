@@ -1,9 +1,9 @@
 import { RelationalClient, RelationalDataAdapter, RelationalRawResult } from '@daita/relational';
-import { RelationalSchema } from '../schema';
+import { OrmRelationalSchema } from '../schema';
 
 export class RelationalBaseContext extends RelationalClient {
   constructor(adapter: RelationalDataAdapter,
-              protected schema: RelationalSchema) {
+              protected schema: OrmRelationalSchema) {
     super(adapter);
   }
 

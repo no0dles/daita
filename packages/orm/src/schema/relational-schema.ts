@@ -6,8 +6,9 @@ import { Constructable, DefaultConstructable } from '@daita/common';
 import { RelationalMapper } from '../context/relational-mapper';
 import { RelationalBackwardCompatibleMapper, RelationalNormalMapper } from '../context/orm-mapper';
 import { Rule } from '@daita/relational';
+import { OrmRelationalSchema } from './orm-relational-schema';
 
-export class RelationalSchema {
+export class RelationalSchema implements OrmRelationalSchema {
   private migrationTree = new MigrationTree();
   private rules: Rule[] = [];
   private tables: Constructable<any>[] = [];

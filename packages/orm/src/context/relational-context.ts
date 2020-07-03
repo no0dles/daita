@@ -1,13 +1,13 @@
 import { Context } from './context';
 import { RelationalBaseContext } from './relational-base-context';
 import { RelationalDataAdapter, RelationalRawResult, RuleContext, validateRules } from '@daita/relational';
-import { RelationalSchema } from '../schema';
+import { OrmRelationalSchema } from '../schema';
 
 export class RelationalContext extends RelationalBaseContext implements Context<any> {
   auth: RuleContext = { isAuthorized: false };
 
   constructor(adapter: RelationalDataAdapter<any>,
-              schema: RelationalSchema) {
+              schema: OrmRelationalSchema) {
     super(adapter, schema);
   }
 

@@ -1,10 +1,10 @@
 import { TransactionContext } from './transaction-context';
 import { RelationalContext } from './relational-context';
 import { Client, RelationalTransactionAdapter } from '@daita/relational';
-import { RelationalSchema } from '../schema';
+import { OrmRelationalSchema } from '../schema';
 
 export class RelationalTransactionContext extends RelationalContext implements TransactionContext<any> {
-  constructor(private transactionAdapter: RelationalTransactionAdapter, schema: RelationalSchema) {
+  constructor(private transactionAdapter: RelationalTransactionAdapter, schema: OrmRelationalSchema) {
     super(transactionAdapter, schema);
   }
 

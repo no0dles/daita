@@ -7,6 +7,7 @@ import { RelationalSchemaDescription } from './description/relational-schema-des
 import { failNever } from '@daita/common';
 import { RelationalTableReferenceDescription } from './description/relational-table-reference-description';
 import { table } from '@daita/relational';
+import { RelationalTableIndexDescription } from './description/relational-table-index-description';
 
 export function getSchemaDescription(schemaMapper: SchemaMapper, paths: MigrationDescription[]): RelationalSchemaDescription {
   const schema = new RelationalSchemaDescription();
@@ -48,6 +49,12 @@ export function getSchemaDescription(schemaMapper: SchemaMapper, paths: Migratio
       } else if (step.kind === 'drop_table') {
         schemaMapper.drop(step.table);
         schema.removeTable(table(step.table, step.schema));
+      } else if (step.kind === 'create_index') {
+        const tbl = schema.table(table(step.table, step.schema));
+        const idx = new RelationalTableIndexDescription(step.name, tbl, step.fields.map(field => tbl.field(field)), step.unique ?? false);
+        tbl.addIndex(step.name, idx);
+      } else if (step.kind === 'drop_index') {
+        schema.table(table(step.table, step.schema)).dropIndex(step.name);
       } else {
         failNever(step, 'unknown migration step');
       }

@@ -3,11 +3,13 @@ import { ArrayMap } from "./array-map";
 import { RelationalTableReferenceDescription } from "./relational-table-reference-description";
 import { arrayClone } from "@daita/common";
 import {RelationalSchemaDescription} from './relational-schema-description';
+import { RelationalTableIndexDescription } from './relational-table-index-description';
 
 export class RelationalTableDescription {
   private primaryKeysArray: ArrayMap<RelationalTableFieldDescription>;
   private fieldArrayMap: ArrayMap<RelationalTableFieldDescription>;
   private referenceArrayMap: ArrayMap<RelationalTableReferenceDescription>;
+  private indexArrayMap: ArrayMap<RelationalTableIndexDescription>;
 
   constructor(private schemaDescription: RelationalSchemaDescription,
               public key: string,
@@ -16,6 +18,7 @@ export class RelationalTableDescription {
     this.fieldArrayMap = new ArrayMap<RelationalTableFieldDescription>();
     this.referenceArrayMap = new ArrayMap<RelationalTableReferenceDescription>();
     this.primaryKeysArray = new ArrayMap<RelationalTableFieldDescription>();
+    this.indexArrayMap = new ArrayMap<RelationalTableIndexDescription>();
   }
 
   get fields() {
@@ -28,6 +31,22 @@ export class RelationalTableDescription {
 
   get references() {
     return arrayClone(this.referenceArrayMap.array);
+  }
+
+  get indices() {
+    return arrayClone(this.indexArrayMap.array);
+  }
+
+  addIndex(name: string, index: RelationalTableIndexDescription) {
+    this.indexArrayMap.add(name, index);
+  }
+
+  getIndex(name: string) {
+    return this.indexArrayMap.get(name);
+  }
+
+  dropIndex(name: string) {
+    this.indexArrayMap.remove(name);
   }
 
   addPrimaryKey(field: RelationalTableFieldDescription) {

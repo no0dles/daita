@@ -11,3 +11,5 @@ export * from './lock-table-sql';
 export * from './select-sql';
 export * from './sql';
 export * from './update-sql';
+export * from './drop-index-sql';
+export * from './create-index-sql';

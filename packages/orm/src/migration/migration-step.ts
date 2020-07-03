@@ -4,6 +4,7 @@ import {RelationalDropTableMigrationStep} from './steps/relational-drop-table.mi
 import {RelationalAddTablePrimaryKey} from './steps/relational-add-table-primary-key.migration-step';
 import {RelationalAddTableForeignKey} from './steps/relational-add-table-foreign-key.migration-step';
 import {RelationalDropTableFieldMigrationStep} from './steps/relational-drop-table-field.migration-step';
+import { RelationalCreateIndexMigrationStep, RelationalDropIndexMigrationStep } from './steps';
 
 export type MigrationStep =
   | RelationalAddTableMigrationStep
@@ -11,4 +12,6 @@ export type MigrationStep =
   | RelationalDropTableMigrationStep
   | RelationalAddTablePrimaryKey
   | RelationalAddTableForeignKey
-  | RelationalDropTableFieldMigrationStep;
+  | RelationalDropTableFieldMigrationStep
+  | RelationalCreateIndexMigrationStep
+  | RelationalDropIndexMigrationStep;

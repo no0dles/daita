@@ -1,5 +1,6 @@
 import * as ts from 'typescript';
-import {readFileSync} from "fs";
+import * as path from 'path';
+import { readFileSync, existsSync } from 'fs';
 
 export function getFirstChildNode(
   node: ts.Node,
@@ -223,12 +224,12 @@ export function getIdentifierName(identifier: ts.PrivateIdentifier | ts.BindingN
     return identfier.text;
   }
 
-  if(identifier.kind === ts.SyntaxKind.StringLiteral) {
+  if (identifier.kind === ts.SyntaxKind.StringLiteral) {
     const stringLiteral = <ts.StringLiteral>identifier;
     return stringLiteral.text;
   }
 
-  if(identifier.kind === ts.SyntaxKind.NumericLiteral) {
+  if (identifier.kind === ts.SyntaxKind.NumericLiteral) {
     const stringLiteral = <ts.NumericLiteral>identifier;
     return stringLiteral.text;
   }
@@ -237,7 +238,14 @@ export function getIdentifierName(identifier: ts.PrivateIdentifier | ts.BindingN
 }
 
 export function parseSourceFile(fileName: string) {
-  const filepath = fileName.endsWith('.ts') ? fileName : `${fileName}.ts`;
+  let filepath = fileName.endsWith('.ts') ? fileName : `${fileName}.ts`;
+
+  if (!existsSync(filepath)) {
+    filepath = path.join(fileName, 'index.ts');
+    if (!existsSync(filepath)) {
+      throw new Error(`unable to find source file ${fileName}`);
+    }
+  }
 
   return ts.createSourceFile(
     filepath,

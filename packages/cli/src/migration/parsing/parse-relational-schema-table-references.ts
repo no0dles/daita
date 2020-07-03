@@ -37,11 +37,8 @@ export function parseRelationalSchemaTableReferences(schema: RelationalSchemaDes
           table.addField(key, keyField);
         } else {
           keyField = table.field(key);
-          if (keyField.required !== primaryKey.required) {
-            throw new Error('key not required as foreign key');
-          }
           if (keyField.type !== primaryKey.type) {
-            throw new Error('key type as foreign key');
+            throw new Error(`property ${key} type ${keyField.type} is not as foreign key type ${primaryKey.type}`);
           }
         }
 

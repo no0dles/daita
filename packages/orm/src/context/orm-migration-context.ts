@@ -7,7 +7,7 @@ import {
   LockTableSql,
   CreateSchemaSql,
   CreateTableSql,
-  AlterTableSql, InsertSql, DropTableSql, SelectTransactionClient,
+  AlterTableSql, InsertSql, DropTableSql, CreateIndexSql, DropIndexSql,
 } from '@daita/relational';
 import { getTableDescriptionIdentifier } from '../schema';
 import { MigrationTree } from '../migration';
@@ -27,6 +27,8 @@ export type MigrationSql =
   | CreateTableSql
   | DropTableSql
   | AlterTableSql
+  | CreateIndexSql<any>
+  | DropIndexSql
   | InsertSql<any>;
 
 export class OrmMigrationContext implements MigrationContext {
@@ -126,6 +128,18 @@ export class OrmMigrationContext implements MigrationContext {
               drop: {
                 column: step.fieldName,
               },
+            });
+          } else if (step.kind === 'create_index') {
+            sqls.push({
+              createIndex: step.name,
+              on: table(step.table, step.schema),
+              columns: step.fields,
+              unique: step.unique ?? false,
+            });
+          } else if (step.kind === 'drop_index') {
+            sqls.push({
+              dropIndex: step.name,
+              on: table(step.table, step.schema),
             });
           } else {
             failNever(step, 'unknown migration step');

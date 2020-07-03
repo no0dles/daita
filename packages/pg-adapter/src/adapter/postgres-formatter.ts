@@ -26,6 +26,8 @@ import {
   AllFormatter,
   NotEqualFormatter, SubSelectFormatter, InFormatter,
 } from '@daita/relational';
+import { CreateIndexFormatter } from '../formatters/create-index-formatter';
+import { DropIndexFormatter } from '../formatters/drop-index-formatter';
 
 export const postgresFormatter = new Formatter();
 postgresFormatter.add(new AllFormatter());
@@ -55,3 +57,5 @@ postgresFormatter.add(new AlterTableAddColumnFormatter());
 postgresFormatter.add(new AlterTableAddForeignKeyFormatter());
 postgresFormatter.add(new AlterTableDropColumnFormatter());
 postgresFormatter.add(new AlterTableDropConstraintFormatter());
+postgresFormatter.add(new CreateIndexFormatter());
+postgresFormatter.add(new DropIndexFormatter());
