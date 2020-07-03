@@ -42,7 +42,23 @@ export function parseSchemaMigrationStep(step: AstObjectValue): MigrationStep {
       table: getStringValue(step, 'table'),
       fieldName: getStringValue(step, 'fieldName'),
     };
+  } else if (migrationStep.kind === 'create_index') {
+    return {
+      kind: 'create_index',
+      table: getStringValue(step, 'table'),
+      name: getStringValue(step, 'name'),
+      fields: getArrayValue(step, 'fields', v => v.stringValue),
+      unique: getBooleanValue(step, 'unique'),
+    }
+  } else if (migrationStep.kind === 'drop_index') {
+    return {
+      kind: 'drop_index',
+      table: getStringValue(step, 'table'),
+      name: getStringValue(step, 'name'),
+    }
   }
+
+  //TODO schema is missing?
 
   return fail(migrationStep, `Unknown migration step ${JSON.stringify(migrationStep)}`);
 }
