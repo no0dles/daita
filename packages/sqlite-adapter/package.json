@@ -1,6 +1,6 @@
 {
   "name": "@daita/sqlite-adapter",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "description": "relational sqlite adapter for daita",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -32,8 +32,8 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "^0.2.18",
-    "@daita/relational": "^0.2.18",
+    "@daita/common": "^0.2.19",
+    "@daita/relational": "^0.2.19",
     "sqlite3": "^4.2.0"
   },
   "devDependencies": {
