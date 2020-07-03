@@ -1,6 +1,6 @@
 import { AstVariableCallArgument } from '../../ast/ast-variable-call-argument';
 import { RelationalTableDescription } from '@daita/orm';
-import { RelationalTableIndexDescription } from '@daita/orm/dist/schema/description/relational-table-index-description';
+import { RelationalTableIndexDescription } from '@daita/orm';
 
 export function parseRelationalSchemaTableIndices(table: RelationalTableDescription, optionsArgument: AstVariableCallArgument | null) {
   const index = optionsArgument?.objectValue?.property('indices');
