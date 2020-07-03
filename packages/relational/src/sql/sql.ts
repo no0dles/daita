@@ -7,5 +7,7 @@ import { InsertSql } from './insert-sql';
 import { UpdateSql } from './update-sql';
 import { DeleteSql } from './delete-sql';
 import { SelectSql } from './select-sql';
+import { DropIndexSql } from './drop-index-sql';
+import { CreateIndexSql } from './create-index-sql';
 
-export type Sql<T> = SelectSql<T> | DeleteSql | UpdateSql<T> | InsertSql<T> | LockTableSql | DropTableSql | AlterTableSql | CreateTableSql | CreateSchemaSql;
+export type Sql<T> = SelectSql<T> | DeleteSql | UpdateSql<T> | InsertSql<T> | LockTableSql | DropTableSql | AlterTableSql | CreateTableSql | CreateSchemaSql | DropIndexSql | CreateIndexSql<T>;

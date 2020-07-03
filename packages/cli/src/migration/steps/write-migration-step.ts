@@ -99,7 +99,25 @@ export function writeRelationalMigrationStep(migrationStep: MigrationStep): ts.O
       ts.createPropertyAssignment('table', ts.createStringLiteral(migrationStep.table)),
       ts.createPropertyAssignment('fieldName', ts.createStringLiteral(migrationStep.fieldName)),
     ]);
+  } else if (migrationStep.kind === 'create_index') {
+    return ts.createObjectLiteral([
+      ts.createPropertyAssignment('kind', ts.createStringLiteral(migrationStep.kind)),
+      ts.createPropertyAssignment('table', ts.createStringLiteral(migrationStep.table)),
+      ts.createPropertyAssignment('name', ts.createStringLiteral(migrationStep.name)),
+      ts.createPropertyAssignment('unique', migrationStep.unique ? ts.createTrue() : ts.createFalse()),
+      ts.createPropertyAssignment('fields', ts.createArrayLiteral(
+        migrationStep.fields.map(fieldName => ts.createStringLiteral(fieldName)),
+      )),
+    ]);
+  } else if (migrationStep.kind === 'drop_index') {
+    return ts.createObjectLiteral([
+      ts.createPropertyAssignment('kind', ts.createStringLiteral(migrationStep.kind)),
+      ts.createPropertyAssignment('table', ts.createStringLiteral(migrationStep.table)),
+      ts.createPropertyAssignment('name', ts.createStringLiteral(migrationStep.name)),
+    ]);
   }
+
+  //TODO schema is missing?
 
   return fail(migrationStep, `Unknown migration step ${JSON.stringify(migrationStep)}`);
 }
