@@ -106,9 +106,9 @@ export function parseType(sourceFile: AstSourceFile, typeNode: ts.TypeNode, allo
   }
   const literalType = isKind(typeNode, ts.SyntaxKind.LiteralType);
   if (literalType) {
-    if (literalType.isNumberLiteral()) {
+    if (isKind(literalType.literal, ts.SyntaxKind.NumericLiteral)) {
       return { kind: 'number', allowUndefined };
-    } else if (literalType.isStringLiteral()) {
+    } else if (isKind(literalType.literal, ts.SyntaxKind.StringLiteral)) {
       return { kind: 'string', allowUndefined };
     }
   }
