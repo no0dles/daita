@@ -17,7 +17,7 @@ export class InsertFormatter implements FormatHandle<InsertSql<any>> {
     if (isSelectSql(param.insert)) {
       sql += ` (${Object.keys(param.insert.select).map(field => ctx.escape(field)).join(', ')}) ` + formatter.format(param.insert, ctx);
     } else {
-      const rows = param.insert instanceof Array ? param.insert : [param.insert];
+      const rows: any[] = param.insert instanceof Array ? param.insert : [param.insert];
       const fields = this.getValues(rows);
       sql += ` (${fields.map((field) => ctx.escape(field)).join(', ')}) VALUES `;
       sql += rows

@@ -3,7 +3,7 @@ import { TableDescription } from './description/table';
 import { SelectSql } from './select-sql';
 
 export interface InsertSql<T> {
-  insert: ExcludeNonPrimitive<T> | ExcludeNonPrimitive<T>[] | SelectSql<T>;
+  insert: ExcludeNonPrimitive<T> | ExcludeNonPrimitive<T>[] | SelectSql<ExcludeNonPrimitive<T>>;
   into: TableDescription<T>;
 }
 
