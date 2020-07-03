@@ -1,6 +1,6 @@
-import {merge} from '@daita/common';
-import {RelationalTableDescription} from '../../schema/description/relational-table-description';
-import {MigrationStep} from '../migration-step';
+import { merge } from '@daita/common';
+import { RelationalTableDescription } from '../../schema/description/relational-table-description';
+import { MigrationStep } from '../migration-step';
 
 export function generateRelationalTableMigrationSteps(
   currentTable: RelationalTableDescription,
@@ -20,7 +20,7 @@ export function generateRelationalTableMigrationSteps(
     });
   }
   for (const removedField of mergedFields.removed) {
-    steps.push({kind: 'drop_table_field', table: newTable.name, fieldName: removedField.name});
+    steps.push({ kind: 'drop_table_field', table: newTable.name, fieldName: removedField.name });
   }
   if (mergedFields.merge.length > 0) {
     // TODO throw new Error('merge not supported yet');
@@ -32,8 +32,8 @@ export function generateRelationalTableMigrationSteps(
     throw new Error(`cant change primary key for table ${currentTable.name} (${mergedPrimaryKeys.added.map(a => a.name)}/${mergedPrimaryKeys.removed.map(a => a.name)})`);
   }
 
-  const mergedReferences = merge(currentTable.references, newTable.references,  (first, second) => first.name === second.name);
-  for(const addedRef of mergedReferences.added) {
+  const mergedReferences = merge(currentTable.references, newTable.references, (first, second) => first.name === second.name);
+  for (const addedRef of mergedReferences.added) {
     steps.push({
       kind: 'add_table_foreign_key',
       table: currentTable.name,
@@ -43,6 +43,29 @@ export function generateRelationalTableMigrationSteps(
       foreignTable: addedRef.table.name,
       required: addedRef.required,
     });
+  }
+
+  const mergedIndices = merge(currentTable.indices, newTable.indices, (first, second) => first.name === second.name);
+  for (const addedIndex of mergedIndices.added) {
+    steps.push({
+      kind: 'create_index',
+      table: currentTable.name,
+      schema: currentTable.schema,
+      unique: addedIndex.unique,
+      name: addedIndex.name,
+      fields: addedIndex.fields.map(f => f.name),
+    });
+  }
+  for (const removedIndex of mergedIndices.removed) {
+    steps.push({
+      kind: 'drop_index',
+      table: currentTable.name,
+      schema: currentTable.schema,
+      name: removedIndex.name,
+    });
+  }
+  for (const mergedIndex of mergedIndices.merge) {
+    throw new Error('chaning index is not supported yet');
   }
 
   return steps;

@@ -26,6 +26,17 @@ export function generateRelationalMigrationSteps(
     steps.push(
       { kind: 'add_table_primary_key', table: table.name, fieldNames: table.primaryKeys.map(k => k.name) },
     );
+
+    for (const index of table.indices) {
+      steps.push({
+        kind: 'create_index',
+        table: table.name,
+        schema: table.schema,
+        unique: index.unique,
+        name: index.name,
+        fields: index.fields.map(f => f.name),
+      });
+    }
   }
 
   for (const merge of mergedTables.merge) {
