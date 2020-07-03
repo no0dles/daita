@@ -1,19 +1,19 @@
 {
   "name": "@daita/http-adapter",
-  "version": "0.2.20",
+  "version": "0.2.21",
   "author": "Pascal Bertschi @no0dles",
   "publishConfig": {
     "access": "public"
   },
   "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
-    "@daita/common": "^0.2.20",
-    "@daita/http-client-common": "^0.2.20",
-    "@daita/relational": "^0.2.20",
+    "@daita/common": "^0.2.21",
+    "@daita/http-client-common": "^0.2.21",
+    "@daita/relational": "^0.2.21",
     "axios": "^0.19.0"
   },
   "devDependencies": {
-    "@daita/http-server": "^0.2.20",
+    "@daita/http-server": "^0.2.21",
     "@types/jest": "^25.1.1",
     "jest": "^25.1.0",
     "ts-jest": "^25.1.0",
