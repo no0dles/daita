@@ -1,0 +1,32 @@
+{
+  "name": "@daita/sqlite-adapter",
+  "version": "0.2.21",
+  "description": "sqlite adapter for daita",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "homepage": "https://daita.ch",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "Pascal Bertschi"
+  },
+  "keywords": [
+    "daita",
+    "relational",
+    "sqlite"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@daita/common": "0.2.21",
+    "@daita/relational": "0.2.21",
+    "sqlite3": "^4.2.0"
+  }
+}

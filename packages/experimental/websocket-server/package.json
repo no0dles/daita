@@ -25,7 +25,6 @@
   "scripts": {
     "build": "tsc -b tsconfig.json",
     "test": "jest",
-    "clean": "rm -rf ./dist",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
     "prettier": "prettier 'src/**/*.ts' --write"

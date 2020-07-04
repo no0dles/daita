@@ -1,0 +1,30 @@
+{
+  "name": "@daita/relational",
+  "version": "0.2.21",
+  "description": "relational functionality of daita",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "homepage": "https://daita.ch",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "Pascal Bertschi"
+  },
+  "keywords": [
+    "daita",
+    "relational"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@daita/common": "0.2.21"
+  },
+  "gitHead": "e3fa8787db743bde265dbe206fe5fd2cb682640c"
+}

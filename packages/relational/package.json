@@ -1,41 +1,21 @@
 {
-  "name": "@daita/relational",
+  "name": "@daita-src/relational",
+  "private": true,
   "version": "0.2.21",
   "description": "relational functionality of daita",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "homepage": "https://daita.ch",
-  "publishConfig": {
-    "access": "public"
-  },
-  "author": {
-    "name": "Pascal Bertschi"
-  },
-  "keywords": [
-    "daita",
-    "relational"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/no0dles/daita"
-  },
-  "bugs": {
-    "url": "https://github.com/no0dles/daita/issues"
-  },
   "scripts": {
     "build": "tsc -b",
     "test": "jest",
     "coverage": "jest --coverage",
     "lint": "eslint src --ext .ts",
-    "fixlint": "eslint src --ext .ts --fix",
-    "clean": "rm -rf ./dist"
+    "fixlint": "eslint src --ext .ts --fix"
   },
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "^0.2.21"
+    "@daita/common": "0.2.21"
   },
   "devDependencies": {
-    "@daita/eslint-config": "^0.2.21",
+    "@daita/eslint-config": "0.2.21",
     "@types/jest": "^25.2.1",
     "@typescript-eslint/eslint-plugin": "^2.28.0",
     "@typescript-eslint/parser": "^2.28.0",

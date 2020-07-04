@@ -10,7 +10,6 @@
   "scripts": {
     "build": "tsc -b tsconfig.json",
     "test": "jest",
-    "clean": "rm -rf ./dist",
     "lint": "tslint src/**/*.ts",
     "prettier": "prettier 'src/**/*.ts' --write"
   },

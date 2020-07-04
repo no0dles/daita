@@ -1,14 +1,10 @@
 {
-  "name": "@daita/http-server-common",
+  "name": "@daita-src/http-server-common",
   "version": "0.2.21",
-  "author": "Pascal Bertschi @no0dles",
-  "publishConfig": {
-    "access": "public"
-  },
-  "bugs": "https://github.com/no0dles/daita/issues",
+  "private": true,
   "dependencies": {
-    "@daita/common": "^0.2.21",
-    "@daita/relational": "^0.2.21",
+    "@daita/common": "0.2.21",
+    "@daita/relational": "0.2.21",
     "axios": "^0.19.2",
     "jwks-rsa": "^1.6.2",
     "jws": "^4.0.0",
@@ -20,15 +16,11 @@
     "ts-jest": "^25.1.0",
     "typescript": "~3.9.3"
   },
-  "homepage": "https://github.com/no0dles/daita",
   "license": "MIT",
-  "main": "dist/index.js",
   "scripts": {
     "build": "tsc -b",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
-    "clean": "rm -rf ./dist",
     "prettier": "prettier 'src/**/*.ts' --write"
-  },
-  "types": "dist/index.d.ts"
+  }
 }

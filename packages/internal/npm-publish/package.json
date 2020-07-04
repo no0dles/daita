@@ -18,8 +18,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -b tsconfig.json",
-    "clean": "rm -rf ./dist"
+    "build": "tsc -b tsconfig.json"
   },
   "types": "dist/index.d.ts"
 }

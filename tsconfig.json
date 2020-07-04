@@ -3,6 +3,10 @@
   "references": [{
     "path": "./packages/common/tsconfig.json"
   }, {
+    "path": "./packages/cli/tsconfig.json"
+  }, {
+    "path": "./packages/create/tsconfig.json"
+  }, {
     "path": "./packages/relational/tsconfig.json"
   }, {
     "path": "./packages/pg-adapter/tsconfig.json"
@@ -12,6 +16,8 @@
     "path": "./packages/http/tsconfig.json"
   }, {
     "path": "./packages/orm/tsconfig.json"
+  }, {
+    "path": "./packages/eslint-config/tsconfig.json"
   }, {
     "path": "./packages/internal/npm-publish/tsconfig.json"
   }]

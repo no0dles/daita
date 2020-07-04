@@ -1,4 +1,10 @@
-dist
+**/dist/**/*.js
+**/dist/**/*.js.map
+**/dist/**/*.ts
+**/dist/**/*.ts.map
+**/dist/**/*.d.ts
+**/dist/**/*.tgz
+
 node_modules
 .DS_Store
 .idea

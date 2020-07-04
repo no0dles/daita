@@ -23,8 +23,7 @@
   "scripts": {
     "build": "tsc -b",
     "lint": "eslint src --ext .ts",
-    "fixlint": "eslint src --ext .ts --fix",
-    "clean": "rm -rf ./dist"
+    "fixlint": "eslint src --ext .ts --fix"
   },
   "license": "MIT",
   "dependencies": {
