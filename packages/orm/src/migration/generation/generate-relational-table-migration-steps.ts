@@ -17,6 +17,7 @@ export function generateRelationalTableMigrationSteps(
       required: addedField.required,
       defaultValue: addedField.defaultValue,
       table: newTable.name,
+      schema: currentTable.schema,
     });
   }
   for (const removedField of mergedFields.removed) {
@@ -37,6 +38,7 @@ export function generateRelationalTableMigrationSteps(
     steps.push({
       kind: 'add_table_foreign_key',
       table: currentTable.name,
+      schema: currentTable.schema,
       name: addedRef.name,
       fieldNames: addedRef.keys.map(key => key.field.name),
       foreignFieldNames: addedRef.keys.map(key => key.foreignField.name),

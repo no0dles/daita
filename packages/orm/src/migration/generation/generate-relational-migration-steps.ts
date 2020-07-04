@@ -16,6 +16,7 @@ export function generateRelationalMigrationSteps(
       steps.push({
         kind: 'add_table_field',
         table: table.name,
+        schema: table.schema,
         fieldName: field.name,
         type: field.type,
         required: field.required,
@@ -52,6 +53,7 @@ export function generateRelationalMigrationSteps(
       steps.push({
         kind: 'add_table_foreign_key',
         table: table.name,
+        schema: table.schema,
         name: foreignKey.name,
         fieldNames: foreignKey.keys.map(key => key.field.name),
         foreignFieldNames: foreignKey.keys.map(key => key.foreignField.name),
@@ -61,5 +63,10 @@ export function generateRelationalMigrationSteps(
     }
   }
 
-  return steps;
+  return steps.map(step => {
+    if (step.schema === undefined || step.schema === null) {
+      delete step.schema;
+    }
+    return step;
+  });
 }

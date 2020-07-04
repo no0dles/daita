@@ -3,7 +3,7 @@ import { RelationalTableSchemaTableFieldType } from '../../schema/relational-tab
 import { RelationalSchemaDescription } from '../../schema/description/relational-schema-description';
 import { RelationalTableDescription } from '../../schema/description/relational-table-description';
 import { RelationalTableFieldDescription } from '../../schema/description/relational-table-field-description';
-import { RelationalTableReferenceDescription } from '../../schema';
+import { RelationalTableIndexDescription, RelationalTableReferenceDescription } from '../../schema';
 import { table } from '@daita/relational';
 
 describe('get-migration-steps', () => {
@@ -154,10 +154,64 @@ describe('get-migration-steps', () => {
       },
     ]);
   });
+
+  it('should add table index on existing table', () => {
+    const currentSchema = createSchema({
+      tables: {
+        'User': {
+          fields: {
+            id: { type: 'string', primaryKey: true },
+          },
+        },
+      },
+    });
+    const newSchema = createSchema({
+      tables: {
+        'User': {
+          fields: { id: { type: 'string', primaryKey: true } },
+          indices: { id: { unique: true, columns: ['id'] } },
+        },
+      },
+    });
+    const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
+    expect(steps).toEqual([
+      {
+        kind: 'create_index',
+        table: 'User',
+        name: 'id',
+        unique: true,
+        fields: ['id'],
+      },
+    ]);
+  });
 });
 
 interface ExpectedSchema {
-  tables?: { [key: string]: { references?: { [key: string]: { table: string, keys: string[], foreignKeys: string[] } }, fields: { [key: string]: { primaryKey?: boolean, required?: boolean, type: RelationalTableSchemaTableFieldType, defaultValue?: any } } } }
+  tables?: {
+    [key: string]: {
+      references?: {
+        [key: string]: {
+          table: string,
+          keys: string[],
+          foreignKeys: string[]
+        }
+      },
+      fields: {
+        [key: string]: {
+          primaryKey?: boolean,
+          required?: boolean,
+          type: RelationalTableSchemaTableFieldType,
+          defaultValue?: any
+        }
+      },
+      indices?: {
+        [key: string]: {
+          unique: boolean,
+          columns: string[];
+        }
+      }
+    }
+  }
 }
 
 function createSchema(schema: ExpectedSchema) {
@@ -175,6 +229,13 @@ function createSchema(schema: ExpectedSchema) {
         }
       }
       description.addTable(table(tableKey), tableDescription);
+
+      if (expectedTable.indices) {
+        for (const name of Object.keys(expectedTable.indices)) {
+          const expectedIndex = expectedTable.indices[name];
+          tableDescription.addIndex(name, new RelationalTableIndexDescription(name, tableDescription, expectedIndex.columns.map(c => tableDescription.field(c)), expectedIndex.unique));
+        }
+      }
     }
 
     for (const tableKey of Object.keys(schema.tables)) {

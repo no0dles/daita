@@ -23,6 +23,11 @@ export async function addMigration(name: string, options: { cwd?: string, schema
     currentSchema,
     schemaInfo.getRelationalSchema(),
   );
+  if (steps.length === 0) {
+    console.log('no changes to migrate from');
+    return;
+  }
+
   const existing = migrationTree.get(name);
   if (existing) {
     throw new Error('name already taken');
