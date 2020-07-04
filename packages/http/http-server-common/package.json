@@ -1,10 +1,10 @@
 {
   "name": "@daita-src/http-server-common",
-  "version": "0.2.21",
+  "version": "0.2.22",
   "private": true,
   "dependencies": {
-    "@daita/common": "0.2.21",
-    "@daita/relational": "0.2.21",
+    "@daita/common": "^0.2.22",
+    "@daita/relational": "^0.2.22",
     "axios": "^0.19.2",
     "jwks-rsa": "^1.6.2",
     "jws": "^4.0.0",

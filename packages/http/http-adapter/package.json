@@ -1,15 +1,15 @@
 {
   "name": "@daita-src/http-adapter",
   "private": true,
-  "version": "0.2.21",
+  "version": "0.2.22",
   "dependencies": {
-    "@daita/common": "0.2.21",
-    "@daita/http-client-common": "0.2.21",
-    "@daita/relational": "0.2.21",
+    "@daita/common": "^0.2.22",
+    "@daita/http-client-common": "^0.2.22",
+    "@daita/relational": "^0.2.22",
     "axios": "^0.19.0"
   },
   "devDependencies": {
-    "@daita/http-server": "0.2.21",
+    "@daita/http-server": "^0.2.22",
     "@types/jest": "^25.1.1",
     "jest": "^25.1.0",
     "ts-jest": "^25.1.0",
