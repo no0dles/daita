@@ -17,6 +17,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
       - run: npx lerna bootstrap
-      - run: npm run publish
+      - run: npx lerna publish from-git
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
