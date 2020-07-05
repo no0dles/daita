@@ -1,17 +1,17 @@
 {
   "packages": [
-    "packages/cli",
-    "packages/common",
-    "packages/create",
+    "packages/cli/**",
+    "packages/common/**",
+    "packages/create/**",
     "packages/docs",
-    "packages/eslint-config",
-    "packages/http/*",
+    "packages/eslint-config/**",
+    "packages/http/**",
     "packages/internal/*",
-    "packages/orm",
-    "packages/pg-adapter",
-    "packages/relational",
-    "packages/sqlite-adapter"
+    "packages/orm/**",
+    "packages/pg-adapter/**",
+    "packages/relational/**",
+    "packages/sqlite-adapter/**"
   ],
-  "version": "0.2.21",
+  "version": "0.2.23",
   "npmClient": "npm"
 }

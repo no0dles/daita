@@ -1,0 +1,1 @@
+# @daita/eslint-config

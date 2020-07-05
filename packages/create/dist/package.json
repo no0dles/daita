@@ -1,0 +1,32 @@
+{
+  "name": "@daita/create",
+  "version": "0.2.23",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "homepage": "https://daita.ch",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "create": "index.js"
+  },
+  "author": {
+    "name": "Pascal Bertschi"
+  },
+  "keywords": [
+    "daita",
+    "create"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "inquirer": "^7.1.0",
+    "yaml": "^1.10.0"
+  }
+}
