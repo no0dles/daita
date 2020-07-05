@@ -2,7 +2,7 @@
   "name": "@daita-src/eslint-config",
   "private": true,
   "description": "eslint config and rules for daita",
-  "version": "0.2.23",
+  "version": "0.2.24",
   "license": "MIT",
   "scripts": {
     "build": "tsc -b",
