@@ -26,6 +26,6 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm ci
       - run: npx lerna bootstrap
-      - run: npx lerna publish from-git
+      - run: npx lerna publish from-git --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

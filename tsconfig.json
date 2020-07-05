@@ -18,7 +18,5 @@
     "path": "./packages/orm/tsconfig.json"
   }, {
     "path": "./packages/eslint-config/tsconfig.json"
-  }, {
-    "path": "./packages/internal/npm-publish/tsconfig.json"
   }]
 }
