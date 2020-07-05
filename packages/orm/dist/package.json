@@ -1,7 +1,7 @@
 {
   "name": "@daita/orm",
   "description": "orm of daita",
-  "version": "0.2.22",
+  "version": "0.2.23",
   "main": "index.js",
   "types": "index.d.ts",
   "homepage": "https://daita.ch",
@@ -25,8 +25,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "^0.2.22",
-    "@daita/relational": "^0.2.22"
+    "@daita/common": "^0.2.23",
+    "@daita/relational": "^0.2.23"
   },
   "gitHead": "e3fa8787db743bde265dbe206fe5fd2cb682640c"
 }
