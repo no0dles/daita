@@ -14,8 +14,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
-      - name: docker-compose
-        run: docker-compose up -d
+#      - name: docker-compose
+#        run: docker-compose up -d
       - uses: actions/setup-node@v1
         with:
           node-version: 14.x
