@@ -28,3 +28,4 @@ export * from './sum';
 export * from './table';
 export * from './table-alias';
 export * from './value-type';
+export * from './is-null';

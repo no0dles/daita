@@ -19,6 +19,7 @@ import {
   OrFormatter,
   SelectFormatter,
   TableFormatter,
+  IsNullFormatter,
   ValueFormatter,
 } from '@daita/relational';
 
@@ -28,6 +29,7 @@ sqliteFormatter.add(new ValueFormatter());
 sqliteFormatter.add(new TableFormatter());
 sqliteFormatter.add(new JoinFormatter());
 sqliteFormatter.add(new MinFormatter());
+sqliteFormatter.add(new IsNullFormatter());
 sqliteFormatter.add(new FieldFormatter());
 sqliteFormatter.add(new CountFormatter());
 sqliteFormatter.add(new OrderByFormatter());

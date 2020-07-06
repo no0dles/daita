@@ -24,7 +24,7 @@ import {
   TableFormatter,
   ValueFormatter,
   AllFormatter,
-  NotEqualFormatter, SubSelectFormatter, InFormatter,
+  NotEqualFormatter, SubSelectFormatter, InFormatter, IsNullFormatter,
 } from '@daita/relational';
 import { CreateIndexFormatter } from '../formatters/create-index-formatter';
 import { DropIndexFormatter } from '../formatters/drop-index-formatter';
@@ -38,6 +38,7 @@ postgresFormatter.add(new ValueFormatter());
 postgresFormatter.add(new TableFormatter());
 postgresFormatter.add(new JoinFormatter());
 postgresFormatter.add(new MinFormatter());
+postgresFormatter.add(new IsNullFormatter());
 postgresFormatter.add(new FieldFormatter());
 postgresFormatter.add(new CountFormatter());
 postgresFormatter.add(new OrderByFormatter());

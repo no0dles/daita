@@ -21,7 +21,7 @@ export class PostgresAdapter implements RelationalTransactionAdapter {
       this.pool = Promise.resolve(new Pool({
         connectionString: poolOrUrl,
       }));
-    } else if(poolOrUrl instanceof Promise) {
+    } else if (poolOrUrl instanceof Promise) {
       this.pool = poolOrUrl;
     } else {
       this.pool = Promise.resolve(poolOrUrl);
@@ -36,7 +36,11 @@ export class PostgresAdapter implements RelationalTransactionAdapter {
   private async run<T>(action: (client: PoolClient) => Promise<T>): Promise<T> {
     let client: PoolClient | null = null;
     try {
-      client = await (await this.pool).connect();
+      const pool = await this.pool;
+      pool.on('error', (err, client) => {
+        console.error('Unexpected error on idle client', err);
+      });
+      client = await pool.connect();
       const result = await action(client);
       if (client) {
         client.release();

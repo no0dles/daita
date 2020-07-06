@@ -1,0 +1,29 @@
+version: '3.5'
+services:
+  postgres:
+    image: "postgres"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    networks:
+      - common
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  server:
+    image: test-server
+    environment:
+      - PORT=3000
+      - DATABASE_URL=postgres://postgres:postgres@postgres/postgres
+    networks:
+      - common
+    ports:
+      - 3000:3000
+
+networks:
+  common:
+    name: common
+
+volumes:
+  postgres-data:
