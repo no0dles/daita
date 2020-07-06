@@ -17,6 +17,7 @@ export * from './join';
 export * from './lock-table';
 export * from './min';
 export * from './or';
+export * from './is-null';
 export * from './order-by';
 export * from './select';
 export * from './in';
