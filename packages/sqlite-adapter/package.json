@@ -1,7 +1,7 @@
 {
   "name": "@daita-src/sqlite-adapter",
   "private": true,
-  "version": "0.2.25",
+  "version": "0.2.26",
   "description": "relational sqlite adapter for daita",
   "scripts": {
     "build": "tsc -b",
@@ -12,8 +12,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "^0.2.25",
-    "@daita/relational": "^0.2.25",
+    "@daita/common": "^0.2.26",
+    "@daita/relational": "^0.2.26",
     "sqlite3": "^4.2.0"
   },
   "devDependencies": {

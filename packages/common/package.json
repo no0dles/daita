@@ -1,7 +1,7 @@
 {
   "name": "@daita-src/common",
   "private": true,
-  "version": "0.2.25",
+  "version": "0.2.26",
   "description": "common functionality of daita",
   "scripts": {
     "build": "tsc -b",
@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@daita/eslint-config": "^0.2.25",
+    "@daita/eslint-config": "^0.2.26",
     "@types/jest": "^25.2.1",
     "@typescript-eslint/eslint-plugin": "^2.28.0",
     "@typescript-eslint/parser": "^2.28.0",

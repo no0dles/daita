@@ -1,7 +1,7 @@
 {
   "name": "@daita/cli",
   "description": "awesome cli for the daita orm",
-  "version": "0.2.25",
+  "version": "0.2.26",
   "author": "Pascal Bertschi @no0dles",
   "bin": {
     "daita": "index.js"
@@ -11,10 +11,10 @@
   },
   "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
-    "@daita/common": "^0.2.25",
-    "@daita/http-server": "^0.2.25",
-    "@daita/orm": "^0.2.25",
-    "@daita/relational": "^0.2.25",
+    "@daita/common": "^0.2.26",
+    "@daita/http-server": "^0.2.26",
+    "@daita/orm": "^0.2.26",
+    "@daita/relational": "^0.2.26",
     "cli-ux": "^5.4.6",
     "commander": "^5.1.0",
     "config": "^3.2.4",
