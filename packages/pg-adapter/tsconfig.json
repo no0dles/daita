@@ -13,8 +13,6 @@
     "path": "../common/tsconfig.json"
   }, {
     "path": "../relational/tsconfig.json"
-  }, {
-    "path": "../internal/relational-test/tsconfig.json"
   }],
   "exclude": [
     "node_modules",

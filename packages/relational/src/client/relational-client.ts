@@ -1,6 +1,6 @@
 import {
-  DeleteSql, InsertSql,
-  isFieldDescription,
+  DeleteSql, InsertSql, isAvgDescription, isConcatDescription, isCountDescription,
+  isFieldDescription, isMaxDescription, isMinDescription, isNowDescription, isSumDescription,
   SelectSql,
   UpdateSql,
 } from '../sql';
@@ -62,6 +62,16 @@ export class RelationalClient implements SelectClient, UpdateClient, DeleteClien
     if (typeof fields === 'object') {
       if (isFieldDescription(fields)) {
         return rows.map(row => row[fields.field.key]);
+      }
+
+      if (isMinDescription(fields) ||
+        isMaxDescription(fields) ||
+        isAvgDescription(fields) ||
+        isSumDescription(fields) ||
+        isCountDescription(fields) ||
+        isConcatDescription(fields) ||
+        isNowDescription(fields)) {
+        return rows.map(row => row[Object.keys(row)[0]]);
       }
 
       if (isAllDescription(fields)) {

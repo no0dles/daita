@@ -3,7 +3,7 @@ FROM node:14-alpine
 WORKDIR /build
 COPY package.json .
 COPY package-lock.json .
-RUN npm ci
+RUN npm install
 
 COPY tsconfig.json .
 COPY src src
@@ -17,7 +17,7 @@ RUN chown node:node -R /app
 USER node
 COPY package.json .
 COPY package-lock.json .
-RUN npm ci --production && rm -rf ~/.config && rm -rf ~/.npm
+RUN npm install --production && rm -rf ~/.config && rm -rf ~/.npm
 COPY --from=0 /build/dist .
 
 ENV DATABASE_URL postgres://postgres:postgres@database/db

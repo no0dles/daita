@@ -17,15 +17,19 @@ module.exports = {
   ],
   testTimeout: 15000,
   moduleNameMapper: {
-    '@daita/common': '<rootDir>/packages/common/src',
-    '@daita/relational': '<rootDir>/packages/relational/src',
-    '@daita/pg-adapter': '<rootDir>/packages/pg-adapter/src',
-    '@daita/cli': '<rootDir>/packages/cli/src'
+    '@daita/common': '<rootDir>/packages/common/dist',
+    '@daita/relational': '<rootDir>/packages/relational/dist',
+    '@daita/orm': '<rootDir>/packages/orm/dist',
+    '@daita/pg-adapter': '<rootDir>/packages/pg-adapter/dist',
+    '@daita/sqlite-adapter': '<rootDir>/packages/sqlite-adapter/dist',
+    '@daita/http-adapter': '<rootDir>/packages/http/http-adapter/dist',
+    '@daita/cli': '<rootDir>/packages/cli/dist'
   },
   projects: [
     '<rootDir>/packages/relational',
     '<rootDir>/packages/common',
     '<rootDir>/packages/cli',
-    '<rootDir>/packages/pg-adapter'
+    '<rootDir>/packages/pg-adapter',
+    '<rootDir>/packages/internal/relational-test'
   ]
 };

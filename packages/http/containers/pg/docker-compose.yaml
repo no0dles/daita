@@ -1,21 +1,21 @@
 version: '3.5'
 services:
-  postgres:
+  db:
     image: "postgres"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=daita
     networks:
       - common
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
+    #volumes:
+      #- postgres-data:/var/lib/postgresql/data
 
   server:
     image: test-server
     environment:
       - PORT=3000
-      - DATABASE_URL=postgres://postgres:postgres@postgres/postgres
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/daita
     networks:
       - common
     ports:

@@ -10,6 +10,9 @@ import { NotBetweenDescription } from './not-between';
 import { NotInDescription } from './not-in';
 import { InDescription } from './in';
 import { IsNullDescription } from './is-null';
+import { GreaterEqualThanDescription } from './greater-equal-than';
+import { LowerThanDescription } from './lower-than';
+import { LowerEqualThanDescription } from './lower-equal-than';
 
 export type Condition =
   EqualDescription<any>
@@ -22,5 +25,8 @@ export type Condition =
   | LikeDescription<any>
   | IsNullDescription<any>
   | GreaterThanDescription<any>
+  | GreaterEqualThanDescription<any>
+  | LowerThanDescription<any>
+  | LowerEqualThanDescription<any>
   | AndDescription
   | OrDescription;

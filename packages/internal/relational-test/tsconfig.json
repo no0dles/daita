@@ -9,6 +9,10 @@
     "path": "../../common/tsconfig.json"
   }, {
     "path": "../../relational/tsconfig.json"
+  }, {
+    "path": "../../pg-adapter/tsconfig.json"
+  }, {
+    "path": "../../sqlite-adapter/tsconfig.json"
   }],
   "exclude": [
     "node_modules",

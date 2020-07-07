@@ -19,25 +19,22 @@ process
     process.exit(1);
   });
 
-setTimeout(() => {
-  debugger;
+pg.adapterFactory.createTransactionAdapter({
+  connectionString: DATABASE_URL
+}).then(pgAdapter => {
+  const server = createHttpServer({
+    transactionTimeout: TRANSACTION_TIMEOUT,
+    dataAdapter: pgAdapter,
+  });
+  server.listen(PORT, async() => {
+    console.log(`listening ${PORT}`)
 
-  pg.adapterFactory.createTransactionAdapter({
-    connectionString: DATABASE_URL
-  }).then(async pgAdapter => {
     console.log('run query');
-    await pgAdapter.exec({
+    const res = await pgAdapter.exec({
       select: now(),
     });
-    const server = createHttpServer({
-      transactionTimeout: TRANSACTION_TIMEOUT,
-      dataAdapter: pgAdapter,
-    });
-    server.listen(PORT, () => console.log(`listening ${PORT}`));
-  }).catch(e => {
-    console.log('test')
-    console.error(e);
-  }).then(() => {
-    console.log('done');
+    console.log(res);
   });
-}, 10000);
+}).catch(e => {
+  console.error(e);
+})

@@ -5,30 +5,15 @@
   "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "homepage": "https://daita.ch",
-  "author": {
-    "name": "Pascal Bertschi"
-  },
-  "keywords": [
-    "daita",
-    "relational"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/no0dles/daita"
-  },
-  "bugs": {
-    "url": "https://github.com/no0dles/daita/issues"
-  },
   "scripts": {
-    "build": "tsc -b",
-    "lint": "eslint src --ext .ts",
-    "fixlint": "eslint src --ext .ts --fix"
+    "build": "tsc -b"
   },
   "license": "MIT",
   "dependencies": {
     "@daita/common": "^0.2.26",
-    "@daita/relational": "^0.2.26"
+    "@daita/relational": "^0.2.26",
+    "@daita/pg-adapter": "^0.2.26",
+    "@daita/sqlite-adapter": "^0.2.26"
   },
   "devDependencies": {
     "@daita/eslint-config": "^0.2.26",

@@ -1,5 +1,4 @@
 import { isExactKind } from '@daita/common';
-import { JoinDescription } from './join';
 
 export interface IsNullDescription<T> {
   isNull: {field: T }
