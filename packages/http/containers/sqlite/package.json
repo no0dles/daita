@@ -1,11 +1,11 @@
 {
   "name": "@daita-container/http-sqlite-server",
   "private": true,
-  "version": "0.2.26",
+  "version": "0.2.27",
   "dependencies": {
-    "@daita/http-server": "^0.2.26",
-    "@daita/sqlite-adapter": "^0.2.26",
-    "@daita/relational": "^0.2.26"
+    "@daita/http-server": "^0.2.27",
+    "@daita/relational": "^0.2.27",
+    "@daita/sqlite-adapter": "^0.2.27"
   },
   "devDependencies": {
     "@types/sqlite3": "^3.1.6",
