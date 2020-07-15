@@ -1,5 +1,6 @@
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { MigrationStep, RelationalTableSchemaTableFieldType } from '@daita/orm';
+import { getTypeDefault } from './parse-relational-schema-table-fields';
 
 export function parseSchemaMigrationStep(step: AstObjectValue): MigrationStep {
   const migrationStep = { kind: step.property('kind')?.stringValue } as MigrationStep;
@@ -12,13 +13,15 @@ export function parseSchemaMigrationStep(step: AstObjectValue): MigrationStep {
   } else if (migrationStep.kind === 'drop_table') {
     return { kind: 'drop_table', table: getStringValue(step, 'table') };
   } else if (migrationStep.kind === 'add_table_field') {
+    const defaultValue = step.property('defaultValue');
+    const type = getStringValue(step, 'type') as RelationalTableSchemaTableFieldType;
     return {
       kind: 'add_table_field',
       table: getStringValue(step, 'table'),
       fieldName: getStringValue(step, 'fieldName'),
       required: getBooleanValue(step, 'required'),
-      defaultValue: getAnyValue(step, 'defaultValue', undefined),
-      type: getStringValue(step, 'type') as RelationalTableSchemaTableFieldType,
+      defaultValue: defaultValue ? getTypeDefault(type, defaultValue) : undefined,
+      type,
     };
   } else if (migrationStep.kind === 'add_table_foreign_key') {
     return {
@@ -49,29 +52,18 @@ export function parseSchemaMigrationStep(step: AstObjectValue): MigrationStep {
       name: getStringValue(step, 'name'),
       fields: getArrayValue(step, 'fields', v => v.stringValue),
       unique: getBooleanValue(step, 'unique'),
-    }
+    };
   } else if (migrationStep.kind === 'drop_index') {
     return {
       kind: 'drop_index',
       table: getStringValue(step, 'table'),
       name: getStringValue(step, 'name'),
-    }
+    };
   }
 
   //TODO schema is missing?
 
   return fail(migrationStep, `Unknown migration step ${JSON.stringify(migrationStep)}`);
-}
-
-function getAnyValue(step: AstObjectValue, key: string, defaultValue?: any) {
-  const property = step.property(key);
-  if (!property) {
-    if (arguments.length === 3) {
-      return defaultValue;
-    }
-    throw new Error(`missing ${key} in migration step`);
-  }
-  return property.anyValue;
 }
 
 function getBooleanValue(step: AstObjectValue, key: string) {

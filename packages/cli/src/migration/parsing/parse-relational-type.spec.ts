@@ -3,6 +3,7 @@ import {parseRelationalType} from './parse-relational-type';
 import {AstObjectValue} from '../../ast/ast-object-value';
 import * as ts from 'typescript';
 import { RelationalTableSchemaTableFieldType } from '@daita/orm';
+import { AstSourceFile } from '../../ast/ast-source-file';
 
 function testRelationalPropertyType(
   type: AstType | null,
@@ -17,7 +18,7 @@ describe('parse-relational-type', () => {
   it('should parse type boolean initalizer false', () => {
     testRelationalPropertyType(
       null,
-      new AstObjectValue(ts.createFalse()),
+      new AstObjectValue(null as any, ts.createFalse()),
       'boolean',
     );
   });
@@ -25,7 +26,7 @@ describe('parse-relational-type', () => {
   it('should parse type boolean initalizer true', () => {
     testRelationalPropertyType(
       null,
-      new AstObjectValue(ts.createTrue()),
+      new AstObjectValue(null as any, ts.createTrue()),
       'boolean',
     );
   });
@@ -33,7 +34,7 @@ describe('parse-relational-type', () => {
   it('should parse type string initalizer', () => {
     testRelationalPropertyType(
       null,
-      new AstObjectValue(ts.createStringLiteral('foo')),
+      new AstObjectValue(null as any, ts.createStringLiteral('foo')),
       'string',
     );
   });

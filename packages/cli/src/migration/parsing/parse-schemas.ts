@@ -5,7 +5,7 @@ export function parseSchemas(sourceFile: AstSourceFile): SchemaDeclaration[] {
   const schemas: SchemaDeclaration[] = [];
   const variables = sourceFile.getVariables();
   for (const variable of variables) {
-    const initializer = variable.initializer;
+    const initializer = variable.getInitializer();
     if (!initializer || !initializer.newConstructor) {
       continue;
     }

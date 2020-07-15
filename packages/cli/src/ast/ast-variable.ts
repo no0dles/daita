@@ -1,21 +1,28 @@
-import {getChildNodes, getIdentifierName, isKind} from './utils';
+import { getChildNodes, getIdentifierName, isKind } from './utils';
 import * as ts from 'typescript';
-import {AstSourceFile} from './ast-source-file';
-import {AstVariableCall} from './ast-variable-call';
-import {AstObjectValue} from './ast-object-value';
+import { AstSourceFile } from './ast-source-file';
+import { AstVariableCall } from './ast-variable-call';
+import { AstObjectValue } from './ast-object-value';
 
 export class AstVariable {
-  initializer: AstObjectValue | null = null;
+  private initializer: AstObjectValue | null = null;
   name: string;
 
   constructor(public sourceFile: AstSourceFile,
               private parentNode: ts.Node,
               private variableStatement: ts.VariableStatement,
               private variableDeclaration: ts.VariableDeclaration) {
-    if (this.variableDeclaration.initializer) {
-      this.initializer = new AstObjectValue(this.variableDeclaration.initializer);
-    }
     this.name = getIdentifierName(this.variableDeclaration.name);
+  }
+
+  getInitializer() {
+    if (this.initializer) {
+      return this.initializer;
+    }
+    if (this.variableDeclaration.initializer) {
+      this.initializer = new AstObjectValue(this.sourceFile, this.variableDeclaration.initializer);
+    }
+    return this.initializer;
   }
 
   get exported() {

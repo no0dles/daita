@@ -43,7 +43,7 @@ export class SelectFormatter implements FormatHandle<SelectSql<any>> {
     }
 
     if (param.having) {
-      sql += ` HAVING BY ${formatter.format(param.having, ctx)}`;
+      sql += ` HAVING ${formatter.format(param.having, ctx)}`;
     }
 
     if (param.orderBy) {

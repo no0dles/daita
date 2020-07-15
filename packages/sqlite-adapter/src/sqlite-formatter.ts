@@ -34,13 +34,15 @@ import {
   ConcatFormatter,
   GreaterEqualThanFormatter,
   LowerThanFormatter,
-  LowerEqualThanFormatter,
+  LowerEqualThanFormatter, SubSelectFormatter, MaxFormatter,
 } from '@daita/relational';
 import { NowFormatter } from './formatters/now-formatter';
 
 export const sqliteFormatter = new Formatter();
 sqliteFormatter.add(new SelectFormatter());
+sqliteFormatter.add(new SubSelectFormatter());
 sqliteFormatter.add(new ValueFormatter());
+sqliteFormatter.add(new MaxFormatter());
 sqliteFormatter.add(new NotBetweenFormatter());
 sqliteFormatter.add(new AllFormatter())
 sqliteFormatter.add(new AvgFormatter());

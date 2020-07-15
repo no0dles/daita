@@ -97,10 +97,10 @@ describe('permission', () => {
       allow(authorized(), update({
         update: table(User),
         set: { password: anything() },
-        where: equal(field(User, 'username'), requestContext().user.username.toLowerCase()),
+        where: equal(field(User, 'username'), requestContext().userId),
       })),
     ];
-    const ctx: RuleContext = { isAuthorized: true, user: {username: 'FOO'} };
+    const ctx: RuleContext = { isAuthorized: true, userId: 'FOO' };
 
     it('should allow update own user ignoring case', () => {
       const isAllowed = matchesRules(update({
@@ -119,10 +119,10 @@ describe('permission', () => {
       allow(authorized(), update({
         update: table(User),
         set: { password: anything() },
-        where: equal(field(User, 'username'), requestContext().user.username),
+        where: equal(field(User, 'username'), requestContext().userId),
       })),
     ];
-    const ctx: RuleContext = { isAuthorized: true, user: {username: 'foo'} };
+    const ctx: RuleContext = { isAuthorized: true, userId: 'foo' };
 
 
     it('should allow update own user', () => {

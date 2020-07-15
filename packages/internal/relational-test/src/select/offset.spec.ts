@@ -3,8 +3,8 @@ import { all, field, getClient, SelectSql, table } from '@daita/relational';
 import { seed } from '../seed';
 import { RelationalTest } from '../relational-test';
 
-export function limitTest(arg: RelationalTest) {
-  describe('limit', () => {
+export function offsetTest(arg: RelationalTest) {
+  describe('offset', () => {
     class Test {
       value!: string;
     }
@@ -17,16 +17,17 @@ export function limitTest(arg: RelationalTest) {
       );
     });
 
-    describe('should select with limit', testAdapter(arg,async (adapter) => {
+    describe('should select with offset', testAdapter(arg, async (adapter) => {
       const sql: SelectSql<any> = {
         select: all(Test),
         from: table(Test),
         orderBy: field(Test, 'value'),
-        limit: 2,
+        limit: 1,
+        offset: 1,
       };
       const client = getClient(adapter);
       const results = await client.select(sql);
-      expect(results).toEqual([{ value: 'bar' }, {value: 'foo'}]);
+      expect(results).toEqual([{value: 'foo'}]);
     }));
   });
 

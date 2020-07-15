@@ -7,6 +7,7 @@ import { undoMigration } from './commands/undo-migration';
 import { applyMigration } from './commands/apply-migration';
 import { diagram } from './commands/diagram';
 import { serve } from './commands/serve';
+import { generateRule } from './commands/generate-rule';
 
 program.command('migration:undo')
   .description('undo last migration')
@@ -24,13 +25,20 @@ program.command('migration:apply')
     await applyMigration(opts);
   });
 
-
 program.command('migration:add <name>')
   .description('add migration')
   .option('--cwd <string>', 'working directory')
   .option('-s, --schema <string>', 'schema filePath')
   .action(async (name, opts) => {
     await addMigration(name, opts);
+  });
+
+program.command('rule:generate')
+  .description('generate rules')
+  .option('--cwd <string>', 'working directory')
+  .option('-s, --schema <string>', 'schema filePath')
+  .action(async (opts) => {
+    await generateRule(opts);
   });
 
 program.command('docs')

@@ -17,6 +17,7 @@
     "sqlite3": "^4.2.0"
   },
   "devDependencies": {
+    "@daita/relational-test": "^0.2.26",
     "@types/jest": "^25.1.1",
     "@types/sqlite3": "^3.1.6",
     "jest": "^25.1.0",

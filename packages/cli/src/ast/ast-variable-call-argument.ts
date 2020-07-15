@@ -19,7 +19,7 @@ export class AstVariableCallArgument {
       ts.SyntaxKind.ObjectLiteralExpression,
     );
     if (objectLiteral) {
-      return new AstObjectValue(objectLiteral);
+      return new AstObjectValue(this.sourceFile, objectLiteral);
     }
     return null;
   }

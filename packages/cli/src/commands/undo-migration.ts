@@ -25,7 +25,7 @@ export async function undoMigration(options: { cwd?: string, schema?: string }) 
     if (!argVariable) {
       throw new Error('undo only works with imports');
     }
-    const id = argVariable.initializer?.property('id')?.stringValue;
+    const id = argVariable.getInitializer()?.property('id')?.stringValue;
     if (id !== lastMigration.id) {
       continue;
     }

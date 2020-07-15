@@ -13,7 +13,7 @@ export class AstPropertyDeclaration {
               private propertyDeclaration: ts.PropertyDeclaration) {
     this.name = getIdentifierName(this.propertyDeclaration.name);
     if (this.propertyDeclaration.initializer) {
-      this.initializer = new AstObjectValue(this.propertyDeclaration.initializer);
+      this.initializer = new AstObjectValue(this.sourceFile, this.propertyDeclaration.initializer);
     }
     if (this.propertyDeclaration.type) {
       this.type = parsePropertyType(this.sourceFile, this.propertyDeclaration);

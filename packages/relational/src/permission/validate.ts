@@ -6,7 +6,7 @@ import { RuleValidateAllowResult } from './description/rule-validation-allow-res
 import { RuleValidateForbidResult } from './description/rule-validation-forbid-result';
 import { failNever } from '@daita/common';
 import { isAllowRegex, isRequestContext } from './function';
-import { RuleContext } from './description';
+import { RuleContext, RuleValidateResult } from './description';
 
 export function matchesObject(ruleContext: RuleContext, authSql: any, ctxSql: any, path: string[]): string | null {
   if (isAnything(authSql)) {
@@ -105,9 +105,37 @@ export function matchesRules(sql: Sql<any>, rules: Rule[], ctx: RuleContext): bo
   return res.type === 'allow';
 }
 
+export function evaluateRule(sql: Sql<any>, rule: Rule, ctx: RuleContext): RuleValidateResult {
+  if (rule.type === 'allow') {
+    if (!matchesAuthsDescription(rule.auth, ctx)) {
+      return { type: 'next' };
+    }
+
+    const error = matchesObject(ctx, sql, rule.sql, []);
+    if (!error) {
+      return { type: 'allow' };
+    }
+
+    return { type: 'next', error };
+  } else if (rule.type === 'forbid') {
+
+    if (!matchesAuthsDescription(rule.auth, ctx)) {
+      return { type: 'next' };
+    }
+
+    const error = matchesObject(ctx, sql, rule.sql, []);
+    if (error) {
+      return { type: 'forbid', error };
+    }
+    return { type: 'next' };
+  } else {
+    failNever(rule.type, 'unknown rule type');
+  }
+}
+
 export function validateRules(sql: Sql<any>, rules: Rule[], ctx: RuleContext): RuleValidateAllowResult | RuleValidateForbidResult {
   for (const rule of rules) {
-    const res = rule.validate(sql, ctx);
+    const res = evaluateRule(sql, rule, ctx);
     if (res.type === 'allow' || res.type === 'forbid') {
       return res;
     }

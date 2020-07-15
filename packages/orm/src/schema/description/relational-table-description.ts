@@ -1,15 +1,17 @@
-import { RelationalTableFieldDescription } from "./relational-table-field-description";
-import { ArrayMap } from "./array-map";
-import { RelationalTableReferenceDescription } from "./relational-table-reference-description";
-import { arrayClone } from "@daita/common";
-import {RelationalSchemaDescription} from './relational-schema-description';
+import { RelationalTableFieldDescription } from './relational-table-field-description';
+import { ArrayMap } from './array-map';
+import { RelationalTableReferenceDescription } from './relational-table-reference-description';
+import { arrayClone } from '@daita/common';
+import { RelationalSchemaDescription } from './relational-schema-description';
 import { RelationalTableIndexDescription } from './relational-table-index-description';
+import { Rule } from '@daita/relational';
 
 export class RelationalTableDescription {
   private primaryKeysArray: ArrayMap<RelationalTableFieldDescription>;
   private fieldArrayMap: ArrayMap<RelationalTableFieldDescription>;
   private referenceArrayMap: ArrayMap<RelationalTableReferenceDescription>;
   private indexArrayMap: ArrayMap<RelationalTableIndexDescription>;
+  private rules: Rule[] = [];
 
   constructor(private schemaDescription: RelationalSchemaDescription,
               public key: string,
@@ -41,6 +43,10 @@ export class RelationalTableDescription {
     this.indexArrayMap.add(name, index);
   }
 
+  getRules() {
+    return [...this.rules];
+  }
+
   getIndex(name: string) {
     return this.indexArrayMap.get(name);
   }
@@ -55,6 +61,10 @@ export class RelationalTableDescription {
 
   addField(name: string, field: RelationalTableFieldDescription) {
     this.fieldArrayMap.add(name, field);
+  }
+
+  addRule(rule: Rule) {
+    this.rules.push(rule);
   }
 
   removeField(name: string) {

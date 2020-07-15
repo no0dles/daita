@@ -15,6 +15,8 @@ export async function serve(opts: {cwd?: string, schema?: string, port?: number}
 
   const app = createHttpServer({
     dataAdapter,
+    rules: [],
+    cors: true,
   });
 
   const port = opts.port || 8765;

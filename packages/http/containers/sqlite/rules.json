@@ -1,0 +1,11 @@
+[
+  {
+    "type": "allow",
+    "auth": {
+      "type": "authorized"
+    },
+    "sql": {
+      "select": "foo"
+    }
+  }
+]

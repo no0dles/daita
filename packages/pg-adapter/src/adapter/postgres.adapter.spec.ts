@@ -1,4 +1,6 @@
 import { PostgresAdapter } from './postgres.adapter';
+import { relationalTest } from '@daita/relational-test';
+import * as pg from '../index';
 
 describe('postgres-adapter', () => {
   let adapter: PostgresAdapter;
@@ -16,4 +18,6 @@ describe('postgres-adapter', () => {
       adapter.close();
     }
   });
+
+  relationalTest({ factory: pg, connectionString: 'postgres://postgres:postgres@localhost/postgres' });
 });

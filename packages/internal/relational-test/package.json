@@ -11,9 +11,7 @@
   "license": "MIT",
   "dependencies": {
     "@daita/common": "^0.2.26",
-    "@daita/relational": "^0.2.26",
-    "@daita/pg-adapter": "^0.2.26",
-    "@daita/sqlite-adapter": "^0.2.26"
+    "@daita/relational": "^0.2.26"
   },
   "devDependencies": {
     "@daita/eslint-config": "^0.2.26",

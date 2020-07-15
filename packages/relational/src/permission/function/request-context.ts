@@ -4,7 +4,7 @@ export interface RequestContextDescription {
   getContextValue: (req: RuleContext) => any;
 }
 
-export function requestContext<T = { username: string }>(): { user: T, now: Date } {
+export function requestContext(): { userId: string } {
   return getProxy(true, []);
 }
 
@@ -21,11 +21,17 @@ interface ProxyCall {
   args: any[];
 }
 
+export function reviveRequestContext(actions: ProxyAction[]) {
+  return getProxy(false, actions);
+}
+
 function getProxy(root: boolean, actions: ProxyAction[]) {
   return new Proxy(() => {
   }, {
     get(target: any, p: PropertyKey, receiver: any): any {
-      if (p === 'getContextValue') {
+      if (p === 'toJSON') {
+        return () => ({ $requestContext: actions });
+      } else if (p === 'getContextValue') {
         return (ctx: any) => {
           let current = ctx;
           for (const action of actions) {

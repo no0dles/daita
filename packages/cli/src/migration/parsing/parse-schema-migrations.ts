@@ -10,10 +10,11 @@ export function parseSchemaMigrations(
   for(const migrationCall of parseSchemaMigrationCalls(schemaVariable)) {
     const migrationVariable = migrationCall.variable;
     if (migrationVariable) {
-      if (!migrationVariable.initializer) {
+      const init = migrationVariable.getInitializer();
+      if (!init) {
         throw new Error('missing init for variable');
       }
-      const migration = parseSchemaMigration(migrationVariable.initializer);
+      const migration = parseSchemaMigration(init);
       migrationTree.add(migration);
       continue;
     }

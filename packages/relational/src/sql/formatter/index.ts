@@ -14,6 +14,7 @@ export * from './formatter';
 export * from './greater-than';
 export * from './greater-equal-than';
 export * from './lower-than';
+export * from './max';
 export * from './lower-equal-than';
 export * from './insert';
 export * from './join';

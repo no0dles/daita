@@ -6,6 +6,7 @@ import {
   ContextManager,
   isAppTransactionOptions, TransactionContextManager, TransactionManager,
 } from '@daita/http-server-common';
+import { allow, authorized, matchesRules, select } from '@daita/relational';
 
 export function relationalRoute(options: AppOptions) {
   if (isAppTransactionOptions(options)) {
@@ -25,7 +26,7 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
     if (typeof req.params['tid'] === 'string') {
       return req.params['tid'];
     } else {
-      res.status(400).json({message: 'tid param is required'});
+      res.status(400).json({ message: 'tid param is required' });
     }
     return null;
   }
@@ -45,7 +46,7 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
     }
   }
 
-  router.post('/trx/:tid/exec', async (req, res, next) => {
+  router.post('/trx/:tid/exec', validateRules(options), async (req, res, next) => {
     try {
       await getTransaction(req, res, async transaction => {
         const result = await transaction.exec(req.body.sql);
@@ -97,10 +98,28 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
   return router;
 }
 
+export function validateRules(options: AppDataOptions) {
+  return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+      const user = (<any>req).user;
+      if (!matchesRules(req.body.sql, options.rules, {
+        isAuthorized: !!user,
+        userId: user ? `${user.iss}|${user.sub}` : undefined,
+      })) {
+        res.status(403).end();
+      } else {
+        next();
+      }
+    } catch (e) {
+      next(e);
+    }
+  };
+}
+
 export function relationalDataRoute(options: AppDataOptions) {
   const router = express.Router();
 
-  router.post('/exec', async (req, res, next) => {
+  router.post('/exec', validateRules(options), async (req, res, next) => {
     try {
       const context = new ContextManager(options.dataAdapter);
       const result = await context.exec(req.body.sql);

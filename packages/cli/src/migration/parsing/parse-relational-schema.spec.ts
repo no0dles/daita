@@ -2,19 +2,19 @@ import { MockAstContext } from '../../ast/ast-context';
 import { parseRelationalSchema } from './parse-relational-schema';
 import { isNotNull } from '../../test/utils.test';
 import 'jest-extended';
-import { table } from '@daita/relational';
+import { all, allow, authorized, Rule, table } from '@daita/relational';
 import { RelationalSchemaDescription } from '@daita/orm';
 
 describe('parse-relational-schema', () => {
   const context = new MockAstContext();
   context.mock('schema.ts', `
-      import {User} from './user';
+      import {User, userRules} from './user';
       import {Role} from './role';
       import {Permission} from './permission';
       import {UserRole} from './user-role';
       import {RolePermission} from './role-permission';
       const schema = new RelationalSchema();
-      schema.table(User, {indices: {username: {unique: true, columns: ['username']}}});
+      schema.table(User, {indices: {username: {unique: true, columns: ['username']}}, rules: userRules});
       schema.table(Role, {key: 'name', indices: { desc: ['description']}});
       schema.table(Permission, {key: ['name']});
       schema.table(UserRole, {key: ['roleName', 'userId']});
@@ -28,6 +28,7 @@ describe('parse-relational-schema', () => {
     `);
   context.mock('user.ts', `
       import {BaseTable} from './base';
+      import {allow, authorized, all, table} from '@daita/relational';
       export class User extends BaseTable {
         id: string;
         username: string;
@@ -35,6 +36,9 @@ describe('parse-relational-schema', () => {
         lastLogin: Date;
         admin = false;
       }
+      export const userRules = [
+        allow(authorized(), {select: all(), from: table(User) }),
+      ];
     `);
   context.mock('role.ts', `
       import {BaseTable} from './base';
@@ -105,6 +109,9 @@ describe('parse-relational-schema', () => {
     foreignKeys: [],
     primaryKeys: ['id'],
     indices: { username: { columns: ['username'], unique: true } },
+    rules: [
+      allow(authorized(), {select: all(), from: table('User') })
+    ],
     fields: [
       {
         required: true,
@@ -280,6 +287,16 @@ function shouldHaveTable(relationalSchema: RelationalSchemaDescription, options:
       });
     }
 
+    if (options.rules) {
+      it(`should parse rules`, () => {
+        const actualRules = roleTable.getRules();
+        console.log(actualRules);
+        // for (const rule of options.rules || []) {
+        //
+        // }
+      });
+    }
+
     it('should not contain more foreign keys', () => {
       expect(roleTable.references.map(ref => ref.name)).toEqual(options.foreignKeys.map(field => field.name));
     });
@@ -296,6 +313,7 @@ interface ExpectedTable {
   indices?: { [key: string]: { columns: string[], unique: boolean } };
   foreignKeys: { name: string, table: string, keys: string[], foreignKeys: string[], required: boolean }[],
   fields: ExpectedTableField[],
+  rules?: Rule[];
 }
 
 interface ExpectedTableField {

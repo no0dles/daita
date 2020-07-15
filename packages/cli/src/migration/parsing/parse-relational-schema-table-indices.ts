@@ -9,9 +9,11 @@ export function parseRelationalSchemaTableIndices(table: RelationalTableDescript
   }
 
   for (const indexProperty of index.properties()) {
-    const indexValue = indexProperty.value.anyValue;
-    if (typeof indexValue === 'object' && indexValue.columns) {
-      addIndex(table, indexProperty.name, indexValue.columns, indexValue.unique ?? false);
+    const indexValue = indexProperty.value.objectValue;
+    if (indexProperty.value.objectValue && indexProperty.value.objectValue['columns']) {
+      const columns = indexProperty.value.objectValue['columns'].arrayValue?.map(v => v.stringValue);
+      const unique = indexProperty.value.objectValue['unique']?.booleanValue ?? false;
+      addIndex(table, indexProperty.name, columns, unique);
     } else {
       addIndex(table, indexProperty.name, indexValue, false);
     }

@@ -37,7 +37,7 @@ import {
   BetweenFormatter,
   ConcatFormatter,
   GreaterEqualThanFormatter,
-  LowerThanFormatter, LowerEqualThanFormatter,
+  LowerThanFormatter, LowerEqualThanFormatter, MaxFormatter,
 } from '@daita/relational';
 import { CreateIndexFormatter } from '../formatters/create-index-formatter';
 import { DropIndexFormatter } from '../formatters/drop-index-formatter';
@@ -46,6 +46,7 @@ import { NowFormatter } from '../formatters/now';
 export const postgresFormatter = new Formatter();
 postgresFormatter.add(new AllFormatter());
 postgresFormatter.add(new NotEqualFormatter());
+postgresFormatter.add(new MaxFormatter());
 postgresFormatter.add(new SelectFormatter());
 postgresFormatter.add(new SubSelectFormatter());
 postgresFormatter.add(new ValueFormatter());

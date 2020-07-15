@@ -6,6 +6,7 @@ import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { parseRelationalSchemaTableReferences } from './parse-relational-schema-table-references';
 import { parseTableDescription } from './parse-table-description';
 import { parseRelationalSchemaTableIndices } from './parse-relational-schema-table-indices';
+import { parseRelationalSchemaTableRules } from './parse-relational-schema-table-rules';
 
 export function parseRelationalSchemaTables(
   schema: RelationalSchemaDescription, schemaVariable: AstVariable,
@@ -45,6 +46,7 @@ export function parseRelationalSchemaTables(
     parseRelationalSchemaTableFields(table, classDeclaration);
     parseRelationalSchemaTablePrimaryKeys(table, optionsArgument);
     parseRelationalSchemaTableIndices(table, optionsArgument);
+    parseRelationalSchemaTableRules(table, optionsArgument);
 
     schema.addTable(tableDescription, table);
     classDeclarations[classDeclaration.name] = classDeclaration;
