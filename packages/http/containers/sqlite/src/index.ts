@@ -26,7 +26,7 @@ const rules: Rule[] = [];
 if (fs.existsSync(RULE_FILE)) {
   const content = fs.readFileSync(RULE_FILE, { encoding: 'utf8' });
   try {
-    rules.push(...parsing(JSON.parse(content)));
+    rules.push(...parsing(content));
   } catch (e) {
     console.error('error parsing rules');
     console.error(e);
