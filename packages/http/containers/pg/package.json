@@ -1,11 +1,11 @@
 {
   "name": "@daita-container/http-pg-server",
   "private": true,
-  "version": "0.2.27",
+  "version": "0.2.28",
   "dependencies": {
-    "@daita/http-server": "^0.2.27",
-    "@daita/pg-adapter": "^0.2.27",
-    "@daita/relational": "^0.2.27"
+    "@daita/http-server": "^0.2.28",
+    "@daita/pg-adapter": "^0.2.28",
+    "@daita/relational": "^0.2.28"
   },
   "devDependencies": {
     "@types/pg": "^7.14.3",
