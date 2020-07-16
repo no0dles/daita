@@ -20,6 +20,10 @@ export class PostgresAdapter implements RelationalTransactionAdapter {
       this.connectionString = poolOrUrl;
       this.pool = Promise.resolve(new Pool({
         connectionString: poolOrUrl,
+        connectionTimeoutMillis: 10000,
+        keepAlive: true,
+        max: 20,
+        idleTimeoutMillis: 10000,
       }));
     } else if (poolOrUrl instanceof Promise) {
       this.pool = poolOrUrl;

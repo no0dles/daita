@@ -7,7 +7,7 @@ import {
 import { PostgresAdapter } from './adapter/postgres.adapter';
 import { parse } from 'pg-connection-string';
 import { dropDatabase, ensureDatabaseExists } from './postgres.util';
-import { Pool } from 'pg';
+import { Pool } from 'pg/native';
 
 export { PostgresAdapter } from './adapter/postgres.adapter';
 export { dropDatabase, ensureDatabaseExists } from './postgres.util';
@@ -38,6 +38,10 @@ export function getPostgresAdapter(options?: CreateAdapterOptions): PostgresAdap
     prepareDatabase(connectionString, options).then(() => {
       resolve(new Pool({
         connectionString: connectionString,
+        connectionTimeoutMillis: 10000,
+        keepAlive: true,
+        max: 20,
+        idleTimeoutMillis: 10000,
       }));
     }).catch(err => {
       reject(err);

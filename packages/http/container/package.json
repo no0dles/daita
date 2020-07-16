@@ -17,6 +17,10 @@
   "scripts": {
     "start": "node -r ts-node/register src/sqlite/index.ts",
     "build": "tsc -b tsconfig.json",
+    "build:pg": "docker build -t docker.pkg.github.com/no0dles/daita/http-pg -f dockerfiles/pg/Dockerfile .",
+    "build:sqlite": "docker build -t docker.pkg.github.com/no0dles/daita/http-sqlite -f dockerfiles/sqlite/Dockerfile .",
+    "push:pg": "docker push docker.pkg.github.com/no0dles/daita/http-pg",
+    "push:sqlite": "docker push docker.pkg.github.com/no0dles/daita/http-sqlite",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
     "prettier": "prettier 'src/**/*.ts' --write"
