@@ -1,11 +1,11 @@
 {
   "name": "@daita-src/http-server",
   "private": true,
-  "version": "0.2.29",
+  "version": "0.2.30",
   "dependencies": {
-    "@daita/common": "^0.2.29",
-    "@daita/http-server-common": "^0.2.29",
-    "@daita/relational": "^0.2.29",
+    "@daita/common": "^0.2.30",
+    "@daita/http-server-common": "^0.2.30",
+    "@daita/relational": "^0.2.30",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
@@ -14,7 +14,7 @@
     "jws": "^4.0.0"
   },
   "devDependencies": {
-    "@daita/pg-adapter": "^0.2.29",
+    "@daita/pg-adapter": "^0.2.30",
     "@types/body-parser": "^1.17.1",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.2",
