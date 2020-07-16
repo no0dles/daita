@@ -1,9 +1,9 @@
 {
   "name": "@daita-src/http-client-common",
   "private": true,
-  "version": "0.2.28",
+  "version": "0.2.29",
   "dependencies": {
-    "@daita/common": "^0.2.28",
+    "@daita/common": "^0.2.29",
     "axios": "^0.19.0",
     "openid-client": "^3.12.1"
   },

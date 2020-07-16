@@ -1,13 +1,13 @@
 {
   "name": "@daita/http-client-common",
-  "version": "0.2.28",
+  "version": "0.2.29",
   "author": "Pascal Bertschi @no0dles",
   "publishConfig": {
     "access": "public"
   },
   "bugs": "https://github.com/no0dles/daita/issues",
   "dependencies": {
-    "@daita/common": "^0.2.28",
+    "@daita/common": "^0.2.29",
     "axios": "^0.19.0",
     "openid-client": "^3.12.1"
   },

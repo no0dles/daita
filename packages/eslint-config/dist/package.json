@@ -1,7 +1,7 @@
 {
   "name": "@daita/eslint-config",
   "description": "eslint config and rules for daita",
-  "version": "0.2.28",
+  "version": "0.2.29",
   "publishConfig": {
     "access": "public"
   },
