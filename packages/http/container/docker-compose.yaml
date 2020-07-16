@@ -12,10 +12,13 @@ services:
       #- postgres-data:/var/lib/postgresql/data
 
   server:
-    image: test-server
+    image: test-pg
     environment:
       - PORT=3000
       - DATABASE_URL=postgres://postgres:postgres@db:5432/daita
+    volumes:
+    - ./auth.json:/app/auth.json
+    - ./rules.json:/app/rules.json
     networks:
       - common
     ports:
