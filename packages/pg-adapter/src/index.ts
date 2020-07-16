@@ -7,7 +7,7 @@ import {
 import { PostgresAdapter } from './adapter/postgres.adapter';
 import { parse } from 'pg-connection-string';
 import { dropDatabase, ensureDatabaseExists } from './postgres.util';
-import { Pool } from 'pg/native';
+import { Pool } from 'pg';
 
 export { PostgresAdapter } from './adapter/postgres.adapter';
 export { dropDatabase, ensureDatabaseExists } from './postgres.util';
