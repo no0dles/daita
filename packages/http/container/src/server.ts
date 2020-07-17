@@ -1,6 +1,7 @@
 import { parsing, RelationalTransactionAdapterFactory, Rule } from '@daita/relational';
 import * as fs from 'fs';
 import { createHttpServer } from '@daita/http-server';
+import { AppAuthorization } from '@daita/http-server-common';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT ? parseInt(process.env.TRANSACTION_TIMEOUT) : 4000;
@@ -26,11 +27,13 @@ if (fs.existsSync(RULE_FILE)) {
   console.log('No rules configured');
 }
 
-const authentication: { uri: string, issuer: string }[] = [];
+const authentication: AppAuthorization = { providers: [], tokens: [] };
 if (fs.existsSync(AUTH_FILE)) {
   const content = fs.readFileSync(AUTH_FILE, { encoding: 'utf8' });
   try {
-    authentication.push(...JSON.parse(content));
+    const parsedAuthentication = JSON.parse(content);
+    authentication.tokens = parsedAuthentication && parsedAuthentication.tokens ? parsedAuthentication.tokens : [];
+    authentication.providers = parsedAuthentication && parsedAuthentication.providers ? parsedAuthentication.providers : [];
   } catch (e) {
     console.error('error parsing auth');
     console.error(e);
@@ -54,9 +57,7 @@ export async function run(factory: RelationalTransactionAdapterFactory) {
   const server = createHttpServer({
     transactionTimeout: TRANSACTION_TIMEOUT,
     dataAdapter: adapter,
-    authorization: authentication.length > 0 ? {
-      providers: authentication,
-    } : undefined,
+    authorization: authentication,
     rules,
   });
 

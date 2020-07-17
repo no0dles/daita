@@ -4,18 +4,14 @@ import {
   RelationalTransactionAdapter,
   Rule,
 } from '@daita/relational';
+import { AppAuthorization } from './app-authorization';
 
 export type AppOptions = AppDataOptions | AppTransactionOptions;
 
 export interface AppDataOptions {
   dataAdapter: RelationalDataAdapter;
   cors?: boolean | string | string[];
-  authorization?: {
-    providers: {
-      issuer: string;
-      uri: string;
-    }[]
-  },
+  authorization?: AppAuthorization;
   rules: Rule[];
 }
 
@@ -23,12 +19,7 @@ export interface AppTransactionOptions {
   dataAdapter: RelationalTransactionAdapter;
   transactionTimeout?: number;
   cors?: boolean | string | string[];
-  authorization?: {
-    providers: {
-      issuer: string;
-      uri: string;
-    }[]
-  },
+  authorization?: AppAuthorization;
   rules: Rule[];
 }
 

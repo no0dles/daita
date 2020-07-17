@@ -16,7 +16,7 @@ export function createHttpServer(options: AppOptions) {
     }));
   }
   app.use(bodyParser.json());
-  if (options.authorization) {
+  if (options.authorization && options.authorization.providers && options.authorization.providers.length > 0) {
     const clients: { [key: string]: JwksClient.JwksClient } = {};
     for (const provider of options.authorization.providers) {
       clients[provider.issuer] = JwksClient({
@@ -36,6 +36,34 @@ export function createHttpServer(options: AppOptions) {
         });
       },
     }));
+  }
+  if (options.authorization && options.authorization.tokens && options.authorization.tokens.length > 0) {
+    const tokenMap = options.authorization.tokens.reduce((map, token) => {
+      map.set(token.token, token.userId);
+      return map;
+    }, new Map<string, string>());
+
+    app.use((req, res, next) => {
+      if (req.user) {
+        return next();
+      }
+
+      if (!req.headers.authorization || !req.headers.authorization.startsWith('Token ')) {
+        return next();
+      }
+
+      const token = req.headers.authorization.substr('Token '.length);
+      const userId = tokenMap.get(token);
+      if (userId) {
+        req.user = {
+          type: 'token',
+          token: token,
+          userId: userId,
+        };
+      }
+
+      next();
+    });
   }
   app.use('/api/relational', relationalRoute(options));
   app.use(

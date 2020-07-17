@@ -1,4 +1,4 @@
-FROM node:14-alpine
+FROM node:13-alpine
 
 WORKDIR /build
 COPY package-pg.json package.json
@@ -11,7 +11,7 @@ COPY src/pg src/pg
 RUN npm run build
 
 ##################################
-FROM node:14-alpine
+FROM node:13-alpine
 
 WORKDIR /app
 RUN chown node:node -R /app

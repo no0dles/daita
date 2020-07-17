@@ -1,4 +1,4 @@
-FROM node:14
+FROM node:13-alpine
 
 WORKDIR /build
 COPY package-sqlite.json package.json
@@ -11,7 +11,7 @@ COPY src/sqlite src/sqlite
 RUN npm run build
 
 ##################################
-FROM node:14
+FROM node:13-alpine
 
 WORKDIR /app
 RUN chown node:node -R /app

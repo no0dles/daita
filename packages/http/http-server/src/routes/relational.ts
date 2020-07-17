@@ -6,7 +6,7 @@ import {
   ContextManager,
   isAppTransactionOptions, TransactionContextManager, TransactionManager,
 } from '@daita/http-server-common';
-import { allow, authorized, matchesRules, select } from '@daita/relational';
+import { matchesRules } from '@daita/relational';
 
 export function relationalRoute(options: AppOptions) {
   if (isAppTransactionOptions(options)) {
@@ -101,10 +101,20 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
 export function validateRules(options: AppDataOptions) {
   return (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-      const user = (<any>req).user;
+      let userId: string | undefined;
+      let authorized = false;
+      if (req.user) {
+        authorized = true;
+        if (req.user.type === 'jwt') {
+          userId = `${req.user.iss}|${req.user.sub}`;
+        } else if (req.user.type === 'token') {
+          userId = req.user.userId;
+        }
+      }
+
       if (!matchesRules(req.body.sql, options.rules, {
-        isAuthorized: !!user,
-        userId: user ? `${user.iss}|${user.sub}` : undefined,
+        isAuthorized: authorized,
+        userId: userId,
       })) {
         res.status(403).end();
       } else {
