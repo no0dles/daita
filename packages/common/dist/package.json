@@ -1,6 +1,6 @@
 {
   "name": "@daita/common",
-  "version": "0.2.32",
+  "version": "0.2.33",
   "description": "common functionality of daita",
   "main": "index.js",
   "types": "index.d.ts",

@@ -1,6 +1,6 @@
 {
   "name": "@daita/relational",
-  "version": "0.2.32",
+  "version": "0.2.33",
   "description": "relational functionality of daita",
   "main": "index.js",
   "types": "index.d.ts",
@@ -24,7 +24,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "^0.2.32"
+    "@daita/common": "^0.2.33"
   },
   "gitHead": "e3fa8787db743bde265dbe206fe5fd2cb682640c"
 }
