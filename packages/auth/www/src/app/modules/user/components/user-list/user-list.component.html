@@ -1,0 +1,10 @@
+<main class="bg-gray-200 flex-grow">
+  <app-navbar-header [name]="'Users'" [link]="['/app/users/create']"></app-navbar-header>
+  <app-card-list class="p-3">
+    <app-card [name]="user.username" *ngFor="let user of users"
+              [description]="user.userPool"
+              [link]="'/app/users/view/' + user.username">
+
+    </app-card>
+  </app-card-list>
+</main>

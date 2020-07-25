@@ -17,7 +17,7 @@ export function parseRelationalSchemaTableReferences(schema: RelationalSchemaDes
     if (property.type && property.type.kind === 'reference' && property.type.referenceName !== 'Date') {
       const referenceClass = property.type.reference;
       if (!referenceClass) {
-        throw new Error('invalid reference');
+        throw new Error(`invalid reference ${property.type.referenceName}`);
       }
 
       const tableDescription = parseTableDescription(referenceClass)

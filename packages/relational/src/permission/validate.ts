@@ -111,7 +111,7 @@ export function evaluateRule(sql: Sql<any>, rule: Rule, ctx: RuleContext): RuleV
       return { type: 'next' };
     }
 
-    const error = matchesObject(ctx, sql, rule.sql, []);
+    const error = matchesObject(ctx, rule.sql, sql, []);
     if (!error) {
       return { type: 'allow' };
     }
@@ -123,7 +123,7 @@ export function evaluateRule(sql: Sql<any>, rule: Rule, ctx: RuleContext): RuleV
       return { type: 'next' };
     }
 
-    const error = matchesObject(ctx, sql, rule.sql, []);
+    const error = matchesObject(ctx, rule.sql, sql, []);
     if (error) {
       return { type: 'forbid', error };
     }

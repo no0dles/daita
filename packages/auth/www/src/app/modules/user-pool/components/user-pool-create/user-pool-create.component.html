@@ -1,0 +1,29 @@
+<main class="flex-grow min-h-0 flex flex-col">
+  <app-navbar-subheader [name]="'Create User Pools'" [link]="['/app/userPools']"></app-navbar-subheader>
+
+  <form class="p-6 overflow-y-scroll flex-grow" [formGroup]="form" (ngSubmit)="save()">
+    <app-form-layout-input [id]="'name'" [name]="'Name'" [form]="form"></app-form-layout-input>
+
+    <app-form-layout-section class="mt-8" [name]="'Token settings'" [description]="'JWT options'">
+      <app-form-layout-select [id]="'algorithm'" [name]="'Algorithm'" [form]="form" [options]="algorithms"></app-form-layout-select>
+      <app-form-layout-input [id]="'accessTokenExpire'" [name]="'Access Token Expire'" [form]="form" [type]="'number'" class="mt-4" [prefix]="accessTokenHumanized"></app-form-layout-input>
+      <app-form-layout-input [id]="'refreshTokenExpire'" [name]="'Refresh Token Expire'" [form]="form" [type]="'number'" class="mt-4" [prefix]="refreshTokenHumanized"></app-form-layout-input>
+    </app-form-layout-section>
+
+    <app-form-layout-section class="mt-8" [name]="'Password strength'" [description]="'Specify password strength'">
+      <app-form-layout-radio [id]="'passwordStrength'" [value]="'none'" [form]="form" [name]="'None'" [description]="'No rule'"></app-form-layout-radio>
+      <app-form-layout-radio class="mt-4" [id]="'passwordStrength'" [value]="'simple'" [form]="form" [name]="'Simple'" [description]="'Minimum length of 8 characters'"></app-form-layout-radio>
+      <app-form-layout-radio class="mt-4" [id]="'passwordStrength'" [value]="'challenging'" [form]="form" [name]="'Challenging'" [description]="'Minimum length of 8 characters with alpha lower and uppercase, numeric'"></app-form-layout-radio>
+      <app-form-layout-radio class="mt-4" [id]="'passwordStrength'" [value]="'complex'" [form]="form" [name]="'Complex'" [description]="'Minimum length of 10 characters with alpha lower and uppercase, numeric and symbol'"></app-form-layout-radio>
+      <app-form-layout-radio class="mt-4" [id]="'passwordStrength'" [value]="'custom'" [form]="form" [name]="'Custom'" [description]="'Custom rule'"></app-form-layout-radio>
+    </app-form-layout-section>
+
+    <app-form-layout-section class="mt-8" [name]="'Options'" [description]="'We\'ll always let you know about important changes, but you pick what else you want to hear about.'">
+      <app-form-layout-checkbox class="mt-4" [id]="'allowRegistration'" [form]="form" [name]="'Allow registration'" [description]="'Allow anonymous people to register'"></app-form-layout-checkbox>
+      <app-form-layout-checkbox class="mt-4" [id]="'verifyEmail'" [form]="form" [name]="'Verify email'" [description]="'Verify registered email address'"></app-form-layout-checkbox>
+      <app-form-layout-checkbox class="mt-4" [id]="'checkPassword'" [form]="form" [name]="'Check password'" [description]="'Do not allowed breached passwords from known password leaks'"></app-form-layout-checkbox>
+    </app-form-layout-section>
+
+    <app-form-layout-footer (canceled)="cancel()"></app-form-layout-footer>
+  </form>
+</main>

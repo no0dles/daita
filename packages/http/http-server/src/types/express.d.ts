@@ -8,6 +8,8 @@ declare namespace Express {
       type: 'jwt';
       sub: string;
       iss: string;
+    } | {
+      type: 'custom'
     }
   }
 }

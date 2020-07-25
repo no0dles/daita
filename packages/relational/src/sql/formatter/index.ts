@@ -24,6 +24,7 @@ export * from './or';
 export * from './is-null';
 export * from './order-by';
 export * from './select';
+export * from './update';
 export * from './in';
 export * from './sub-select';
 export * from './simple-format-context';

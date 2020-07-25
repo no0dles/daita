@@ -1,0 +1,13 @@
+<div class="relative flex items-start">
+  <div class="flex items-center h-5"
+       [formGroup]="form">
+    <input [id]="id"
+           [formControlName]="id"
+           type="checkbox"
+           class="form-checkbox h-4 w-4 text-indigo-600 transition duration-150 ease-in-out">
+  </div>
+  <div class="ml-3 text-sm leading-5">
+    <label [for]="id" class="font-medium text-gray-700">{{name}}</label>
+    <p class="text-gray-500">{{description}}</p>
+  </div>
+</div>

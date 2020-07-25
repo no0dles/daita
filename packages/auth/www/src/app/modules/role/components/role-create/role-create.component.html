@@ -1,0 +1,10 @@
+<main class="flex-grow min-h-0 flex flex-col">
+  <app-navbar-subheader [name]="'Create Role'" [link]="['/app/roles']"></app-navbar-subheader>
+
+  <form class="p-6 flex-grow" [formGroup]="form" (ngSubmit)="save()">
+    <app-form-layout-input [id]="'name'" [name]="'Name'" [form]="form"></app-form-layout-input>
+    <app-form-layout-textarea class="mt-4" [id]="'description'" [name]="'Description'" [form]="form"></app-form-layout-textarea>
+    <p class="mt-2 text-sm text-gray-500">Write a few sentences about the purpose of the role.</p>
+    <app-form-layout-footer></app-form-layout-footer>
+  </form>
+</main>

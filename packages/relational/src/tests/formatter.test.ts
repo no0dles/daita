@@ -30,6 +30,7 @@ import { NotEqualFormatter } from '../sql/formatter/not-equal';
 import { SubSelectFormatter } from '../sql/formatter/sub-select';
 import { InFormatter } from '../sql/formatter';
 import { IsNullFormatter } from '../sql/formatter/is-null';
+import { UpdateFormatter } from '../sql/formatter/update';
 
 export class TestFormatContext extends CounterFormatContext {
   getDataType(type: string): string {
@@ -44,6 +45,7 @@ export function expectedSql(sql: Sql<any>, expected: string, params?: any[]) {
   formatter.add(new NotEqualFormatter());
   formatter.add(new SubSelectFormatter());
   formatter.add(new SelectFormatter());
+  formatter.add(new UpdateFormatter());
   formatter.add(new ValueFormatter());
   formatter.add(new InFormatter());
   formatter.add(new TableFormatter());

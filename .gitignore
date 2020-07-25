@@ -11,6 +11,7 @@ node_modules
 .task
 .nyc_output
 coverage
+packages/auth/keys
 
 tsconfig.tsbuildinfo
 tmp

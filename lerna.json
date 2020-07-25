@@ -1,6 +1,7 @@
 {
   "packages": [
     "packages/cli/**",
+    "packages/auth",
     "packages/common/**",
     "packages/create/**",
     "packages/docs",

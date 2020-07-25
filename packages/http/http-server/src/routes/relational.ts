@@ -109,6 +109,8 @@ export function validateRules(options: AppDataOptions) {
           userId = `${req.user.iss}|${req.user.sub}`;
         } else if (req.user.type === 'token') {
           userId = req.user.userId;
+        } else if (req.user.type === 'custom') {
+          // TODO
         }
       }
 

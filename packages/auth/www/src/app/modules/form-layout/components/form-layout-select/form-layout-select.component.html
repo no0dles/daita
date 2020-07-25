@@ -1,0 +1,11 @@
+<label [for]="id" class="block text-sm font-medium leading-5 text-gray-700">
+  {{name}}
+</label>
+<div class="mt-1 rounded-md shadow-sm"
+     [formGroup]="form">
+  <select [id]="id"
+          [formControlName]="id"
+          class="form-select block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+    <option [value]="option.value" *ngFor="let option of options">{{option.name}}</option>
+  </select>
+</div>

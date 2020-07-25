@@ -1,0 +1,9 @@
+<main class="bg-gray-200 flex-grow">
+  <app-navbar-header [name]="'User Pools'" [link]="['/app', 'userPools', 'create']"></app-navbar-header>
+  <app-card-list class="p-3">
+    <app-card [name]="userPool.name"
+              *ngFor="let userPool of userPools"
+              [description]="userPool.count + ' Users'"
+              [link]="'/app/userPools/view/' + userPool.id"></app-card>
+  </app-card-list>
+</main>

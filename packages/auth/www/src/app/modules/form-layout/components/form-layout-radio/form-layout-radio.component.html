@@ -1,0 +1,14 @@
+<div class="flex items-start"
+     [formGroup]="form">
+  <input [id]="id + '-' + value"
+         [formControlName]="id"
+         [value]="value"
+         [name]="id"
+         name="form-input push_notifications"
+         type="radio"
+         class="form-radio h-4 w-4 mt-1 text-indigo-600 transition duration-150 ease-in-out">
+  <label [for]="id + '-' + value" class="ml-3">
+    <span class="block text-sm leading-5 font-medium text-gray-700">{{name}}</span>
+    <p class="text-gray-500 text-sm">{{description}}</p>
+  </label>
+</div>

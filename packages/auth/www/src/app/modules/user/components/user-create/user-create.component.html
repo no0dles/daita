@@ -1,0 +1,12 @@
+<main class="flex-grow min-h-0 flex flex-col">
+  <app-navbar-subheader [name]="'Create User'" [link]="['/app/users']"></app-navbar-subheader>
+
+  <form class="p-6 overflow-y-scroll flex-grow" [formGroup]="form" (ngSubmit)="save()">
+    <app-form-layout-select [id]="'userPool'" [name]="'User Pool'" [form]="form" [options]="userPools"></app-form-layout-select>
+    <app-form-layout-input class="mt-4" [id]="'username'" [name]="'Username'" [form]="form"></app-form-layout-input>
+    <app-form-layout-input-btn class="mt-4" [id]="'password'" [name]="'Password'" [type]="'text'" [form]="form" [buttonText]="'Generate'" (buttonClicked)="generate()"></app-form-layout-input-btn>
+    <app-form-layout-input class="mt-4" [id]="'email'" [name]="'Email'" [type]="'email'" [form]="form"></app-form-layout-input>
+    <app-form-layout-input class="mt-4" [id]="'phone'" [name]="'Phone Number'" [type]="'phone'" [form]="form"></app-form-layout-input>
+    <app-form-layout-footer></app-form-layout-footer>
+  </form>
+</main>

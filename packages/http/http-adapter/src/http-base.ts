@@ -1,6 +1,6 @@
 import axios, {AxiosRequestConfig} from 'axios';
 import {failNever} from '@daita/common';
-import {AuthProvider, isTokenAuthProvider, isUsernamePasswordAuthProvider} from '@daita/http-client-common';
+import {AuthProvider, isTokenAuthProvider} from '@daita/http-client-common';
 
 export class HttpBase {
   constructor(protected baseUrl: string,
@@ -14,12 +14,7 @@ export class HttpBase {
       const config: AxiosRequestConfig = {};
       if (this.authProvider) {
         const authProvider = this.authProvider;
-        if (isUsernamePasswordAuthProvider(authProvider)) {
-          config.auth = {
-            username: authProvider.username,
-            password: authProvider.password,
-          };
-        } else if (isTokenAuthProvider(authProvider)) {
+        if (isTokenAuthProvider(authProvider)) {
           const token = await authProvider.getToken();
           if (token) {
             config.headers = {'Authorization': `Bearer ${token}`};

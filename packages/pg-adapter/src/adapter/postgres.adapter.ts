@@ -41,9 +41,6 @@ export class PostgresAdapter implements RelationalTransactionAdapter {
     let client: PoolClient | null = null;
     try {
       const pool = await this.pool;
-      pool.on('error', (err, client) => {
-        console.error('Unexpected error on idle client', err);
-      });
       client = await pool.connect();
       const result = await action(client);
       if (client) {

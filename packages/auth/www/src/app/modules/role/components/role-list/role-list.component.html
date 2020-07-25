@@ -1,0 +1,7 @@
+<main class="bg-gray-200 flex-grow">
+  <app-navbar-header [name]="'Roles'" [link]="['/app/roles/create']"></app-navbar-header>
+  <app-card-list class="p-3">
+    <app-card [name]="role.name" *ngFor="let role of roles" [description]="role.description"
+              [link]="'/app/roles/view/' + role.name"></app-card>
+  </app-card-list>
+</main>

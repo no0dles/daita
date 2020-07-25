@@ -34,6 +34,8 @@ export function getTypeDefault(type: RelationalTableSchemaTableFieldType, value:
       return value.stringValue;
     case 'boolean':
       return value.booleanValue;
+    case 'date':
+      return null; //TODO
     default:
       console.log(`unknown type for default ${type}`);
       return null;

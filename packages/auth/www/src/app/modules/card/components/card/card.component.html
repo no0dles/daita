@@ -1,0 +1,9 @@
+<a [routerLink]="link" class="col-span-1 flex items-center bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
+  <div class="flex-shrink-0 flex items-center justify-center w-16 h-16 text-white text-center text-sm leading-5 font-medium" [ngClass]="color">
+    {{shortName}}
+  </div>
+  <div class="flex-1 px-4 py-2 truncate">
+    <div class="text-gray-900 text-sm leading-5 font-medium hover:text-gray-600 transition ease-in-out duration-150">{{name}}</div>
+    <p class="text-sm leading-5 text-gray-500">{{description}}</p>
+  </div>
+</a>

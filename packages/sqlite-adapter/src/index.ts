@@ -9,8 +9,65 @@ import { Defer } from '@daita/common';
 import { sqliteFormatter } from './sqlite-formatter';
 import { SqliteFormatContext } from './sqlite-format-context';
 
+export interface SerializableAction<T> {
+  (): Promise<T> | T;
+}
+
+export interface SerializableQueueItem<T> {
+  action: SerializableAction<T>;
+  defer: Defer<T>;
+}
+
+class Serializable {
+  private nextActions: SerializableQueueItem<any>[] = [];
+  private currentAction: SerializableQueueItem<any> | null = null;
+
+  run<T>(action: SerializableAction<T>): Promise<T> {
+    const defer = new Defer<T>();
+    const item: SerializableQueueItem<T> = { action, defer };
+    if (this.currentAction) {
+      this.nextActions.push(item);
+    } else {
+      this.execute(item);
+    }
+    return defer.promise;
+  }
+
+  private async execute(queueItem: SerializableQueueItem<any>) {
+    this.currentAction = queueItem;
+    try {
+      const result = await this.currentAction.action();
+      this.currentAction.defer.resolve(result);
+    } catch (e) {
+      this.currentAction.defer.reject(e);
+    }
+
+    const nextAction = this.nextActions.shift();
+    if (!nextAction) {
+      this.currentAction = null;
+      return;
+    }
+    this.execute(nextAction);
+  }
+}
+
 export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
+  protected transactionSerializable = new Serializable();
+  protected runSerializable = new Serializable();
+
   constructor(protected db: sqlite.Database) {
+    this.db.on('error', (err) => {
+      console.log('onerr', err);
+    });
+    this.db.on('close', () => {
+      console.log('close', arguments);
+    })
+    this.db.on('open', () => {
+      console.log('open', arguments);
+    });
+    this.db.on('trace', () => {
+      console.log('trace', arguments);
+    });
   }
 
   async close(): Promise<void> {
@@ -25,29 +82,18 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
     await defer.promise;
   }
 
-  protected async run(sql: string) {
-    const defer = new Defer<void>();
-    this.db.run(sql, err => {
-      if (err) {
-        defer.reject(err);
-      } else {
-        defer.resolve();
-      }
+  protected async run(sql: string, values?: any[]) {
+    return this.runSerializable.run(() => {
+      const defer = new Defer<void>();
+      this.db.run(sql, values, err => {
+        if (err) {
+          defer.reject(err);
+        } else {
+          defer.resolve();
+        }
+      });
+      return defer.promise;
     });
-    return defer.promise;
-  }
-
-  protected serialize<T>(action: () => Promise<T>): Promise<T> {
-    const defer = new Defer<T>();
-    this.db.serialize(async () => {
-      try {
-        const result = await action();
-        defer.resolve(result);
-      } catch (e) {
-        defer.reject(e);
-      }
-    });
-    return defer.promise;
   }
 
   async exec(sql: any): Promise<RelationalRawResult> {
@@ -58,30 +104,34 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
   }
 
   execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
-    return this.serialize<RelationalRawResult>(async () => {
+    return this.runSerializable.run<RelationalRawResult>(async () => {
       const defer = new Defer<RelationalRawResult>();
-      const stmt = this.db.prepare(sql);
-      stmt.all(values, (err, rows) => {
-        if (err) {
-          defer.reject(err);
-        } else {
-          defer.resolve({
-            rows: rows.map(row => {
-              for (const key of Object.keys(row)) {
-                if (typeof row[key] === 'string' && /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z/.test(row[key])) {
-                  row[key] = new Date(row[key]);
+      const stmt = this.db.prepare(sql, values, () => {
+        stmt.bind(err => {
+          console.log(err);
+        });
+        stmt.all(values, (err, rows) => {
+          if (err) {
+            defer.reject(err);
+          } else {
+            defer.resolve({
+              rows: rows.map(row => {
+                for (const key of Object.keys(row)) {
+                  if (typeof row[key] === 'string' && /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z/.test(row[key])) {
+                    row[key] = new Date(row[key]);
+                  }
                 }
-              }
-              return row;
-            }),
-            rowCount: rows.length,
-          });
-        }
-      });
-      stmt.finalize(err => {
-        if (err) {
-          defer.reject(err);
-        }
+                return row;
+              }),
+              rowCount: rows.length,
+            });
+          }
+        });
+        stmt.finalize(err => {
+          if (err) {
+            defer.reject(err);
+          }
+        })
       });
       return defer.promise;
     });
@@ -94,11 +144,11 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
 
 export class SqliteRelationalAdapter extends SqliteRelationalDataAdapter implements RelationalTransactionAdapter {
   constructor(private fileName: string) {
-    super(new sqlite.Database(fileName));
+    super(new (sqlite.verbose()).Database(fileName));
   }
 
   transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
-    return this.serialize<T>(async () => {
+    return this.transactionSerializable.run(async () => {
       await this.db.run('BEGIN');
       try {
         const result = await action(new SqliteRelationalDataAdapter(this.db));

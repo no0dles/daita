@@ -92,12 +92,23 @@ export class OrmMigrationContext implements MigrationContext {
           } else if (step.kind === 'add_table_field') {
             const tbl = table(step.table, step.schema);
             const key = getTableDescriptionIdentifier(tbl);
-            createTables[key].columns.push({
-              name: step.fieldName,
-              type: step.type,
-              primaryKey: false,
-              notNull: false,
-            });
+            if(createTables[key]) {
+              createTables[key].columns.push({
+                name: step.fieldName,
+                type: step.type,
+                primaryKey: false,
+                notNull: false,
+              });
+            } else {
+              sqls.push({
+                alterTable: tbl,
+                add: {
+                  column: step.fieldName,
+                  type: step.type,
+                  //TODO notnull missing?
+                }
+              })
+            }
           } else if (step.kind === 'add_table_primary_key') {
             const tbl = table(step.table, step.schema);
             const key = getTableDescriptionIdentifier(tbl);
