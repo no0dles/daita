@@ -11,7 +11,11 @@ node_modules
 .task
 .nyc_output
 coverage
+
 packages/auth/keys
+packages/http/container/rules.json
+packages/http/container/auth.json
+
 
 tsconfig.tsbuildinfo
 tmp
