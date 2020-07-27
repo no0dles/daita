@@ -1,7 +1,7 @@
 {
   "name": "@daita-src/create",
   "private": true,
-  "version": "0.2.33",
+  "version": "0.2.34",
   "scripts": {
     "start": "ts-node src/index.ts",
     "build": "tsc -b",
@@ -16,7 +16,7 @@
     "yaml": "^1.10.0"
   },
   "devDependencies": {
-    "@daita/eslint-config": "^0.2.33",
+    "@daita/eslint-config": "^0.2.34",
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^25.2.1",
     "@types/node": "^14.0.13",

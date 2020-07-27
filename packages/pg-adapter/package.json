@@ -1,7 +1,7 @@
 {
   "name": "@daita-src/pg-adapter",
   "private": true,
-  "version": "0.2.33",
+  "version": "0.2.34",
   "description": "relational pg adapter for daita",
   "scripts": {
     "build": "tsc -b",
@@ -12,13 +12,13 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "^0.2.33",
-    "@daita/relational": "^0.2.33",
+    "@daita/common": "^0.2.34",
+    "@daita/relational": "^0.2.34",
     "pg": "^8.3.0",
     "pg-connection-string": "^2.1.0"
   },
   "devDependencies": {
-    "@daita/relational-test": "^0.2.33",
+    "@daita/relational-test": "^0.2.34",
     "@types/jest": "^25.1.1",
     "@types/pg": "^7.14.4",
     "jest": "^25.1.0",
