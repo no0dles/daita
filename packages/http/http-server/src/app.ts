@@ -24,7 +24,7 @@ export function createHttpServer(options: AppOptions) {
       });
     }
     app.use(jwt({
-      algorithms: ['RS256'],
+      algorithms: ['RS256', 'RS384', 'RS512'],
       secret: (req: express.Request, header: any, payload: any, done: (err: any, secret?: string | Buffer) => void) => {
         const client = clients[payload.iss];
         client.getSigningKey(header.kid, (err, key) => {

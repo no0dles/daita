@@ -13,7 +13,7 @@ RUN npm run build
 
 FROM node:14-alpine AS web
 
-WORKDIR /build
+WORKDIR /build/www
 COPY www/package.json .
 COPY www/package-lock.json .
 RUN npm install
@@ -23,7 +23,10 @@ COPY www/angular.json .
 COPY www/tsconfig.json .
 COPY www/webpack.config.js .
 COPY www/tsconfig.app.json .
+COPY www/tsconfig.base.json .
 COPY www/tailwind.config.js .
+
+COPY src/models /build/src/models
 
 RUN npm run build
 
@@ -35,11 +38,12 @@ WORKDIR /app
 COPY package-lock.json .
 COPY package.json .
 RUN npm install --production
+RUN npm i @daita/pg-adapter
 
 COPY --from=api /app/dist .
-COPY --from=web /build/dist www/dist
+COPY --from=web /build/www/dist /app/www/dist
 
 EXPOSE 4000
 EXPOSE 5000
 
-CMD ["node", ""]
+CMD ["node", "index.js"]

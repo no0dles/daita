@@ -1,4 +1,3 @@
-//import * as sqlite from '@daita/sqlite-adapter';
 import * as pg from '@daita/pg-adapter';
 import { all, and, equal, field, getClient, table } from '@daita/relational';
 import { UserPool } from './models/user-pool';
@@ -8,7 +7,7 @@ import { hashPassword } from './modules/hash';
 
 //const adapter = new sqlite.SqliteRelationalAdapter(':memory:');
 //pg.ensureDatabaseExists('postgres://postgres:postgres@localhost:5432/auth')
-export const adapter = new pg.PostgresAdapter('postgres://postgres:postgres@localhost:5432/auth');
+export const adapter = new pg.PostgresAdapter(process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/auth');
 export const client = getClient(adapter);
 
 (async () => {

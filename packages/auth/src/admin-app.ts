@@ -7,9 +7,11 @@ import { relationalRoute } from '@daita/http-server';
 import { adapter } from './client';
 import { allow, anything, authorized } from '@daita/relational';
 import { authMiddleware } from './middlewares/auth-middleware';
+import * as helmet from 'helmet';
 
 const app = express();
 
+app.use(helmet());
 app.use(bodyParser.json());
 
 app.use('/:userPoolId/refresh', refreshRoute);
@@ -25,13 +27,13 @@ app.use('/api/relational', authMiddleware, relationalRoute({
 }));
 
 app.get('/', (req, res) => {
-  return res.sendFile(path.join(__dirname, '../www/dist/web/index.html'));
+  return res.sendFile(path.join(process.cwd(), 'www/dist/web/index.html'));
 });
 
-app.use('/admin', express.static('www/dist/web'));
+app.use('/admin', express.static(path.join(process.cwd(), 'www/dist/web')));
 app.get('/admin/*', (req, res, next) => {
   if (req.accepts('html')) {
-    return res.sendFile(path.join(__dirname, '../www/dist/web/index.html'));
+    return res.sendFile(path.join(process.cwd(), 'www/dist/web/index.html'));
   }
 
   next();

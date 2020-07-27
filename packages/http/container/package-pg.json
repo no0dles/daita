@@ -3,9 +3,9 @@
   "private": true,
   "version": "0.2.29",
   "dependencies": {
-    "@daita/http-server": "^0.2.29",
-    "@daita/relational": "^0.2.29",
-    "@daita/pg-adapter": "^0.2.29"
+    "@daita/http-server": "^0.2.33",
+    "@daita/relational": "^0.2.33",
+    "@daita/pg-adapter": "^0.2.33"
   },
   "devDependencies": {
     "@types/pg": "^7.14.3",

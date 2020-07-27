@@ -7,9 +7,11 @@ import * as refreshRoute from './routes/refresh';
 import * as loginRoute from './routes/login';
 import * as resendRoute from './routes/resend';
 import * as wellKnownRoute from './routes/well-known';
+import * as helmet from 'helmet';
 
 const app = express();
 
+app.use(helmet());
 app.use(bodyParser.json());
 
 app.use('/:userPoolId/verify', verifyRoute);

@@ -6,7 +6,6 @@ RUN npm install
 
 COPY tsconfig.json .
 COPY src/server.ts src/server.ts
-COPY src/test.ts src/test.ts
 COPY src/pg src/pg
 RUN npm run build
 
