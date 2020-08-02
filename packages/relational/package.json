@@ -1,6 +1,5 @@
 {
   "name": "@daita/relational",
-  "private": true,
   "version": "0.2.35-alpha.0",
   "description": "relational functionality of daita",
   "scripts": {
