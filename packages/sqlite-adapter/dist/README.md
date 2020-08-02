@@ -1,1 +1,0 @@
-# @daita/sqlite-adapter

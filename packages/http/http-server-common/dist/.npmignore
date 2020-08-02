@@ -1,8 +1,0 @@
-**/*.spec.js
-**/*.spec.js.map
-**/*.spec.ts
-**/*.spec.ts.map
-tsconfig.tsbuildinfo
-.npmrc
-node_modules
-package-lock.json
