@@ -82,6 +82,8 @@ export async function getKey(algorithm: UserPoolAlgorithm) {
       type: 'sec1',
     });
     keystore.add(key);
+  } else {
+    throw new Error(`unsupported algorithm ${algorithm}`);
   }
 
   const keyPath = path.join(process.cwd(), 'keys');

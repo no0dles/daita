@@ -1,6 +1,7 @@
 <h1 align="center">
-  <a href="https://daita.ch"><img src="docs/logo.png" alt="daita" width="250"></a>
+  <a href="https://daita.ch"><img src="docs/logo.svg" alt="daita" width="250"></a>
 </h1>
+<h2 align="center">Daita</h2>
 
 <p align='center'>
   <img alt='build' src='https://github.com/no0dles/daita/workflows/build/badge.svg'>

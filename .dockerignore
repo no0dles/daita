@@ -1,2 +1,6 @@
 **/node_modules
-**/dist
+**/dist/**/*.js
+**/dist/**/*.js.map
+**/dist/**/*.d.ts
+packages/auth/keys
+.github
