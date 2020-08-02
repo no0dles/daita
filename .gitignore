@@ -2,6 +2,7 @@
 **/dist/**/*.d.ts
 **/dist/**/*.d.ts.map
 **/dist/**/*.js.map
+**/dist/package.json
 
 node_modules
 .DS_Store
