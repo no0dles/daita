@@ -5,13 +5,13 @@
     "directory": "dist"
   },
   "description": "awesome auth for the daita",
-  "version": "0.2.38-alpha.0",
+  "version": "0.2.39-alpha.0",
   "dependencies": {
-    "@daita/common": "^0.2.38-alpha.0",
-    "@daita/http-server": "^0.2.38-alpha.0",
-    "@daita/orm": "^0.2.38-alpha.0",
-    "@daita/pg-adapter": "^0.2.38-alpha.0",
-    "@daita/relational": "^0.2.38-alpha.0",
+    "@daita/common": "^0.2.39-alpha.0",
+    "@daita/http-server": "^0.2.39-alpha.0",
+    "@daita/orm": "^0.2.39-alpha.0",
+    "@daita/pg-adapter": "^0.2.39-alpha.0",
+    "@daita/relational": "^0.2.39-alpha.0",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -21,7 +21,7 @@
     "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
-    "@daita/cli": "^0.2.38-alpha.0",
+    "@daita/cli": "^0.2.39-alpha.0",
     "@types/bcrypt": "^3.0.0",
     "@types/body-parser": "^1.19.0",
     "@types/cors": "^2.8.6",
