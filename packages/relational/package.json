@@ -1,14 +1,19 @@
 {
-  "name": "@daita-src/relational",
+  "name": "@daita/relational",
   "private": true,
   "version": "0.2.35-alpha.0",
   "description": "relational functionality of daita",
   "scripts": {
     "build": "tsc -b",
+    "prepack": "tsc -b --incremental false",
     "test": "jest",
     "coverage": "jest --coverage",
     "lint": "eslint src --ext .ts",
     "fixlint": "eslint src --ext .ts --fix"
+  },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
   },
   "license": "MIT",
   "dependencies": {

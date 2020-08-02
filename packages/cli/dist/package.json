@@ -24,5 +24,6 @@
   "homepage": "https://github.com/no0dles/daita",
   "license": "MIT",
   "main": "index.js",
-  "types": "index.d.ts"
+  "types": "index.d.ts",
+  "gitHead": "99181b9b77c57dc5331f39278928e3e7d047af31"
 }

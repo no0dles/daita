@@ -1,0 +1,6 @@
+src
+test
+tsconfig.tsbuildinfo
+node_modules
+package-lock.json
+.prettierrc

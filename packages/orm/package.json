@@ -1,10 +1,14 @@
 {
-  "name": "@daita-src/orm",
-  "private": true,
+  "name": "@daita/orm",
   "description": "orm of daita",
   "version": "0.2.35-alpha.0",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "scripts": {
     "build": "tsc -b",
+    "prepack": "tsc -b --incremental false",
     "test": "jest",
     "lint": "eslint src --ext .ts",
     "fixlint": "eslint src --ext .ts --fix"

@@ -1,6 +1,9 @@
 {
-  "name": "@daita-src/auth",
+  "name": "@daita/auth",
   "private": true,
+  "publishConfig": {
+    "directory": "dist"
+  },
   "description": "awesome auth for the daita",
   "version": "0.2.35-alpha.0",
   "dependencies": {

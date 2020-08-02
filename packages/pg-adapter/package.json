@@ -1,10 +1,14 @@
 {
-  "name": "@daita-src/pg-adapter",
-  "private": true,
+  "name": "@daita/pg-adapter",
   "version": "0.2.35-alpha.0",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "description": "relational pg adapter for daita",
   "scripts": {
     "build": "tsc -b",
+    "prepack": "tsc -b --incremental false",
     "test": "jest",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fixlint": "tslint -c tslint.json --fix src/**/*.ts",

@@ -1,7 +1,10 @@
 {
-  "name": "@daita-src/http-server-common",
+  "name": "@daita/http-server-common",
   "version": "0.2.35-alpha.0",
-  "private": true,
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "dependencies": {
     "@daita/common": "^0.2.35-alpha.0",
     "@daita/relational": "^0.2.35-alpha.0",
@@ -19,6 +22,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -b",
+    "prepack": "tsc -b --incremental false",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
     "prettier": "prettier 'src/**/*.ts' --write"

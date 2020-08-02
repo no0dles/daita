@@ -1,7 +1,10 @@
 {
-  "name": "@daita-src/http-server",
-  "private": true,
+  "name": "@daita/http-server",
   "version": "0.2.35-alpha.0",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "dependencies": {
     "@daita/common": "^0.2.35-alpha.0",
     "@daita/http-server-common": "^0.2.35-alpha.0",
@@ -29,6 +32,7 @@
   },
   "scripts": {
     "start": "node -r ts-node/register src/server.ts",
+    "prepack": "tsc -b --incremental false",
     "build": "tsc -b tsconfig.json",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",

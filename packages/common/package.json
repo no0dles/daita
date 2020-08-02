@@ -1,10 +1,14 @@
 {
-  "name": "@daita-src/common",
-  "private": true,
+  "name": "@daita/common",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "version": "0.2.35-alpha.0",
   "description": "common functionality of daita",
   "scripts": {
     "build": "tsc -b",
+    "prepack": "tsc -b --incremental false",
     "test": "jest",
     "coverage": "jest --coverage",
     "lint": "eslint src --ext .ts",

@@ -1,9 +1,4 @@
-**/dist/**/*.js
-**/dist/**/*.js.map
-**/dist/**/*.ts
-**/dist/**/*.ts.map
-**/dist/**/*.d.ts
-**/dist/**/*.tgz
+**/dist
 
 node_modules
 .DS_Store

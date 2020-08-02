@@ -1,9 +1,13 @@
 {
-  "name": "@daita-src/create",
-  "private": true,
+  "name": "@daita/create",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "version": "0.2.35-alpha.0",
   "scripts": {
     "start": "ts-node src/index.ts",
+    "prepack": "tsc -b --incremental false",
     "build": "tsc -b",
     "test": "jest",
     "coverage": "jest --coverage",

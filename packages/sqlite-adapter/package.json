@@ -1,10 +1,14 @@
 {
-  "name": "@daita-src/sqlite-adapter",
-  "private": true,
+  "name": "@daita/sqlite-adapter",
   "version": "0.2.35-alpha.0",
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "description": "relational sqlite adapter for daita",
   "scripts": {
     "build": "tsc -b",
+    "prepack": "tsc -b --incremental false",
     "test": "jest",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fixlint": "tslint -c tslint.json --fix src/**/*.ts",
