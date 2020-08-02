@@ -1,4 +1,7 @@
-**/dist
+**/dist/**/*.js
+**/dist/**/*.d.ts
+**/dist/**/*.d.ts.map
+**/dist/**/*.js.map
 
 node_modules
 .DS_Store
