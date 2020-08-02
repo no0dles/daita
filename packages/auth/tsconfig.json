@@ -1,26 +1,33 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": "./packages",
-    "module": "commonjs",
-    "target": "es6",
-    "lib": ["es2016", "es2019", "dom"],
-    "moduleResolution": "node",
-    "declaration": true,
-    "declarationMap": true,
-    "incremental": true,
-    "sourceMap": true,
-    "composite": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "removeComments": true,
     "outDir": "dist",
     "rootDir": "src",
-    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
-    "typeRoots": ["node_modules/@types", "src/types"]
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
+  "references": [
+    {
+      "path": "../common/tsconfig.json"
+    },
+    {
+      "path": "../cli/tsconfig.json"
+    },
+    {
+      "path": "../orm/tsconfig.json"
+    },
+    {
+      "path": "../relational/tsconfig.json"
+    },
+    {
+      "path": "../pg-adapter/tsconfig.json"
+    },
+    {
+      "path": "../http/http-server/tsconfig.json"
+    },
+    {
+      "path": "../http/http-adapter/tsconfig.json"
+    }
+  ],
   "exclude": [
     "node_modules",
     "dist",
