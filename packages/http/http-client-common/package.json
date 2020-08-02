@@ -1,12 +1,12 @@
 {
   "name": "@daita/http-client-common",
-  "version": "0.2.40-alpha.0",
+  "version": "0.2.41-alpha.0",
   "publishConfig": {
     "access": "public",
     "directory": "dist"
   },
   "dependencies": {
-    "@daita/common": "^0.2.40-alpha.0",
+    "@daita/common": "^0.2.41-alpha.0",
     "axios": "^0.19.0",
     "openid-client": "^3.12.1"
   },
