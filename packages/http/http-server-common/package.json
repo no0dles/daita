@@ -1,13 +1,13 @@
 {
   "name": "@daita/http-server-common",
-  "version": "0.2.35-alpha.0",
+  "version": "0.2.36-alpha.0",
   "publishConfig": {
     "access": "public",
     "directory": "dist"
   },
   "dependencies": {
-    "@daita/common": "^0.2.35-alpha.0",
-    "@daita/relational": "^0.2.35-alpha.0",
+    "@daita/common": "^0.2.36-alpha.0",
+    "@daita/relational": "^0.2.36-alpha.0",
     "axios": "^0.19.2",
     "jwks-rsa": "^1.6.2",
     "jws": "^4.0.0",
