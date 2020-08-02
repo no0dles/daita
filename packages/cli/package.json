@@ -5,12 +5,12 @@
     "directory": "dist"
   },
   "description": "awesome cli for the daita orm",
-  "version": "0.2.37-alpha.0",
+  "version": "0.2.38-alpha.0",
   "dependencies": {
-    "@daita/common": "^0.2.37-alpha.0",
-    "@daita/http-server": "^0.2.37-alpha.0",
-    "@daita/orm": "^0.2.37-alpha.0",
-    "@daita/relational": "^0.2.37-alpha.0",
+    "@daita/common": "^0.2.38-alpha.0",
+    "@daita/http-server": "^0.2.38-alpha.0",
+    "@daita/orm": "^0.2.38-alpha.0",
+    "@daita/relational": "^0.2.38-alpha.0",
     "cli-ux": "^5.4.6",
     "commander": "^5.1.0",
     "config": "^3.2.4",
@@ -18,8 +18,8 @@
     "nomnoml": "^0.6.2"
   },
   "devDependencies": {
-    "@daita/http-adapter": "^0.2.37-alpha.0",
-    "@daita/pg-adapter": "^0.2.37-alpha.0",
+    "@daita/http-adapter": "^0.2.38-alpha.0",
+    "@daita/pg-adapter": "^0.2.38-alpha.0",
     "@types/config": "^0.0.36",
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^25.1.1",
