@@ -8,7 +8,6 @@
   "description": "common functionality of daita",
   "scripts": {
     "build": "tsc -b",
-    "prepack": "tsc -b --incremental false",
     "test": "jest",
     "coverage": "jest --coverage",
     "lint": "eslint src --ext .ts",

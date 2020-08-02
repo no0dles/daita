@@ -21,7 +21,6 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -b",
-    "prepack": "tsc -b --incremental false",
     "test": "jest",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",

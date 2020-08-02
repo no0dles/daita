@@ -7,7 +7,6 @@
   "version": "0.2.39-alpha.0",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "prepack": "tsc -b --incremental false",
     "build": "tsc -b",
     "test": "jest",
     "coverage": "jest --coverage",

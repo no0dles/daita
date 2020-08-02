@@ -31,7 +31,6 @@
   },
   "scripts": {
     "build": "tsc -b tsconfig.json",
-    "prepack": "tsc -b --incremental false",
     "test": "jest",
     "coverage": "jest --coverage",
     "lint": "tslint -c tslint.json src/**/*.ts",

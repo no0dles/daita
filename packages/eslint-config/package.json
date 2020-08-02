@@ -9,7 +9,6 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -b",
-    "prepack": "tsc -b --incremental false",
     "test": "jest"
   },
   "devDependencies": {

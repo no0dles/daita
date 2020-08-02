@@ -32,7 +32,6 @@
   },
   "scripts": {
     "start": "node -r ts-node/register src/server.ts",
-    "prepack": "tsc -b --incremental false",
     "build": "tsc -b tsconfig.json",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
