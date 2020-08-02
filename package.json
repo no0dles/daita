@@ -15,7 +15,7 @@
     "rebuild": "npm run clean && npm run build",
     "test": "jest",
     "coverage": "jest --coverage",
-    "prepublishOnly": "npm run rebuild"
+    "preversion": "npm run rebuild"
   },
   "license": "MIT"
 }
