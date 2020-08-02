@@ -13,6 +13,6 @@
     "packages/relational/**",
     "packages/sqlite-adapter/**"
   ],
-  "version": "0.2.34",
+  "version": "0.2.35-alpha.0",
   "npmClient": "npm"
 }
