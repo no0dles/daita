@@ -11,6 +11,7 @@
     "test": "jest",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fixlint": "tslint -c tslint.json --fix src/**/*.ts",
+    "prepublish": "node ../../scripts/build-pkg-config.js",
     "prettier": "prettier 'src/**/*.ts' --write"
   },
   "license": "MIT",

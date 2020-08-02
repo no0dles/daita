@@ -10,6 +10,7 @@
     "build": "tsc -b",
     "test": "jest",
     "lint": "eslint src --ext .ts",
+    "prepublish": "node ../../scripts/build-pkg-config.js",
     "fixlint": "eslint src --ext .ts --fix"
   },
   "license": "MIT",

@@ -22,6 +22,7 @@
   "scripts": {
     "build": "tsc -b",
     "test": "jest",
+    "prepublish": "node ../../../scripts/build-pkg-config.js",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",
     "prettier": "prettier 'src/**/*.ts' --write"

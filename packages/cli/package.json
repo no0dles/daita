@@ -32,6 +32,7 @@
   "scripts": {
     "build": "tsc -b tsconfig.json",
     "test": "jest",
+    "prepublish": "node ../../scripts/build-pkg-config.js",
     "coverage": "jest --coverage",
     "lint": "tslint -c tslint.json src/**/*.ts",
     "fix-linting": "tslint -c tslint.json --fix src/**/*.ts",

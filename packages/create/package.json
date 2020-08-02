@@ -8,6 +8,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "build": "tsc -b",
+    "prepublish": "node ../../scripts/build-pkg-config.js",
     "test": "jest",
     "coverage": "jest --coverage",
     "lint": "eslint src --ext .ts",

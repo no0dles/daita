@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsc -b",
     "test": "jest",
+    "prepublish": "node ../../scripts/build-pkg-config.js",
     "coverage": "jest --coverage",
     "lint": "eslint src --ext .ts",
     "fixlint": "eslint src --ext .ts --fix"
