@@ -55,6 +55,9 @@ export function getSchemaDescription(schemaMapper: SchemaMapper, paths: Migratio
         tbl.addIndex(step.name, idx);
       } else if (step.kind === 'drop_index') {
         schema.table(table(step.table, step.schema)).dropIndex(step.name);
+      } else if(step.kind === 'drop_table_foreign_key') {
+        const table = schema.table({ schema: step.schema, table: step.table });
+        table.dropReference(step.name);
       } else {
         failNever(step, 'unknown migration step');
       }

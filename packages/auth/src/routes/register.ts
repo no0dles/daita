@@ -7,11 +7,10 @@ import { client } from '../client';
 import { hashPassword } from '../modules/hash';
 import { getRandomCode } from '../modules/random';
 import { getLeakedCount } from '../modules/password';
-import { cors } from '../middlewares/cors';
 
 const router = express.Router({mergeParams: true});
 
-router.post('/', cors(req => req.params.userPoolId), async (req, res, next) => {
+router.post('/', async (req, res, next) => {
   try {
     const userPool = await client.selectFirst({
       select: {

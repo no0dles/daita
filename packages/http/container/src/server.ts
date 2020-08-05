@@ -50,18 +50,28 @@ process
     process.exit(1);
   });
 
+
 export async function run(factory: RelationalTransactionAdapterFactory) {
   const adapter = await factory.createTransactionAdapter({
     connectionString: DATABASE_URL,
   });
-  const server = createHttpServer({
+  const app = createHttpServer({
     transactionTimeout: TRANSACTION_TIMEOUT,
     dataAdapter: adapter,
     authorization: authentication,
     rules,
   });
 
-  server.listen(PORT, async () => {
+  const server = app.listen(PORT, async () => {
     console.log(`listening ${PORT}`);
+  });
+
+  process.on('SIGTERM', () => {
+    if(adapter) {
+      adapter.close();
+    }
+    if (server) {
+      server.close();
+    }
   });
 }

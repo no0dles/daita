@@ -8,6 +8,7 @@ import * as loginRoute from './routes/login';
 import * as resendRoute from './routes/resend';
 import * as wellKnownRoute from './routes/well-known';
 import * as helmet from 'helmet';
+import { cors } from './middlewares/cors';
 
 const app = express();
 
@@ -15,11 +16,11 @@ app.use(helmet());
 app.use(bodyParser.json());
 
 app.use('/:userPoolId/verify', verifyRoute);
-app.use('/:userPoolId/reset', resetRoute);
-app.use('/:userPoolId/register', registerRoute);
-app.use('/:userPoolId/refresh', refreshRoute);
-app.use('/:userPoolId/resend', resendRoute);
-app.use('/:userPoolId/login', loginRoute);
+app.use('/:userPoolId/reset', cors(req => req.params.userPoolId), resetRoute);
+app.use('/:userPoolId/register', cors(req => req.params.userPoolId), registerRoute);
+app.use('/:userPoolId/refresh', cors(req => req.params.userPoolId), refreshRoute);
+app.use('/:userPoolId/resend', cors(req => req.params.userPoolId), resendRoute);
+app.use('/:userPoolId/login', cors(req => req.params.userPoolId), loginRoute);
 app.use('/.well-known', wellKnownRoute);
 
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {

@@ -5,12 +5,11 @@ import { and, equal, field, table } from '@daita/relational';
 import { UserEmailVerify } from '../models/user-email-verify';
 import { getRandomCode } from '../modules/random';
 import { authMiddleware } from '../middlewares/auth-middleware';
-import { cors } from '../middlewares/cors';
 
 const router = express.Router({mergeParams: true});
 
 router.use(authMiddleware);
-router.post('/', cors(req => req.params.userPoolId), async (req, res, next) => {
+router.post('/', async (req, res, next) => {
   try {
     const user = await client.selectFirst({
       select: {

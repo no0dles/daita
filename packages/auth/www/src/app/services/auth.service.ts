@@ -83,7 +83,7 @@ export class AuthService {
     this.refreshDefer = defer;
 
     try {
-      const response = await this.http.post<{ refresh_token: string, access_token: string }>(`/${this.accessToken.sub}/refresh`, {
+      const response = await this.http.post<{ refresh_token: string, access_token: string }>(`/${this.accessToken.iss}/refresh`, {
         refreshToken: this.refreshToken,
       }).toPromise();
       localStorage.setItem('access_token', response.access_token);

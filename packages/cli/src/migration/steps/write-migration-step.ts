@@ -115,6 +115,12 @@ export function writeRelationalMigrationStep(migrationStep: MigrationStep): ts.O
       ts.createPropertyAssignment('table', ts.createStringLiteral(migrationStep.table)),
       ts.createPropertyAssignment('name', ts.createStringLiteral(migrationStep.name)),
     ]);
+  } else if (migrationStep.kind === 'drop_table_foreign_key') {
+    return ts.createObjectLiteral([
+      ts.createPropertyAssignment('kind', ts.createStringLiteral(migrationStep.kind)),
+      ts.createPropertyAssignment('table', ts.createStringLiteral(migrationStep.table)),
+      ts.createPropertyAssignment('name', ts.createStringLiteral(migrationStep.name)),
+    ]);
   }
 
   //TODO schema is missing?

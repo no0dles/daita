@@ -125,7 +125,7 @@ export function evaluateRule(sql: Sql<any>, rule: Rule, ctx: RuleContext): RuleV
 
     const error = matchesObject(ctx, rule.sql, sql, []);
     if (error) {
-      return { type: 'forbid', error };
+      return { type: 'forbid', error, details: [] };
     }
     return { type: 'next' };
   } else {
@@ -134,11 +134,14 @@ export function evaluateRule(sql: Sql<any>, rule: Rule, ctx: RuleContext): RuleV
 }
 
 export function validateRules(sql: Sql<any>, rules: Rule[], ctx: RuleContext): RuleValidateAllowResult | RuleValidateForbidResult {
+  const details: string[] = [];
   for (const rule of rules) {
     const res = evaluateRule(sql, rule, ctx);
     if (res.type === 'allow' || res.type === 'forbid') {
       return res;
+    } else if (res.error) {
+      details.push(res.error);
     }
   }
-  return { type: 'forbid', error: 'no matching rule' };
+  return { type: 'forbid', error: 'no matching rule', details };
 }

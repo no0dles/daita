@@ -3,7 +3,11 @@ import { RelationalTableSchemaTableFieldType } from '../../schema/relational-tab
 import { RelationalSchemaDescription } from '../../schema/description/relational-schema-description';
 import { RelationalTableDescription } from '../../schema/description/relational-table-description';
 import { RelationalTableFieldDescription } from '../../schema/description/relational-table-field-description';
-import { RelationalTableIndexDescription, RelationalTableReferenceDescription } from '../../schema';
+import {
+  RelationalTableIndexDescription,
+  RelationalTableReferenceDescription,
+  RelationalTableReferenceKeyDescription,
+} from '../../schema';
 import { table } from '@daita/relational';
 
 describe('get-migration-steps', () => {
@@ -155,6 +159,26 @@ describe('get-migration-steps', () => {
     ]);
   });
 
+
+  it('should drop references first', () => {
+    const currentSchema = createSchema({
+      tables: {
+        'User': {
+          fields: { id: { type: 'string', primaryKey: true } },
+          references: {
+            'parent': { keys: ['id'], table: 'User', foreignKeys: ['id'] },
+          },
+        },
+      },
+    });
+    const newSchema = createSchema({});
+    const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
+    expect(steps).toEqual([
+      { kind: 'drop_table_foreign_key', table: 'User', name: 'parent' },
+      { kind: 'drop_table', table: 'User' },
+    ]);
+  });
+
   it('should add table index on existing table', () => {
     const currentSchema = createSchema({
       tables: {
@@ -241,11 +265,18 @@ function createSchema(schema: ExpectedSchema) {
     for (const tableKey of Object.keys(schema.tables)) {
       const tableDescription = schema.tables[tableKey];
       if (tableDescription.references) {
-        const tableDescription = description.table(table(tableKey));
+        const currentTable = description.table(table(tableKey));
         for (const key of Object.keys(tableDescription.references)) {
-          const ref = tableDescription.reference(key);
-          const refTable = description.table(table(ref.table.name));
-          tableDescription.addReference(key, new RelationalTableReferenceDescription(key, refTable, ref.keys));
+          const ref = tableDescription.references[key];
+          const refTable = description.table(table(ref.table));
+          const refKeys: RelationalTableReferenceKeyDescription[] = [];
+          for (let i = 0; i < ref.keys.length; i++) {
+            refKeys.push({
+              foreignField: refTable.field(ref.foreignKeys[i]),
+              field: currentTable.field(ref.keys[i]),
+            });
+          }
+          currentTable.addReference(key, new RelationalTableReferenceDescription(key, refTable, refKeys));
         }
       }
     }

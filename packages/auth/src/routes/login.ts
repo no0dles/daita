@@ -9,11 +9,10 @@ import { client } from '../client';
 import { compareHash } from '../modules/hash';
 import { getAccessToken } from '../modules/key';
 import { getRandomCode } from '../modules/random';
-import { cors } from '../middlewares/cors';
 
 const router = express.Router({mergeParams: true});
 
-router.post('/', cors(req => req.params.userPoolId), async (req, res, next) => {
+router.post('/', async (req, res, next) => {
   try {
     const user = await client.selectFirst({
       select: {

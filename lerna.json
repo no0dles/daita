@@ -2,6 +2,7 @@
   "packages": [
     "packages/cli",
     "packages/auth",
+    "packages/auth/www",
     "packages/common",
     "packages/create",
     "packages/docs",

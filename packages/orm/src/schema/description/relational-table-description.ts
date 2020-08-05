@@ -75,7 +75,7 @@ export class RelationalTableDescription {
     this.referenceArrayMap.add(name, ref);
   }
 
-  removeReference(name: string) {
+  dropReference(name: string) {
     this.referenceArrayMap.remove(name);
   }
 

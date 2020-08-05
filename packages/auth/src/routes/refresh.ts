@@ -8,11 +8,10 @@ import { UserPool, UserPoolAlgorithm } from '../models/user-pool';
 import { getAccessToken } from '../modules/key';
 import { Role } from '../models/role';
 import { UserRole } from '../models/user-role';
-import { cors } from '../middlewares/cors';
 
 const router = express.Router({mergeParams: true});
 
-router.post('/', cors(req => req.params.userPoolId), async (req, res, next) => {
+router.post('/', async (req, res, next) => {
   try {
     const token = await client.selectFirst({
       select: {

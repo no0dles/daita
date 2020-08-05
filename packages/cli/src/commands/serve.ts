@@ -1,6 +1,7 @@
 import * as path from "path";
 import { getRelationalDataAdapter } from '../utils/data-adapter';
 import { createHttpServer } from '@daita/http-server';
+import { anything, anonymous } from '@daita/relational';
 
 export async function serve(opts: {cwd?: string, schema?: string, port?: number}) {
   process.env.SUPPRESS_NO_CONFIG_WARNING = 'true';
@@ -15,7 +16,10 @@ export async function serve(opts: {cwd?: string, schema?: string, port?: number}
 
   const app = createHttpServer({
     dataAdapter,
-    rules: [],
+    authorization: undefined, //TODO
+    rules: [
+      {auth: anonymous(), type: 'allow', sql: anything()}, //TODO
+    ],
     cors: true,
   });
 

@@ -5,8 +5,6 @@ import { User } from './models/user';
 import { getRandomCode } from './modules/random';
 import { hashPassword } from './modules/hash';
 
-//const adapter = new sqlite.SqliteRelationalAdapter(':memory:');
-//pg.ensureDatabaseExists('postgres://postgres:postgres@localhost:5432/auth')
 export const adapter = new pg.PostgresAdapter(process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/auth');
 export const client = getClient(adapter);
 

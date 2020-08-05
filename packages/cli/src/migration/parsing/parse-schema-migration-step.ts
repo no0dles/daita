@@ -59,6 +59,12 @@ export function parseSchemaMigrationStep(step: AstObjectValue): MigrationStep {
       table: getStringValue(step, 'table'),
       name: getStringValue(step, 'name'),
     };
+  } else if (migrationStep.kind === 'drop_table_foreign_key') {
+    return {
+      kind: 'drop_table_foreign_key',
+      table: getStringValue(step, 'table'),
+      name: getStringValue(step, 'name'),
+    };
   }
 
   //TODO schema is missing?

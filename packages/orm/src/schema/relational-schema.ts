@@ -12,6 +12,7 @@ export class RelationalSchema implements OrmRelationalSchema {
   private migrationTree = new MigrationTree();
   private rules: Rule[] = [];
   private tables: Constructable<any>[] = [];
+  private seeds: { model: DefaultConstructable<any>, values: any[] }[] = [];
 
   schema: string | null = null;
 
@@ -38,6 +39,10 @@ export class RelationalSchema implements OrmRelationalSchema {
 
   rule<T>(...rules: Rule[]) {
     this.rules.push(...rules);
+  }
+
+  seed<T>(model: DefaultConstructable<T>, values: T[]) {
+    this.seeds.push({ model, values });
   }
 
   migration(migration: MigrationDescription) {

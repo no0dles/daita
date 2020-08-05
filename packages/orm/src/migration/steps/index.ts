@@ -6,3 +6,4 @@ export { RelationalDropTableMigrationStep } from './relational-drop-table.migrat
 export { RelationalDropTableFieldMigrationStep } from './relational-drop-table-field.migration-step';
 export { RelationalCreateIndexMigrationStep } from './relational-create-index.migration-step';
 export { RelationalDropIndexMigrationStep } from './relational-drop-index.migration-step';
+export { RelationalDropTableForeignKeyMigrationStep } from './relational-drop-table-foreign-key.migration-step';

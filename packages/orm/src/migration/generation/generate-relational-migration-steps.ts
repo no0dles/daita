@@ -45,6 +45,12 @@ export function generateRelationalMigrationSteps(
   }
 
   for (const table of mergedTables.removed) {
+    for(const reference of table.references) {
+      steps.push({ kind: 'drop_table_foreign_key', table: table.name, schema: table.schema, name: reference.name });
+    }
+  }
+
+  for (const table of mergedTables.removed) {
     steps.push({ kind: 'drop_table', table: table.name });
   }
 

@@ -6,7 +6,7 @@ import {
   ContextManager,
   isAppTransactionOptions, TransactionContextManager, TransactionManager,
 } from '@daita/http-server-common';
-import { matchesRules } from '@daita/relational';
+import { validateRules } from '@daita/relational';
 
 export function relationalRoute(options: AppOptions) {
   if (isAppTransactionOptions(options)) {
@@ -46,7 +46,7 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
     }
   }
 
-  router.post('/trx/:tid/exec', validateRules(options), async (req, res, next) => {
+  router.post('/trx/:tid/exec', validateSqlRules(options), async (req, res, next) => {
     try {
       await getTransaction(req, res, async transaction => {
         const result = await transaction.exec(req.body.sql);
@@ -98,7 +98,7 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
   return router;
 }
 
-export function validateRules(options: AppDataOptions) {
+export function validateSqlRules(options: AppDataOptions) {
   return (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
       let userId: string | undefined;
@@ -114,13 +114,24 @@ export function validateRules(options: AppDataOptions) {
         }
       }
 
-      if (!matchesRules(req.body.sql, options.rules, {
+      const result = validateRules(req.body.sql, options.rules, {
         isAuthorized: authorized,
         userId: userId,
-      })) {
+      });
+      if (result.type === 'allow') {
+        next();
+      } else if (process.env.NODE_ENV === 'production') {
         res.status(403).end();
       } else {
-        next();
+        if (options.rules.length === 0) {
+          res.status(403).json({
+            messages: ['no rules defined'],
+          });
+        } else {
+          res.status(403).json({
+            messages: result.details,
+          });
+        }
       }
     } catch (e) {
       next(e);
@@ -131,7 +142,7 @@ export function validateRules(options: AppDataOptions) {
 export function relationalDataRoute(options: AppDataOptions) {
   const router = express.Router();
 
-  router.post('/exec', validateRules(options), async (req, res, next) => {
+  router.post('/exec', validateSqlRules(options), async (req, res, next) => {
     try {
       const context = new ContextManager(options.dataAdapter);
       const result = await context.exec(req.body.sql);

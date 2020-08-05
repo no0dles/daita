@@ -92,7 +92,7 @@ export class OrmMigrationContext implements MigrationContext {
           } else if (step.kind === 'add_table_field') {
             const tbl = table(step.table, step.schema);
             const key = getTableDescriptionIdentifier(tbl);
-            if(createTables[key]) {
+            if (createTables[key]) {
               createTables[key].columns.push({
                 name: step.fieldName,
                 type: step.type,
@@ -106,8 +106,8 @@ export class OrmMigrationContext implements MigrationContext {
                   column: step.fieldName,
                   type: step.type,
                   //TODO notnull missing?
-                }
-              })
+                },
+              });
             }
           } else if (step.kind === 'add_table_primary_key') {
             const tbl = table(step.table, step.schema);
@@ -151,6 +151,13 @@ export class OrmMigrationContext implements MigrationContext {
             sqls.push({
               dropIndex: step.name,
               on: table(step.table, step.schema),
+            });
+          } else if (step.kind === 'drop_table_foreign_key') {
+            sqls.push({
+              alterTable: table(step.table, step.schema),
+              drop: {
+                constraint: step.name,
+              },
             });
           } else {
             failNever(step, 'unknown migration step');
