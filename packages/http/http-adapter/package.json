@@ -1,18 +1,18 @@
 {
   "name": "@daita/http-adapter",
-  "version": "0.2.42-alpha.0",
+  "version": "0.2.42",
   "publishConfig": {
     "access": "public",
     "directory": "dist"
   },
   "dependencies": {
-    "@daita/common": "^0.2.42-alpha.0",
-    "@daita/http-client-common": "^0.2.42-alpha.0",
-    "@daita/relational": "^0.2.42-alpha.0",
+    "@daita/common": "^0.2.42",
+    "@daita/http-client-common": "^0.2.42",
+    "@daita/relational": "^0.2.42",
     "axios": "^0.19.0"
   },
   "devDependencies": {
-    "@daita/http-server": "^0.2.42-alpha.0",
+    "@daita/http-server": "^0.2.42",
     "@types/jest": "^25.1.1",
     "jest": "^25.1.0",
     "ts-jest": "^25.1.0",
