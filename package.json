@@ -14,8 +14,7 @@
     "clean": "git clean -fX -d packages/**/dist",
     "rebuild": "npm run clean && npm run build",
     "test": "jest",
-    "coverage": "jest --coverage",
-    "preversion": "npm run rebuild"
+    "coverage": "jest --coverage"
   },
   "license": "MIT"
 }
