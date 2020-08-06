@@ -1,6 +1,6 @@
 {
   "name": "@daita/sqlite-adapter",
-  "version": "0.2.42",
+  "version": "0.2.43",
   "publishConfig": {
     "access": "public",
     "directory": "dist"
@@ -16,12 +16,12 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "^0.2.42",
-    "@daita/relational": "^0.2.42",
+    "@daita/common": "^0.2.43",
+    "@daita/relational": "^0.2.43",
     "sqlite3": "^4.2.0"
   },
   "devDependencies": {
-    "@daita/relational-test": "^0.2.42",
+    "@daita/relational-test": "^0.2.43",
     "@types/jest": "^25.1.1",
     "@types/sqlite3": "^3.1.6",
     "jest": "^25.1.0",
