@@ -1,0 +1,7 @@
+{
+  "name": "package-json",
+  "version": "1.0.0",
+  "dependencies": {
+    "@daita/common": "~0.2.34"
+  }
+}

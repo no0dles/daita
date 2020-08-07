@@ -3,12 +3,12 @@
   "private": true,
   "version": "0.2.35-alpha.0",
   "dependencies": {
-    "@daita/http-server": "^0.2.35-alpha.0",
-    "@daita/relational": "^0.2.35-alpha.0"
+    "@daita/http-server": "^0.2.44",
+    "@daita/relational": "^0.2.44"
   },
   "devDependencies": {
-    "@daita/pg-adapter": "^0.2.35-alpha.0",
-    "@daita/sqlite-adapter": "^0.2.35-alpha.0",
+    "@daita/pg-adapter": "^0.2.44",
+    "@daita/sqlite-adapter": "^0.2.44",
     "@types/pg": "^7.14.3",
     "@types/sqlite3": "^3.1.6",
     "ts-node": "^8.10.2",

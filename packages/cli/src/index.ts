@@ -8,6 +8,7 @@ import { applyMigration } from './commands/apply-migration';
 import { diagram } from './commands/diagram';
 import { serve } from './commands/serve';
 import { generateRule } from './commands/generate-rule';
+import { upgrade } from './commands/upgrade';
 
 program.command('migration:undo')
   .description('undo last migration')
@@ -46,6 +47,13 @@ program.command('docs')
   .action(async () => {
     const url = 'https://docs.daita.ch';
     await cli.open(url);
+  });
+
+program.command('upgrade')
+  .option('--cwd <string>', 'working directory')
+  .description('upgrade all daita packages')
+  .action(async (opts) => {
+    await upgrade(opts);
   });
 
 program.command('diagram')

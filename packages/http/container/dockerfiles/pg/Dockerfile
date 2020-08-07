@@ -18,7 +18,7 @@ RUN chown node:node -R /app
 USER node
 COPY package-pg.json package.json
 COPY package-lock.json .
-RUN npm install --production && rm -rf ~/.config && rm -rf ~/.npm
+RUN npm install --production && npm install @daita/pg-adapter && rm -rf ~/.config && rm -rf ~/.npm
 COPY --from=0 /build/dist .
 
 ENV TRANSACTION_TIMEOUT 4000
