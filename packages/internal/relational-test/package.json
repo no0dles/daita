@@ -1,6 +1,6 @@
 {
   "name": "@daita/relational-test",
-  "version": "0.2.43",
+  "version": "0.2.44",
   "description": "test relational adapter functionality",
   "private": true,
   "main": "dist/index.js",
@@ -10,11 +10,11 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "^0.2.43",
-    "@daita/relational": "^0.2.43"
+    "@daita/common": "^0.2.44",
+    "@daita/relational": "^0.2.44"
   },
   "devDependencies": {
-    "@daita/eslint-config": "^0.2.43",
+    "@daita/eslint-config": "^0.2.44",
     "@types/jest": "^25.2.1",
     "@typescript-eslint/eslint-plugin": "^2.28.0",
     "@typescript-eslint/parser": "^2.28.0",

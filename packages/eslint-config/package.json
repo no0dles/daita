@@ -5,7 +5,7 @@
     "directory": "dist"
   },
   "description": "eslint config and rules for daita",
-  "version": "0.2.43",
+  "version": "0.2.44",
   "license": "MIT",
   "scripts": {
     "build": "tsc -b",
