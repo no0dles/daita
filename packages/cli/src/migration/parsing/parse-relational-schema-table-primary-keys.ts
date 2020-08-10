@@ -1,23 +1,25 @@
 import { RelationalTableDescription } from '@daita/orm';
-import { AstVariableCallArgument } from '../../ast/ast-variable-call-argument';
+import { AstObjectValue } from '../../ast/ast-object-value';
+import { getArrayValue, getStringValue } from '../../ast/utils';
+import { AstArrayValue } from '../../ast/ast-array-value';
+import { AstLiteralValue } from '../../ast/ast-literal-value';
 
-export function parseRelationalSchemaTablePrimaryKeys(table: RelationalTableDescription, optionsArgument: AstVariableCallArgument | null) {
-  const key = optionsArgument?.objectValue?.property('key');
+export function parseRelationalSchemaTablePrimaryKeys(table: RelationalTableDescription, optionsArgument: AstObjectValue) {
+  const key = optionsArgument.prop('key');
 
-  let keys = ['id'];
-  if (key) {
-    if (key.stringValue) {
-      keys = [key.stringValue];
-    } else if (key.arrayValue) {
-      keys = [];
-      for (const item of key.arrayValue) {
-        if (item.stringValue) {
-          keys.push(item.stringValue);
-        } else {
-          throw new Error('not all keys are valid');
-        }
+  const keys = [];
+  if (key && key.value instanceof AstArrayValue) {
+    keys.push(...getArrayValue(key.value, elm => {
+      const stringValue = getStringValue(elm);
+      if (stringValue) {
+        return stringValue;
       }
-    }
+      throw new Error('invalid key');
+    }));
+  } else if (key && key.value instanceof AstLiteralValue) {
+    keys.push(getStringValue(key.value));
+  } else {
+    keys.push('id');
   }
 
   for (const key of keys) {

@@ -1,5 +1,6 @@
 import { RelationalTransactionAdapter } from '@daita/relational';
 import { RelationalTransactionAdapterPackage } from '@daita/relational';
+import * as path from "path";
 
 export interface DaitaContextConfig {
   module: string;
@@ -9,6 +10,10 @@ export interface DaitaContextConfig {
 export async function getRelationalDataAdapter(
   options: any
 ): Promise<RelationalTransactionAdapter> {
+  process.env.SUPPRESS_NO_CONFIG_WARNING = 'true';
+  if (options.cwd) {
+    process.env.NODE_CONFIG_DIR = path.join(options.cwd, 'config');
+  }
 
   const config = require('config');
   const contextName = options.context || 'default';

@@ -4,7 +4,7 @@ import { getRelationalDataAdapter } from '../utils/data-adapter';
 import { getMigrationContext } from '@daita/orm';
 import { getClient } from '@daita/relational';
 
-export async function applyMigration(options: { cwd?: string, schema?: string }) {
+export async function applyMigration(options: { cwd?: string, schema?: string, context?: string }) {
   const astContext = new AstContext();
   const schemaLocation = await getSchemaLocation(options);
   const schemaInfo = await getSchemaInformation(astContext, schemaLocation);

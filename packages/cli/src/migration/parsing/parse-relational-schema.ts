@@ -1,9 +1,9 @@
 import {parseRelationalSchemaTables} from './parse-relational-schema-tables';
-import {AstVariable} from '../../ast/ast-variable';
 import { RelationalSchemaDescription } from '@daita/orm';
+import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 
 export function parseRelationalSchema(
-  schemaVariable: AstVariable,
+  schemaVariable: AstVariableDeclaration,
 ): RelationalSchemaDescription {
   const schema = new RelationalSchemaDescription();
 

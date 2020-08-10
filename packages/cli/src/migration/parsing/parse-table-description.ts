@@ -1,5 +1,6 @@
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { table } from '@daita/relational';
+import { getStringValue } from '../../ast/utils';
 
 export function parseTableDescription(classDeclaration: AstClassDeclaration) {
   if (!classDeclaration.name) {
@@ -7,15 +8,16 @@ export function parseTableDescription(classDeclaration: AstClassDeclaration) {
   }
 
   let tableName = classDeclaration.name;
-
   let schemaName: string | undefined = undefined;
-  const tableProperty = classDeclaration.getProperty('table', { static: true });
-  if (tableProperty && tableProperty.initializer && tableProperty.initializer.stringValue) {
-    tableName = tableProperty.initializer.stringValue;
+
+  const tableProperty = classDeclaration.staticProp('table');
+  if (tableProperty && tableProperty.value) {
+    tableName = getStringValue(tableProperty.value);
   }
-  const schemaProperty = classDeclaration.getProperty('table', { static: true });
-  if (schemaProperty && schemaProperty.initializer && schemaProperty.initializer.stringValue) {
-    schemaName = schemaProperty.initializer.stringValue;
+
+  const schemaProperty = classDeclaration.staticProp('schema');
+  if (schemaProperty && schemaProperty.value) {
+    schemaName = getStringValue(schemaProperty.value);
   }
 
   return table(tableName, schemaName);

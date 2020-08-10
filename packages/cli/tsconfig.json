@@ -3,25 +3,13 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
-  },
-  "references": [
-    {
-      "path": "../orm/tsconfig.json"
-    },
-    {
-      "path": "../relational/tsconfig.json"
-    },
-    {
-      "path": "../pg-adapter/tsconfig.json"
-    },
-    {
-      "path": "../http/http-server/tsconfig.json"
-    },
-    {
-      "path": "../http/http-adapter/tsconfig.json"
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "paths": {
+      "@daita/relational": ["relational/src"],
+      "@daita/common": ["common/src"],
+      "@daita/orm": ["orm/src"]
     }
-  ],
+  },
   "exclude": [
     "node_modules",
     "dist",

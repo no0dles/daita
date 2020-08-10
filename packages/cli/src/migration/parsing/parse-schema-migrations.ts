@@ -1,44 +1,43 @@
-import { AstVariable } from '../../ast/ast-variable';
 import { parseSchemaMigration } from './parse-schema-migration';
 import { MigrationTree } from '@daita/orm';
+import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
+import { getObjectValue } from '../../ast/utils';
 
 export function parseSchemaMigrations(
-  schemaVariable: AstVariable,
+  schemaVariable: AstVariableDeclaration,
 ): MigrationTree {
   const migrationTree = new MigrationTree();
 
-  for(const migrationCall of parseSchemaMigrationCalls(schemaVariable)) {
-    const migrationVariable = migrationCall.variable;
-    if (migrationVariable) {
-      const init = migrationVariable.getInitializer();
-      if (!init) {
-        throw new Error('missing init for variable');
-      }
-      const migration = parseSchemaMigration(init);
-      migrationTree.add(migration);
-      continue;
-    }
-
-    const objectVariable = migrationCall.objectValue;
-    if (objectVariable) {
-      const migration = parseSchemaMigration(objectVariable);
-      migrationTree.add(migration);
-      continue;
-    }
-
-    throw new Error('unknown arg');
+  for (const migrationCall of parseSchemaMigrationCalls(schemaVariable)) {
+    const migration = parseSchemaMigration(migrationCall);
+    migrationTree.add(migration);
   }
 
   return migrationTree;
 }
 
-export function* parseSchemaMigrationCalls(schemaVariable: AstVariable) {
-  const migrationCalls = schemaVariable.getCalls({ name: 'migration' });
+export function* parseSchemaMigrationCalls(schemaVariable: AstVariableDeclaration) {
+  const migrationCalls = schemaVariable.callsByName('migration');
   for (const migrationCall of migrationCalls) {
-    const migrationClassArg = migrationCall.argument(0);
+    const migrationClassArg = migrationCall.argumentAt(0);
     if (!migrationClassArg) {
       throw new Error('missing first arg in migration');
     }
-    yield migrationClassArg;
+
+    yield getObjectValue(migrationClassArg);
+  }
+}
+
+export function* parseSchemaMigrationVariables(schemaVariable: AstVariableDeclaration) {
+  const migrationCalls = schemaVariable.callsByName('migration');
+  for (const migrationCall of migrationCalls) {
+    const migrationClassArg = migrationCall.argumentAt(0);
+    if (!migrationClassArg) {
+      throw new Error('missing first arg in migration');
+    }
+
+    if (migrationClassArg instanceof AstVariableDeclaration) {
+      yield migrationClassArg;
+    }
   }
 }

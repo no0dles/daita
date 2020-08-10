@@ -1,21 +1,20 @@
-import {AstSourceFile} from '../../ast/ast-source-file';
-import {SchemaDeclaration} from './schema-declaration';
+import { AstSourceFile } from '../../ast/ast-source-file';
+import { SchemaDeclaration } from './schema-declaration';
+import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 
 export function parseSchemas(sourceFile: AstSourceFile): SchemaDeclaration[] {
   const schemas: SchemaDeclaration[] = [];
-  const variables = sourceFile.getVariables();
-  for (const variable of variables) {
-    const initializer = variable.getInitializer();
-    if (!initializer || !initializer.newConstructor) {
+  for (const variable of sourceFile.block.variables) {
+    const variableType = variable.type;
+    if (!(variableType instanceof AstClassDeclaration)) {
       continue;
     }
-
-    if (initializer.newConstructor.typeName === 'RelationalSchema') {
+    if (variableType.name === 'RelationalSchema') {
       schemas.push({
         variable: variable,
         type: 'relational',
       });
-    } else if (initializer.newConstructor.typeName === 'DocumentSchema') {
+    } else if (variableType.name === 'DocumentSchema') {
       schemas.push({
         variable: variable,
         type: 'document',

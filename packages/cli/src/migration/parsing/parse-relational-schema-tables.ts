@@ -1,4 +1,3 @@
-import { AstVariable } from '../../ast/ast-variable';
 import { RelationalSchemaDescription, RelationalTableDescription } from '@daita/orm';
 import { parseRelationalSchemaTableFields } from './parse-relational-schema-table-fields';
 import { parseRelationalSchemaTablePrimaryKeys } from './parse-relational-schema-table-primary-keys';
@@ -7,32 +6,41 @@ import { parseRelationalSchemaTableReferences } from './parse-relational-schema-
 import { parseTableDescription } from './parse-table-description';
 import { parseRelationalSchemaTableIndices } from './parse-relational-schema-table-indices';
 import { parseRelationalSchemaTableRules } from './parse-relational-schema-table-rules';
+import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
+import { AstObjectValue } from '../../ast/ast-object-value';
 
 export function parseRelationalSchemaTables(
-  schema: RelationalSchemaDescription, schemaVariable: AstVariable,
+  schema: RelationalSchemaDescription, schemaVariable: AstVariableDeclaration,
 ) {
-  const calls = schemaVariable.getCalls({ name: 'table' });
+  const calls = schemaVariable.callsByName('table');
   const classDeclarations: { [key: string]: AstClassDeclaration } = {};
 
   for (const call of calls) {
-    const classArgument = call.argument(0);
-    const optionsArgument = call.argument(1);
+    const classArgument = call.argumentAt(0);
+    const optionsArgument = call.argumentAt(1);
 
-    if (!classArgument) {
+    if (!(classArgument instanceof AstClassDeclaration)) {
       throw new Error('invalid table argument without class');
     }
-    const classDeclaration = classArgument.classDeclaration;
-    if (!classDeclaration) {
-      throw new Error(`unable to find class ${classArgument.className} in schema ${schemaVariable.name}`);
+
+    let optionsObject: AstObjectValue | null = null;
+
+    if (optionsArgument instanceof AstObjectValue) {
+      optionsObject = optionsArgument;
+    } else if (optionsArgument instanceof AstVariableDeclaration) {
+      const variableValue = optionsArgument.value;
+      if (variableValue instanceof AstObjectValue) {
+        optionsObject = variableValue;
+      }
     }
 
-    const tableDescription = parseTableDescription(classDeclaration);
+    const tableDescription = parseTableDescription(classArgument);
 
     if (schema.containsTable(tableDescription)) {
       throw new Error('name already registered');
     }
 
-    if (!classDeclaration.name) {
+    if (!classArgument.name) {
       throw new Error(`missing table class name`);
     }
 
@@ -43,13 +51,16 @@ export function parseRelationalSchemaTables(
       tableDescription.schema,
     );
 
-    parseRelationalSchemaTableFields(table, classDeclaration);
-    parseRelationalSchemaTablePrimaryKeys(table, optionsArgument);
-    parseRelationalSchemaTableIndices(table, optionsArgument);
-    parseRelationalSchemaTableRules(table, optionsArgument);
+    parseRelationalSchemaTableFields(table, classArgument);
+
+    if (optionsObject) {
+      parseRelationalSchemaTablePrimaryKeys(table, optionsObject);
+      parseRelationalSchemaTableIndices(table, optionsObject);
+      parseRelationalSchemaTableRules(table, optionsObject);
+    }
 
     schema.addTable(tableDescription, table);
-    classDeclarations[classDeclaration.name] = classDeclaration;
+    classDeclarations[classArgument.name] = classArgument;
   }
 
   for (const table of schema.tables) {

@@ -1,5 +1,5 @@
 import { MigrationDescription, MigrationTree } from '../migration';
-import { SchemaTableOptions } from './schema-table-options';
+import { SchemaTableOptions, SchemaTableRequiredKeyOptions } from './schema-table-options';
 import { RelationalSchemaOptions } from './relational-schema-options';
 import { RelationalSchemaDescription } from './description/relational-schema-description';
 import { Constructable, DefaultConstructable } from '@daita/common';
@@ -23,9 +23,13 @@ export class RelationalSchema implements OrmRelationalSchema {
   }
 
   table<T extends { id: any }>(model: DefaultConstructable<T>): void;
-  table<T>(
+  table<T extends { id: any }>(
     model: DefaultConstructable<T>,
     options: SchemaTableOptions<T>,
+  ): void;
+  table<T>(
+    model: DefaultConstructable<T>,
+    options: SchemaTableRequiredKeyOptions<T>,
   ): void;
   table<T>(
     model: DefaultConstructable<T>,

@@ -1,72 +1,141 @@
-import { getIdentifierName, isKind } from './utils';
-import * as ts from 'typescript';
-import { AstSourceFile } from './ast-source-file';
-import { AstPropertyDeclaration } from './ast-property-declaration';
+import { AstError, isKind } from '../ast/utils';
+import { getName, hasModifier } from './utils';
+import { AstMethodDeclaration } from './ast-method-declaration';
+import { AstClassDeclarationProp } from './ast-class-declaration-prop';
+import { AstBlock } from './ast-block';
+import { ClassDeclaration, SyntaxKind } from 'typescript';
+import { AstTypeParameterDeclaration } from './ast-type-parameter-declaration';
+import { AstNode } from './ast-node';
 
-export class AstClassDeclaration {
-  name: string | null = null;
-
-  constructor(private sourceFile: AstSourceFile,
-              private classDeclaration: ts.ClassDeclaration) {
-    if (this.classDeclaration.name) {
-      this.name = getIdentifierName(this.classDeclaration.name);
-    }
+export class AstClassDeclaration implements AstNode {
+  constructor(private block: AstBlock,
+              public node: ClassDeclaration) {
   }
 
-  get extendedClass(): AstClassDeclaration | null {
-    if (this.classDeclaration.heritageClauses) {
-      for (const heritageClass of this.classDeclaration.heritageClauses) {
-        for (const type of heritageClass.types) {
-          const className = getIdentifierName(type.expression);
-          return this.sourceFile.getClassDeclaration(className, { includeImport: true });
+  get name(): string {
+    if (!this.node.name) {
+      throw new AstError(this.node, 'missing class name');
+    }
+    return getName(this.node.name, 'class declaration');
+  }
+
+  get typeParameters() {
+    return this.getTypeParameters();
+  }
+
+  get extends(): AstClassDeclaration | null {
+    if (!this.node.heritageClauses) {
+      return null;
+    }
+
+    for (const heritage of this.node.heritageClauses) {
+      if (heritage.token === SyntaxKind.ExtendsKeyword) {
+        const heritageType = heritage.types[0];
+        if (!heritageType) {
+          return null;
         }
+
+        const extendName = getName(heritageType.expression, 'expression with type arguments');
+        return this.block.class(extendName);
+      }
+    }
+
+    return null;
+  }
+
+  get methods(): Generator<AstMethodDeclaration> {
+    return this.getMethods();
+  }
+
+  get props(): Generator<AstClassDeclarationProp> {
+    return this.getProps();
+  }
+
+  get staticProps(): Generator<AstClassDeclarationProp> {
+    return this.getStaticProps();
+  }
+
+  get allProps(): Generator<AstClassDeclarationProp> {
+    return this.getAllProps();
+  }
+
+  method(name: string) {
+    for (const method of this.methods) {
+      if (method.name === name) {
+        return method;
       }
     }
     return null;
   }
 
-  get exported() {
-    if (!this.classDeclaration.modifiers) {
-      return false;
-    }
-    for (const modifier of this.classDeclaration.modifiers) {
-      if (modifier.kind === ts.SyntaxKind.ExportKeyword) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  getProperties(options?: { includedInherited?: boolean, static?: boolean }): AstPropertyDeclaration[] {
-    const astPropertyDeclaration = new Array<AstPropertyDeclaration>();
-    for (const member of this.classDeclaration.members) {
-      const propertyDeclaration = isKind(member, ts.SyntaxKind.PropertyDeclaration);
-      if (!propertyDeclaration) {
-        continue;
-      }
-
-      if (options && options.static && (!propertyDeclaration.modifiers || !propertyDeclaration.modifiers.some(m => m.kind === ts.SyntaxKind.StaticKeyword))) {
-        continue;
-      }
-      
-      astPropertyDeclaration.push(new AstPropertyDeclaration(this.sourceFile, propertyDeclaration));
-    }
-    if (options && options.includedInherited) {
-      const extendedClass = this.extendedClass;
-      if (extendedClass) {
-        astPropertyDeclaration.push(...extendedClass.getProperties());
-      }
-    }
-    return astPropertyDeclaration;
-  }
-
-  getProperty(name: string, options?: { includedInherited?: boolean, static?: boolean }): AstPropertyDeclaration | null {
-    const astPropertyDeclarations = this.getProperties(options);
-    for (const astPropertyDeclaration of astPropertyDeclarations) {
-      if (astPropertyDeclaration.name === name) {
-        return astPropertyDeclaration;
+  staticProp(name: string) {
+    for (const prop of this.staticProps) {
+      if (prop.name === name) {
+        return prop;
       }
     }
     return null;
+  }
+
+  prop(name: string) {
+    for (const prop of this.props) {
+      if (prop.name === name) {
+        return prop;
+      }
+    }
+    return null;
+  }
+
+  private* getTypeParameters() {
+    if (!this.node.typeParameters) {
+      return;
+    }
+
+    for (const typeParameter of this.node.typeParameters) {
+      yield new AstTypeParameterDeclaration(this.block, typeParameter);
+    }
+  }
+
+  private* getMethods() {
+    for (const member of this.node.members) {
+      const methodDeclaration = isKind(member, SyntaxKind.MethodDeclaration);
+      if (methodDeclaration) {
+        yield new AstMethodDeclaration(this.block, methodDeclaration);
+      }
+    }
+  }
+
+  private* getStaticProps() {
+    for (const prop of this.props) {
+      if (prop.static) {
+        yield prop;
+      }
+    }
+  }
+
+  private* getAllProps() {
+    const extended = this.extends;
+    if (extended) {
+      for (const prop of extended.allProps) {
+        yield prop;
+      }
+    }
+
+    for (const prop of this.props) {
+      yield prop;
+    }
+  }
+
+  private* getProps() {
+    for (const member of this.node.members) {
+      const propertyDeclaration = isKind(member, SyntaxKind.PropertyDeclaration);
+      if (propertyDeclaration) {
+        yield new AstClassDeclarationProp(this.block, propertyDeclaration);
+      }
+    }
+  }
+
+  get exported(): boolean {
+    return hasModifier(this.node.modifiers, SyntaxKind.ExportKeyword);
   }
 }

@@ -5,7 +5,7 @@
   }, {
     "path": "./packages/common/tsconfig.json"
   }, {
-    "path": "./packages/cli/tsconfig.json"
+    "path": "./packages/cli/tsconfig.build.json"
   }, {
     "path": "./packages/create/tsconfig.json"
   }, {

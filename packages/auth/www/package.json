@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "@daita/auth-web",
   "version": "0.2.45",
   "scripts": {
     "ng": "ng",

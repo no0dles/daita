@@ -10,7 +10,7 @@
       "path": "../common/tsconfig.json"
     },
     {
-      "path": "../cli/tsconfig.json"
+      "path": "../cli/tsconfig.build.json"
     },
     {
       "path": "../orm/tsconfig.json"

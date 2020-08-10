@@ -1,98 +1,99 @@
 import * as ts from 'typescript';
 import * as path from 'path';
 import { readFileSync, existsSync } from 'fs';
-
-export function getFirstChildNode(
-  node: ts.Node,
-  kind: ts.SyntaxKind.Identifier,
-): ts.Identifier | null;
-export function getFirstChildNode(
-  node: ts.Node,
-  kind: ts.SyntaxKind.PropertyDeclaration,
-): ts.PropertyDeclaration | null;
-export function getFirstChildNode(
-  node: ts.Node,
-  kind: ts.SyntaxKind.ExportAssignment,
-): ts.ExportAssignment | null;
-export function getFirstChildNode(
-  node: ts.Node,
-  kind: ts.SyntaxKind.ClassDeclaration,
-): ts.ClassDeclaration | null;
-export function getFirstChildNode(
-  node: ts.Node,
-  kind: ts.SyntaxKind,
-): ts.Node | null {
-  let result: ts.Node | null = null;
-  ts.forEachChild(node, childNode => {
-    if (result === null && childNode.kind === kind) {
-      result = childNode;
-    }
-  });
-  return result;
-}
-
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.VariableStatement,
-): ts.VariableStatement[];
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.ExportDeclaration,
-): ts.ExportDeclaration[];
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.PropertyAssignment,
-): ts.PropertyAssignment[];
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.CallExpression,
-): ts.CallExpression[];
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.ExpressionStatement,
-): ts.ExpressionStatement[];
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.ImportDeclaration,
-): ts.ImportDeclaration[];
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.Identifier,
-): ts.Identifier[];
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.PropertyDeclaration,
-): ts.PropertyDeclaration[];
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.ExportAssignment,
-): ts.ExportAssignment[];
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.ClassDeclaration,
-): ts.ClassDeclaration[];
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.VariableDeclarationList,
-): ts.VariableDeclarationList[];
-export function getChildNodes(
-  node: ts.Node,
-  kind: ts.SyntaxKind.VariableDeclaration,
-): ts.VariableDeclaration[];
-export function getChildNodes(node: ts.Node, kind: ts.SyntaxKind): ts.Node[] {
-  const childNodes: ts.Node[] = [];
-  ts.forEachChild(node, childNode => {
-    if (childNode.kind === kind) {
-      childNodes.push(childNode);
-    }
-  });
-  return childNodes;
-}
+import { AstBlock } from './ast-block';
+import { AstType } from './ast-type';
+import { AstKeywordType } from './ast-keyword-type';
+import { AstLiteralType } from './ast-literal-type';
+import { AstTypeLiteralType } from './ast-type-literal-type';
+import { AstReferenceType } from './ast-reference-type';
+import { AstUnionType } from './ast-union-type';
+import {
+  AstBooleanLiteralValue,
+  AstLiteralValue,
+  AstNumericLiteralValue,
+  AstStringLiteralValue,
+} from './ast-literal-value';
+import { AstObjectValue } from './ast-object-value';
+import { AstKeywordValue } from './ast-keyword-value';
+import { AstValue } from './ast-value';
+import {
+  BindingPattern, EntityName,
+  Expression,
+  Identifier,
+  ModifiersArray,
+  PropertyName,
+  QualifiedName,
+  SyntaxKind, TypeNode, Node,
+} from 'typescript';
+import { AstArrayType } from './ast-array-type';
+import { AstVariableDeclaration } from './ast-variable-declaration';
+import { AstArrayValue } from './ast-array-value';
+import { AstNewExpression } from './ast-new-expression';
+import { AstCallExpression } from './ast-call-expression';
+import { AstPropertyAccessExpression } from './ast-property-access-expression';
+import { AstNode } from './ast-node';
 
 export function isKind(
   node: ts.Node | undefined,
   kind: ts.SyntaxKind.TypeLiteral,
 ): ts.TypeLiteralNode | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.ExportDeclaration,
+): ts.ExportDeclaration | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.EnumDeclaration,
+): ts.EnumDeclaration | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.TrueKeyword,
+): ts.BooleanLiteral | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.FalseKeyword,
+): ts.BooleanLiteral | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.NullKeyword,
+): ts.KeywordTypeNode | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.UndefinedKeyword,
+): ts.KeywordTypeNode | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.SpreadAssignment,
+): ts.SpreadAssignment | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.ShorthandPropertyAssignment,
+): ts.ShorthandPropertyAssignment | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.NamedImports,
+): ts.NamedImports | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.NamespaceImport,
+): ts.NamespaceImport | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.ClassDeclaration,
+): ts.ClassDeclaration | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.VariableStatement,
+): ts.VariableStatement | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.FunctionDeclaration,
+): ts.FunctionDeclaration | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.MethodDeclaration,
+): ts.MethodDeclaration | null;
 export function isKind(
   node: ts.Node | undefined,
   kind: ts.SyntaxKind.PropertyAssignment,
@@ -207,14 +208,15 @@ export function isKind(
   return null;
 }
 
-export function getBooleanValue(literal: ts.BooleanLiteral): boolean {
-  if (literal.kind === ts.SyntaxKind.TrueKeyword) {
-    return true;
-  } else if (literal.kind === ts.SyntaxKind.FalseKeyword) {
-    return false;
+export function getBooleanValue(value: AstValue): boolean {
+  if (value instanceof AstLiteralValue) {
+    const booleanValue = value.value;
+    if (typeof booleanValue === 'boolean') {
+      return booleanValue;
+    }
   }
 
-  throw new Error('not a bool');
+  throw new AstError(value.node, 'get boolean value');
 }
 
 export function getIdentifierName(identifier: ts.PrivateIdentifier | ts.BindingName | ts.StringLiteral | ts.NumericLiteral | ts.ComputedPropertyName | ts.Expression | ts.QualifiedName) {
@@ -238,7 +240,7 @@ export function getIdentifierName(identifier: ts.PrivateIdentifier | ts.BindingN
     return stringLiteral.text;
   }
 
-  throw new Error(`unable to parse ${ts.SyntaxKind[identifier.kind]} ast node`);
+  throw new AstError(identifier, 'get name');
 }
 
 export function parseSourceFile(fileName: string) {
@@ -257,4 +259,235 @@ export function parseSourceFile(fileName: string) {
     ts.ScriptTarget.ES2015,
     true,
   );
+}
+
+export function getName(identifier: Identifier | Expression | BindingPattern | EntityName | PropertyName | QualifiedName | string, nodeType: string) {
+  if (typeof identifier === 'string') {
+    return identifier;
+  }
+
+  const identifierNode = isKind(identifier, SyntaxKind.Identifier);
+  if (identifierNode) {
+    return identifierNode.getText();
+  }
+
+  //TODO binding pattern + property name + qualifiedname
+  throw new AstError(identifier, `unable to parse name of ${nodeType}`);
+}
+
+export function hasModifier(modifiers: ModifiersArray | undefined, kind: SyntaxKind): boolean {
+  return modifiers !== undefined && modifiers.some(m => m.kind === kind);
+}
+
+export function getType(block: AstBlock, node: TypeNode | undefined): AstType | null
+export function getType(block: AstBlock, node: TypeNode): AstType
+export function getType(block: AstBlock, node: TypeNode | undefined): AstType | null {
+  if (!node) {
+    return null;
+  }
+
+  if (node.kind === SyntaxKind.AnyKeyword || node.kind === SyntaxKind.UnknownKeyword ||
+    node.kind === SyntaxKind.NumberKeyword || node.kind === SyntaxKind.BigIntKeyword ||
+    node.kind === SyntaxKind.ObjectKeyword || node.kind === SyntaxKind.BooleanKeyword ||
+    node.kind === SyntaxKind.StringKeyword || node.kind === SyntaxKind.SymbolKeyword ||
+    node.kind === SyntaxKind.ThisKeyword || node.kind === SyntaxKind.VoidKeyword ||
+    node.kind === SyntaxKind.UndefinedKeyword || node.kind === SyntaxKind.NullKeyword ||
+    node.kind === SyntaxKind.NeverKeyword) {
+    return new AstKeywordType(node as any);
+  }
+
+  const literalType = isKind(node, SyntaxKind.LiteralType);
+  if (literalType) {
+    return new AstLiteralType(literalType);
+  }
+
+  const typeLiteral = isKind(node, SyntaxKind.TypeLiteral);
+  if (typeLiteral) {
+    return new AstTypeLiteralType(block, typeLiteral);
+  }
+
+  const typeRef = isKind(node, SyntaxKind.TypeReference);
+  if (typeRef) {
+    return new AstReferenceType(block, typeRef);
+  }
+
+  const arrayType = isKind(node, SyntaxKind.ArrayType);
+  if (arrayType) {
+    return new AstArrayType(block, arrayType);
+  }
+
+  const unionType = isKind(node, SyntaxKind.UnionType);
+  if (unionType) {
+    return new AstUnionType(block, unionType);
+  }
+
+  throw new AstError(node, 'get type');
+}
+
+export function getTypeFromValue(value: AstValue): AstType | null {
+  if (value instanceof AstArrayValue) {
+    //return value.type;
+  } else if (value instanceof AstLiteralValue) {
+    return value.type;
+  } else if (value instanceof AstObjectValue) {
+
+  }
+
+  return null;
+}
+
+export function getValueFromExpression(block: AstBlock, expression: Expression): AstValue
+export function getValueFromExpression(block: AstBlock, expression: Expression | undefined): AstValue | null
+export function getValueFromExpression(block: AstBlock, expression: Expression | undefined): AstValue | null {
+  if (expression === undefined) {
+    return null;
+  }
+
+  const numericLiteral = isKind(expression, SyntaxKind.NumericLiteral);
+  if (numericLiteral) {
+    return new AstNumericLiteralValue(numericLiteral);
+  }
+
+  const stringLiteral = isKind(expression, SyntaxKind.StringLiteral);
+  if (stringLiteral) {
+    return new AstStringLiteralValue(stringLiteral);
+  }
+
+  const objectLiteral = isKind(expression, SyntaxKind.ObjectLiteralExpression);
+  if (objectLiteral) {
+    return new AstObjectValue(block, objectLiteral);
+  }
+
+  const newExpression = isKind(expression, SyntaxKind.NewExpression);
+  if (newExpression) {
+    return new AstNewExpression(block, newExpression);
+  }
+
+  const trueKeyword = isKind(expression, SyntaxKind.TrueKeyword);
+  if (trueKeyword) {
+    return new AstBooleanLiteralValue(trueKeyword);
+  }
+  const falseKeyword = isKind(expression, SyntaxKind.FalseKeyword);
+  if (falseKeyword) {
+    return new AstBooleanLiteralValue(falseKeyword);
+  }
+  const nullKeyword = isKind(expression, SyntaxKind.NullKeyword);
+  if (nullKeyword) {
+    return new AstKeywordValue(nullKeyword);
+  }
+  const undefinedKeyword = isKind(expression, SyntaxKind.UndefinedKeyword);
+  if (undefinedKeyword) {
+    return new AstKeywordValue(undefinedKeyword);
+  }
+
+  const array = isKind(expression, SyntaxKind.ArrayLiteralExpression);
+  if (array) {
+    return new AstArrayValue(block, array);
+  }
+
+  const identifierNode = isKind(expression, SyntaxKind.Identifier);
+  if (identifierNode) {
+    return block.getValue(identifierNode);
+  }
+
+  const callExpression = isKind(expression, SyntaxKind.CallExpression);
+  if (callExpression) {
+    return new AstCallExpression(block, callExpression);
+  }
+
+  const propertyAccessExpression = isKind(expression, SyntaxKind.PropertyAccessExpression);
+  if (propertyAccessExpression) {
+    return new AstPropertyAccessExpression(block, propertyAccessExpression);
+  }
+
+  //TODO
+  throw new AstError(expression, 'value from expression');
+}
+
+export function getTypeFromTypeOrExpression(block: AstBlock, typeNode: TypeNode | undefined, expression: Expression | undefined): AstType | null {
+  if (typeNode) {
+    const type = getType(block, typeNode);
+    if (type) {
+      return type;
+    }
+  }
+
+  if (expression) {
+    const value = getValueFromExpression(block, expression);
+    if (value) {
+      if (value instanceof AstLiteralValue) {
+        return value.type;
+      } else if (value instanceof AstPropertyAccessExpression) {
+        return getTypeFromValue(value.value);
+      } else {
+        //TODO
+        console.log('unknown');
+      }
+    }
+  }
+  return null;
+}
+
+export function isSameType(first: AstType, second: AstType): boolean {
+  if (first instanceof AstKeywordType && second instanceof AstKeywordType) {
+    return first.equals(second);
+  }
+
+  throw new Error('type is not comparable');
+}
+
+export function getStringOrNull(value: AstValue | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+
+  return getStringValue(value);
+}
+
+export function getStringValue(value: AstValue): string {
+  if (value instanceof AstLiteralValue) {
+    const stringValue = value.value;
+    if (typeof stringValue === 'string') {
+      return stringValue;
+    }
+  }
+
+  throw new AstError(value.node, 'get string value');
+}
+
+export function getArrayValue<T>(value: AstValue, fn: (element: AstValue) => T): T[] {
+  const array: T[] = [];
+  if (value instanceof AstArrayValue) {
+    for (const element of value.elements) {
+      array.push(fn(element));
+    }
+  }
+  return array;
+}
+
+export function getObjectValue(value: AstValue): AstObjectValue {
+  if (value instanceof AstObjectValue) {
+    return value;
+  }
+  if (value instanceof AstVariableDeclaration) {
+    const variableValue = value.value;
+    if (variableValue instanceof AstObjectValue) {
+      return variableValue;
+    }
+  }
+
+  throw new AstError(value.node, 'unknown object value');
+}
+
+export class AstError extends Error {
+  constructor(private node: Node, private reason?: string) {
+    super();
+  }
+
+  get message() {
+    const sourceFile = this.node.getSourceFile();
+    const code = this.node.getFullText();
+    const pos = sourceFile.getLineAndCharacterOfPosition(this.node.getStart());
+    return `${this.reason}: ${code} [${sourceFile.fileName}, line ${pos.line}, char ${pos.character}]`;
+  }
 }

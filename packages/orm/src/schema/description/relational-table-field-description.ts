@@ -1,6 +1,6 @@
-import {RelationalTableSchemaTableFieldType} from '../relational-table-schema-table-field-type';
-import {failNever} from '@daita/common';
-import {RelationalTableDescription} from './relational-table-description';
+import { RelationalTableSchemaTableFieldType } from '../relational-table-schema-table-field-type';
+import { failNever } from '@daita/common';
+import { RelationalTableDescription } from './relational-table-description';
 
 
 export class RelationalTableFieldDescription {
@@ -35,6 +35,10 @@ export class RelationalTableFieldDescription {
     } else if (this.type === 'boolean') {
       if (typeof value !== 'boolean') {
         throw new Error(`${this.key} is not a boolean`);
+      }
+    } else if (this.type === 'json') {
+      if (typeof value !== 'object') {
+        throw new Error(`${this.key} is not an object`);
       }
     } else if (this.type === 'number') {
       if (typeof value !== 'number') {

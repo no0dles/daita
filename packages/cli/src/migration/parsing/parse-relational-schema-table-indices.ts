@@ -1,33 +1,48 @@
-import { AstVariableCallArgument } from '../../ast/ast-variable-call-argument';
 import { RelationalTableDescription } from '@daita/orm';
 import { RelationalTableIndexDescription } from '@daita/orm';
+import { AstObjectValue } from '../../ast/ast-object-value';
+import { AstArrayValue } from '../../ast/ast-array-value';
+import { AstError, getArrayValue, getStringValue } from '../../ast/utils';
+import { AstLiteralValue, AstStringLiteralValue } from '../../ast/ast-literal-value';
 
-export function parseRelationalSchemaTableIndices(table: RelationalTableDescription, optionsArgument: AstVariableCallArgument | null) {
-  const index = optionsArgument?.objectValue?.property('indices');
+export function parseRelationalSchemaTableIndices(table: RelationalTableDescription, optionsArgument: AstObjectValue) {
+  const index = optionsArgument.prop('indices');
   if (!index) {
     return;
   }
 
-  for (const indexProperty of index.properties()) {
-    const indexValue = indexProperty.value.objectValue;
-    if (indexProperty.value.objectValue && indexProperty.value.objectValue['columns']) {
-      const columns = indexProperty.value.objectValue['columns'].arrayValue?.map(v => v.stringValue);
-      const unique = indexProperty.value.objectValue['unique']?.booleanValue ?? false;
-      addIndex(table, indexProperty.name, columns, unique);
+  const indexObject = index.value;
+  if (!(indexObject instanceof AstObjectValue)) {
+    throw new Error('index should be an object literal');
+  }
+
+  for (const indexProperty of indexObject.props) {
+    const indexValue = indexProperty.value;
+    if (indexValue instanceof AstArrayValue) {
+      addIndex(table, indexProperty.name, getArrayValue(indexValue, elm => getStringValue(elm)), false);
+    } else if (indexValue instanceof AstObjectValue) {
+      const columnsProp = indexValue.requiredProp('columns').value;
+      if (columnsProp instanceof AstArrayValue) {
+        const columns = getArrayValue(columnsProp, elm => getStringValue(elm));
+        const unique = indexValue.hasProp('unique') ? indexValue.booleanProp('unique') : false;
+        addIndex(table, indexProperty.name, columns, unique);
+      } else if (columnsProp instanceof AstStringLiteralValue) {
+        const unique = indexValue.hasProp('unique') ? indexValue.booleanProp('unique') : false;
+        addIndex(table, indexProperty.name, [getStringValue(columnsProp)], unique);
+      } else {
+        throw new AstError(indexValue.node, 'invalid index');
+      }
+    } else if (indexValue instanceof AstLiteralValue) {
+      addIndex(table, indexProperty.name, [getStringValue(indexValue)], false);
+    } else if (indexValue) {
+      throw new AstError(indexValue.node, `invalid index`);
     } else {
-      addIndex(table, indexProperty.name, indexValue, false);
+      throw new AstError(indexProperty.node, `invalid index`);
     }
   }
 }
 
-function addIndex(table: RelationalTableDescription, name: string, columns: any, unique: boolean) {
-  if (columns instanceof Array) {
-    const idx = new RelationalTableIndexDescription(name, table, columns.map(f => table.field(f)), unique);
-    table.addIndex(name, idx);
-  } else if (typeof columns === 'string') {
-    const idx = new RelationalTableIndexDescription(name, table, [table.field(columns)], unique);
-    table.addIndex(name, idx);
-  } else {
-    throw new Error(`invalid index`);
-  }
+function addIndex(table: RelationalTableDescription, name: string, columns: string[], unique: boolean) {
+  const idx = new RelationalTableIndexDescription(name, table, columns.map(f => table.field(f)), unique);
+  table.addIndex(name, idx);
 }

@@ -1,7 +1,15 @@
 import { Rule } from '@daita/relational';
 
+export type SchemaTableIndexOption<T> = keyof T | (keyof T)[] | { columns: string | (string[]), unique: boolean }
+
 export interface SchemaTableOptions<T> {
+  key?: keyof T | (keyof T)[];
+  rules?: Rule[];
+  indices?: { [key: string]: SchemaTableIndexOption<T> }
+}
+
+export interface SchemaTableRequiredKeyOptions<T> {
   key: keyof T | (keyof T)[];
   rules?: Rule[];
-  indices?: { [key: string]: keyof T | (keyof T)[] | { columns: keyof T | (keyof T[]), unique: boolean } }
+  indices?: { [key: string]: SchemaTableIndexOption<T> }
 }

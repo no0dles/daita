@@ -3,7 +3,7 @@ import {ScriptKind, ScriptTarget} from 'typescript';
 import {getIdentifierName, isKind, parseSourceFile} from '../../ast/utils';
 import * as fs from 'fs';
 import {getMigrationName} from '../utils';
-import { writeRelationalMigrationStep } from '../steps/write-migration-step';
+import { writeRelationalMigrationStep } from './write-migration-step';
 import { MigrationStep } from '@daita/orm';
 
 export function addMigrationImport(

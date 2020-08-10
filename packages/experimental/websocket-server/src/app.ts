@@ -13,7 +13,7 @@ import {
   ContextManager,
   isAppTransactionOptions, isTokenProvider, TransactionContextManager,
 } from '@daita/http-server-common';
-import {failNever} from '../../../common/src/utils';
+import {failNever} from '@daita/common';
 import {SocketExecTransactionEvent} from './events/socket-exec-transaction';
 
 export function createHandler(socket: socketIo.Socket, options: AppOptions): WebsocketHandler {

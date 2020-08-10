@@ -1,95 +1,100 @@
-import { getChildNodes, getIdentifierName, isKind } from './utils';
-import * as ts from 'typescript';
-import { AstNewConstructor } from './ast-new-constructor';
-import { AstSourceFile } from './ast-source-file';
-import { AstVariableCall } from './ast-variable-call';
+import { AstError, getArrayValue, getBooleanValue, getName, getStringValue, isKind } from '../ast/utils';
+import {
+  AstObjectPropertyAssignmentValue,
+  AstObjectPropertyShorthandValue,
+  AstObjectPropertyValue,
+} from './ast-object-property-value';
+import { ObjectLiteralExpression, SyntaxKind } from 'typescript';
+import { AstValue } from './ast-value';
+import { AstBlock } from './ast-block';
+import { AstNode } from './ast-node';
 
-export class AstObjectValue {
-  stringValue: string | null = null;
-  numericValue: number | null = null;
-  booleanValue: boolean | null = null;
-  arrayValue: AstObjectValue[] | null = null;
-  newConstructor: AstNewConstructor | null = null;
-  callValue: { name: string, args: AstObjectValue[] } | null = null;
-  objectValue: { [key: string]: AstObjectValue } | null = null;
-
-  constructor(private sourceFile: AstSourceFile,
-              private expression: ts.Expression) {
-    const stringLiteral = isKind(this.expression, ts.SyntaxKind.StringLiteral);
-    const numericLiteral = isKind(this.expression, ts.SyntaxKind.NumericLiteral);
-    const arrayLiteral = isKind(this.expression, ts.SyntaxKind.ArrayLiteralExpression);
-    const objectLiteral = isKind(this.expression, ts.SyntaxKind.ObjectLiteralExpression);
-    const newExpression = isKind(this.expression, ts.SyntaxKind.NewExpression);
-    const identifier = isKind(this.expression, ts.SyntaxKind.Identifier);
-    const callExpression = isKind(this.expression, ts.SyntaxKind.CallExpression);
-
-    if (stringLiteral) {
-      this.stringValue = stringLiteral.text;
-    } else if (numericLiteral) {
-      this.numericValue = parseFloat(numericLiteral.text);
-    } else if (arrayLiteral) {
-      this.arrayValue = arrayLiteral.elements.map(elm => new AstObjectValue(this.sourceFile, elm));
-    } else if (objectLiteral) {
-      const obj: { [key: string]: AstObjectValue } = {};
-      for (const prop of objectLiteral.properties) {
-        const propAssign = isKind(prop, ts.SyntaxKind.PropertyAssignment);
-        if (propAssign) {
-          obj[getIdentifierName(propAssign.name)] = new AstObjectValue(this.sourceFile, propAssign.initializer);
-        }
-      }
-      this.objectValue = obj;
-    } else if (newExpression) {
-      this.newConstructor = new AstNewConstructor(this.sourceFile, newExpression);
-    } else if (this.expression.kind === ts.SyntaxKind.TrueKeyword) {
-      this.booleanValue = true;
-    } else if (this.expression.kind === ts.SyntaxKind.FalseKeyword) {
-      this.booleanValue = false;
-    } else if (this.expression.kind === ts.SyntaxKind.NullKeyword) {
-
-    } else if (identifier) {
-      const variable = sourceFile.getVariable(identifier.text, { includeImported: true });
-      if (variable) {
-        this.booleanValue = variable?.getInitializer()?.booleanValue ?? null;
-        this.numericValue = variable?.getInitializer()?.numericValue ?? null;
-        this.stringValue = variable?.getInitializer()?.stringValue ?? null;
-        this.arrayValue = variable?.getInitializer()?.arrayValue ?? null;
-      }
-    } else if (callExpression) {
-      const name = getIdentifierName(callExpression.expression);
-      const args: AstObjectValue[] = [];
-      for (const arg of callExpression.arguments) {
-        args.push(new AstObjectValue(this.sourceFile, arg));
-      }
-      this.callValue = { name, args };
-    }
+export class AstObjectValue implements AstNode {
+  constructor(private block: AstBlock,
+              public node: ObjectLiteralExpression) {
   }
 
-  property(name: string): AstObjectValue | null {
-    const propertyAssignments = getChildNodes(
-      this.expression,
-      ts.SyntaxKind.PropertyAssignment,
-    );
-    for (const propertyAssignment of propertyAssignments) {
-      const propertyName = getIdentifierName(propertyAssignment.name);
-      if (propertyName === name) {
-        return new AstObjectValue(this.sourceFile, propertyAssignment.initializer);
+  get props(): Generator<AstObjectPropertyValue> {
+    return this.getProps();
+  }
+
+  stringProp(name: string) {
+    const prop = this.requiredProp(name);
+    if (!prop.value) {
+      throw new AstError(this.node, 'prop ' + name + ' has no value');
+    }
+    return getStringValue(prop.value);
+  }
+
+  arrayProp<T>(name: string, fn: (elm: AstValue) => T): T[] {
+    const prop = this.requiredProp(name);
+    if (!prop.value) {
+      throw new AstError(this.node, 'prop ' + name + ' has no value');
+    }
+    return getArrayValue(prop.value, fn);
+  }
+
+  hasProp(name: string) {
+    for (const prop of this.props) {
+      if (prop.name === name) {
+        return true;
       }
     }
+    return false;
+  }
 
+  booleanProp(name: string) {
+    const prop = this.requiredProp(name);
+    if (!prop.value) {
+      throw new AstError(this.node, 'prop ' + name + ' has no value');
+    }
+    return getBooleanValue(prop.value);
+  }
+
+  requiredProp(name: string) {
+    const prop = this.prop(name);
+    if (prop) {
+      return prop;
+    }
+    throw new AstError(this.node, 'missing prop ' + name);
+  }
+
+  prop(name: string) {
+    for (const prop of this.props) {
+      if (prop.name === name) {
+        return prop;
+      }
+    }
     return null;
   }
 
-  properties() {
-    const propertyAssignments = getChildNodes(
-      this.expression,
-      ts.SyntaxKind.PropertyAssignment,
-    );
-
-    return propertyAssignments.map(propertyAssignment => {
-      return {
-        name: getIdentifierName(propertyAssignment.name),
-        value: new AstObjectValue(this.sourceFile, propertyAssignment.initializer),
-      };
-    });
+  private* getProps(): Generator<AstObjectPropertyValue> {
+    for (const property of this.node.properties) {
+      const propertyAssignment = isKind(property, SyntaxKind.PropertyAssignment);
+      if (propertyAssignment) {
+        yield new AstObjectPropertyAssignmentValue(this.block, propertyAssignment);
+      }
+      const shorthandPropertyAssignment = isKind(property, SyntaxKind.ShorthandPropertyAssignment);
+      if (shorthandPropertyAssignment) {
+        yield new AstObjectPropertyShorthandValue(this.block, shorthandPropertyAssignment);
+      }
+      const spreadAssignment = isKind(property, SyntaxKind.SpreadAssignment);
+      if (spreadAssignment) {
+        const variableName = getName(spreadAssignment.expression, 'spread assignment');
+        const variable = this.block.variable(variableName);
+        if (!variable) {
+          throw new AstError(this.node, 'unable to find variable');
+        }
+        const variableValue = variable.value;
+        if (variableValue instanceof AstObjectValue) {
+          for (const variableProp of variableValue.props) {
+            yield variableProp;
+          }
+        }
+      }
+    }
   }
+
+  // type: AstType;
+  // functionCalls: AstCallExpression[];
 }

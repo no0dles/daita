@@ -5,7 +5,11 @@ import * as inquirer from 'inquirer';
 import { AstContext } from '../ast/ast-context';
 import { parseSchemas } from '../migration/parsing/parse-schemas';
 import { SchemaDeclaration } from '../migration/parsing/schema-declaration';
-import { parseSchemaMigrationCalls, parseSchemaMigrations } from '../migration/parsing/parse-schema-migrations';
+import {
+  parseSchemaMigrationCalls,
+  parseSchemaMigrations,
+  parseSchemaMigrationVariables,
+} from '../migration/parsing/parse-schema-migrations';
 import { parseRelationalSchema } from '../migration/parsing/parse-relational-schema';
 import { RelationalSchemaDescription } from '@daita/orm';
 
@@ -149,7 +153,7 @@ export class SchemaInformation {
     return parseRelationalSchema(this.schemaDeclaration.variable);
   }
 
-  getMigrationCalls() {
-    return parseSchemaMigrationCalls(this.schemaDeclaration.variable);
+  getMigrationVariables() {
+    return parseSchemaMigrationVariables(this.schemaDeclaration.variable);
   }
 }

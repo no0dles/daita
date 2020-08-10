@@ -2,6 +2,7 @@ import { AstContext } from '../ast/ast-context';
 import { getMigrationRelativePath, getSchemaInformation, getSchemaLocation } from '../utils/path';
 import { removeMigrationImport, removeMigrationRegistration } from '../migration/writing/write-migration';
 import * as fs from "fs";
+import { AstObjectValue } from '../ast/ast-object-value';
 
 export async function undoMigration(options: { cwd?: string, schema?: string }) {
   const astContext = new AstContext();
@@ -18,22 +19,19 @@ export async function undoMigration(options: { cwd?: string, schema?: string }) 
     throw new Error('only possible if one leaf migration');
   }
   const lastMigration = migrations[0];
-  const migrationVariables = schemaInfo.getMigrationCalls();
+  const migrationVariables = schemaInfo.getMigrationVariables();
 
   for (const migrationVariable of migrationVariables) {
-    const argVariable = migrationVariable.variable;
-    if (!argVariable) {
-      throw new Error('undo only works with imports');
-    }
-    const id = argVariable.getInitializer()?.property('id')?.stringValue;
+    const migrationValue = migrationVariable.value as AstObjectValue; //TODO check
+    const id = migrationValue.stringProp('id');
     if (id !== lastMigration.id) {
       continue;
     }
 
-    const migrationName = argVariable.name;
+    const migrationName = migrationVariable.name;
     const relativePath = getMigrationRelativePath(
       schemaLocation.fileName,
-      argVariable.sourceFile.fileName,
+      migrationVariable.sourceFile.fileName,
     );
     const successImport = removeMigrationImport(
       schemaLocation.fileName,
@@ -46,8 +44,8 @@ export async function undoMigration(options: { cwd?: string, schema?: string }) 
     );
 
     if (successImport && successRegistration) {
-      console.log('delete migration ' + argVariable.sourceFile.fileName);
-      fs.unlinkSync(argVariable.sourceFile.fileName);
+      console.log('delete migration ' + migrationVariable.sourceFile.fileName);
+      fs.unlinkSync(migrationVariable.sourceFile.fileName);
     }
   }
 }

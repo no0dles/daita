@@ -1,6 +1,6 @@
-import {AstVariable} from '../../ast/ast-variable';
+import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 
 export interface SchemaDeclaration {
-  variable: AstVariable;
+  variable: AstVariableDeclaration;
   type: 'relational' | 'document';
 }

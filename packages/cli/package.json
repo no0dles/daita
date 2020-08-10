@@ -33,7 +33,7 @@
     "typescript": "~3.9.3"
   },
   "scripts": {
-    "build": "tsc -b tsconfig.json",
+    "build": "tsc -b tsconfig.build.json",
     "test": "jest",
     "prepublish": "node ../../scripts/build-pkg-config.js",
     "coverage": "jest --coverage",

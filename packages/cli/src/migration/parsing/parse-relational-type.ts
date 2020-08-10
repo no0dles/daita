@@ -1,82 +1,105 @@
 import { AstType } from '../../ast/ast-type';
-import { AstPropertyDeclaration } from '../../ast/ast-property-declaration';
-import { AstObjectValue } from '../../ast/ast-object-value';
 import { RelationalTableSchemaTableFieldType } from '@daita/orm';
+import { AstClassDeclarationProp } from '../../ast/ast-class-declaration-prop';
+import { AstUnionType } from '../../ast/ast-union-type';
+import { AstKeywordType } from '../../ast/ast-keyword-type';
+import { AstValue } from '../../ast/ast-value';
+import { AstArrayType } from '../../ast/ast-array-type';
+import { AstLiteralType } from '../../ast/ast-literal-type';
+import { AstEnumDeclaration } from '../../ast/ast-enum-declaration';
+import { AstTypeLiteralType } from '../../ast/ast-type-literal-type';
+import { AstReferenceType } from '../../ast/ast-reference-type';
+import { AstLiteralValue } from '../../ast/ast-literal-value';
+import { AstKeywordValue } from '../../ast/ast-keyword-value';
+import { AstPropertyAccessExpression } from '../../ast/ast-property-access-expression';
 
-export function parseRelationalType(
-  property: AstPropertyDeclaration,
-): RelationalTableSchemaTableFieldType {
-  if (!property.type) {
-    if (property.initializer) {
-      if (property.initializer.arrayValue) {
-        const types = property.initializer.arrayValue.map(value => getRelationalInitializerType(value));
-        const typeSet = new Set(types);
-        if (typeSet.size === 1 && types[0]) {
-          return types[0];
-        }
-      } else {
-        const type = getRelationalInitializerType(property.initializer);
-        if (type) {
-          return type;
-        }
+export function parseRelationalType(type: AstType): RelationalTableSchemaTableFieldType {
+  if (type instanceof AstArrayType) {
+    if (!type.elementType) {
+      throw new Error('array requires type');
+    }
+    const elementFieldType = parseRelationalType(type.elementType);
+    const arrayType = parseRelationalType(type);
+
+  } else if (type instanceof AstLiteralType) {
+    if (type.isNumber) {
+      return 'number';
+    } else if (type.isString) {
+      return 'string';
+    } else {
+      throw new Error('unknown literal type');
+    }
+  } else if (type instanceof AstTypeLiteralType) {
+    return 'json';
+  } else if (type instanceof AstReferenceType) {
+    if (type.name === 'Date') {
+      return 'date';
+    } else if (type.referenceType instanceof AstEnumDeclaration) {
+      return parseRelationalType(type.referenceType.type);
+    }
+  } else if (type instanceof AstUnionType) {
+    const relationalTypes: RelationalTableSchemaTableFieldType[] = [];
+
+    for (const unionType of type.types) {
+      if (unionType instanceof AstKeywordType && (unionType.isNull || unionType.isUndefined)) {
+        continue;
+      }
+
+      const relationalType = parseRelationalType(unionType);
+      if (relationalTypes.indexOf(relationalType) === -1) {
+        relationalTypes.push(relationalType);
       }
     }
-
-    throw new Error('unsupported type');
-  }
-
-  const primitiveType = getRelationalPrimitiveType(property.type);
-  if (primitiveType) {
-    return primitiveType;
-  } else if (property.type.kind === 'array') {
-    if (property.type.elementType.kind === 'string') {
-      return 'string[]';
-    } else if (property.type.elementType.kind === 'number') {
-      return 'number[]';
-    } else if (property.type.elementType.kind === 'boolean') {
-      return 'boolean[]';
-    } else if (property.type.elementType.kind === 'reference') {
-      if (property.type.elementType.referenceName === 'Date') {
-        return 'date[]';
-      }
+    if (relationalTypes.length === 1) {
+      return relationalTypes[0];
     }
-  } else if (property.type.kind === 'union') {
-    const types = property.type.types.filter(t => t.kind !== 'null' && t.kind !== 'undefined');
-    if (types.length === 1) {
-      const primitiveType = getRelationalPrimitiveType(types[0]);
-      if (primitiveType) {
-        return primitiveType;
-      }
+  } else if (type instanceof AstKeywordType) {
+    if (type.isBoolean) {
+      return 'boolean';
+    } else if (type.isString) {
+      return 'string';
+    } else if (type.isNumber) {
+      return 'number';
+    } else {
+      throw new Error('unknown keyword type');
     }
   }
 
   throw new Error(`unsupported type`);
 }
 
-function getRelationalInitializerType(initializer: AstObjectValue): RelationalTableSchemaTableFieldType | null {
-  if (initializer.booleanValue !== undefined && initializer.booleanValue !== null) {
-    return 'boolean';
+export function isRequiredProperty(property: AstClassDeclarationProp) {
+  if (property.canBeUndefined) {
+    return false;
   }
-  if (initializer.stringValue) {
-    return 'string';
-  }
-  if (initializer.newConstructor?.typeName === 'Date') {
-    return 'date';
-  }
-  return null;
-}
 
-function getRelationalPrimitiveType(type: AstType): RelationalTableSchemaTableFieldType | null {
-  if (type.kind === 'string') {
-    return 'string';
-  } else if (type.kind === 'boolean') {
-    return 'boolean';
-  } else if (type.kind === 'number') {
-    return 'number';
-  } else if (type.kind === 'reference') {
-    if (type.referenceName === 'Date') {
-      return 'date';
+  const propertyType = property.type;
+  if (propertyType instanceof AstUnionType) {
+    for (const subType of propertyType.types) {
+      if (subType instanceof AstKeywordType) {
+        if (subType.isNull || subType.isUndefined) {
+          return false;
+        }
+      }
     }
   }
-  return null;
+
+  return true;
+}
+
+export function getRawValue(type: RelationalTableSchemaTableFieldType, value: AstValue | null): any {
+  if (value instanceof AstLiteralValue) {
+    return value.value;
+  }
+
+  if (value instanceof AstKeywordValue) {
+    return value.value;
+  }
+
+  if (value instanceof AstPropertyAccessExpression) {
+    return getRawValue(type, value.value);
+  }
+
+  console.log(`unknown type for default ${type}`);
+  return undefined;
 }

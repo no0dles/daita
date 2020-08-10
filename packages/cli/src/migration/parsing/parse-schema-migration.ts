@@ -1,42 +1,25 @@
-import {parseSchemaMigrationStep} from './parse-schema-migration-step';
-import { MigrationDescription, MigrationStep } from '@daita/orm';
+import { parseSchemaMigrationStep } from './parse-schema-migration-step';
+import { MigrationDescription } from '@daita/orm';
 import { AstObjectValue } from '../../ast/ast-object-value';
+import { getObjectValue, getStringOrNull } from '../../ast/utils';
 
 export function parseSchemaMigration(
   migrationObject: AstObjectValue,
 ): MigrationDescription {
 
-  const idProp = migrationObject.property('id');
-  const afterProp = migrationObject.property('after');
-  const resolveProp = migrationObject.property('resolve');
-  const stepsProp = migrationObject.property('steps');
+  const id = migrationObject.stringProp('id');
+  const steps = migrationObject.arrayProp('steps', elm => {
+    const objectValue = getObjectValue(elm);
+    return parseSchemaMigrationStep(objectValue);
+  });
+  const afterProp = migrationObject.prop('after');
+  const resolveProp = migrationObject.prop('resolve');
 
-  let after: string | null = null;
-  let resolve: string | null = null;
-  const steps: MigrationStep[] = [];
-
-  if (!idProp || !idProp.stringValue) {
-    throw new Error('missing id prop in migration');
-  }
-
-  if (afterProp && afterProp.stringValue) {
-    after = afterProp.stringValue;
-  }
-
-  if (resolveProp && resolveProp.stringValue) {
-    resolve = resolveProp.stringValue;
-  }
-
-  if (!stepsProp || !stepsProp.arrayValue) {
-    throw new Error('missing steps prop in migration');
-  }
-
-  for (const step of stepsProp.arrayValue) {
-    steps.push(parseSchemaMigrationStep(step));
-  }
+  const after = getStringOrNull(afterProp?.value);
+  const resolve = getStringOrNull(resolveProp?.value);
 
   return {
-    id: idProp.stringValue,
+    id,
     after: after || undefined,
     resolve: resolve || undefined,
     steps,

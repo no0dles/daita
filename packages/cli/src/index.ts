@@ -22,6 +22,7 @@ program.command('migration:apply')
   .description('applies migration')
   .option('--cwd <string>', 'working directory')
   .option('-s, --schema <string>', 'schema filePath')
+  .option('-c, --context <string>', 'config context')
   .action(async (opts) => {
     await applyMigration(opts);
   });
@@ -68,7 +69,7 @@ program.command('diagram')
 program.command('serve')
   .description('serve daita api')
   .option('-p, --port <number>', 'serving api port', (value) => parseInt(value, 0))
-  .option('-c, --context <string>', 'context name')
+  .option('-c, --context <string>', 'config context name')
   .option('--cwd <string>', 'working directory')
   .action(async (opts) => {
     await serve(opts);

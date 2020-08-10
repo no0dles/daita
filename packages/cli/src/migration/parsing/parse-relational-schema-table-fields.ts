@@ -1,59 +1,31 @@
-import { parseRelationalType } from './parse-relational-type';
-import { AstPropertyDeclaration } from '../../ast/ast-property-declaration';
-import { RelationalTableDescription, RelationalTableSchemaTableFieldType } from '@daita/orm';
+import { getRawValue, isRequiredProperty, parseRelationalType } from './parse-relational-type';
+import { RelationalTableDescription } from '@daita/orm';
 import { RelationalTableFieldDescription } from '@daita/orm';
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
-import { AstObjectValue } from '../../ast/ast-object-value';
+import { AstReferenceType } from '../../ast/ast-reference-type';
 
 export function parseRelationalSchemaTableFields(table: RelationalTableDescription, classDeclaration: AstClassDeclaration) {
-  for (const property of classDeclaration.getProperties({ includedInherited: true })) {
+  for (const property of classDeclaration.allProps) {
     if (!property.name) {
       throw new Error('missing prop name');
     }
 
-    if (!property.type || property.type.kind !== 'reference' || property.type.referenceName === 'Date') {
-      try {
-        const type = parseRelationalType(property);
-        table.addField(property.name, new RelationalTableFieldDescription(table,
-          property.name, property.name,
-          type,
-          isRequiredProperty(property),
-          property.initializer ? getTypeDefault(type, property.initializer) : null));
-      } catch (e) {
-        throw new Error(`${classDeclaration.name}.${property.name}: ${e.message}`);
-      }
+    if (!property.type) {
+      throw new Error('missing prop type');
     }
-  }
-}
 
-export function getTypeDefault(type: RelationalTableSchemaTableFieldType, value: AstObjectValue) {
-  switch (type) {
-    case 'number':
-      return value.numericValue;
-    case 'string':
-      return value.stringValue;
-    case 'boolean':
-      return value.booleanValue;
-    case 'date':
-      return null; //TODO
-    default:
-      console.log(`unknown type for default ${type}`);
-      return null;
-  }
-}
+    if (property.type instanceof AstReferenceType && (property.type.referenceType instanceof AstClassDeclaration)) {
+      continue;
+    }
 
-export function isRequiredProperty(property: AstPropertyDeclaration) {
-  if (!property.type) {
-    return true;
+    const type = parseRelationalType(property.type);
+    table.addField(property.name,
+      new RelationalTableFieldDescription(table,
+        property.name, property.name,
+        type,
+        isRequiredProperty(property),
+        getRawValue(type, property.value),
+      ),
+    );
   }
-
-  if (property.type.allowUndefined) {
-    return false;
-  }
-
-  if (property.type.kind === 'union') {
-    return !property.type.types.some(t => t.kind === 'null' || t.kind === 'undefined');
-  }
-
-  return true;
 }
