@@ -1,7 +1,7 @@
-import { parseSchemaMigrationStep } from './parse-schema-migration-step';
 import { MigrationDescription } from '@daita/orm';
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { getObjectValue, getStringOrNull } from '../../ast/utils';
+import { convertValue } from './convert-value';
 
 export function parseSchemaMigration(
   migrationObject: AstObjectValue,
@@ -10,7 +10,7 @@ export function parseSchemaMigration(
   const id = migrationObject.stringProp('id');
   const steps = migrationObject.arrayProp('steps', elm => {
     const objectValue = getObjectValue(elm);
-    return parseSchemaMigrationStep(objectValue);
+    return convertValue(objectValue);
   });
   const afterProp = migrationObject.prop('after');
   const resolveProp = migrationObject.prop('resolve');

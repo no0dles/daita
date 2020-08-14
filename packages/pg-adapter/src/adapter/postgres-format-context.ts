@@ -15,6 +15,8 @@ export class PostgresFormatContext extends CounterFormatContext {
         return 'TIMESTAMPTZ';
       case 'boolean':
         return 'BOOLEAN';
+      case 'json':
+        return 'JSONB';
     }
 
     throw new Error(`unknown data type ${type}`);

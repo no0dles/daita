@@ -3,7 +3,7 @@ import {ScriptKind, ScriptTarget} from 'typescript';
 import {getIdentifierName, isKind, parseSourceFile} from '../../ast/utils';
 import * as fs from 'fs';
 import {getMigrationName} from '../utils';
-import { writeRelationalMigrationStep } from './write-migration-step';
+import { createExpressionFromValue } from './write-migration-step';
 import { MigrationStep } from '@daita/orm';
 
 export function addMigrationImport(
@@ -285,7 +285,7 @@ export function writeMigration(
     ts.createPropertyAssignment(
       ts.createIdentifier('steps'),
       ts.createArrayLiteral(
-        steps.map(step => writeRelationalMigrationStep(step)),
+        steps.map(step => createExpressionFromValue(step)),
         true,
       ),
     ));

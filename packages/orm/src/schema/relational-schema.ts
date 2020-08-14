@@ -5,13 +5,14 @@ import { RelationalSchemaDescription } from './description/relational-schema-des
 import { Constructable, DefaultConstructable } from '@daita/common';
 import { RelationalMapper } from '../context/relational-mapper';
 import { RelationalBackwardCompatibleMapper, RelationalNormalMapper } from '../context/orm-mapper';
-import { Rule } from '@daita/relational';
+import { Rule, SelectSql } from '@daita/relational';
 import { OrmRelationalSchema } from './orm-relational-schema';
 
 export class RelationalSchema implements OrmRelationalSchema {
   private migrationTree = new MigrationTree();
-  private rules: Rule[] = [];
+  private _rules: Rule[] = [];
   private tables: Constructable<any>[] = [];
+  private views: { view: Constructable<any>, query: SelectSql<any> }[] = [];
   private seeds: { model: DefaultConstructable<any>, values: any[] }[] = [];
 
   schema: string | null = null;
@@ -22,10 +23,9 @@ export class RelationalSchema implements OrmRelationalSchema {
     }
   }
 
-  table<T extends { id: any }>(model: DefaultConstructable<T>): void;
   table<T extends { id: any }>(
     model: DefaultConstructable<T>,
-    options: SchemaTableOptions<T>,
+    options?: SchemaTableOptions<T>,
   ): void;
   table<T>(
     model: DefaultConstructable<T>,
@@ -36,13 +36,14 @@ export class RelationalSchema implements OrmRelationalSchema {
     options?: SchemaTableOptions<T>,
   ): void {
     this.tables.push(model);
-    if (options?.rules) {
-      this.rules.push(...options.rules);
-    }
   }
 
-  rule<T>(...rules: Rule[]) {
-    this.rules.push(...rules);
+  view<T>(view: DefaultConstructable<T>, query: SelectSql<T>) {
+    this.views.push({ view, query });
+  }
+
+  rules(rules: Rule[]) {
+    this._rules.push(...rules);
   }
 
   seed<T>(model: DefaultConstructable<T>, values: T[]) {
@@ -58,7 +59,7 @@ export class RelationalSchema implements OrmRelationalSchema {
   }
 
   getRules(): Rule[] {
-    return this.rules;
+    return this._rules;
   }
 
   getMigrations(): MigrationTree {

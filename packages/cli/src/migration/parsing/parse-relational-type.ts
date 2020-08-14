@@ -36,6 +36,8 @@ export function parseRelationalType(type: AstType): RelationalTableSchemaTableFi
       return 'date';
     } else if (type.referenceType instanceof AstEnumDeclaration) {
       return parseRelationalType(type.referenceType.type);
+    } else if (type.name === 'UUID') {
+      return 'uuid';
     }
   } else if (type instanceof AstUnionType) {
     const relationalTypes: RelationalTableSchemaTableFieldType[] = [];
@@ -87,7 +89,11 @@ export function isRequiredProperty(property: AstClassDeclarationProp) {
   return true;
 }
 
-export function getRawValue(type: RelationalTableSchemaTableFieldType, value: AstValue | null): any {
+export function getRawValue(value: AstValue | null): any {
+  if (!value) {
+    return undefined;
+  }
+
   if (value instanceof AstLiteralValue) {
     return value.value;
   }
@@ -97,9 +103,9 @@ export function getRawValue(type: RelationalTableSchemaTableFieldType, value: As
   }
 
   if (value instanceof AstPropertyAccessExpression) {
-    return getRawValue(type, value.value);
+    return getRawValue(value.value);
   }
 
-  console.log(`unknown type for default ${type}`);
+  console.log(`unknown value`, value);
   return undefined;
 }

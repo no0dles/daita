@@ -10,6 +10,8 @@ export function generateRelationalMigrationSteps(
   const steps: MigrationStep[] = [];
 
   const mergedTables = merge(currentSchema.tables, newSchema.tables, (first, second) => first.key === second.key);
+  const mergedViews = merge(currentSchema.views, newSchema.views, (first, second) => first.key === second.key);
+
   for (const table of mergedTables.added) {
     steps.push({ kind: 'add_table', table: table.name });
     for (const field of table.fields) {
@@ -44,8 +46,12 @@ export function generateRelationalMigrationSteps(
     steps.push(...generateRelationalTableMigrationSteps(merge.current, merge.target));
   }
 
+  for (const view of mergedViews.removed) {
+    steps.push({ kind: 'drop_view', schema: view.schema, view: view.name });
+  }
+
   for (const table of mergedTables.removed) {
-    for(const reference of table.references) {
+    for (const reference of table.references) {
       steps.push({ kind: 'drop_table_foreign_key', table: table.name, schema: table.schema, name: reference.name });
     }
   }
@@ -69,7 +75,18 @@ export function generateRelationalMigrationSteps(
     }
   }
 
+  for (const view of mergedViews.merge) {
+    steps.push({ kind: 'alter_view', view: view.current.name, schema: view.current.schema, query: view.target.query });
+  }
+
+  for (const view of mergedViews.added) {
+    steps.push({ kind: 'drop_view', view: view.name, schema: view.schema });
+  }
+
   return steps.map(step => {
+    if (step.kind === 'drop_rule' || step.kind === 'add_rule') {
+      return step;
+    }
     if (step.schema === undefined || step.schema === null) {
       delete step.schema;
     }

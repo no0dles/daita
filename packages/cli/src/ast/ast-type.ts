@@ -8,12 +8,14 @@ import { AstClassDeclaration } from './ast-class-declaration';
 import { AstEnumDeclaration } from './ast-enum-declaration';
 import { AstMethodDeclaration } from './ast-method-declaration';
 import { AstFunctionDeclaration } from './ast-function-declaration';
+import { AstTypeDeclaration } from './ast-type-declaration';
 
 export type AstType =
   AstClassDeclaration
   | AstEnumDeclaration
   | AstMethodDeclaration
   | AstFunctionDeclaration
+  | AstTypeDeclaration
   | AstLiteralType
   | AstReferenceType
   | AstTypeLiteralType

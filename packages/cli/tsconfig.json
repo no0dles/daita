@@ -7,7 +7,9 @@
     "paths": {
       "@daita/relational": ["relational/src"],
       "@daita/common": ["common/src"],
-      "@daita/orm": ["orm/src"]
+      "@daita/orm": ["orm/src"],
+      "@daita/http-server": ["http/http-server/src"],
+      "@daita/http-server-common": ["http/http-server-common/src"]
     }
   },
   "exclude": [

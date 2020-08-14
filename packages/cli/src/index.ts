@@ -71,6 +71,7 @@ program.command('serve')
   .option('-p, --port <number>', 'serving api port', (value) => parseInt(value, 0))
   .option('-c, --context <string>', 'config context name')
   .option('--cwd <string>', 'working directory')
+  .option('--disable-auth', 'disable authorization and rules', false)
   .action(async (opts) => {
     await serve(opts);
   });

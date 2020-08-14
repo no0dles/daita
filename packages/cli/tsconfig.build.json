@@ -19,6 +19,9 @@
       "path": "../http/http-server/tsconfig.json"
     },
     {
+      "path": "../http/http-server-common/tsconfig.json"
+    },
+    {
       "path": "../http/http-adapter/tsconfig.json"
     }
   ],

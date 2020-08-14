@@ -24,7 +24,7 @@ export function parseRelationalSchemaTableFields(table: RelationalTableDescripti
         property.name, property.name,
         type,
         isRequiredProperty(property),
-        getRawValue(type, property.value),
+        getRawValue(property.value),
       ),
     );
   }

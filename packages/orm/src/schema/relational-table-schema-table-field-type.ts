@@ -7,4 +7,5 @@ export type RelationalTableSchemaTableFieldType =
   | 'date[]'
   | 'boolean'
   | 'boolean[]'
+  | 'uuid'
   | 'json';

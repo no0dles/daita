@@ -1,9 +1,12 @@
-import * as path from "path";
+import * as path from 'path';
 import { getRelationalDataAdapter } from '../utils/data-adapter';
 import { createHttpServer } from '@daita/http-server';
-import { anything, anonymous } from '@daita/relational';
+import { anything, anonymous, Rule } from '@daita/relational';
+import { getSchemaInformation, getSchemaLocation } from '../utils/path';
+import { AstContext } from '../ast/ast-context';
+import { getAuthorization } from '../utils/authorization';
 
-export async function serve(opts: {cwd?: string, schema?: string, port?: number}) {
+export async function serve(opts: { cwd?: string, schema?: string, port?: number, disableAuth?: boolean }) {
   process.env.SUPPRESS_NO_CONFIG_WARNING = 'true';
   if (opts.cwd) {
     process.env.NODE_CONFIG_DIR = path.join(opts.cwd, 'config');
@@ -14,12 +17,29 @@ export async function serve(opts: {cwd?: string, schema?: string, port?: number}
     throw new Error('no relational adapter');
   }
 
+  const rules: Rule[] = [];
+  const authorization = getAuthorization(opts);
+
+  if (opts.disableAuth) {
+    rules.push({ auth: anonymous(), type: 'allow', sql: anything() });
+  } else {
+    const schemaLocation = await getSchemaLocation(opts);
+    const astContext = new AstContext();
+    const schemaInfo = await getSchemaInformation(astContext, schemaLocation);
+    if (!schemaInfo) {
+      console.warn('could not load schema');
+      return;
+    }
+
+    const migrationTree = schemaInfo.getMigrationTree();
+    const currentSchema = migrationTree.getSchemaDescription({ backwardCompatible: false });
+    rules.push(...currentSchema.getRules());
+  }
+
   const app = createHttpServer({
     dataAdapter,
-    authorization: undefined, //TODO
-    rules: [
-      {auth: anonymous(), type: 'allow', sql: anything()}, //TODO
-    ],
+    authorization,
+    rules,
     cors: true,
   });
 

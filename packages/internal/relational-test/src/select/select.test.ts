@@ -5,6 +5,11 @@ import { getClient } from '@daita/relational';
 import { testAdapter } from '../adapters';
 import { selectFunctionTest } from './functions';
 import { RelationalTest } from '../relational-test';
+import { orderByTest } from './order-by.test';
+import { offsetTest } from './offset.test';
+import { limitTest } from './limit.test';
+import { havingTest } from './having.test';
+import { groupByTest } from './group-by.test';
 
 export function selectTest(arg: RelationalTest) {
   describe('select', () => {
@@ -21,4 +26,9 @@ export function selectTest(arg: RelationalTest) {
   });
 
   selectFunctionTest(arg);
+  orderByTest(arg);
+  offsetTest(arg);
+  limitTest(arg);
+  havingTest(arg);
+  groupByTest(arg);
 }

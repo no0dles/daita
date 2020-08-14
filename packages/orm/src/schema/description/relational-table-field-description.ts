@@ -32,6 +32,8 @@ export class RelationalTableFieldDescription {
       if (typeof value !== 'string') {
         throw new Error(`${this.key} is not a string`);
       }
+    } else if (this.type === 'uuid') {
+
     } else if (this.type === 'boolean') {
       if (typeof value !== 'boolean') {
         throw new Error(`${this.key} is not a boolean`);

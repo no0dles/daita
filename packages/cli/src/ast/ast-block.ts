@@ -2,13 +2,15 @@ import { AstSourceFile } from './ast-source-file';
 import { AstClassDeclaration } from './ast-class-declaration';
 import { AstFunctionDeclaration } from './ast-function-declaration';
 import { AstVariableDeclaration } from './ast-variable-declaration';
-import { isKind } from '../ast/utils';
+import { AstError, isKind } from '../ast/utils';
 import { getName } from './utils';
 import { AstValue } from './ast-value';
-import { BlockLike, Expression, Identifier, QualifiedName, SyntaxKind } from 'typescript';
+import { BlockLike, createKeywordTypeNode, Expression, Identifier, QualifiedName, SyntaxKind } from 'typescript';
 import { AstType } from './ast-type';
 import { AstEnumDeclaration } from './ast-enum-declaration';
 import { AstExpressionStatement } from './ast-expression-statement';
+import { AstTypeDeclaration } from './ast-type-declaration';
+import { AstKeywordValue } from './ast-keyword-value';
 
 export class AstBlock {
   constructor(public sourceFile: AstSourceFile,
@@ -33,6 +35,19 @@ export class AstBlock {
 
   get expressionStatements(): Generator<AstExpressionStatement> {
     return this.getExpressionStatements();
+  }
+
+  get types(): Generator<AstTypeDeclaration> {
+    return this.getTypes();
+  }
+
+  type(name: string) {
+    for (const typeDeclaration of this.types) {
+      if (typeDeclaration.name === name) {
+        return typeDeclaration;
+      }
+    }
+    return null;
   }
 
   enum(name: string) {
@@ -68,11 +83,21 @@ export class AstBlock {
         return classDeclaration;
       }
     }
+    for (const imp of this.sourceFile.imports) {
+      const type = imp.getType(name);
+      if (type instanceof AstClassDeclaration) {
+        return type;
+      }
+    }
     return null;
   }
 
   getValue(identifier: Identifier | string): AstValue | null {
     const name = getName(identifier, 'identifier');
+
+    if (name === 'undefined') {
+      return new AstKeywordValue(createKeywordTypeNode(SyntaxKind.UndefinedKeyword));
+    }
 
     const variable = this.variable(name);
     if (variable) {
@@ -124,6 +149,11 @@ export class AstBlock {
       return enumDeclaration;
     }
 
+    const typeDeclaration = this.type(name);
+    if (typeDeclaration) {
+      return typeDeclaration;
+    }
+
     const functionDeclaration = this.function(name);
     if (functionDeclaration) {
       return functionDeclaration;
@@ -171,6 +201,15 @@ export class AstBlock {
       const node = isKind(statement, SyntaxKind.ExpressionStatement);
       if (node) {
         yield new AstExpressionStatement(this, node);
+      }
+    }
+  }
+
+  private* getTypes() {
+    for (const statement of this.block.statements) {
+      const node = isKind(statement, SyntaxKind.TypeAliasDeclaration);
+      if (node) {
+        yield new AstTypeDeclaration(this, node);
       }
     }
   }

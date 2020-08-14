@@ -5,9 +5,9 @@ import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { parseRelationalSchemaTableReferences } from './parse-relational-schema-table-references';
 import { parseTableDescription } from './parse-table-description';
 import { parseRelationalSchemaTableIndices } from './parse-relational-schema-table-indices';
-import { parseRelationalSchemaTableRules } from './parse-relational-schema-table-rules';
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { AstObjectValue } from '../../ast/ast-object-value';
+import { AstError } from '../../ast/utils';
 
 export function parseRelationalSchemaTables(
   schema: RelationalSchemaDescription, schemaVariable: AstVariableDeclaration,
@@ -20,7 +20,7 @@ export function parseRelationalSchemaTables(
     const optionsArgument = call.argumentAt(1);
 
     if (!(classArgument instanceof AstClassDeclaration)) {
-      throw new Error('invalid table argument without class');
+      throw new AstError(classArgument?.node ?? call.node, 'invalid table argument without class');
     }
 
     let optionsObject: AstObjectValue | null = null;
@@ -56,7 +56,6 @@ export function parseRelationalSchemaTables(
     if (optionsObject) {
       parseRelationalSchemaTablePrimaryKeys(table, optionsObject);
       parseRelationalSchemaTableIndices(table, optionsObject);
-      parseRelationalSchemaTableRules(table, optionsObject);
     }
 
     schema.addTable(tableDescription, table);

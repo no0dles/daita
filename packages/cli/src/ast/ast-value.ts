@@ -7,10 +7,14 @@ import { AstArrayValue } from './ast-array-value';
 import { AstNewExpression } from './ast-new-expression';
 import { AstPropertyAccessExpression } from './ast-property-access-expression';
 import { AstVariableDeclaration } from './ast-variable-declaration';
+import { AstObjectPropertyValue } from './ast-object-property-value';
+import { AstSpreadElement } from './ast-spread-element';
 
 export type AstValue =
   AstType
+  | AstSpreadElement
   | AstVariableDeclaration
+  | AstObjectPropertyValue
   | AstCallExpression
   | AstPropertyAccessExpression
   | AstObjectValue

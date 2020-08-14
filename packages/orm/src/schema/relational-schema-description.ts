@@ -8,6 +8,7 @@ import { failNever } from '@daita/common';
 import { RelationalTableReferenceDescription } from './description/relational-table-reference-description';
 import { table } from '@daita/relational';
 import { RelationalTableIndexDescription } from './description/relational-table-index-description';
+import { RelationalViewDescription } from './description/relational-view-description';
 
 export function getSchemaDescription(schemaMapper: SchemaMapper, paths: MigrationDescription[]): RelationalSchemaDescription {
   const schema = new RelationalSchemaDescription();
@@ -48,16 +49,29 @@ export function getSchemaDescription(schemaMapper: SchemaMapper, paths: Migratio
         schema.table({ table: step.table, schema: step.schema }).removeField(step.fieldName);
       } else if (step.kind === 'drop_table') {
         schemaMapper.drop(step.table);
-        schema.removeTable(table(step.table, step.schema));
+        schema.dropTable(table(step.table, step.schema));
       } else if (step.kind === 'create_index') {
         const tbl = schema.table(table(step.table, step.schema));
         const idx = new RelationalTableIndexDescription(step.name, tbl, step.fields.map(field => tbl.field(field)), step.unique ?? false);
         tbl.addIndex(step.name, idx);
       } else if (step.kind === 'drop_index') {
         schema.table(table(step.table, step.schema)).dropIndex(step.name);
-      } else if(step.kind === 'drop_table_foreign_key') {
+      } else if (step.kind === 'drop_table_foreign_key') {
         const table = schema.table({ schema: step.schema, table: step.table });
         table.dropReference(step.name);
+      } else if (step.kind === 'add_rule') {
+        schema.addRule(step.rule);
+      } else if (step.kind === 'drop_rule') {
+        schema.dropRule(step.rule);
+      } else if (step.kind === 'add_view') {
+        const viewName = schemaMapper.add(step.view, path.id);
+        schema.addView(table(step.view, step.schema), new RelationalViewDescription(schema, step.query, step.view, viewName, step.schema));
+      } else if (step.kind === 'drop_view') {
+        schemaMapper.drop(step.view);
+        schema.dropView(table(step.view, step.schema));
+      } else if (step.kind === 'alter_view') {
+        const view = schema.view(table(step.view, step.schema));
+        view.query = step.query;
       } else {
         failNever(step, 'unknown migration step');
       }

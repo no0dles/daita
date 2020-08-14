@@ -21,6 +21,19 @@ describe('parse-relational-schema', () => {
     expect(parsedSchema.tables.map(t => t.name)).toIncludeAllMembers(['UserRole', 'Role', 'RolePermission', 'User', 'Permission']);
   });
 
+  it('should parse view', () => {
+    console.log(parsedSchema.views);
+    expect(parsedSchema.views).toHaveLength(1);
+  })
+
+
+  it(`should parse rules`, () => {
+    const actualRules = parsedSchema.getRules();
+    expect(actualRules).toEqual([
+      allow(authorized(), { select: all(), from: table('User') }),
+    ]);
+  });
+
   const baseFields: ExpectedTableField[] = [
     {
       required: true,
@@ -41,13 +54,10 @@ describe('parse-relational-schema', () => {
     foreignKeys: [],
     primaryKeys: ['id'],
     indices: { username: { columns: ['username'], unique: true } },
-    rules: [
-      allow(authorized(), { select: all(), from: table('User') }),
-    ],
     fields: [
       {
         required: true,
-        type: 'string',
+        type: 'uuid',
         defaultValue: undefined,
         name: 'id',
       },
@@ -148,7 +158,7 @@ describe('parse-relational-schema', () => {
         required: true,
         defaultValue: undefined,
         name: 'userId',
-        type: 'string',
+        type: 'uuid',
       },
       {
         required: true,
@@ -230,13 +240,6 @@ function shouldHaveTable(relationalSchema: RelationalSchemaDescription, options:
       });
     }
 
-    if (options.rules) {
-      it(`should parse rules`, () => {
-        const actualRules = roleTable.getRules();
-        expect(actualRules).toEqual(options.rules || []);
-      });
-    }
-
     it('should not contain more foreign keys', () => {
       expect(roleTable.references.map(ref => ref.name)).toEqual(options.foreignKeys.map(field => field.name));
     });
@@ -253,7 +256,6 @@ interface ExpectedTable {
   indices?: { [key: string]: { columns: string[], unique: boolean } };
   foreignKeys: { name: string, table: string, keys: string[], foreignKeys: string[], required: boolean }[],
   fields: ExpectedTableField[],
-  rules?: Rule[];
 }
 
 interface ExpectedTableField {

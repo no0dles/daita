@@ -1,4 +1,4 @@
-import { KeywordTypeNode, SyntaxKind } from 'typescript';
+import { Identifier, KeywordTypeNode, SyntaxKind } from 'typescript';
 import { AstNode } from './ast-node';
 import { AstError } from './utils';
 

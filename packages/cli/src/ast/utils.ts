@@ -32,12 +32,20 @@ import { AstArrayValue } from './ast-array-value';
 import { AstNewExpression } from './ast-new-expression';
 import { AstCallExpression } from './ast-call-expression';
 import { AstPropertyAccessExpression } from './ast-property-access-expression';
-import { AstNode } from './ast-node';
+import { AstSpreadElement } from './ast-spread-element';
 
 export function isKind(
   node: ts.Node | undefined,
   kind: ts.SyntaxKind.TypeLiteral,
 ): ts.TypeLiteralNode | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.SpreadElement,
+): ts.SpreadElement | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.TypeAliasDeclaration,
+): ts.TypeAliasDeclaration | null;
 export function isKind(
   node: ts.Node | undefined,
   kind: ts.SyntaxKind.ExportDeclaration,
@@ -343,6 +351,7 @@ export function getValueFromExpression(block: AstBlock, expression: Expression |
     return null;
   }
 
+
   const numericLiteral = isKind(expression, SyntaxKind.NumericLiteral);
   if (numericLiteral) {
     return new AstNumericLiteralValue(numericLiteral);
@@ -400,6 +409,11 @@ export function getValueFromExpression(block: AstBlock, expression: Expression |
     return new AstPropertyAccessExpression(block, propertyAccessExpression);
   }
 
+  const spreadElement = isKind(expression, SyntaxKind.SpreadElement);
+  if (spreadElement) {
+    return new AstSpreadElement(block, spreadElement);
+  }
+
   //TODO
   throw new AstError(expression, 'value from expression');
 }
@@ -419,6 +433,10 @@ export function getTypeFromTypeOrExpression(block: AstBlock, typeNode: TypeNode 
         return value.type;
       } else if (value instanceof AstPropertyAccessExpression) {
         return getTypeFromValue(value.value);
+      } else if (value instanceof AstPropertyAccessExpression) {
+        return getTypeFromValue(value.value);
+      } else if (value instanceof AstNewExpression) {
+        return value.type;
       } else {
         //TODO
         console.log('unknown');
@@ -480,14 +498,18 @@ export function getObjectValue(value: AstValue): AstObjectValue {
 }
 
 export class AstError extends Error {
-  constructor(private node: Node, private reason?: string) {
+  constructor(private node: Node, private reason: string) {
     super();
   }
 
-  get message() {
+  get message(): string {
     const sourceFile = this.node.getSourceFile();
-    const code = this.node.getFullText();
-    const pos = sourceFile.getLineAndCharacterOfPosition(this.node.getStart());
-    return `${this.reason}: ${code} [${sourceFile.fileName}, line ${pos.line}, char ${pos.character}]`;
+    if (sourceFile) {
+      const code = this.node.getFullText();
+      const pos = sourceFile.getLineAndCharacterOfPosition(this.node.getStart());
+      return `${this.reason}: ${code} [${sourceFile.fileName}, line ${pos.line}, char ${pos.character}]`;
+    } else {
+      return this.reason;
+    }
   }
 }

@@ -1,6 +1,5 @@
 import { RelationalSchema } from '@daita/orm';
-import { allow, authorized, all, table } from '@daita/relational';
-
+import { allow, field, authorized, all, table, UUID, join, equal } from '@daita/relational';
 
 export class BaseTable {
   createdDate!: Date;
@@ -8,7 +7,7 @@ export class BaseTable {
 }
 
 export class User extends BaseTable {
-  id!: string;
+  id!: UUID;
   username!: string;
   password: string = '1234';
   lastLogin!: Date;
@@ -18,7 +17,7 @@ export class User extends BaseTable {
 }
 
 export enum UserType {
-  Local= 'local',
+  Local = 'local',
   Social = 'social'
 }
 
@@ -41,7 +40,7 @@ export class Permission extends BaseTable {
 export class UserRole extends BaseTable {
   roleName!: string;
   role!: Role;
-  userId!: string;
+  userId!: UUID;
   user!: User;
 }
 
@@ -50,6 +49,11 @@ export class RolePermission extends BaseTable {
   role!: Role;
   permissionName!: string;
   permission!: Permission;
+}
+
+export class UserPermissions {
+  username!: string;
+  permissionName!: string;
 }
 
 export const userRules = [
@@ -61,12 +65,24 @@ schema.table(User, {
   indices: {
     username: {
       unique: true,
-      columns: ['username']
-    }
+      columns: ['username'],
+    },
   },
-  rules: userRules
 });
-schema.table(Role, {key: 'name', indices: { desc: ['description']}});
-schema.table(Permission, {key: ['name']});
-schema.table(UserRole, {key: ['roleName', 'userId']});
-schema.table(RolePermission, {key: ['roleName', 'permissionName']});
+schema.table(Role, { key: 'name', indices: { desc: ['description'] } });
+schema.table(Permission, { key: ['name'] });
+schema.table(UserRole, { key: ['roleName', 'userId'] });
+schema.table(RolePermission, { key: ['roleName', 'permissionName'] });
+schema.view(UserPermissions, {
+  select: {
+    username: field(User, 'username'),
+    permissionName: field(RolePermission, 'permissionName'),
+  },
+  from: table(User),
+  join: [
+    join(UserRole, equal(field(User, 'id'), field(UserRole, 'userId'))),
+    join(Role, equal(field(Role, 'name'), field(UserRole, 'roleName'))),
+    join(RolePermission, equal(field(Role, 'name'), field(RolePermission, 'roleName'))),
+  ],
+});
+schema.rules(userRules);

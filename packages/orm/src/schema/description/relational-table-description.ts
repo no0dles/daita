@@ -11,7 +11,6 @@ export class RelationalTableDescription {
   private fieldArrayMap: ArrayMap<RelationalTableFieldDescription>;
   private referenceArrayMap: ArrayMap<RelationalTableReferenceDescription>;
   private indexArrayMap: ArrayMap<RelationalTableIndexDescription>;
-  private rules: Rule[] = [];
 
   constructor(private schemaDescription: RelationalSchemaDescription,
               public key: string,
@@ -43,10 +42,6 @@ export class RelationalTableDescription {
     this.indexArrayMap.add(name, index);
   }
 
-  getRules() {
-    return [...this.rules];
-  }
-
   getIndex(name: string) {
     return this.indexArrayMap.get(name);
   }
@@ -61,10 +56,6 @@ export class RelationalTableDescription {
 
   addField(name: string, field: RelationalTableFieldDescription) {
     this.fieldArrayMap.add(name, field);
-  }
-
-  addRule(rule: Rule) {
-    this.rules.push(rule);
   }
 
   removeField(name: string) {

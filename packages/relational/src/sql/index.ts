@@ -13,3 +13,5 @@ export * from './sql';
 export * from './update-sql';
 export * from './drop-index-sql';
 export * from './create-index-sql';
+export * from './create-view-sql';
+export * from './drop-view-sql';

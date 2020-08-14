@@ -7,7 +7,7 @@ import {
   LockTableSql,
   CreateSchemaSql,
   CreateTableSql,
-  AlterTableSql, InsertSql, DropTableSql, CreateIndexSql, DropIndexSql,
+  AlterTableSql, InsertSql, DropTableSql, CreateIndexSql, DropIndexSql, CreateViewSql, DropViewSql,
 } from '@daita/relational';
 import { getTableDescriptionIdentifier } from '../schema';
 import { MigrationTree } from '../migration';
@@ -29,7 +29,9 @@ export type MigrationSql =
   | AlterTableSql
   | CreateIndexSql<any>
   | DropIndexSql
-  | InsertSql<any>;
+  | InsertSql<any>
+  | CreateViewSql<any>
+  | DropViewSql;
 
 export class OrmMigrationContext implements MigrationContext {
   constructor(private client: TransactionClient<Client<MigrationSql> & SelectClient> & SelectClient,
@@ -158,6 +160,23 @@ export class OrmMigrationContext implements MigrationContext {
               drop: {
                 constraint: step.name,
               },
+            });
+          } else if (step.kind === 'add_rule' || step.kind === 'drop_rule') {
+            //Do nothing
+          } else if (step.kind === 'add_view') {
+            sqls.push({
+              createView: table(step.view, step.schema),
+              as: step.query,
+            });
+          } else if (step.kind === 'alter_view') {
+            sqls.push({
+              createView: table(step.view, step.schema),
+              orReplace: true,
+              as: step.query,
+            });
+          } else if (step.kind === 'drop_view') {
+            sqls.push({
+              dropView: table(step.view, step.schema),
             });
           } else {
             failNever(step, 'unknown migration step');

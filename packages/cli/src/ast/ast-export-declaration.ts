@@ -10,34 +10,25 @@ export class AstExportDeclaration {
   }
 
   getValue(name: string): AstValue | null {
-    const importPath = this.sourceFile.getModulePath(this.moduleSpecifier);
-    if (!importPath) {
-      console.warn('import null');
-      return null;
-    }
     const sourceFile = this.getExportSourceFile();
     if (!sourceFile) {
-      console.warn('import null');
       return null;
     }
     return sourceFile.block.getValue(name);
   }
 
   getType(name: string): AstType | null {
-    const importPath = this.sourceFile.getModulePath(this.moduleSpecifier);
-    if (!importPath) {
-      console.warn('import null');
-      return null;
-    }
     const sourceFile = this.getExportSourceFile();
     if (!sourceFile) {
-      console.warn('import null');
       return null;
     }
     return sourceFile.block.getType(name);
   }
 
-  private get moduleSpecifier(): string {
+  private get moduleSpecifier(): string | null {
+    if (!this.node.moduleSpecifier) {
+      return null;
+    }
     const stringLiteral = isKind(this.node.moduleSpecifier, SyntaxKind.StringLiteral);
     if (stringLiteral) {
       return stringLiteral.text;
@@ -47,9 +38,12 @@ export class AstExportDeclaration {
   }
 
   private getExportSourceFile(): AstSourceFile | null {
-    const importPath = this.sourceFile.getModulePath(this.moduleSpecifier);
+    const module = this.moduleSpecifier;
+    if (!module) {
+      return null;
+    }
+    const importPath = this.sourceFile.getModulePath(module);
     if (!importPath) {
-      console.warn('import not found');
       return null;
     }
 
