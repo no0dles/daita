@@ -2,6 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as childProcess from 'child_process';
 import { Defer } from '@daita/common';
+import { getSchemaInformation, getSchemaLocation, SchemaLocation } from '../utils/path';
+import { AstContext } from '../ast/ast-context';
+import { generateRelationalMigrationSteps } from '@daita/orm';
 
 export function isNotNull<T>(value: T): asserts value is NonNullable<T> {
   expect(value).not.toBeUndefined();
@@ -202,4 +205,28 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
     };
     return await callback(context);
   };
+}
+
+
+export async function getMigrationSteps(fileName: string) {
+  const schemaLocation: SchemaLocation = {
+    fileName,
+    directory: path.dirname(fileName),
+    migrationDirectory: path.join(path.dirname(fileName), 'migrations'),
+    sourceDirectory: path.dirname(fileName),
+  };
+
+  const astContext = new AstContext();
+  const schemaInfo = await getSchemaInformation(astContext, schemaLocation);
+  if (!schemaInfo) {
+    throw new Error('unable to get schema information');
+  }
+
+  const migrationTree = schemaInfo.getMigrationTree();
+  const currentSchema = migrationTree.getSchemaDescription({ backwardCompatible: false });
+
+  return generateRelationalMigrationSteps(
+    currentSchema,
+    schemaInfo.getRelationalSchema(),
+  );
 }

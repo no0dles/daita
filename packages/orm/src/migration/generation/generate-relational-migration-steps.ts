@@ -11,6 +11,7 @@ export function generateRelationalMigrationSteps(
 
   const mergedTables = merge(currentSchema.tables, newSchema.tables, (first, second) => first.key === second.key);
   const mergedViews = merge(currentSchema.views, newSchema.views, (first, second) => first.key === second.key);
+  const mergedRules = merge(currentSchema.getRules(), newSchema.getRules(), (first, second) => JSON.stringify(first) === JSON.stringify(second));
 
   for (const table of mergedTables.added) {
     steps.push({ kind: 'add_table', table: table.name });
@@ -80,7 +81,15 @@ export function generateRelationalMigrationSteps(
   }
 
   for (const view of mergedViews.added) {
-    steps.push({ kind: 'drop_view', view: view.name, schema: view.schema });
+    steps.push({ kind: 'add_view', view: view.name, schema: view.schema, query: view.query });
+  }
+
+  for (const rule of mergedRules.added) {
+    steps.push({ kind: 'add_rule', rule: rule });
+  }
+
+  for (const rule of mergedRules.removed) {
+    steps.push({ kind: 'drop_rule', rule: rule });
   }
 
   return steps.map(step => {

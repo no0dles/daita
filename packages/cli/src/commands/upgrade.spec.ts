@@ -1,4 +1,4 @@
-import {setupEnv} from './utils.test';
+import {setupEnv} from '../test/utils.test';
 
 describe('cli upgrade', () => {
   it(`should upgrade to latest`, setupEnv('upgrade', async (ctx) => {

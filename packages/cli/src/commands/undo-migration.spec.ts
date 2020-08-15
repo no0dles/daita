@@ -1,4 +1,4 @@
-import {setupEnv} from './utils.test';
+import {setupEnv} from '../test/utils.test';
 
 describe('cli migration:undo', () => {
   it(`should undo migration`, setupEnv('undo-migration', async (ctx) => {

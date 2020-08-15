@@ -48,16 +48,16 @@ export function convertValue(value: AstValue): any {
   } else if (value instanceof AstClassDeclaration) {
     return createClass(value);
   } else if (value instanceof AstKeywordValue) {
-    return value.value
+    return value.value;
   } else {
     throw new AstError(value.node, 'unable to convert to value');
   }
 }
 
 export function createClass(classDeclaration: AstClassDeclaration) {
-  const classValue: any = {};
+  const classValue: any = function() { };
 
-  classValue.name = classDeclaration.name;
+  Object.defineProperty(classValue, 'name', { value: classDeclaration.name });
 
   for (const prop of classDeclaration.staticProps) {
     if (prop.value) {
