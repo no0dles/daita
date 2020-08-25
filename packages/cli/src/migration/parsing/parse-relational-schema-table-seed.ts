@@ -18,6 +18,10 @@ export function parseRelationalSchemaTableSeed(schema: RelationalSchemaDescripti
     const tableDescription = parseTableDescription(classArgument);
     const table = schema.table(tableDescription);
 
+    if (seedValue instanceof AstVariableDeclaration) {
+      seedValue = seedValue.value;
+    }
+
     if (seedValue instanceof AstArrayValue) {
       for (const ruleElement of seedValue.elements) {
         const seed = convertValue(ruleElement);

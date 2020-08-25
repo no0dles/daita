@@ -7,10 +7,10 @@ export class AstLiteralType implements AstNode {
   }
 
   get isString() {
-    return !!isKind(this.node, SyntaxKind.StringLiteral);
+    return !!isKind(this.node.literal, SyntaxKind.StringLiteral);
   }
 
   get isNumber() {
-    return !!isKind(this.node, SyntaxKind.NumericLiteral);
+    return !!isKind(this.node.literal, SyntaxKind.NumericLiteral);
   }
 }

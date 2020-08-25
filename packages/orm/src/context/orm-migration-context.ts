@@ -216,7 +216,7 @@ export class OrmMigrationContext implements MigrationContext {
             });
           } else if (step.kind === 'insert_seed') {
             sqls.push({
-              insert: step.seed,
+              insert: { ...step.keys, ...step.seed },
               into: table(step.table, step.schema),
             });
           } else if (step.kind === 'update_seed') {
