@@ -1,6 +1,6 @@
 {
   "name": "@daita/auth-web",
-  "version": "0.2.48",
+  "version": "0.2.49",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -18,7 +18,7 @@
     "@angular/platform-browser": "~10.0.4",
     "@angular/platform-browser-dynamic": "~10.0.4",
     "@angular/router": "~10.0.4",
-    "@daita/http-adapter": "^0.2.48",
+    "@daita/http-adapter": "^0.2.49",
     "@tailwindcss/ui": "^0.4.0",
     "jwt-decode": "^2.2.0",
     "rxjs": "~6.5.5",
