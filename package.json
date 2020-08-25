@@ -9,7 +9,7 @@
     "typescript": "^3.9.3"
   },
   "scripts": {
-    "release": "lerna version --force-publish",
+    "release": "npm run build && lerna version --force-publish && lerna publish from-git",
     "build": "tsc -b",
     "clean": "git clean -fX -d packages/**/dist",
     "rebuild": "npm run clean && npm run build",
