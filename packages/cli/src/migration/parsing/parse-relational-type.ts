@@ -12,6 +12,7 @@ import { AstReferenceType } from '../../ast/ast-reference-type';
 import { AstLiteralValue } from '../../ast/ast-literal-value';
 import { AstKeywordValue } from '../../ast/ast-keyword-value';
 import { AstPropertyAccessExpression } from '../../ast/ast-property-access-expression';
+import { AstError } from '../../ast/utils';
 
 export function parseRelationalType(type: AstType): RelationalTableSchemaTableFieldType {
   if (type instanceof AstArrayType) {
@@ -27,7 +28,7 @@ export function parseRelationalType(type: AstType): RelationalTableSchemaTableFi
     } else if (type.isString) {
       return 'string';
     } else {
-      throw new Error('unknown literal type');
+      throw new AstError(type.node, 'unknown literal type');
     }
   } else if (type instanceof AstTypeLiteralType) {
     return 'json';
@@ -63,11 +64,11 @@ export function parseRelationalType(type: AstType): RelationalTableSchemaTableFi
     } else if (type.isNumber) {
       return 'number';
     } else {
-      throw new Error('unknown keyword type');
+      throw new AstError(type.node, 'unknown keyword type');
     }
   }
 
-  throw new Error(`unsupported type`);
+  throw new AstError(type.node, `unsupported type`);
 }
 
 export function isRequiredProperty(property: AstClassDeclarationProp) {
