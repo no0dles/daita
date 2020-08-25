@@ -1,6 +1,6 @@
 {
   "name": "@daita/pg-adapter",
-  "version": "0.2.47",
+  "version": "0.2.48",
   "publishConfig": {
     "access": "public",
     "directory": "dist"
@@ -16,13 +16,13 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@daita/common": "^0.2.47",
-    "@daita/relational": "^0.2.47",
+    "@daita/common": "^0.2.48",
+    "@daita/relational": "^0.2.48",
     "pg": "^8.3.0",
     "pg-connection-string": "^2.1.0"
   },
   "devDependencies": {
-    "@daita/relational-test": "^0.2.47",
+    "@daita/relational-test": "^0.2.48",
     "@types/jest": "^25.1.1",
     "@types/pg": "^7.14.4",
     "jest": "^25.1.0",
