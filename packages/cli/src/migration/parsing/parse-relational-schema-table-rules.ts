@@ -1,4 +1,4 @@
-import { RelationalSchemaDescription } from '@daita/orm';
+import { getRuleId, RelationalSchemaDescription } from '@daita/orm';
 import { AstArrayValue } from '../../ast/ast-array-value';
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { AstError } from '../../ast/utils';
@@ -15,7 +15,8 @@ export function parseRelationalSchemaTableRules(schema: RelationalSchemaDescript
     if (ruleValue instanceof AstArrayValue) {
       for (const ruleElement of ruleValue.elements) {
         const rule = convertValue(ruleElement);
-        schema.addRule(rule);
+        const id = getRuleId(rule);
+        schema.addRule(id, rule);
       }
     } else {
       throw new AstError(ruleValue?.node ?? rule.node, 'unable to parse rules');

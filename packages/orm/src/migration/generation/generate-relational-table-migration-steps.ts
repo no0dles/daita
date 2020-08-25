@@ -9,6 +9,7 @@ export function generateRelationalTableMigrationSteps(
   const steps: MigrationStep[] = [];
 
   const mergedFields = merge(currentTable.fields, newTable.fields, (first, second) => first.name === second.name);
+
   for (const addedField of mergedFields.added) {
     steps.push({
       kind: 'add_table_field',
@@ -68,6 +69,40 @@ export function generateRelationalTableMigrationSteps(
   }
   for (const mergedIndex of mergedIndices.merge) {
     throw new Error('chaning index is not supported yet');
+  }
+
+  const mergedSeeds = merge(currentTable.seeds, newTable.seeds, (first, second) => first.key === second.key);
+  for (const addedSeed of mergedSeeds.added) {
+    steps.push({
+      kind: 'insert_seed',
+      seed: addedSeed.seed,
+      keys: addedSeed.seedKeys,
+      table: currentTable.name,
+      schema: currentTable.schema,
+    });
+  }
+
+  for (const mergedSeed of mergedSeeds.merge) {
+    if (JSON.stringify(mergedSeed.current.seed) === JSON.stringify(mergedSeed.target.seed)) {
+      continue;
+    }
+
+    steps.push({
+      kind: 'update_seed',
+      keys: mergedSeed.target.seedKeys,
+      seed: mergedSeed.target.seed,
+      table: currentTable.name,
+      schema: currentTable.schema,
+    });
+  }
+
+  for (const deletedSeeds of mergedSeeds.removed) {
+    steps.push({
+      kind: 'delete_seed',
+      keys: deletedSeeds.seedKeys,
+      table: currentTable.name,
+      schema: currentTable.schema,
+    });
   }
 
   return steps;

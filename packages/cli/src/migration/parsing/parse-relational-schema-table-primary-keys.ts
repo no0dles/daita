@@ -4,8 +4,8 @@ import { getArrayValue, getStringValue } from '../../ast/utils';
 import { AstArrayValue } from '../../ast/ast-array-value';
 import { AstLiteralValue } from '../../ast/ast-literal-value';
 
-export function parseRelationalSchemaTablePrimaryKeys(table: RelationalTableDescription, optionsArgument: AstObjectValue) {
-  const key = optionsArgument.prop('key');
+export function parseRelationalSchemaTablePrimaryKeys(table: RelationalTableDescription, optionsArgument: AstObjectValue | null) {
+  const key = optionsArgument?.prop('key');
 
   const keys = [];
   if (key && key.value instanceof AstArrayValue) {

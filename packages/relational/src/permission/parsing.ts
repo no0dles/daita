@@ -1,8 +1,32 @@
 import { Rule } from './description';
 import { allow, forbid, reviveRequestContext } from './function';
 
-export function parsing(content: string): Rule[] {
-  const rules = JSON.parse(content, (key, value) => {
+export function parseRules(content: string): Rule[] {
+  const rules = reviveRuleJson<Rule[]>(content);
+  const result: Rule[] = [];
+  for (const rule of rules) {
+    result.push(restoreRule(rule));
+  }
+  return result;
+}
+
+export function parseRule(content: string): Rule {
+  const rule = reviveRuleJson<Rule>(content);
+  return restoreRule(rule);
+}
+
+function restoreRule(rule: Rule): Rule {
+  if (rule.type === 'allow') {
+    return allow(rule.auth, rule.sql);
+  } else if (rule.type === 'forbid') {
+    return forbid(rule.auth, rule.sql);
+  } else {
+    throw new Error(`unknown rule type ${rule.type}`);
+  }
+}
+
+function reviveRuleJson<T>(content: string): T {
+  return JSON.parse(content, (key, value) => {
     if (key === '$requestContext') {
       return reviveRequestContext(value);
     } else if (typeof value === 'object') {
@@ -12,15 +36,4 @@ export function parsing(content: string): Rule[] {
     }
     return value;
   });
-  const result: Rule[] = [];
-  for (const rule of rules) {
-    if (rule.type === 'allow') {
-      result.push(allow(rule.auth, rule.sql));
-    } else if (rule.type === 'forbid') {
-      result.push(forbid(rule.auth, rule.sql));
-    } else {
-      throw new Error(`unknown rule type ${rule.type}`);
-    }
-  }
-  return result;
 }

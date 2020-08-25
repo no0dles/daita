@@ -11,6 +11,7 @@ export class RelationalTableDescription {
   private fieldArrayMap: ArrayMap<RelationalTableFieldDescription>;
   private referenceArrayMap: ArrayMap<RelationalTableReferenceDescription>;
   private indexArrayMap: ArrayMap<RelationalTableIndexDescription>;
+  private seedArrayMap: ArrayMap<{ key: string, seed: any, seedKeys: any }>;
 
   constructor(private schemaDescription: RelationalSchemaDescription,
               public key: string,
@@ -20,6 +21,7 @@ export class RelationalTableDescription {
     this.referenceArrayMap = new ArrayMap<RelationalTableReferenceDescription>();
     this.primaryKeysArray = new ArrayMap<RelationalTableFieldDescription>();
     this.indexArrayMap = new ArrayMap<RelationalTableIndexDescription>();
+    this.seedArrayMap = new ArrayMap<{ key: string, seed: any, seedKeys: any }>();
   }
 
   get fields() {
@@ -36,6 +38,10 @@ export class RelationalTableDescription {
 
   get indices() {
     return arrayClone(this.indexArrayMap.array);
+  }
+
+  get seeds() {
+    return arrayClone(this.seedArrayMap.array);
   }
 
   addIndex(name: string, index: RelationalTableIndexDescription) {
@@ -88,5 +94,26 @@ export class RelationalTableDescription {
       throw new Error(`Unable to get reference ${alias} from table ${this.key}`);
     }
     return reference;
+  }
+
+  private getKeyForSeed(seed: any) {
+    return this.primaryKeys.map(primaryKey => {
+      return seed[primaryKey.key] ?? '';
+    }).join('-');
+  }
+
+  insertSeed(seedKeys: any, seed: any) {
+    const key = this.getKeyForSeed(seedKeys);
+    this.seedArrayMap.add(key, { key, seed, seedKeys });
+  }
+
+  deleteSeed(seedKeys: any) {
+    const key = this.getKeyForSeed(seedKeys);
+    this.seedArrayMap.remove(key);
+  }
+
+  updateSeed(seedKeys: any, seed: any) {
+    const key = this.getKeyForSeed(seedKeys);
+    this.seedArrayMap.update(key, { key, seed, seedKeys });
   }
 }

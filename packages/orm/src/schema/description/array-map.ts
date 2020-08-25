@@ -16,6 +16,16 @@ export class ArrayMap<T> {
     return key in this.map;
   }
 
+  update(key: string, value: T) {
+    const oldValue = this.map[key];
+    if(!oldValue) {
+      throw new Error('nothing to update for key ' + key);
+    }
+    const oldIndex = this.array.indexOf(oldValue);
+    this.array.splice(oldIndex, 1, value);
+    this.map[key] = value;
+  }
+
   remove(key: string) {
     const item = this.map[key];
     const index = this.array.indexOf(item);

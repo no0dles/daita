@@ -3,6 +3,7 @@ import { RelationalTableDescription } from './relational-table-description';
 import { arrayClone } from '@daita/common';
 import { Rule, TableDescription } from '@daita/relational';
 import { RelationalViewDescription } from './relational-view-description';
+import { getRuleId } from '../../migration/generation/rule-id';
 
 export function getTableDescriptionIdentifier(table: TableDescription<any>): string {
   if (table.schema) {
@@ -14,7 +15,7 @@ export function getTableDescriptionIdentifier(table: TableDescription<any>): str
 export class RelationalSchemaDescription {
   private readonly tableArrayMap = new ArrayMap<RelationalTableDescription>();
   private readonly viewArrayMap = new ArrayMap<RelationalViewDescription>();
-  private readonly rules: Rule[] = [];
+  private readonly rulesArrayMap = new ArrayMap<{ id: string, rule: Rule }>();
 
   table(key: TableDescription<any>): RelationalTableDescription {
     const identifier = getTableDescriptionIdentifier(key);
@@ -34,22 +35,16 @@ export class RelationalSchemaDescription {
     return tableDescription;
   }
 
-  getRules() {
-    return [...this.rules];
+  get rules() {
+    return this.rulesArrayMap.array;
   }
 
-  addRule(rule: Rule) {
-    this.rules.push(rule);
+  addRule(id: string, rule: Rule) {
+    this.rulesArrayMap.add(id, { id, rule });
   }
 
-  dropRule(rule: Rule) {
-    for (let i = 0; i < this.rules.length; i++) {
-      const existingRule = this.rules[i];
-      if (JSON.stringify(existingRule) === JSON.stringify(rule)) {
-        this.rules.splice(i, 1);
-        return;
-      }
-    }
+  dropRule(ruleId: string) {
+    this.rulesArrayMap.remove(ruleId);
   }
 
   get views() {

@@ -1,5 +1,5 @@
 import { allow, authorized, requestContext } from './function';
-import { parsing } from './parsing';
+import { parseRules } from './parsing';
 import { equal } from '../sql/function';
 import { field } from '../sql/function/field';
 import { table } from '../sql/function/table';
@@ -16,7 +16,7 @@ describe('parsing', () => {
       }),
     ];
     const jsonRules = JSON.stringify(srcRules);
-    const dstRules = parsing(jsonRules);
+    const dstRules = parseRules(jsonRules);
     const matches = matchesRules({
       select: 'test',
       from: table('tbl'),

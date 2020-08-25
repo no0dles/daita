@@ -1,4 +1,4 @@
-import { parsing, RelationalTransactionAdapterFactory, Rule } from '@daita/relational';
+import { parseRules, RelationalTransactionAdapterFactory, Rule } from '@daita/relational';
 import * as fs from 'fs';
 import { createHttpServer } from '@daita/http-server';
 import { AppAuthorization } from '@daita/http-server-common';
@@ -17,7 +17,7 @@ const rules: Rule[] = [];
 if (fs.existsSync(RULE_FILE)) {
   const content = fs.readFileSync(RULE_FILE, { encoding: 'utf8' });
   try {
-    rules.push(...parsing(content));
+    rules.push(...parseRules(content));
   } catch (e) {
     console.error('error parsing rules');
     console.error(e);

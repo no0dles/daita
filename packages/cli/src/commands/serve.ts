@@ -33,7 +33,7 @@ export async function serve(opts: { cwd?: string, schema?: string, port?: number
 
     const migrationTree = schemaInfo.getMigrationTree();
     const currentSchema = migrationTree.getSchemaDescription({ backwardCompatible: false });
-    rules.push(...currentSchema.getRules());
+    rules.push(...currentSchema.rules.map(r => r.rule));
   }
 
   const app = createHttpServer({

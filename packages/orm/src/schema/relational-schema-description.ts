@@ -60,9 +60,9 @@ export function getSchemaDescription(schemaMapper: SchemaMapper, paths: Migratio
         const table = schema.table({ schema: step.schema, table: step.table });
         table.dropReference(step.name);
       } else if (step.kind === 'add_rule') {
-        schema.addRule(step.rule);
+        schema.addRule(step.ruleId, step.rule);
       } else if (step.kind === 'drop_rule') {
-        schema.dropRule(step.rule);
+        schema.dropRule(step.ruleId);
       } else if (step.kind === 'add_view') {
         const viewName = schemaMapper.add(step.view, path.id);
         schema.addView(table(step.view, step.schema), new RelationalViewDescription(schema, step.query, step.view, viewName, step.schema));
@@ -72,6 +72,15 @@ export function getSchemaDescription(schemaMapper: SchemaMapper, paths: Migratio
       } else if (step.kind === 'alter_view') {
         const view = schema.view(table(step.view, step.schema));
         view.query = step.query;
+      } else if(step.kind === 'insert_seed') {
+        const table = schema.table({ schema: step.schema, table: step.table });
+        table.insertSeed(step.keys, step.seed);
+      } else if(step.kind === 'update_seed') {
+        const table = schema.table({ schema: step.schema, table: step.table });
+        table.updateSeed(step.keys, step.seed);
+      } else if(step.kind === 'delete_seed') {
+        const table = schema.table({ schema: step.schema, table: step.table });
+        table.deleteSeed(step.keys);
       } else {
         failNever(step, 'unknown migration step');
       }

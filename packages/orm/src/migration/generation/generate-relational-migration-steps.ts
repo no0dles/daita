@@ -2,6 +2,7 @@ import { merge } from '@daita/common';
 import { RelationalSchemaDescription } from '../../schema/description/relational-schema-description';
 import { MigrationStep } from '../migration-step';
 import { generateRelationalTableMigrationSteps } from './generate-relational-table-migration-steps';
+import { getRuleId } from './rule-id';
 
 export function generateRelationalMigrationSteps(
   currentSchema: RelationalSchemaDescription,
@@ -11,7 +12,7 @@ export function generateRelationalMigrationSteps(
 
   const mergedTables = merge(currentSchema.tables, newSchema.tables, (first, second) => first.key === second.key);
   const mergedViews = merge(currentSchema.views, newSchema.views, (first, second) => first.key === second.key);
-  const mergedRules = merge(currentSchema.getRules(), newSchema.getRules(), (first, second) => JSON.stringify(first) === JSON.stringify(second));
+  const mergedRules = merge(currentSchema.rules, newSchema.rules, (first, second) => first.id === second.id);
 
   for (const table of mergedTables.added) {
     steps.push({ kind: 'add_table', table: table.name });
@@ -39,6 +40,16 @@ export function generateRelationalMigrationSteps(
         unique: index.unique,
         name: index.name,
         fields: index.fields.map(f => f.name),
+      });
+    }
+
+    for (const seed of table.seeds) {
+      steps.push({
+        kind: 'insert_seed',
+        table: table.name,
+        schema: table.schema,
+        keys: seed.seedKeys,
+        seed: seed.seed,
       });
     }
   }
@@ -85,11 +96,15 @@ export function generateRelationalMigrationSteps(
   }
 
   for (const rule of mergedRules.added) {
-    steps.push({ kind: 'add_rule', rule: rule });
+    steps.push({ kind: 'add_rule', rule: rule.rule, ruleId: rule.id });
+  }
+
+  for (const rule of mergedRules.merge) {
+    throw new Error('there is a rule conflict, duplicate id');
   }
 
   for (const rule of mergedRules.removed) {
-    steps.push({ kind: 'drop_rule', rule: rule });
+    steps.push({ kind: 'drop_rule', ruleId: rule.id });
   }
 
   return steps.map(step => {

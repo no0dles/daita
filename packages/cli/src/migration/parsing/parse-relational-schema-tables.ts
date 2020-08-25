@@ -52,9 +52,9 @@ export function parseRelationalSchemaTables(
     );
 
     parseRelationalSchemaTableFields(table, classArgument);
+    parseRelationalSchemaTablePrimaryKeys(table, optionsObject);
 
     if (optionsObject) {
-      parseRelationalSchemaTablePrimaryKeys(table, optionsObject);
       parseRelationalSchemaTableIndices(table, optionsObject);
     }
 

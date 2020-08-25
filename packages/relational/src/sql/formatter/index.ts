@@ -40,3 +40,5 @@ export * from './avg';
 export * from './like';
 export * from './exists';
 export * from './between';
+export * from './create-view';
+export * from './drop-view';

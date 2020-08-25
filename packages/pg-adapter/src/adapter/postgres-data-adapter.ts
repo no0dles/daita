@@ -40,6 +40,9 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
       if (e.code === '23505') {
         throw new Error('primary key already exists');
       }
+      if (e.code === '42P01') {
+        throw new Error(`table ${e.message} does not exists`); //extract table name
+      }
       throw e;
     }
   }

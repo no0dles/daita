@@ -5,10 +5,16 @@ import { RelationalAddTablePrimaryKey } from './steps/relational-add-table-prima
 import { RelationalAddTableForeignKey } from './steps/relational-add-table-foreign-key.migration-step';
 import { RelationalDropTableFieldMigrationStep } from './steps/relational-drop-table-field.migration-step';
 import {
-  RelationalAddRuleMigrationStep, RelationalAddViewMigrationStep, RelationalAlterViewMigrationStep,
-  RelationalCreateIndexMigrationStep,
-  RelationalDropIndexMigrationStep, RelationalDropRuleMigrationStep,
-  RelationalDropTableForeignKeyMigrationStep, RelationalDropViewMigrationStep,
+  RelationalAddRuleMigrationStep,
+  RelationalAddViewMigrationStep,
+  RelationalAlterViewMigrationStep,
+  RelationalCreateIndexMigrationStep, RelationalDeleteSeedMigrationStep,
+  RelationalDropIndexMigrationStep,
+  RelationalDropRuleMigrationStep,
+  RelationalDropTableForeignKeyMigrationStep,
+  RelationalDropViewMigrationStep,
+  RelationalInsertSeedMigrationStep,
+  RelationalUpdateSeedMigrationStep,
 } from './steps';
 
 export type MigrationStep =
@@ -25,4 +31,7 @@ export type MigrationStep =
   | RelationalDropTableForeignKeyMigrationStep
   | RelationalAddViewMigrationStep
   | RelationalDropViewMigrationStep
-  | RelationalAlterViewMigrationStep;
+  | RelationalAlterViewMigrationStep
+  | RelationalInsertSeedMigrationStep
+  | RelationalUpdateSeedMigrationStep
+  | RelationalDeleteSeedMigrationStep;

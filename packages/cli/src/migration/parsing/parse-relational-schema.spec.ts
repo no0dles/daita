@@ -28,7 +28,7 @@ describe('parse-relational-schema', () => {
 
 
   it(`should parse rules`, () => {
-    const actualRules = parsedSchema.getRules();
+    const actualRules = parsedSchema.rules.map(r => r.rule);
     expect(actualRules).toEqual([
       allow(authorized(), { select: all(), from: table('User') }),
     ]);

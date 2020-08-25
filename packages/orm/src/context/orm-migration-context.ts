@@ -7,7 +7,16 @@ import {
   LockTableSql,
   CreateSchemaSql,
   CreateTableSql,
-  AlterTableSql, InsertSql, DropTableSql, CreateIndexSql, DropIndexSql, CreateViewSql, DropViewSql,
+  AlterTableSql,
+  InsertSql,
+  DropTableSql,
+  CreateIndexSql,
+  DropIndexSql,
+  CreateViewSql,
+  DropViewSql,
+  equal,
+  DeleteSql,
+  UpdateSql, Condition, and, TableDescription,
 } from '@daita/relational';
 import { getTableDescriptionIdentifier } from '../schema';
 import { MigrationTree } from '../migration';
@@ -21,6 +30,14 @@ class Migrations {
   id!: string;
 }
 
+class Rules {
+  static schema = 'daita';
+  static table = 'rules';
+
+  id!: string;
+  rule!: string;
+}
+
 export type MigrationSql =
   LockTableSql
   | CreateSchemaSql
@@ -29,6 +46,8 @@ export type MigrationSql =
   | AlterTableSql
   | CreateIndexSql<any>
   | DropIndexSql
+  | DeleteSql
+  | UpdateSql<any>
   | InsertSql<any>
   | CreateViewSql<any>
   | DropViewSql;
@@ -69,6 +88,15 @@ export class OrmMigrationContext implements MigrationContext {
     }
 
     sqls.push({ lockTable: table(Migrations) });
+
+    sqls.push({
+      createTable: table(Rules),
+      ifNotExists: true,
+      columns: [
+        { name: 'id', type: 'string', notNull: true, primaryKey: true },
+        { name: 'rule', type: 'string', notNull: true, primaryKey: false },
+      ],
+    });
 
     let currentMigrations = this.migrationTree.roots();
 
@@ -161,8 +189,16 @@ export class OrmMigrationContext implements MigrationContext {
                 constraint: step.name,
               },
             });
-          } else if (step.kind === 'add_rule' || step.kind === 'drop_rule') {
-            //Do nothing
+          } else if (step.kind === 'add_rule') {
+            sqls.push({
+              into: table(Rules),
+              insert: { id: step.ruleId, rule: JSON.stringify(step.rule) },
+            });
+          } else if (step.kind === 'drop_rule') {
+            sqls.push({
+              delete: table(Rules),
+              where: equal(field(Rules, 'id'), step.ruleId),
+            });
           } else if (step.kind === 'add_view') {
             sqls.push({
               createView: table(step.view, step.schema),
@@ -178,6 +214,24 @@ export class OrmMigrationContext implements MigrationContext {
             sqls.push({
               dropView: table(step.view, step.schema),
             });
+          } else if (step.kind === 'insert_seed') {
+            sqls.push({
+              insert: step.seed,
+              into: table(step.table, step.schema),
+            });
+          } else if (step.kind === 'update_seed') {
+            const tbl = table(step.table, step.schema);
+            sqls.push({
+              update: tbl,
+              set: step.seed,
+              where: this.getWhere(tbl, step.keys),
+            });
+          } else if (step.kind === 'delete_seed') {
+            const tbl = table(step.table, step.schema);
+            sqls.push({
+              delete: tbl,
+              where: this.getWhere(tbl, step.keys),
+            });
           } else {
             failNever(step, 'unknown migration step');
           }
@@ -190,6 +244,14 @@ export class OrmMigrationContext implements MigrationContext {
     }
 
     return sqls;
+  }
+
+  private getWhere(tableDescription: TableDescription<any>, keys: any): Condition {
+    const conditions = Object.keys(keys).map(key => equal(field(tableDescription, key), keys[key]));
+    if (conditions.length === 0) {
+      throw new Error('seed requires at least 1 key');
+    }
+    return and(...conditions as any);
   }
 
   async update(trx?: Client<MigrationSql> & SelectClient): Promise<void> {

@@ -12,3 +12,6 @@ export { RelationalDropRuleMigrationStep } from './relational-drop-rule.migratio
 export { RelationalAddViewMigrationStep } from './relational-add-view.migration-step';
 export { RelationalDropViewMigrationStep } from './relational-drop-view.migration-step';
 export { RelationalAlterViewMigrationStep } from './relational-alter-view.migration-step';
+export { RelationalInsertSeedMigrationStep } from './relational-insert-seed.migration-step';
+export { RelationalUpdateSeedMigrationStep } from './relational-update-seed.migration-step';
+export { RelationalDeleteSeedMigrationStep } from './relational-delete-seed.migration-step';
