@@ -10,6 +10,10 @@ const pkg = require(pkgFile);
 delete pkg.scripts;
 delete pkg.devDependencies;
 
+if (pkg.publishConfig) {
+  delete pkg.publishConfig.directory;
+}
+
 pkg.repository = {
   'type': 'git',
   'url': 'https://github.com/no0dles/daita'
