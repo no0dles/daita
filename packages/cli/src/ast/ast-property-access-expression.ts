@@ -14,6 +14,10 @@ export class AstPropertyAccessExpression implements AstNode {
     return getValueFromExpression(this.block, this.node.expression);
   }
 
+  get name() {
+    return getName(this.node.name, 'property access expression');
+  }
+
   get value(): AstValue {
     const source = this.source;
 

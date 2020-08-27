@@ -33,6 +33,7 @@ import { AstNewExpression } from './ast-new-expression';
 import { AstCallExpression } from './ast-call-expression';
 import { AstPropertyAccessExpression } from './ast-property-access-expression';
 import { AstSpreadElement } from './ast-spread-element';
+import { AstRegularExpressionLiteral } from './ast-regular-expression-literal';
 
 export function isKind(
   node: ts.Node | undefined,
@@ -46,6 +47,10 @@ export function isKind(
   node: ts.Node | undefined,
   kind: ts.SyntaxKind.TypeAliasDeclaration,
 ): ts.TypeAliasDeclaration | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.RegularExpressionLiteral,
+): ts.RegularExpressionLiteral | null;
 export function isKind(
   node: ts.Node | undefined,
   kind: ts.SyntaxKind.ExportDeclaration,
@@ -412,6 +417,11 @@ export function getValueFromExpression(block: AstBlock, expression: Expression |
   const spreadElement = isKind(expression, SyntaxKind.SpreadElement);
   if (spreadElement) {
     return new AstSpreadElement(block, spreadElement);
+  }
+
+  const regularExpressionLiteral = isKind(expression, SyntaxKind.RegularExpressionLiteral);
+  if (regularExpressionLiteral) {
+    return new AstRegularExpressionLiteral(block, regularExpressionLiteral);
   }
 
   //TODO

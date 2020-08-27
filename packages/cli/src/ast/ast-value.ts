@@ -9,6 +9,7 @@ import { AstPropertyAccessExpression } from './ast-property-access-expression';
 import { AstVariableDeclaration } from './ast-variable-declaration';
 import { AstObjectPropertyValue } from './ast-object-property-value';
 import { AstSpreadElement } from './ast-spread-element';
+import { AstRegularExpressionLiteral } from './ast-regular-expression-literal';
 
 export type AstValue =
   AstType
@@ -21,5 +22,6 @@ export type AstValue =
   | AstNewExpression
   | AstLiteralValue<any>
   | AstKeywordValue
+  | AstRegularExpressionLiteral
   | AstArrayValue;
 

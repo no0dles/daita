@@ -20,7 +20,6 @@
     "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
-    "@daita/cli": "^0.2.49",
     "@daita/pg-adapter": "^0.2.49",
     "@types/bcrypt": "^3.0.0",
     "@types/body-parser": "^1.19.0",

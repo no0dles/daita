@@ -23,10 +23,12 @@ export function createExpressionFromValue(value: any): ts.Expression {
   } else if (typeof value === 'object') {
     if (Array.isArray(value)) {
       return ts.createArrayLiteral(value.map(item => createExpressionFromValue(item)));
+    } else if(value instanceof RegExp) {
+      return ts.createRegularExpressionLiteral(value.toString());
     } else {
       return createObject(value);
     }
   } else {
-    throw new Error('unknown type ' + typeof value);
+    throw new Error('unknown type ' + typeof value + ', ' + value);
   }
 }

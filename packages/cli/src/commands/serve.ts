@@ -1,10 +1,11 @@
 import * as path from 'path';
 import { getRelationalDataAdapter } from '../utils/data-adapter';
 import { createHttpServer } from '@daita/http-server';
-import { anything, anonymous, Rule } from '@daita/relational';
+import { anything, anonymous, Rule, getClient } from '@daita/relational';
 import { getSchemaInformation, getSchemaLocation } from '../utils/path';
 import { AstContext } from '../ast/ast-context';
 import { getAuthorization } from '../utils/authorization';
+import { OrmRuleContext } from '@daita/orm';
 
 export async function serve(opts: { cwd?: string, schema?: string, port?: number, disableAuth?: boolean }) {
   process.env.SUPPRESS_NO_CONFIG_WARNING = 'true';
@@ -17,7 +18,8 @@ export async function serve(opts: { cwd?: string, schema?: string, port?: number
     throw new Error('no relational adapter');
   }
 
-  const rules: Rule[] = [];
+  const ruleContext = new OrmRuleContext(getClient(dataAdapter));
+  const rules: Rule[] = await ruleContext.getRules();
   const authorization = getAuthorization(opts);
 
   if (opts.disableAuth) {

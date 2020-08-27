@@ -8,6 +8,8 @@ import { AstLiteralValue } from '../../ast/ast-literal-value';
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { AstError } from '../../ast/utils';
 import { AstKeywordValue } from '../../ast/ast-keyword-value';
+import { AstRegularExpressionLiteral } from '../../ast/ast-regular-expression-literal';
+import { AstPropertyAccessExpression } from '../../ast/ast-property-access-expression';
 
 function convertFn(value: AstCallExpression) {
   const fn = (relational as any)[value.methodName];
@@ -49,6 +51,11 @@ export function convertValue(value: AstValue): any {
     return createClass(value);
   } else if (value instanceof AstKeywordValue) {
     return value.value;
+  } else if (value instanceof AstRegularExpressionLiteral) {
+    return value.regexp;
+  } else if (value instanceof AstPropertyAccessExpression) {
+    const srcValue = convertValue(value.source);
+    return JSON.parse(JSON.stringify(srcValue[value.name]));
   } else {
     throw new AstError(value.node, 'unable to convert to value');
   }

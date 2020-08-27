@@ -16,7 +16,7 @@ import {
   DropViewSql,
   equal,
   DeleteSql,
-  UpdateSql, Condition, and, TableDescription,
+  UpdateSql, Condition, and, TableDescription, SelectSql, parseRule,
 } from '@daita/relational';
 import { getTableDescriptionIdentifier } from '../schema';
 import { MigrationTree } from '../migration';
@@ -51,6 +51,22 @@ export type MigrationSql =
   | InsertSql<any>
   | CreateViewSql<any>
   | DropViewSql;
+
+export class OrmRuleContext {
+  constructor(private client: Client<SelectSql<any>>) {
+  }
+
+  async getRules() {
+    const rules = await this.client.select({
+      select: {
+        id: field(Rules, 'id'),
+        rule: field(Rules, 'rule'),
+      },
+      from: table(Rules),
+    });
+    return rules.map(rule => parseRule(rule.rule));
+  }
+}
 
 export class OrmMigrationContext implements MigrationContext {
   constructor(private client: TransactionClient<Client<MigrationSql> & SelectClient> & SelectClient,
