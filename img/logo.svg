@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="407px" height="430px" viewBox="0 0 407 430" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="575px" height="575px" viewBox="0 0 575 575" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <circle id="path-1" cx="287.5" cy="287.5" r="287.5"></circle>
+    </defs>
     <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="Red" transform="translate(-137.000000, -60.000000)">
-            <rect id="Rectangle" fill="#DC3E3E" x="0" y="0" width="683" height="683"></rect>
-            <path d="M140,248 L543,248 L543,403 C543,451.048773 452.785377,490 341.5,490 C230.214623,490 140,451.048773 140,403 L140,403 L140,248 Z" id="Combined-Shape" fill="#FFFFFF"></path>
-            <path d="M139,180 L544,180 L544,335 C544,383.048773 453.337662,422 341.5,422 C229.662338,422 139,383.048773 139,335 L139,335 L139,180 Z" id="Combined-Shape" fill="#DC3E3E"></path>
-            <path d="M140,149 L543,149 L543,304 C543,352.048773 452.785377,391 341.5,391 C230.214623,391 140,352.048773 140,304 L140,304 L140,149 Z" id="Combined-Shape" fill="#FFFFFF"></path>
-            <path d="M139,99 L544,99 L544,254 C544,302.048773 453.337662,341 341.5,341 C229.662338,341 139,302.048773 139,254 L139,254 L139,99 Z" id="Combined-Shape" fill="#DC3E3E"></path>
-            <ellipse id="Oval" fill="#FFFFFF" cx="341.5" cy="221" rx="201.5" ry="87"></ellipse>
-            <rect id="Rectangle" fill="#FFFFFF" x="140" y="157" width="403" height="64"></rect>
-            <ellipse id="Oval" fill="#FFFFFF" cx="340.5" cy="149" rx="201.5" ry="87"></ellipse>
+        <g id="Logo2">
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <use id="Oval" fill="#BF616A" xlink:href="#path-1"></use>
+            <g id="Triangle" mask="url(#mask-2)">
+                <g transform="translate(-23.000000, -1.000000)" id="Combined-Shape">
+                    <path d="M311.500895,-3.40038327e-14 C470.052481,0.270363758 598.5,128.884706 598.5,287.499573 C598.5,446.281439 469.781866,574.999573 311,574.999573 L311.5,574.995 Z" fill="#5E81AC"></path>
+                    <path d="M311.5,0 L623,574 L311,574 L311,0.921 L311.5,0 Z" fill="#EBCB8B"></path>
+                    <path d="M311,1.921 L311,574.999 L0,575 L311,1.921 Z" fill="#3B4252"></path>
+                </g>
+            </g>
         </g>
     </g>
 </svg>
