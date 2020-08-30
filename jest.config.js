@@ -1,9 +1,6 @@
 module.exports = {
   setupFilesAfterEnv: ['jest-extended'],
-  moduleFileExtensions: [
-    'ts',
-    'js',
-  ],
+  moduleFileExtensions: ['ts', 'js'],
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
@@ -17,12 +14,10 @@ module.exports = {
     '!dist/**',
     '!tests/**',
     '!src/**/tests/**',
+    '!src/docs/**',
     '!src/frontends/**',
     '!src/**/*.test.ts',
-    '!src/**/*.spec.ts'
+    '!src/**/*.spec.ts',
   ],
-  coverageReporters: [
-    'json',
-    'html'
-  ],
+  coverageReporters: ['json', 'html'],
 };

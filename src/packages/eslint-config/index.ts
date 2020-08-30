@@ -1,5 +1,3 @@
-import banImportRule from './rules/ban-import';
-
 export = {
   parser: '@typescript-eslint/parser',
   extends: [
