@@ -9,7 +9,11 @@ export class SumFormatter implements FormatHandle<SumDescription> {
     return isSumDescription(param);
   }
 
-  handle(param: SumDescription, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: SumDescription,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     return `sum(${formatter.format(param.sum, ctx)})`;
   }
 }

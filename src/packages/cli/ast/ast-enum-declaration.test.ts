@@ -1,6 +1,6 @@
 export enum NormalEnum {
   First,
-  Second
+  Second,
 }
 
 enum InternalEnum {

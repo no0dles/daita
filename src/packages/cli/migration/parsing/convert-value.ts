@@ -62,7 +62,7 @@ export function convertValue(value: AstValue): any {
 }
 
 export function createClass(classDeclaration: AstClassDeclaration) {
-  const classValue: any = function() { };
+  const classValue: any = function () {};
 
   Object.defineProperty(classValue, 'name', { value: classDeclaration.name });
 

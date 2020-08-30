@@ -6,9 +6,9 @@ import { client } from '../client';
 import { hashPassword } from '../modules/hash';
 import { getRandomCode } from '../modules/random';
 import { getLeakedCount } from '../modules/password';
-import {equal, field, table} from '../../relational/sql/function';
+import { equal, field, table } from '../../relational/sql/function';
 
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 router.post('/', async (req, res, next) => {
   try {
@@ -27,26 +27,32 @@ router.post('/', async (req, res, next) => {
     }
 
     if (!userPool.allowRegistration) {
-      return res.status(400).json({ message: 'user pool does not allow registration' });
+      return res
+        .status(400)
+        .json({ message: 'user pool does not allow registration' });
     }
 
     if (userPool.passwordRegex) {
       const regexp = new RegExp(userPool.passwordRegex);
       if (!regexp.test(req.body.password)) {
-        return res.status(400).json({ message: 'password does not match password rules' });
+        return res
+          .status(400)
+          .json({ message: 'password does not match password rules' });
       }
     }
 
     if (userPool.checkPasswordForBreach) {
       const leakedCount = await getLeakedCount(req.body.password);
       if (leakedCount > 0) {
-        return res.status(400).json({ message: `password got leaked ${leakedCount} times` });
+        return res
+          .status(400)
+          .json({ message: `password got leaked ${leakedCount} times` });
       }
     }
 
     const hash = await hashPassword(req.body.password);
     const emailVerifyCode = await getRandomCode();
-    await client.transaction(async trx => {
+    await client.transaction(async (trx) => {
       await trx.insert({
         insert: {
           userPoolId: req.params.userPoolId,

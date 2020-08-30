@@ -1,14 +1,13 @@
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { getObjectValue, getStringOrNull } from '../../ast/utils';
 import { convertValue } from './convert-value';
-import {MigrationDescription} from '../../../orm/migration';
+import { MigrationDescription } from '../../../orm/migration';
 
 export function parseSchemaMigration(
   migrationObject: AstObjectValue,
 ): MigrationDescription {
-
   const id = migrationObject.stringProp('id');
-  const steps = migrationObject.arrayProp('steps', elm => {
+  const steps = migrationObject.arrayProp('steps', (elm) => {
     const objectValue = getObjectValue(elm);
     return convertValue(objectValue);
   });

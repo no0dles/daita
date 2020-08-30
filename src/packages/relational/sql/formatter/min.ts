@@ -9,7 +9,11 @@ export class MinFormatter implements FormatHandle<MinDescription> {
     return isMinDescription(param);
   }
 
-  handle(param: MinDescription, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: MinDescription,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     return `min(${formatter.format(param.min, ctx)})`;
   }
 }

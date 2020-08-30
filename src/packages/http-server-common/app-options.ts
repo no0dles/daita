@@ -4,7 +4,7 @@ import {
   RelationalDataAdapter,
   RelationalTransactionAdapter,
 } from '../relational/adapter';
-import {Rule} from '../relational/permission/description';
+import { Rule } from '../relational/permission/description';
 
 export type AppOptions = AppDataOptions | AppTransactionOptions;
 
@@ -23,4 +23,7 @@ export interface AppTransactionOptions {
   rules: Rule[];
 }
 
-export const isAppTransactionOptions = (val: AppOptions): val is AppTransactionOptions => isRelationalTransactionAdapter(val.dataAdapter)
+export const isAppTransactionOptions = (
+  val: AppOptions,
+): val is AppTransactionOptions =>
+  isRelationalTransactionAdapter(val.dataAdapter);

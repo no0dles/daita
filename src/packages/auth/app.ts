@@ -16,20 +16,47 @@ app.use(helmet());
 app.use(bodyParser.json());
 
 app.use('/:userPoolId/verify', verifyRoute);
-app.use('/:userPoolId/reset', cors(req => req.params.userPoolId), resetRoute);
-app.use('/:userPoolId/register', cors(req => req.params.userPoolId), registerRoute);
-app.use('/:userPoolId/refresh', cors(req => req.params.userPoolId), refreshRoute);
-app.use('/:userPoolId/resend', cors(req => req.params.userPoolId), resendRoute);
-app.use('/:userPoolId/login', cors(req => req.params.userPoolId), loginRoute);
+app.use(
+  '/:userPoolId/reset',
+  cors((req) => req.params.userPoolId),
+  resetRoute,
+);
+app.use(
+  '/:userPoolId/register',
+  cors((req) => req.params.userPoolId),
+  registerRoute,
+);
+app.use(
+  '/:userPoolId/refresh',
+  cors((req) => req.params.userPoolId),
+  refreshRoute,
+);
+app.use(
+  '/:userPoolId/resend',
+  cors((req) => req.params.userPoolId),
+  resendRoute,
+);
+app.use(
+  '/:userPoolId/login',
+  cors((req) => req.params.userPoolId),
+  loginRoute,
+);
 app.use('/.well-known', wellKnownRoute);
 
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.log(err);
-  if (process.env.NODE_ENV === 'production') {
-    res.status(500).end();
-  } else {
-    res.status(500).json({ message: err.message });
-  }
-});
+app.use(
+  (
+    err: any,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    console.log(err);
+    if (process.env.NODE_ENV === 'production') {
+      res.status(500).end();
+    } else {
+      res.status(500).json({ message: err.message });
+    }
+  },
+);
 
 export = app;

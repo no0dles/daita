@@ -6,9 +6,7 @@ import { AstValue } from './ast-value';
 import { AstNode } from './ast-node';
 
 export class AstPropertyAccessExpression implements AstNode {
-  constructor(private block: AstBlock,
-              public node: PropertyAccessExpression) {
-  }
+  constructor(private block: AstBlock, public node: PropertyAccessExpression) {}
 
   get source() {
     return getValueFromExpression(this.block, this.node.expression);
@@ -24,7 +22,6 @@ export class AstPropertyAccessExpression implements AstNode {
     if (!source) {
       throw new AstError(this.node, 'unknown source');
     }
-
 
     if (source instanceof AstEnumDeclaration) {
       const name = getName(this.node.name, 'property access expression');

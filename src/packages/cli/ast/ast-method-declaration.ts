@@ -8,9 +8,7 @@ export class AstMethodDeclaration implements AstNode {
   //returnType: AstType;
   //accessType: public|private
 
-  constructor(private block: AstBlock,
-              public node: MethodDeclaration) {
-  }
+  constructor(private block: AstBlock, public node: MethodDeclaration) {}
 
   get name(): string {
     return getName(this.node.name, 'method declaration');
@@ -20,7 +18,7 @@ export class AstMethodDeclaration implements AstNode {
     return this.getParameters();
   }
 
-  private* getParameters() {
+  private *getParameters() {
     for (const param of this.node.parameters) {
       yield new AstParameterDeclaration(this.block, param);
     }

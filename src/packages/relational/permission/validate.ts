@@ -1,14 +1,19 @@
-import {isAnything} from './function/anything';
-import {AuthDescription} from './description/auth-description';
-import {Sql} from '../sql';
-import {Rule} from './description/rule';
-import {RuleValidateAllowResult} from './description/rule-validation-allow-result';
-import {RuleValidateForbidResult} from './description/rule-validation-forbid-result';
-import {isAllowRegex, isRequestContext} from './function';
-import {RuleContext, RuleValidateResult} from './description';
-import {failNever} from '../../common/utils';
+import { isAnything } from './function/anything';
+import { AuthDescription } from './description/auth-description';
+import { Sql } from '../sql';
+import { Rule } from './description/rule';
+import { RuleValidateAllowResult } from './description/rule-validation-allow-result';
+import { RuleValidateForbidResult } from './description/rule-validation-forbid-result';
+import { isAllowRegex, isRequestContext } from './function';
+import { RuleContext, RuleValidateResult } from './description';
+import { failNever } from '../../common/utils';
 
-export function matchesObject(ruleContext: RuleContext, authSql: any, ctxSql: any, path: string[]): string | null {
+export function matchesObject(
+  ruleContext: RuleContext,
+  authSql: any,
+  ctxSql: any,
+  path: string[],
+): string | null {
   if (isAnything(authSql)) {
     return null;
   } else if (isRequestContext(authSql)) {
@@ -26,9 +31,14 @@ export function matchesObject(ruleContext: RuleContext, authSql: any, ctxSql: an
     } else {
       return `${path.join('.')} does not match regexp`;
     }
-  } else if (typeof authSql === 'string' || typeof ctxSql === 'string' ||
-    typeof authSql === 'boolean' || typeof ctxSql === 'boolean' ||
-    typeof authSql === 'number' || typeof ctxSql === 'number') {
+  } else if (
+    typeof authSql === 'string' ||
+    typeof ctxSql === 'string' ||
+    typeof authSql === 'boolean' ||
+    typeof ctxSql === 'boolean' ||
+    typeof authSql === 'number' ||
+    typeof ctxSql === 'number'
+  ) {
     if (authSql === ctxSql) {
       return null;
     } else {
@@ -45,7 +55,10 @@ export function matchesObject(ruleContext: RuleContext, authSql: any, ctxSql: an
       return `${path.join('.')} array length does not match`;
     }
     for (let i = 0; i < authSql.length; i++) {
-      const res = matchesObject(ruleContext, authSql[i], ctxSql[i], [...path, '0']);
+      const res = matchesObject(ruleContext, authSql[i], ctxSql[i], [
+        ...path,
+        '0',
+      ]);
       if (res) {
         return res;
       }
@@ -64,11 +77,16 @@ export function matchesObject(ruleContext: RuleContext, authSql: any, ctxSql: an
   }
 
   if (ctxKeys.length > 0) {
-    return `${path.join('.')} does not allow ${ctxKeys.map(k => k).join(', ')}`;
+    return `${path.join('.')} does not allow ${ctxKeys
+      .map((k) => k)
+      .join(', ')}`;
   }
 
   for (const key of authKeys) {
-    const error = matchesObject(ruleContext, authSql[key], ctxSql[key], [...path, key]);
+    const error = matchesObject(ruleContext, authSql[key], ctxSql[key], [
+      ...path,
+      key,
+    ]);
     if (error) {
       return error;
     }
@@ -77,7 +95,10 @@ export function matchesObject(ruleContext: RuleContext, authSql: any, ctxSql: an
   return null;
 }
 
-export function matchesAuthsDescription(auths: AuthDescription[] | AuthDescription, ctx: RuleContext): boolean {
+export function matchesAuthsDescription(
+  auths: AuthDescription[] | AuthDescription,
+  ctx: RuleContext,
+): boolean {
   if (auths instanceof Array) {
     for (const item of auths) {
       if (matchesAuthDescription(item, ctx)) {
@@ -90,7 +111,10 @@ export function matchesAuthsDescription(auths: AuthDescription[] | AuthDescripti
   }
 }
 
-export function matchesAuthDescription(auth: AuthDescription, ctx: RuleContext): boolean {
+export function matchesAuthDescription(
+  auth: AuthDescription,
+  ctx: RuleContext,
+): boolean {
   if (auth.type === 'anonymous') {
     return !ctx.isAuthorized;
   } else if (auth.type === 'authorized') {
@@ -100,40 +124,51 @@ export function matchesAuthDescription(auth: AuthDescription, ctx: RuleContext):
   }
 }
 
-export function matchesRules(sql: Sql<any>, rules: Rule[], ctx: RuleContext): boolean {
+export function matchesRules(
+  sql: Sql<any>,
+  rules: Rule[],
+  ctx: RuleContext,
+): boolean {
   const res = validateRules(sql, rules, ctx);
   return res.type === 'allow';
 }
 
-export function evaluateRule(sql: Sql<any>, rule: Rule, ctx: RuleContext): RuleValidateResult {
+export function evaluateRule(
+  sql: Sql<any>,
+  rule: Rule,
+  ctx: RuleContext,
+): RuleValidateResult {
   if (rule.type === 'allow') {
     if (!matchesAuthsDescription(rule.auth, ctx)) {
-      return {type: 'next'};
+      return { type: 'next' };
     }
 
     const error = matchesObject(ctx, rule.sql, sql, []);
     if (!error) {
-      return {type: 'allow'};
+      return { type: 'allow' };
     }
 
-    return {type: 'next', error};
+    return { type: 'next', error };
   } else if (rule.type === 'forbid') {
-
     if (!matchesAuthsDescription(rule.auth, ctx)) {
-      return {type: 'next'};
+      return { type: 'next' };
     }
 
     const error = matchesObject(ctx, rule.sql, sql, []);
     if (error) {
-      return {type: 'forbid', error, details: []};
+      return { type: 'forbid', error, details: [] };
     }
-    return {type: 'next'};
+    return { type: 'next' };
   } else {
     failNever(rule.type, 'unknown rule type');
   }
 }
 
-export function validateRules(sql: Sql<any>, rules: Rule[], ctx: RuleContext): RuleValidateAllowResult | RuleValidateForbidResult {
+export function validateRules(
+  sql: Sql<any>,
+  rules: Rule[],
+  ctx: RuleContext,
+): RuleValidateAllowResult | RuleValidateForbidResult {
   const details: string[] = [];
   for (const rule of rules) {
     const res = evaluateRule(sql, rule, ctx);
@@ -143,5 +178,5 @@ export function validateRules(sql: Sql<any>, rules: Rule[], ctx: RuleContext): R
       details.push(res.error);
     }
   }
-  return {type: 'forbid', error: 'no matching rule', details};
+  return { type: 'forbid', error: 'no matching rule', details };
 }

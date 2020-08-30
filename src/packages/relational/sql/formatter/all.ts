@@ -9,12 +9,15 @@ export class AllFormatter implements FormatHandle<AllDescription<any>> {
     return isAllDescription(param);
   }
 
-  handle(param: AllDescription<any>, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: AllDescription<any>,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     if (param.all.table) {
       return `${formatter.format(param.all.table, ctx)}.*`;
     } else {
       return '*';
     }
   }
-
 }

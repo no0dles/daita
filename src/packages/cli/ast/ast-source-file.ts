@@ -10,10 +10,8 @@ import { SourceFile, SyntaxKind } from 'typescript';
 export class AstSourceFile {
   block: AstBlock;
 
-  constructor(public context: AstContext,
-              private node: SourceFile) {
+  constructor(public context: AstContext, private node: SourceFile) {
     this.block = new AstBlock(this, node);
-
   }
 
   get fileName() {
@@ -28,7 +26,7 @@ export class AstSourceFile {
     return this.getExports();
   }
 
-  private* getExports() {
+  private *getExports() {
     for (const statement of this.node.statements) {
       const node = isKind(statement, SyntaxKind.ExportDeclaration);
       if (node) {
@@ -37,7 +35,7 @@ export class AstSourceFile {
     }
   }
 
-  private* getImports() {
+  private *getImports() {
     for (const statement of this.node.statements) {
       const node = isKind(statement, SyntaxKind.ImportDeclaration);
       if (node) {
@@ -48,12 +46,19 @@ export class AstSourceFile {
 
   getModulePath(moduleSpecifier: string) {
     if (moduleSpecifier.startsWith('.')) {
-      const importPath = path.join(path.dirname(this.fileName), moduleSpecifier);
+      const importPath = path.join(
+        path.dirname(this.fileName),
+        moduleSpecifier,
+      );
       return this.getPath(importPath);
     } else {
       let pathParts = path.dirname(this.fileName).split(path.sep);
       for (let i = pathParts.length - 1; i >= 0; i--) {
-        const nodeModulePath = path.join(pathParts.slice(0, i).join(path.sep), 'node_modules', moduleSpecifier);
+        const nodeModulePath = path.join(
+          pathParts.slice(0, i).join(path.sep),
+          'node_modules',
+          moduleSpecifier,
+        );
         const importPath = this.getPath(nodeModulePath);
         if (importPath) {
           return importPath;

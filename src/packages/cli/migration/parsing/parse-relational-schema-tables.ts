@@ -7,10 +7,14 @@ import { parseRelationalSchemaTableIndices } from './parse-relational-schema-tab
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { AstError } from '../../ast/utils';
-import {RelationalSchemaDescription, RelationalTableDescription} from '../../../orm/schema';
+import {
+  RelationalSchemaDescription,
+  RelationalTableDescription,
+} from '../../../orm/schema';
 
 export function parseRelationalSchemaTables(
-  schema: RelationalSchemaDescription, schemaVariable: AstVariableDeclaration,
+  schema: RelationalSchemaDescription,
+  schemaVariable: AstVariableDeclaration,
 ) {
   const calls = schemaVariable.callsByName('table');
   const classDeclarations: { [key: string]: AstClassDeclaration } = {};
@@ -20,7 +24,10 @@ export function parseRelationalSchemaTables(
     const optionsArgument = call.argumentAt(1);
 
     if (!(classArgument instanceof AstClassDeclaration)) {
-      throw new AstError(classArgument?.node ?? call.node, 'invalid table argument without class');
+      throw new AstError(
+        classArgument?.node ?? call.node,
+        'invalid table argument without class',
+      );
     }
 
     let optionsObject: AstObjectValue | null = null;
@@ -63,6 +70,10 @@ export function parseRelationalSchemaTables(
   }
 
   for (const table of schema.tables) {
-    parseRelationalSchemaTableReferences(schema, table, classDeclarations[table.name]);
+    parseRelationalSchemaTableReferences(
+      schema,
+      table,
+      classDeclarations[table.name],
+    );
   }
 }

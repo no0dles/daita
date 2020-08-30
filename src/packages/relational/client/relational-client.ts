@@ -1,6 +1,14 @@
 import {
-  DeleteSql, InsertSql, isAvgDescription, isConcatDescription, isCountDescription,
-  isFieldDescription, isMaxDescription, isMinDescription, isNowDescription, isSumDescription,
+  DeleteSql,
+  InsertSql,
+  isAvgDescription,
+  isConcatDescription,
+  isCountDescription,
+  isFieldDescription,
+  isMaxDescription,
+  isMinDescription,
+  isNowDescription,
+  isSumDescription,
   SelectSql,
   UpdateSql,
 } from '../sql';
@@ -14,12 +22,16 @@ import { RelationalInsertResult } from './relational-insert-result';
 import { DeleteClient } from './delete-client';
 import { InsertClient } from './insert-client';
 import { isAllDescription } from '../sql/description/all';
-import {deepClone} from '../../common/utils';
+import { deepClone } from '../../common/utils';
 
-
-export class RelationalClient implements SelectClient, UpdateClient, DeleteClient, InsertClient, Client<any> {
-  constructor(private dataAdapter: RelationalDataAdapter<any>) {
-  }
+export class RelationalClient
+  implements
+    SelectClient,
+    UpdateClient,
+    DeleteClient,
+    InsertClient,
+    Client<any> {
+  constructor(private dataAdapter: RelationalDataAdapter<any>) {}
 
   async selectFirst<T>(sql: SelectSql<T>): Promise<T> {
     const clonedSql = deepClone(sql);
@@ -61,17 +73,19 @@ export class RelationalClient implements SelectClient, UpdateClient, DeleteClien
     const fields = sql.select;
     if (typeof fields === 'object') {
       if (isFieldDescription(fields)) {
-        return rows.map(row => row[fields.field.key]);
+        return rows.map((row) => row[fields.field.key]);
       }
 
-      if (isMinDescription(fields) ||
+      if (
+        isMinDescription(fields) ||
         isMaxDescription(fields) ||
         isAvgDescription(fields) ||
         isSumDescription(fields) ||
         isCountDescription(fields) ||
         isConcatDescription(fields) ||
-        isNowDescription(fields)) {
-        return rows.map(row => row[Object.keys(row)[0]]);
+        isNowDescription(fields)
+      ) {
+        return rows.map((row) => row[Object.keys(row)[0]]);
       }
 
       if (isAllDescription(fields)) {
@@ -100,7 +114,7 @@ export class RelationalClient implements SelectClient, UpdateClient, DeleteClien
       }
       return mappedRows;
     } else {
-      return rows.map(row => row[Object.keys(row)[0]]);
+      return rows.map((row) => row[Object.keys(row)[0]]);
     }
   }
 }

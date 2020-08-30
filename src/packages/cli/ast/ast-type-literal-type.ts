@@ -5,9 +5,7 @@ import { AstPropertySignature } from './ast-property-signature';
 import { AstNode } from './ast-node';
 
 export class AstTypeLiteralType implements AstNode {
-  constructor(private block: AstBlock,
-              public node: TypeLiteralNode) {
-  }
+  constructor(private block: AstBlock, public node: TypeLiteralNode) {}
 
   get members() {
     return this.getMembers();
@@ -22,7 +20,7 @@ export class AstTypeLiteralType implements AstNode {
     return null;
   }
 
-  private* getMembers() {
+  private *getMembers() {
     for (const member of this.node.members) {
       const propertySignature = isKind(member, SyntaxKind.PropertySignature);
       if (propertySignature) {

@@ -1,7 +1,13 @@
-import {allow, authorized} from '../../../relational/permission/function';
-import {all, equal, field, join, table} from '../../../relational/sql/function';
-import {UUID} from '../../../relational/types';
-import {RelationalSchema} from '../../../orm/schema';
+import { allow, authorized } from '../../../relational/permission/function';
+import {
+  all,
+  equal,
+  field,
+  join,
+  table,
+} from '../../../relational/sql/function';
+import { UUID } from '../../../relational/types';
+import { RelationalSchema } from '../../../orm/schema';
 
 export class BaseTable {
   createdDate!: Date;
@@ -20,13 +26,13 @@ export class User extends BaseTable {
 
 export enum UserType {
   Local = 'local',
-  Social = 'social'
+  Social = 'social',
 }
 
 export enum UserStatus {
   Unverified = 10,
   Verified = 20,
-  Certified
+  Certified,
 }
 
 export class Role extends BaseTable {
@@ -84,7 +90,10 @@ schema.view(UserPermissions, {
   join: [
     join(UserRole, equal(field(User, 'id'), field(UserRole, 'userId'))),
     join(Role, equal(field(Role, 'name'), field(UserRole, 'roleName'))),
-    join(RolePermission, equal(field(Role, 'name'), field(RolePermission, 'roleName'))),
+    join(
+      RolePermission,
+      equal(field(Role, 'name'), field(RolePermission, 'roleName')),
+    ),
   ],
 });
 schema.rules(userRules);

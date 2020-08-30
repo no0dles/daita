@@ -8,9 +8,16 @@ import { client } from '../client';
 import { compareHash } from '../modules/hash';
 import { getAccessToken } from '../modules/key';
 import { getRandomCode } from '../modules/random';
-import {and, equal, field, join, or, table} from '../../relational/sql/function';
+import {
+  and,
+  equal,
+  field,
+  join,
+  or,
+  table,
+} from '../../relational/sql/function';
 
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 router.post('/', async (req, res, next) => {
   try {
@@ -28,51 +35,63 @@ router.post('/', async (req, res, next) => {
       },
       from: table(User),
       join: [
-        join(table(UserPool), equal(field(UserPool, 'id'), field(User, 'userPoolId'))),
+        join(
+          table(UserPool),
+          equal(field(UserPool, 'id'), field(User, 'userPoolId')),
+        ),
       ],
       where: and(
-        or(equal(field(User, 'username'), req.body.username), equal(field(User, 'email'), req.body.username)),
+        or(
+          equal(field(User, 'username'), req.body.username),
+          equal(field(User, 'email'), req.body.username),
+        ),
         equal(field(User, 'userPoolId'), req.params.userPoolId),
       ),
     });
 
     if (!user) {
-      return res.status(400)
-        .json({ message: 'invalid credentials' });
+      return res.status(400).json({ message: 'invalid credentials' });
     }
 
     const matchesHash = await compareHash(req.body.password, user.password);
     if (!matchesHash) {
-      return res.status(400)
-        .json({ message: 'invalid credentials' });
+      return res.status(400).json({ message: 'invalid credentials' });
     }
 
     const roles = await client.select({
       select: field(Role, 'name'),
       from: table(Role),
-      join: [join(UserRole, equal(field(UserRole, 'roleName'), field(Role, 'name')))],
+      join: [
+        join(UserRole, equal(field(UserRole, 'roleName'), field(Role, 'name'))),
+      ],
       where: equal(field(UserRole, 'userUsername'), user.username),
     });
 
     const refreshToken = await getRandomCode();
-    const accessToken = await getAccessToken({
-      roles,
-    }, {
-      subject: user.username,
-      expiresIn: user.userPool.accessTokenExpiresIn,
-      issuer: user.userPool.id,
-      algorithm: user.userPool.algorithm as UserPoolAlgorithm,
-    });
-    const idToken = await getAccessToken({
-      roles,
-      email: user.email,
-      emailVerified: user.emailVerified,
-    }, {
-      subject: user.username,
-      expiresIn: user.userPool.accessTokenExpiresIn,
-      issuer: user.userPool.id,
-      algorithm: user.userPool.algorithm as UserPoolAlgorithm,
-    });
+    const accessToken = await getAccessToken(
+      {
+        roles,
+      },
+      {
+        subject: user.username,
+        expiresIn: user.userPool.accessTokenExpiresIn,
+        issuer: user.userPool.id,
+        algorithm: user.userPool.algorithm as UserPoolAlgorithm,
+      },
+    );
+    const idToken = await getAccessToken(
+      {
+        roles,
+        email: user.email,
+        emailVerified: user.emailVerified,
+      },
+      {
+        subject: user.username,
+        expiresIn: user.userPool.accessTokenExpiresIn,
+        issuer: user.userPool.id,
+        algorithm: user.userPool.algorithm as UserPoolAlgorithm,
+      },
+    );
 
     await client.insert({
       insert: {

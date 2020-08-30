@@ -10,8 +10,14 @@ export class FieldFormatter implements FormatHandle<FieldDescription> {
     return isFieldDescription(param);
   }
 
-  handle(param: FieldDescription, ctx: FormatContext, formatter: Formatter): string {
-    const table = isTableAliasDescription(param.field.table) ? ctx.escape(param.field.table.alias.name) : formatter.format(param.field.table, ctx);
+  handle(
+    param: FieldDescription,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
+    const table = isTableAliasDescription(param.field.table)
+      ? ctx.escape(param.field.table.alias.name)
+      : formatter.format(param.field.table, ctx);
     return `${table}.${ctx.escape(param.field.key)}`;
   }
 }

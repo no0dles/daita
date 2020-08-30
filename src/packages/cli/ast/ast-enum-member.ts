@@ -6,10 +6,11 @@ import { AstNumericLiteralValue } from './ast-literal-value';
 import { AstType } from './ast-type';
 
 export class AstEnumMember {
-  constructor(private block: AstBlock,
-              private node: EnumMember,
-              private indexValue: number) {
-  }
+  constructor(
+    private block: AstBlock,
+    private node: EnumMember,
+    private indexValue: number,
+  ) {}
 
   get name() {
     return getName(this.node.name, 'enum member');
@@ -27,7 +28,9 @@ export class AstEnumMember {
     if (this.node.initializer) {
       return getValueFromExpression(this.block, this.node.initializer);
     } else {
-      return new AstNumericLiteralValue(createNumericLiteral(this.indexValue.toString()));
+      return new AstNumericLiteralValue(
+        createNumericLiteral(this.indexValue.toString()),
+      );
     }
   }
 }

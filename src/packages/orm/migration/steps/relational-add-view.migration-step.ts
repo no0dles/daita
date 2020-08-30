@@ -1,4 +1,4 @@
-import {SelectSql} from '../../../relational/sql';
+import { SelectSql } from '../../../relational/sql';
 
 export interface RelationalAddViewMigrationStep {
   kind: 'add_view';

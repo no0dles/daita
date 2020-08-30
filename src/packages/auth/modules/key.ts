@@ -4,7 +4,7 @@ import * as jose from 'jose';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
-import {Defer} from '../../common/utils';
+import { Defer } from '../../common/utils';
 
 const keystore = new jose.JWKS.KeyStore([]);
 const keysOnDisk = new Promise((resolve, reject) => {
@@ -48,7 +48,10 @@ export async function getKey(algorithm: UserPoolAlgorithm) {
 
   if (algorithm === 'RS384') {
     const rsaKey = crypto.generateKeyPairSync('rsa', { modulusLength: 3072 });
-    const rsaKeyPem = rsaKey.privateKey.export({ type: 'pkcs8', format: 'pem' });
+    const rsaKeyPem = rsaKey.privateKey.export({
+      type: 'pkcs8',
+      format: 'pem',
+    });
     key = jose.JWK.asKey({
       key: rsaKeyPem,
       format: 'pem',
@@ -57,7 +60,10 @@ export async function getKey(algorithm: UserPoolAlgorithm) {
     keystore.add(key);
   } else if (algorithm === 'RS512') {
     const rsaKey = crypto.generateKeyPairSync('rsa', { modulusLength: 4096 });
-    const rsaKeyPem = rsaKey.privateKey.export({ type: 'pkcs8', format: 'pem' });
+    const rsaKeyPem = rsaKey.privateKey.export({
+      type: 'pkcs8',
+      format: 'pem',
+    });
     key = jose.JWK.asKey({
       key: rsaKeyPem,
       format: 'pem',
@@ -100,14 +106,27 @@ export async function getKeys() {
   return keystore.toJWKS(false);
 }
 
-export async function getAccessToken<T>(payload: any, options: { subject: string, expiresIn: number, issuer: string, algorithm: UserPoolAlgorithm }) {
+export async function getAccessToken<T>(
+  payload: any,
+  options: {
+    subject: string;
+    expiresIn: number;
+    issuer: string;
+    algorithm: UserPoolAlgorithm;
+  },
+) {
   const defer = new Defer<string>();
   const key = await getKey(options.algorithm);
-  jwt.sign(payload, key.secret, { ...options, keyid: key.id }, (err, encoded) => {
-    if (err) {
-      return defer.reject(err);
-    }
-    defer.resolve(encoded);
-  });
+  jwt.sign(
+    payload,
+    key.secret,
+    { ...options, keyid: key.id },
+    (err, encoded) => {
+      if (err) {
+        return defer.reject(err);
+      }
+      defer.resolve(encoded);
+    },
+  );
   return defer.promise;
 }

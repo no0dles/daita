@@ -1,10 +1,11 @@
 import { TableDescription } from './description/table';
-import {isKind} from '../../common/utils';
+import { isKind } from '../../common/utils';
 
 export interface CreateTableColumn {
-  name: string, type: string,
-  notNull?: boolean
-  primaryKey?: boolean
+  name: string;
+  type: string;
+  notNull?: boolean;
+  primaryKey?: boolean;
 }
 
 export interface CreateTableSql {
@@ -13,4 +14,5 @@ export interface CreateTableSql {
   columns: CreateTableColumn[];
 }
 
-export const isCreateTableSql = (val: any): val is CreateTableSql => isKind<CreateTableSql>(val, ['createTable', 'columns']);
+export const isCreateTableSql = (val: any): val is CreateTableSql =>
+  isKind<CreateTableSql>(val, ['createTable', 'columns']);

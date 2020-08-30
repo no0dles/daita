@@ -1,26 +1,23 @@
 import { RelationalTableSchemaTableFieldType } from '../relational-table-schema-table-field-type';
 import { RelationalTableDescription } from './relational-table-description';
-import {failNever} from '../../../common/utils';
-
+import { failNever } from '../../../common/utils';
 
 export class RelationalTableFieldDescription {
-  constructor(private tableDescription: RelationalTableDescription,
-              public key: string,
-              public name: string,
-              public type: RelationalTableSchemaTableFieldType,
-              public required: boolean,
-              public defaultValue: any) {
-  }
+  constructor(
+    private tableDescription: RelationalTableDescription,
+    public key: string,
+    public name: string,
+    public type: RelationalTableSchemaTableFieldType,
+    public required: boolean,
+    public defaultValue: any,
+  ) {}
 
   get isPrimaryKey() {
     return this.tableDescription.primaryKeys.indexOf(this) >= 0;
   }
 
   validateValue(value: any): void {
-    if (
-      this.required &&
-      (value === null || value === undefined)
-    ) {
+    if (this.required && (value === null || value === undefined)) {
       throw new Error(`${this.key} is required`);
     }
 
@@ -33,7 +30,6 @@ export class RelationalTableFieldDescription {
         throw new Error(`${this.key} is not a string`);
       }
     } else if (this.type === 'uuid') {
-
     } else if (this.type === 'boolean') {
       if (typeof value !== 'boolean') {
         throw new Error(`${this.key} is not a boolean`);
@@ -50,7 +46,12 @@ export class RelationalTableFieldDescription {
       if (!(value instanceof Date)) {
         throw new Error(`${this.key} is not a Date`);
       }
-    } else if (this.type === 'boolean[]' || this.type === 'number[]' || this.type === 'date[]' || this.type === 'string[]') {
+    } else if (
+      this.type === 'boolean[]' ||
+      this.type === 'number[]' ||
+      this.type === 'date[]' ||
+      this.type === 'string[]'
+    ) {
       if (!(value instanceof Array)) {
         throw new Error(`${this.key} is not an array`);
       }

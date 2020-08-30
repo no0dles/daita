@@ -1,5 +1,8 @@
 import { FormatHandle, Formatter, FormatType } from './formatter';
-import { isOrderByDescription, OrderByDescription } from '../description/order-by';
+import {
+  isOrderByDescription,
+  OrderByDescription,
+} from '../description/order-by';
 import { FormatContext } from './format-context';
 
 export class OrderByFormatter implements FormatHandle<OrderByDescription> {
@@ -9,7 +12,11 @@ export class OrderByFormatter implements FormatHandle<OrderByDescription> {
     return isOrderByDescription(param);
   }
 
-  handle(param: OrderByDescription, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: OrderByDescription,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     return `${formatter.format(param.value, ctx)} ${this.getOrderBy(param)}`;
   }
 

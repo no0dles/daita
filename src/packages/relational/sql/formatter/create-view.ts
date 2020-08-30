@@ -10,7 +10,16 @@ export class CreateViewFormatter implements FormatHandle<CreateViewSql<any>> {
     return isCreateViewSql(param);
   }
 
-  handle(param: CreateViewSql<any>, ctx: FormatContext, formatter: Formatter): string {
-    return `CREATE${param.orReplace ? ' OR REPLACE ' : ' '}VIEW ${formatter.format(param.createView, ctx)} AS ${formatter.format(param.as, new InlineFormatContext(ctx))}`;
+  handle(
+    param: CreateViewSql<any>,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
+    return `CREATE${
+      param.orReplace ? ' OR REPLACE ' : ' '
+    }VIEW ${formatter.format(param.createView, ctx)} AS ${formatter.format(
+      param.as,
+      new InlineFormatContext(ctx),
+    )}`;
   }
 }

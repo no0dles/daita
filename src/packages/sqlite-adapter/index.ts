@@ -9,8 +9,12 @@ import {
   RelationalDataAdapterFactory,
   RelationalTransactionAdapterFactory,
 } from '../relational/adapter/factory';
-import {RelationalDataAdapter, RelationalRawResult, RelationalTransactionAdapter} from '../relational/adapter';
-import {Defer} from '../common/utils';
+import {
+  RelationalDataAdapter,
+  RelationalRawResult,
+  RelationalTransactionAdapter,
+} from '../relational/adapter';
+import { Defer } from '../common/utils';
 
 export interface SerializableAction<T> {
   (): Promise<T> | T;
@@ -64,7 +68,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
     });
     this.db.on('close', () => {
       console.log('close', arguments);
-    })
+    });
     this.db.on('open', () => {
       console.log('open', arguments);
     });
@@ -75,7 +79,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
 
   async close(): Promise<void> {
     const defer = new Defer<void>();
-    this.db.close(err => {
+    this.db.close((err) => {
       if (err) {
         defer.reject(err);
       } else {
@@ -88,7 +92,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
   protected async run(sql: string, values?: any[]) {
     return this.runSerializable.run(() => {
       const defer = new Defer<void>();
-      this.db.run(sql, values, err => {
+      this.db.run(sql, values, (err) => {
         if (err) {
           defer.reject(err);
         } else {
@@ -110,7 +114,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
     return this.runSerializable.run<RelationalRawResult>(async () => {
       const defer = new Defer<RelationalRawResult>();
       const stmt = this.db.prepare(sql, values, () => {
-        stmt.bind(err => {
+        stmt.bind((err) => {
           console.log(err);
         });
         stmt.all(values, (err, rows) => {
@@ -118,9 +122,14 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
             defer.reject(err);
           } else {
             defer.resolve({
-              rows: rows.map(row => {
+              rows: rows.map((row) => {
                 for (const key of Object.keys(row)) {
-                  if (typeof row[key] === 'string' && /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z/.test(row[key])) {
+                  if (
+                    typeof row[key] === 'string' &&
+                    /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z/.test(
+                      row[key],
+                    )
+                  ) {
                     row[key] = new Date(row[key]);
                   }
                 }
@@ -130,11 +139,11 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
             });
           }
         });
-        stmt.finalize(err => {
+        stmt.finalize((err) => {
           if (err) {
             defer.reject(err);
           }
-        })
+        });
       });
       return defer.promise;
     });
@@ -145,12 +154,16 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
   }
 }
 
-export class SqliteRelationalAdapter extends SqliteRelationalDataAdapter implements RelationalTransactionAdapter {
+export class SqliteRelationalAdapter
+  extends SqliteRelationalDataAdapter
+  implements RelationalTransactionAdapter {
   constructor(private fileName: string) {
-    super(new (sqlite.verbose()).Database(fileName));
+    super(new (sqlite.verbose().Database)(fileName));
   }
 
-  transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
+  transaction<T>(
+    action: (adapter: RelationalDataAdapter) => Promise<T>,
+  ): Promise<T> {
     return this.transactionSerializable.run(async () => {
       await this.db.run('BEGIN');
       try {
@@ -165,26 +178,33 @@ export class SqliteRelationalAdapter extends SqliteRelationalDataAdapter impleme
   }
 }
 
-export const adapterFactory: RelationalDataAdapterFactory & RelationalTransactionAdapterFactory = {
-  async createTransactionAdapter(options?: CreateTransactionAdapterOptions): Promise<RelationalTransactionAdapter> {
+export const adapterFactory: RelationalDataAdapterFactory &
+  RelationalTransactionAdapterFactory = {
+  async createTransactionAdapter(
+    options?: CreateTransactionAdapterOptions,
+  ): Promise<RelationalTransactionAdapter> {
     const fileName = await getFileName(options);
     return new SqliteRelationalAdapter(fileName);
   },
-  async createDataAdapter(options?: CreateDataAdapterOptions): Promise<RelationalDataAdapter> {
+  async createDataAdapter(
+    options?: CreateDataAdapterOptions,
+  ): Promise<RelationalDataAdapter> {
     const fileName = await getFileName(options);
     return new SqliteRelationalAdapter(fileName);
   },
-  async destroy(options?: DestroyAdapterOptions): Promise<void> {
-
-  },
+  async destroy(options?: DestroyAdapterOptions): Promise<void> {},
   name: '@daita/sqlite-adapter',
   canCreate(connectionString: string): boolean {
-    return connectionString === ':memory:' || connectionString.startsWith('.' || connectionString.startsWith('sqlite:'));
+    return (
+      connectionString === ':memory:' ||
+      connectionString.startsWith('.' || connectionString.startsWith('sqlite:'))
+    );
   },
 };
 
 function getFileName(options?: CreateAdapterOptions) {
-  const connectionString = options?.connectionString ?? process.env.DATABASE_URL;
+  const connectionString =
+    options?.connectionString ?? process.env.DATABASE_URL;
   if (!connectionString) {
     throw new Error('missing connection string');
   }

@@ -1,10 +1,15 @@
 import { OrmRelationalSchema } from '../schema';
-import {RelationalClient} from '../../relational/client';
-import {RelationalDataAdapter, RelationalRawResult} from '../../relational/adapter';
+import { RelationalClient } from '../../relational/client';
+import {
+  RelationalDataAdapter,
+  RelationalRawResult,
+} from '../../relational/adapter';
 
 export class RelationalBaseContext extends RelationalClient {
-  constructor(adapter: RelationalDataAdapter,
-              protected schema: OrmRelationalSchema) {
+  constructor(
+    adapter: RelationalDataAdapter,
+    protected schema: OrmRelationalSchema,
+  ) {
     super(adapter);
   }
 

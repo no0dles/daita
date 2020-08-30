@@ -9,7 +9,11 @@ export class AvgFormatter implements FormatHandle<AvgDescription> {
     return isAvgDescription(param);
   }
 
-  handle(param: AvgDescription, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: AvgDescription,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     return `avg(${formatter.format(param.avg, ctx)})`;
   }
 }

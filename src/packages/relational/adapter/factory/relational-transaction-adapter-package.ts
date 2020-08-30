@@ -1,4 +1,4 @@
-import { RelationalTransactionAdapterFactory } from "./relational-transaction-adapter-factory";
+import { RelationalTransactionAdapterFactory } from './relational-transaction-adapter-factory';
 
 export interface RelationalTransactionAdapterPackage {
   adapterFactory: RelationalTransactionAdapterFactory;

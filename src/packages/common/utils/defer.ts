@@ -33,10 +33,10 @@ export class Defer<T> {
 
   resolve(value?: T) {
     if (this.promiseResolved) {
-      throw new Error("defer already resolved");
+      throw new Error('defer already resolved');
     }
     if (this.promiseRejected) {
-      throw new Error("defer already rejected");
+      throw new Error('defer already rejected');
     }
 
     this.promiseResolved = true;
@@ -46,10 +46,10 @@ export class Defer<T> {
 
   reject(err?: any) {
     if (this.promiseResolved) {
-      throw new Error("defer already resolved");
+      throw new Error('defer already resolved');
     }
     if (this.promiseRejected) {
-      throw new Error("defer already rejected");
+      throw new Error('defer already rejected');
     }
 
     this.promiseRejected = true;

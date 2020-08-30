@@ -4,40 +4,57 @@ import * as jwt from 'express-jwt';
 import * as JwksClient from 'jwks-rsa';
 import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
-import {AppOptions} from '../http-server-common';
+import { AppOptions } from '../http-server-common';
 
 export function createHttpServer(options: AppOptions) {
   const app = express();
   if (options.cors === true) {
     app.use(cors());
   } else if (typeof options.cors === 'string') {
-    app.use(cors({
-      origin: options.cors,
-    }));
+    app.use(
+      cors({
+        origin: options.cors,
+      }),
+    );
   }
   app.use(bodyParser.json());
-  if (options.authorization && options.authorization.providers && options.authorization.providers.length > 0) {
+  if (
+    options.authorization &&
+    options.authorization.providers &&
+    options.authorization.providers.length > 0
+  ) {
     const clients: { [key: string]: JwksClient.JwksClient } = {};
     for (const provider of options.authorization.providers) {
       clients[provider.issuer] = JwksClient({
         jwksUri: provider.uri,
       });
     }
-    app.use(jwt({
-      algorithms: ['RS256', 'RS384', 'RS512'],
-      secret: (req: express.Request, header: any, payload: any, done: (err: any, secret?: string | Buffer) => void) => {
-        const client = clients[payload.iss];
-        client.getSigningKey(header.kid, (err, key) => {
-          if (err) {
-            done(err);
-          } else {
-            done(err, key.getPublicKey());
-          }
-        });
-      },
-    }));
+    app.use(
+      jwt({
+        algorithms: ['RS256', 'RS384', 'RS512'],
+        secret: (
+          req: express.Request,
+          header: any,
+          payload: any,
+          done: (err: any, secret?: string | Buffer) => void,
+        ) => {
+          const client = clients[payload.iss];
+          client.getSigningKey(header.kid, (err, key) => {
+            if (err) {
+              done(err);
+            } else {
+              done(err, key.getPublicKey());
+            }
+          });
+        },
+      }),
+    );
   }
-  if (options.authorization && options.authorization.tokens && options.authorization.tokens.length > 0) {
+  if (
+    options.authorization &&
+    options.authorization.tokens &&
+    options.authorization.tokens.length > 0
+  ) {
     const tokenMap = options.authorization.tokens.reduce((map, token) => {
       map.set(token.token, token.userId);
       return map;
@@ -48,7 +65,10 @@ export function createHttpServer(options: AppOptions) {
         return next();
       }
 
-      if (!req.headers.authorization || !req.headers.authorization.startsWith('Token ')) {
+      if (
+        !req.headers.authorization ||
+        !req.headers.authorization.startsWith('Token ')
+      ) {
         return next();
       }
 

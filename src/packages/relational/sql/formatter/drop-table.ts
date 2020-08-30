@@ -9,7 +9,11 @@ export class DropTableFormatter implements FormatHandle<DropTableSql> {
     return isDropTableSql(param);
   }
 
-  handle(param: DropTableSql, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: DropTableSql,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     let sql = 'DROP TABLE';
     if (param.ifExists) {
       sql += ' IF EXISTS';

@@ -7,9 +7,9 @@ import { UserPool, UserPoolAlgorithm } from '../models/user-pool';
 import { getAccessToken } from '../modules/key';
 import { Role } from '../models/role';
 import { UserRole } from '../models/user-role';
-import {and, equal, field, join, table} from '../../relational/sql/function';
+import { and, equal, field, join, table } from '../../relational/sql/function';
 
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 router.post('/', async (req, res, next) => {
   try {
@@ -25,7 +25,13 @@ router.post('/', async (req, res, next) => {
       },
       from: table(UserRefreshToken),
       join: [
-        join(User, equal(field(User, 'username'), field(UserRefreshToken, 'userUsername'))),
+        join(
+          User,
+          equal(
+            field(User, 'username'),
+            field(UserRefreshToken, 'userUsername'),
+          ),
+        ),
         join(UserPool, equal(field(User, 'userPoolId'), field(UserPool, 'id'))),
       ],
       where: and(
@@ -38,7 +44,9 @@ router.post('/', async (req, res, next) => {
       return res.status(400).json({ message: 'invalid token' });
     }
 
-    const expiresAt = Math.floor(token.issuedAt.getTime() / 1000) + token.refreshRefreshExpiresIn;
+    const expiresAt =
+      Math.floor(token.issuedAt.getTime() / 1000) +
+      token.refreshRefreshExpiresIn;
     const now = Math.floor(new Date().getTime() / 1000);
     if (now > expiresAt) {
       await client.delete({
@@ -53,21 +61,26 @@ router.post('/', async (req, res, next) => {
     const roles = await client.select({
       select: field(Role, 'name'),
       from: table(Role),
-      join: [join(UserRole, equal(field(UserRole, 'roleName'), field(Role, 'name')))],
+      join: [
+        join(UserRole, equal(field(UserRole, 'roleName'), field(Role, 'name'))),
+      ],
       where: equal(field(UserRole, 'userUsername'), token.userUsername),
     });
 
     const refreshToken = await getRandomCode();
-    const accessToken = await getAccessToken({
-      roles,
-    }, {
-      subject: token.userUsername,
-      expiresIn: token.userPoolAccessTokenExpiresIn,
-      issuer: token.userPoolId,
-      algorithm: token.userPoolAlgorithm as UserPoolAlgorithm,
-    });
+    const accessToken = await getAccessToken(
+      {
+        roles,
+      },
+      {
+        subject: token.userUsername,
+        expiresIn: token.userPoolAccessTokenExpiresIn,
+        issuer: token.userPoolId,
+        algorithm: token.userPoolAlgorithm as UserPoolAlgorithm,
+      },
+    );
 
-    await client.transaction(async trx => {
+    await client.transaction(async (trx) => {
       await trx.delete({
         delete: table(UserRefreshToken),
         where: equal(field(UserRefreshToken, 'token'), req.body.refreshToken),

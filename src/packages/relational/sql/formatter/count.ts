@@ -9,7 +9,11 @@ export class CountFormatter implements FormatHandle<CountDescription> {
     return isCountDescription(param);
   }
 
-  handle(param: CountDescription, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: CountDescription,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     if (param.count.field) {
       const prefix = param.count.distinct ? 'DISTINCT ' : '';
       return `count(${prefix}${formatter.format(param.count.field, ctx)})`;
@@ -17,5 +21,4 @@ export class CountFormatter implements FormatHandle<CountDescription> {
       return `count(*)`;
     }
   }
-
 }

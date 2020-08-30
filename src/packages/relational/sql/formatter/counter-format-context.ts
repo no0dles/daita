@@ -4,8 +4,7 @@ import { ValueType } from '../description/value-type';
 export abstract class CounterFormatContext implements FormatContext {
   private values: ValueType[] = [];
 
-  constructor(private prefix: string) {
-  }
+  constructor(private prefix: string) {}
 
   appendValue(value: ValueType): string {
     const index = this.values.indexOf(value);

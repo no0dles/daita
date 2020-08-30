@@ -11,7 +11,7 @@ import { AstFunctionDeclaration } from './ast-function-declaration';
 import { AstTypeDeclaration } from './ast-type-declaration';
 
 export type AstType =
-  AstClassDeclaration
+  | AstClassDeclaration
   | AstEnumDeclaration
   | AstMethodDeclaration
   | AstFunctionDeclaration

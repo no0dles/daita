@@ -1,11 +1,9 @@
-import {AppTransactionOptions} from './app-options';
-import {TransactionManager} from './transaction-manager';
-import {RelationalDataAdapter} from '../relational/adapter';
+import { AppTransactionOptions } from './app-options';
+import { TransactionManager } from './transaction-manager';
+import { RelationalDataAdapter } from '../relational/adapter';
 
 export class ContextManager {
-
-  constructor(private dataAdapter: RelationalDataAdapter) {
-  }
+  constructor(private dataAdapter: RelationalDataAdapter) {}
 
   async exec(sql: any) {
     if (!this.dataAdapter.supportsQuery(sql)) {
@@ -34,7 +32,10 @@ export class TransactionContextManager {
     if (this.transactions[transactionId]) {
       throw new Error('transaction already exists');
     }
-    const transaction = new TransactionManager(this.options.dataAdapter, this.transactionTimeout);
+    const transaction = new TransactionManager(
+      this.options.dataAdapter,
+      this.transactionTimeout,
+    );
     this.transactions[transactionId] = transaction;
     transaction.result.finally(() => {
       delete this.transactions[transactionId];

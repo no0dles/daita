@@ -11,7 +11,7 @@ import {
   parseSchemaMigrationVariables,
 } from '../migration/parsing/parse-schema-migrations';
 import { parseRelationalSchema } from '../migration/parsing/parse-relational-schema';
-import {RelationalSchemaDescription} from '../../orm/schema';
+import { RelationalSchemaDescription } from '../../orm/schema';
 
 export function getMigrationRelativePath(
   schemaFilePath: string,
@@ -28,19 +28,17 @@ export interface SchemaLocation {
   sourceDirectory: string;
 }
 
-export async function getSchemaLocation(
-  opts: { schema?: string, cwd?: string }
-): Promise<SchemaLocation> {
+export async function getSchemaLocation(opts: {
+  schema?: string;
+  cwd?: string;
+}): Promise<SchemaLocation> {
   const cwd = opts.cwd ? path.resolve(opts.cwd) : process.cwd();
   let sourceDirectory = path.join(cwd, 'src');
   const tsconfigFileName = path.join(cwd, 'tsconfig.json');
   if (fs.existsSync(tsconfigFileName)) {
     const tsconfig = JSON.parse(fs.readFileSync(tsconfigFileName).toString());
     if (tsconfig.compilerOptions && tsconfig.compilerOptions.rootDir) {
-      sourceDirectory = path.join(
-        cwd,
-        tsconfig.compilerOptions.rootDir,
-      );
+      sourceDirectory = path.join(cwd, tsconfig.compilerOptions.rootDir);
     }
   }
 
@@ -69,10 +67,7 @@ export async function getSchemaLocation(
     }
   }
 
-  fileName = path.relative(
-    cwd,
-    path.join(sourceDirectory, 'schema.ts'),
-  );
+  fileName = path.relative(cwd, path.join(sourceDirectory, 'schema.ts'));
 
   while (true) {
     fileName = await cli.prompt('Where is your schema file?', {
@@ -106,7 +101,7 @@ function resolveSchemaLocation(
 
 export async function getSchemaInformation(
   astContext: AstContext,
-  location: SchemaLocation
+  location: SchemaLocation,
 ): Promise<SchemaInformation | null> {
   const sourceFile = astContext.get(location.fileName);
   if (!sourceFile) {
@@ -127,19 +122,17 @@ export async function getSchemaInformation(
         name: 'schema',
         message: 'select a schema',
         type: 'list',
-        choices: schemas.map(s => s.variable.name),
+        choices: schemas.map((s) => s.variable.name),
       },
     ]);
-    schema = schemas.filter(s => s.variable.name === response.schema)[0];
+    schema = schemas.filter((s) => s.variable.name === response.schema)[0];
   }
 
   return new SchemaInformation(schema);
 }
 
 export class SchemaInformation {
-  constructor(private schemaDeclaration: SchemaDeclaration) {
-
-  }
+  constructor(private schemaDeclaration: SchemaDeclaration) {}
 
   get variableName() {
     return this.schemaDeclaration.variable.name;

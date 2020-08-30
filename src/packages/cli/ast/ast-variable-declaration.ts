@@ -12,17 +12,21 @@ import { AstCallExpression } from './ast-call-expression';
 import { AstNode } from './ast-node';
 
 export class AstVariableDeclaration implements AstNode {
-  constructor(private block: AstBlock,
-              private variableStatement: VariableStatement,
-              public node: VariableDeclaration) {
-  }
+  constructor(
+    private block: AstBlock,
+    private variableStatement: VariableStatement,
+    public node: VariableDeclaration,
+  ) {}
 
   get sourceFile() {
     return this.block.sourceFile;
   }
 
   get exported(): boolean {
-    return hasModifier(this.variableStatement.modifiers, SyntaxKind.ExportKeyword);
+    return hasModifier(
+      this.variableStatement.modifiers,
+      SyntaxKind.ExportKeyword,
+    );
   }
 
   get name(): string {
@@ -30,7 +34,11 @@ export class AstVariableDeclaration implements AstNode {
   }
 
   get type(): AstType | null {
-    return getTypeFromTypeOrExpression(this.block, this.node.type, this.node.initializer);
+    return getTypeFromTypeOrExpression(
+      this.block,
+      this.node.type,
+      this.node.initializer,
+    );
   }
 
   get value(): AstValue | null {
@@ -41,7 +49,7 @@ export class AstVariableDeclaration implements AstNode {
     return this.getCalls();
   }
 
-  * callsByName(name: string) {
+  *callsByName(name: string) {
     for (const call of this.calls) {
       if (call.methodName === name) {
         yield call;
@@ -49,7 +57,7 @@ export class AstVariableDeclaration implements AstNode {
     }
   }
 
-  private* getCalls(): Generator<AstCallExpression> {
+  private *getCalls(): Generator<AstCallExpression> {
     const name = this.name;
     for (const expresionStatement of this.block.expressionStatements) {
       const call = expresionStatement.callExpression;

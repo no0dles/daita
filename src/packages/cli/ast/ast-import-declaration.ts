@@ -6,9 +6,10 @@ import { AstType } from './ast-type';
 import { getName } from './utils';
 
 export class AstImportDeclaration {
-  constructor(private sourceFile: AstSourceFile,
-              private node: ImportDeclaration) {
-  }
+  constructor(
+    private sourceFile: AstSourceFile,
+    private node: ImportDeclaration,
+  ) {}
 
   getValue(name: string): AstValue | null {
     const exportName = this.exportsName(name);
@@ -39,7 +40,10 @@ export class AstImportDeclaration {
       return null;
     }
 
-    const namedImport = isKind(this.node.importClause.namedBindings, SyntaxKind.NamedImports);
+    const namedImport = isKind(
+      this.node.importClause.namedBindings,
+      SyntaxKind.NamedImports,
+    );
     if (namedImport) {
       for (const elm of namedImport.elements) {
         const exportName = getName(elm.name, 'identifier');
@@ -52,7 +56,10 @@ export class AstImportDeclaration {
       }
     }
 
-    const namespaceImport = isKind(this.node.importClause.namedBindings, SyntaxKind.NamespaceImport);
+    const namespaceImport = isKind(
+      this.node.importClause.namedBindings,
+      SyntaxKind.NamespaceImport,
+    );
     if (namespaceImport) {
       //TODO
     }
@@ -71,7 +78,10 @@ export class AstImportDeclaration {
   }
 
   private get moduleSpecifier(): string {
-    const stringLiteral = isKind(this.node.moduleSpecifier, SyntaxKind.StringLiteral);
+    const stringLiteral = isKind(
+      this.node.moduleSpecifier,
+      SyntaxKind.StringLiteral,
+    );
     if (stringLiteral) {
       return stringLiteral.text;
     }

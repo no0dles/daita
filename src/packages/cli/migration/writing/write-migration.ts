@@ -1,10 +1,10 @@
 import * as ts from 'typescript';
-import {ScriptKind, ScriptTarget} from 'typescript';
-import {getIdentifierName, isKind, parseSourceFile} from '../../ast/utils';
+import { ScriptKind, ScriptTarget } from 'typescript';
+import { getIdentifierName, isKind, parseSourceFile } from '../../ast/utils';
 import * as fs from 'fs';
-import {getMigrationName} from '../utils';
+import { getMigrationName } from '../utils';
 import { createExpressionFromValue } from './write-migration-step';
-import {MigrationStep} from '../../../orm/migration';
+import { MigrationStep } from '../../../orm/migration';
 
 export function addMigrationImport(
   schemaFilePath: string,
@@ -129,7 +129,7 @@ export function removeMigrationImport(
       continue;
     }
 
-    const identifiers: string[] = namedImport.elements.map(element =>
+    const identifiers: string[] = namedImport.elements.map((element) =>
       element.name.escapedText.toString(),
     );
     if (identifiers.length === 1) {
@@ -226,7 +226,7 @@ export function addMigrationRegistration(
     prefix.endsWith('\n') ||
     prefix.endsWith('\r') ||
     prefix.endsWith(' ')
-    ) {
+  ) {
     suffix = prefix[prefix.length - 1] + suffix;
     prefix = prefix.substr(0, prefix.length - 1);
   }
@@ -249,9 +249,12 @@ export function writeMigration(
     undefined,
     ts.createImportClause(
       undefined,
-      ts.createNamedImports(
-        [ts.createImportSpecifier(undefined, ts.createIdentifier('MigrationDescription'))],
-      ),
+      ts.createNamedImports([
+        ts.createImportSpecifier(
+          undefined,
+          ts.createIdentifier('MigrationDescription'),
+        ),
+      ]),
     ),
     ts.createStringLiteral('@daita/orm'),
   );
@@ -285,26 +288,28 @@ export function writeMigration(
     ts.createPropertyAssignment(
       ts.createIdentifier('steps'),
       ts.createArrayLiteral(
-        steps.map(step => createExpressionFromValue(step)),
+        steps.map((step) => createExpressionFromValue(step)),
         true,
       ),
-    ));
+    ),
+  );
 
   const exportStmt = ts.createVariableStatement(
     [ts.createModifier(ts.SyntaxKind.ExportKeyword)],
-    ts.createVariableDeclarationList([ts.createVariableDeclaration(
-      ts.createIdentifier(getMigrationName(name)),
-      ts.createTypeReferenceNode(
-        ts.createIdentifier('MigrationDescription'),
-        undefined,
-      ),
-      ts.createObjectLiteral(
-        properties,
-        true,
-      ),
-      )],
+    ts.createVariableDeclarationList(
+      [
+        ts.createVariableDeclaration(
+          ts.createIdentifier(getMigrationName(name)),
+          ts.createTypeReferenceNode(
+            ts.createIdentifier('MigrationDescription'),
+            undefined,
+          ),
+          ts.createObjectLiteral(properties, true),
+        ),
+      ],
       ts.NodeFlags.Const,
-    ));
+    ),
+  );
 
   const sourceFile = ts.createSourceFile(
     `${name}.migration.ts`,

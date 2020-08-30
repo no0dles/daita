@@ -9,7 +9,13 @@ export class CreateSchemaFormatter implements FormatHandle<CreateSchemaSql> {
     return isCreateSchemaSql(param);
   }
 
-  handle(param: CreateSchemaSql, ctx: FormatContext, formatter: Formatter): string {
-    return `CREATE SCHEMA ${param.ifNotExists ? 'IF NOT EXISTS ' : ''}${ctx.escape(param.createSchema)}`;
+  handle(
+    param: CreateSchemaSql,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
+    return `CREATE SCHEMA ${
+      param.ifNotExists ? 'IF NOT EXISTS ' : ''
+    }${ctx.escape(param.createSchema)}`;
   }
 }

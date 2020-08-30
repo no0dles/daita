@@ -3,18 +3,33 @@ import { MigrationTree } from '../migration';
 import { MigrationContext } from './get-migration-context';
 import {
   AlterTableSql,
-  and, Condition,
-  CreateIndexSql, CreateSchemaSql, CreateTableSql, CreateViewSql,
+  and,
+  Condition,
+  CreateIndexSql,
+  CreateSchemaSql,
+  CreateTableSql,
+  CreateViewSql,
   DeleteSql,
   DropIndexSql,
-  DropTableSql, DropViewSql, equal, field, InsertSql, LockTableSql, SelectSql,
+  DropTableSql,
+  DropViewSql,
+  equal,
+  field,
+  InsertSql,
+  LockTableSql,
+  SelectSql,
   table,
-  TableDescription, UpdateSql,
+  TableDescription,
+  UpdateSql,
 } from '../../relational/sql';
-import {failNever} from '../../common/utils';
-import {RelationDoesNotExistsError} from '../../relational/error';
-import {Client, SelectClient, TransactionClient} from '../../relational/client';
-import {parseRule} from '../../relational/permission';
+import { failNever } from '../../common/utils';
+import { RelationDoesNotExistsError } from '../../relational/error';
+import {
+  Client,
+  SelectClient,
+  TransactionClient,
+} from '../../relational/client';
+import { parseRule } from '../../relational/permission';
 
 class Migrations {
   static schema = 'daita';
@@ -32,7 +47,7 @@ class Rules {
 }
 
 export type MigrationSql =
-  LockTableSql
+  | LockTableSql
   | CreateSchemaSql
   | CreateTableSql
   | DropTableSql
@@ -46,8 +61,7 @@ export type MigrationSql =
   | DropViewSql;
 
 export class OrmRuleContext {
-  constructor(private client: Client<SelectSql<any>>) {
-  }
+  constructor(private client: Client<SelectSql<any>>) {}
 
   async getRules() {
     try {
@@ -58,7 +72,7 @@ export class OrmRuleContext {
         },
         from: table(Rules),
       });
-      return rules.map(rule => parseRule(rule.rule));
+      return rules.map((rule) => parseRule(rule.rule));
     } catch (e) {
       if (e instanceof RelationDoesNotExistsError) {
         return [];
@@ -69,10 +83,11 @@ export class OrmRuleContext {
 }
 
 export class OrmMigrationContext implements MigrationContext {
-  constructor(private client: TransactionClient<Client<MigrationSql> & SelectClient> & SelectClient,
-              private migrationTree: MigrationTree) {
-
-  }
+  constructor(
+    private client: TransactionClient<Client<MigrationSql> & SelectClient> &
+      SelectClient,
+    private migrationTree: MigrationTree,
+  ) {}
 
   async needsUpdate(): Promise<boolean> {
     const updates = await this.pendingUpdates();
@@ -126,7 +141,7 @@ export class OrmMigrationContext implements MigrationContext {
 
       const currentMigration = currentMigrations[0];
 
-      if (!appliedMigrations.some(m => m.id === currentMigration.id)) {
+      if (!appliedMigrations.some((m) => m.id === currentMigration.id)) {
         const createTables: { [key: string]: CreateTableSql } = {};
 
         for (const step of currentMigration.steps) {
@@ -162,7 +177,9 @@ export class OrmMigrationContext implements MigrationContext {
             const tbl = table(step.table, step.schema);
             const key = getTableDescriptionIdentifier(tbl);
             for (const fieldName of step.fieldNames) {
-              const field = createTables[key].columns.filter(c => c.name === fieldName)[0];
+              const field = createTables[key].columns.filter(
+                (c) => c.name === fieldName,
+              )[0];
               field.primaryKey = true;
             }
             //TODO optimize
@@ -256,7 +273,10 @@ export class OrmMigrationContext implements MigrationContext {
           }
         }
 
-        sqls.push({ insert: { id: currentMigration.id }, into: table(Migrations) });
+        sqls.push({
+          insert: { id: currentMigration.id },
+          into: table(Migrations),
+        });
       }
 
       currentMigrations = this.migrationTree.next(currentMigration.id);
@@ -265,19 +285,24 @@ export class OrmMigrationContext implements MigrationContext {
     return sqls;
   }
 
-  private getWhere(tableDescription: TableDescription<any>, keys: any): Condition {
-    const conditions = Object.keys(keys).map(key => equal(field(tableDescription, key), keys[key]));
+  private getWhere(
+    tableDescription: TableDescription<any>,
+    keys: any,
+  ): Condition {
+    const conditions = Object.keys(keys).map((key) =>
+      equal(field(tableDescription, key), keys[key]),
+    );
     if (conditions.length === 0) {
       throw new Error('seed requires at least 1 key');
     }
-    return and(...conditions as any);
+    return and(...(conditions as any));
   }
 
   async update(trx?: Client<MigrationSql> & SelectClient): Promise<void> {
     if (trx) {
       await this.runUpdate(trx);
     } else {
-      await this.client.transaction(async trx => {
+      await this.client.transaction(async (trx) => {
         await this.runUpdate(trx);
       });
     }

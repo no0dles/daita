@@ -1,3 +1,3 @@
-import {TokenAuthProvider} from './token-auth-provider';
+import { TokenAuthProvider } from './token-auth-provider';
 
 export type AuthProvider = TokenAuthProvider;

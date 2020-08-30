@@ -14,12 +14,12 @@ export class Formatter {
   }
 
   canHandle(value: any) {
-    const availableFormatters = this.handlers.filter(h => h.canHandle(value));
+    const availableFormatters = this.handlers.filter((h) => h.canHandle(value));
     return availableFormatters.length == 1;
   }
 
   format(value: any, ctx: FormatContext): string {
-    const availableFormatters = this.handlers.filter(h => h.canHandle(value));
+    const availableFormatters = this.handlers.filter((h) => h.canHandle(value));
     if (availableFormatters.length === 0) {
       throw new Error(`unable to format ${JSON.stringify(value)}`);
     }

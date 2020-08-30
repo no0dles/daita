@@ -1,8 +1,6 @@
 import { FormatHandle, Formatter, FormatType } from './formatter';
 import { FormatContext } from './format-context';
-import {
-  ConcatDescription, isConcatDescription,
-} from '../description';
+import { ConcatDescription, isConcatDescription } from '../description';
 
 export class ConcatFormatter implements FormatHandle<ConcatDescription> {
   type = FormatType.Condition;
@@ -11,7 +9,11 @@ export class ConcatFormatter implements FormatHandle<ConcatDescription> {
     return isConcatDescription(param);
   }
 
-  handle(param: ConcatDescription, ctx: FormatContext, formatter: Formatter): string {
-    return `${param.concat.map(c => formatter.format(c, ctx)).join(' || ')}`;
+  handle(
+    param: ConcatDescription,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
+    return `${param.concat.map((c) => formatter.format(c, ctx)).join(' || ')}`;
   }
 }

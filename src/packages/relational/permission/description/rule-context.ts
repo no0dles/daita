@@ -1,4 +1,4 @@
 export interface RuleContext<T = any> {
-  isAuthorized: boolean
+  isAuthorized: boolean;
   userId?: string;
 }

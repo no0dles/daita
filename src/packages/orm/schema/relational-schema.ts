@@ -1,20 +1,26 @@
 import { MigrationDescription, MigrationTree } from '../migration';
-import { SchemaTableOptions, SchemaTableRequiredKeyOptions } from './schema-table-options';
+import {
+  SchemaTableOptions,
+  SchemaTableRequiredKeyOptions,
+} from './schema-table-options';
 import { RelationalSchemaOptions } from './relational-schema-options';
 import { RelationalSchemaDescription } from './description/relational-schema-description';
 import { RelationalMapper } from '../context/relational-mapper';
-import { RelationalBackwardCompatibleMapper, RelationalNormalMapper } from '../context/orm-mapper';
+import {
+  RelationalBackwardCompatibleMapper,
+  RelationalNormalMapper,
+} from '../context/orm-mapper';
 import { OrmRelationalSchema } from './orm-relational-schema';
-import {Constructable, DefaultConstructable} from '../../common/types';
-import {SelectSql} from '../../relational/sql';
-import {Rule} from '../../relational/permission/description';
+import { Constructable, DefaultConstructable } from '../../common/types';
+import { SelectSql } from '../../relational/sql';
+import { Rule } from '../../relational/permission/description';
 
 export class RelationalSchema implements OrmRelationalSchema {
   private migrationTree = new MigrationTree();
   private _rules: Rule[] = [];
   private tables: Constructable<any>[] = [];
-  private views: { view: Constructable<any>, query: SelectSql<any> }[] = [];
-  private seeds: { model: DefaultConstructable<any>, values: any[] }[] = [];
+  private views: { view: Constructable<any>; query: SelectSql<any> }[] = [];
+  private seeds: { model: DefaultConstructable<any>; values: any[] }[] = [];
 
   schema: string | null = null;
 
@@ -56,7 +62,9 @@ export class RelationalSchema implements OrmRelationalSchema {
   }
 
   getSchemaDescription(): RelationalSchemaDescription {
-    return this.migrationTree.getSchemaDescription({ backwardCompatible: this.options?.backwardCompatible ?? false });
+    return this.migrationTree.getSchemaDescription({
+      backwardCompatible: this.options?.backwardCompatible ?? false,
+    });
   }
 
   getRules(): Rule[] {
@@ -69,7 +77,9 @@ export class RelationalSchema implements OrmRelationalSchema {
 
   getMapper(): RelationalMapper {
     if (this.options?.backwardCompatible) {
-      return new RelationalBackwardCompatibleMapper(this.getSchemaDescription());
+      return new RelationalBackwardCompatibleMapper(
+        this.getSchemaDescription(),
+      );
     } else {
       return new RelationalNormalMapper();
     }

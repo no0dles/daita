@@ -12,16 +12,17 @@ import { AstLiteralValue } from '../../ast/ast-literal-value';
 import { AstKeywordValue } from '../../ast/ast-keyword-value';
 import { AstPropertyAccessExpression } from '../../ast/ast-property-access-expression';
 import { AstError } from '../../ast/utils';
-import {RelationalTableSchemaTableFieldType} from '../../../orm/schema';
+import { RelationalTableSchemaTableFieldType } from '../../../orm/schema';
 
-export function parseRelationalType(type: AstType): RelationalTableSchemaTableFieldType {
+export function parseRelationalType(
+  type: AstType,
+): RelationalTableSchemaTableFieldType {
   if (type instanceof AstArrayType) {
     if (!type.elementType) {
       throw new Error('array requires type');
     }
     const elementFieldType = parseRelationalType(type.elementType);
     const arrayType = parseRelationalType(type);
-
   } else if (type instanceof AstLiteralType) {
     if (type.isNumber) {
       return 'number';
@@ -44,7 +45,10 @@ export function parseRelationalType(type: AstType): RelationalTableSchemaTableFi
     const relationalTypes: RelationalTableSchemaTableFieldType[] = [];
 
     for (const unionType of type.types) {
-      if (unionType instanceof AstKeywordType && (unionType.isNull || unionType.isUndefined)) {
+      if (
+        unionType instanceof AstKeywordType &&
+        (unionType.isNull || unionType.isUndefined)
+      ) {
         continue;
       }
 

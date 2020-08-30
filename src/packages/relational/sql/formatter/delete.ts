@@ -18,5 +18,4 @@ export class DeleteFormatter implements FormatHandle<DeleteSql> {
 
     return sql;
   }
-
 }

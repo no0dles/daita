@@ -5,9 +5,10 @@ import { AstValue } from './ast-value';
 import { AstType } from './ast-type';
 
 export class AstExportDeclaration {
-  constructor(private sourceFile: AstSourceFile,
-              private node: ExportDeclaration) {
-  }
+  constructor(
+    private sourceFile: AstSourceFile,
+    private node: ExportDeclaration,
+  ) {}
 
   getValue(name: string): AstValue | null {
     const sourceFile = this.getExportSourceFile();
@@ -29,7 +30,10 @@ export class AstExportDeclaration {
     if (!this.node.moduleSpecifier) {
       return null;
     }
-    const stringLiteral = isKind(this.node.moduleSpecifier, SyntaxKind.StringLiteral);
+    const stringLiteral = isKind(
+      this.node.moduleSpecifier,
+      SyntaxKind.StringLiteral,
+    );
     if (stringLiteral) {
       return stringLiteral.text;
     }

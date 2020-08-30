@@ -1,5 +1,5 @@
 import { getMigrationSteps } from '../../utils.test';
-import {MigrationStep} from '../../../../orm/migration';
+import { MigrationStep } from '../../../../orm/migration';
 
 describe('add-seed', () => {
   let steps: MigrationStep[] = [];
@@ -7,19 +7,23 @@ describe('add-seed', () => {
   beforeAll(async () => {
     steps = await getMigrationSteps(__dirname + '/add-seed.test.ts');
   });
-  
+
   it('should add seed', () => {
-    expect(steps).toIncludeAnyMembers([{
-      kind: 'insert_seed', 
-      table: 'User', 
-      keys: {id: 'a' }, 
-      seed: {admin: false},
-    }]);
-    expect(steps).toIncludeAnyMembers([{
-      kind: 'insert_seed', 
-      table: 'User', 
-      keys: {id: 'b'}, 
-      seed: {admin: true},
-    }]);
+    expect(steps).toIncludeAnyMembers([
+      {
+        kind: 'insert_seed',
+        table: 'User',
+        keys: { id: 'a' },
+        seed: { admin: false },
+      },
+    ]);
+    expect(steps).toIncludeAnyMembers([
+      {
+        kind: 'insert_seed',
+        table: 'User',
+        keys: { id: 'b' },
+        seed: { admin: true },
+      },
+    ]);
   });
 });

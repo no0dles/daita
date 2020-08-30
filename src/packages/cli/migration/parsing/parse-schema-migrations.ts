@@ -1,7 +1,7 @@
 import { parseSchemaMigration } from './parse-schema-migration';
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { getObjectValue } from '../../ast/utils';
-import {MigrationTree} from '../../../orm/migration';
+import { MigrationTree } from '../../../orm/migration';
 
 export function parseSchemaMigrations(
   schemaVariable: AstVariableDeclaration,
@@ -16,7 +16,9 @@ export function parseSchemaMigrations(
   return migrationTree;
 }
 
-export function* parseSchemaMigrationCalls(schemaVariable: AstVariableDeclaration) {
+export function* parseSchemaMigrationCalls(
+  schemaVariable: AstVariableDeclaration,
+) {
   const migrationCalls = schemaVariable.callsByName('migration');
   for (const migrationCall of migrationCalls) {
     const migrationClassArg = migrationCall.argumentAt(0);
@@ -28,7 +30,9 @@ export function* parseSchemaMigrationCalls(schemaVariable: AstVariableDeclaratio
   }
 }
 
-export function* parseSchemaMigrationVariables(schemaVariable: AstVariableDeclaration) {
+export function* parseSchemaMigrationVariables(
+  schemaVariable: AstVariableDeclaration,
+) {
   const migrationCalls = schemaVariable.callsByName('migration');
   for (const migrationCall of migrationCalls) {
     const migrationClassArg = migrationCall.argumentAt(0);

@@ -4,8 +4,11 @@ import { User } from './schema/user';
 
 describe('lock-table', () => {
   it('should lock table', () => {
-    expectedSql({
-      lockTable: table(User),
-    }, 'LOCK TABLE "auth"."user"');
+    expectedSql(
+      {
+        lockTable: table(User),
+      },
+      'LOCK TABLE "auth"."user"',
+    );
   });
-})
+});

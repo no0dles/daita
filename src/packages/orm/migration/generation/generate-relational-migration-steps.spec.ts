@@ -8,14 +8,14 @@ import {
   RelationalTableReferenceDescription,
   RelationalTableReferenceKeyDescription,
 } from '../../schema';
-import {table} from '../../../relational/sql/function';
+import { table } from '../../../relational/sql/function';
 
 describe('get-migration-steps', () => {
   it('should add table', () => {
     const currentSchema = createSchema({});
     const newSchema = createSchema({
       tables: {
-        'User': {
+        User: {
           fields: { id: { type: 'string', primaryKey: true } },
         },
       },
@@ -45,32 +45,34 @@ describe('get-migration-steps', () => {
   it('should drop table', () => {
     const currentSchema = createSchema({
       tables: {
-        'User': {
+        User: {
           fields: { id: { type: 'string', primaryKey: true } },
         },
       },
     });
     const newSchema = createSchema({});
     const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
-    expect(steps).toEqual([
-      { kind: 'drop_table', table: 'User' },
-    ]);
+    expect(steps).toEqual([{ kind: 'drop_table', table: 'User' }]);
   });
 
   it('should add table field', () => {
     const currentSchema = createSchema({
       tables: {
-        'User': {
+        User: {
           fields: { id: { type: 'string', primaryKey: true } },
         },
       },
     });
     const newSchema = createSchema({
       tables: {
-        'User': {
+        User: {
           fields: {
             id: { type: 'string', primaryKey: true },
-            username: { type: 'string', required: false, defaultValue: 'admin' },
+            username: {
+              type: 'string',
+              required: false,
+              defaultValue: 'admin',
+            },
           },
         },
       },
@@ -91,21 +93,26 @@ describe('get-migration-steps', () => {
   it('should add foreign key', () => {
     const currentSchema = createSchema({
       tables: {
-        'User': {
+        User: {
           fields: { id: { type: 'string', primaryKey: true } },
         },
-        'Role': {
+        Role: {
           fields: { id: { type: 'string', primaryKey: true } },
         },
       },
     });
     const newSchema = createSchema({
       tables: {
-        'User': {
-          fields: { id: { type: 'string', primaryKey: true }, roleId: { type: 'string', required: true } },
-          references: { role: { table: 'Role', keys: ['roleId'], foreignKeys: ['id'] } },
+        User: {
+          fields: {
+            id: { type: 'string', primaryKey: true },
+            roleId: { type: 'string', required: true },
+          },
+          references: {
+            role: { table: 'Role', keys: ['roleId'], foreignKeys: ['id'] },
+          },
         },
-        'Role': {
+        Role: {
           fields: { id: { type: 'string', primaryKey: true } },
         },
       },
@@ -113,11 +120,11 @@ describe('get-migration-steps', () => {
     const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
     expect(steps).toEqual([
       {
-        'fieldName': 'roleId',
-        'kind': 'add_table_field',
-        'required': true,
-        'table': 'User',
-        'type': 'string',
+        fieldName: 'roleId',
+        kind: 'add_table_field',
+        required: true,
+        table: 'User',
+        type: 'string',
       },
       {
         kind: 'add_table_foreign_key',
@@ -134,17 +141,21 @@ describe('get-migration-steps', () => {
   it('should remove table field', () => {
     const currentSchema = createSchema({
       tables: {
-        'User': {
+        User: {
           fields: {
             id: { type: 'string', primaryKey: true },
-            username: { type: 'string', required: false, defaultValue: 'admin' },
+            username: {
+              type: 'string',
+              required: false,
+              defaultValue: 'admin',
+            },
           },
         },
       },
     });
     const newSchema = createSchema({
       tables: {
-        'User': {
+        User: {
           fields: { id: { type: 'string', primaryKey: true } },
         },
       },
@@ -159,14 +170,13 @@ describe('get-migration-steps', () => {
     ]);
   });
 
-
   it('should drop references first', () => {
     const currentSchema = createSchema({
       tables: {
-        'User': {
+        User: {
           fields: { id: { type: 'string', primaryKey: true } },
           references: {
-            'parent': { keys: ['id'], table: 'User', foreignKeys: ['id'] },
+            parent: { keys: ['id'], table: 'User', foreignKeys: ['id'] },
           },
         },
       },
@@ -182,7 +192,7 @@ describe('get-migration-steps', () => {
   it('should add table index on existing table', () => {
     const currentSchema = createSchema({
       tables: {
-        'User': {
+        User: {
           fields: {
             id: { type: 'string', primaryKey: true },
           },
@@ -191,7 +201,7 @@ describe('get-migration-steps', () => {
     });
     const newSchema = createSchema({
       tables: {
-        'User': {
+        User: {
           fields: { id: { type: 'string', primaryKey: true } },
           indices: { id: { unique: true, columns: ['id'] } },
         },
@@ -215,27 +225,27 @@ interface ExpectedSchema {
     [key: string]: {
       references?: {
         [key: string]: {
-          table: string,
-          keys: string[],
-          foreignKeys: string[]
-        }
-      },
+          table: string;
+          keys: string[];
+          foreignKeys: string[];
+        };
+      };
       fields: {
         [key: string]: {
-          primaryKey?: boolean,
-          required?: boolean,
-          type: RelationalTableSchemaTableFieldType,
-          defaultValue?: any
-        }
-      },
+          primaryKey?: boolean;
+          required?: boolean;
+          type: RelationalTableSchemaTableFieldType;
+          defaultValue?: any;
+        };
+      };
       indices?: {
         [key: string]: {
-          unique: boolean,
+          unique: boolean;
           columns: string[];
-        }
-      }
-    }
-  }
+        };
+      };
+    };
+  };
 }
 
 function createSchema(schema: ExpectedSchema) {
@@ -243,10 +253,21 @@ function createSchema(schema: ExpectedSchema) {
   if (schema.tables) {
     for (const tableKey of Object.keys(schema.tables)) {
       const expectedTable = schema.tables[tableKey];
-      const tableDescription = new RelationalTableDescription(description, tableKey, tableKey);
+      const tableDescription = new RelationalTableDescription(
+        description,
+        tableKey,
+        tableKey,
+      );
       for (const fieldKey of Object.keys(expectedTable.fields)) {
         const field = schema.tables[tableKey].fields[fieldKey];
-        const fieldDescription = new RelationalTableFieldDescription(tableDescription, fieldKey, fieldKey, field.type, field.required ?? true, field.defaultValue);
+        const fieldDescription = new RelationalTableFieldDescription(
+          tableDescription,
+          fieldKey,
+          fieldKey,
+          field.type,
+          field.required ?? true,
+          field.defaultValue,
+        );
         tableDescription.addField(fieldKey, fieldDescription);
         if (field.primaryKey) {
           tableDescription.addPrimaryKey(fieldDescription);
@@ -257,7 +278,15 @@ function createSchema(schema: ExpectedSchema) {
       if (expectedTable.indices) {
         for (const name of Object.keys(expectedTable.indices)) {
           const expectedIndex = expectedTable.indices[name];
-          tableDescription.addIndex(name, new RelationalTableIndexDescription(name, tableDescription, expectedIndex.columns.map(c => tableDescription.field(c)), expectedIndex.unique));
+          tableDescription.addIndex(
+            name,
+            new RelationalTableIndexDescription(
+              name,
+              tableDescription,
+              expectedIndex.columns.map((c) => tableDescription.field(c)),
+              expectedIndex.unique,
+            ),
+          );
         }
       }
     }
@@ -276,7 +305,10 @@ function createSchema(schema: ExpectedSchema) {
               field: currentTable.field(ref.keys[i]),
             });
           }
-          currentTable.addReference(key, new RelationalTableReferenceDescription(key, refTable, refKeys));
+          currentTable.addReference(
+            key,
+            new RelationalTableReferenceDescription(key, refTable, refKeys),
+          );
         }
       }
     }

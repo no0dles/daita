@@ -1,7 +1,7 @@
 import { run } from '../server';
-import {adapterFactory} from '../../../packages/pg-adapter';
+import { adapterFactory } from '../../../packages/pg-adapter';
 
-run(adapterFactory).catch(err => {
+run(adapterFactory).catch((err) => {
   console.error(err);
   process.exit(1);
 });

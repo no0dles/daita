@@ -4,7 +4,9 @@ import * as pg from '../index';
 describe('postgres-adapter', () => {
   let adapter: PostgresAdapter;
   beforeAll(() => {
-    adapter = new PostgresAdapter('postgres://postgres:postgres@localhost/postgres');
+    adapter = new PostgresAdapter(
+      'postgres://postgres:postgres@localhost/postgres',
+    );
   });
 
   it('should select 1', async () => {

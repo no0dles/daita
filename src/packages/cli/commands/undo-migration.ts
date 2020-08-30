@@ -1,10 +1,20 @@
 import { AstContext } from '../ast/ast-context';
-import { getMigrationRelativePath, getSchemaInformation, getSchemaLocation } from '../utils/path';
-import { removeMigrationImport, removeMigrationRegistration } from '../migration/writing/write-migration';
-import * as fs from "fs";
+import {
+  getMigrationRelativePath,
+  getSchemaInformation,
+  getSchemaLocation,
+} from '../utils/path';
+import {
+  removeMigrationImport,
+  removeMigrationRegistration,
+} from '../migration/writing/write-migration';
+import * as fs from 'fs';
 import { AstObjectValue } from '../ast/ast-object-value';
 
-export async function undoMigration(options: { cwd?: string, schema?: string }) {
+export async function undoMigration(options: {
+  cwd?: string;
+  schema?: string;
+}) {
   const astContext = new AstContext();
   const schemaLocation = await getSchemaLocation(options);
   const schemaInfo = await getSchemaInformation(astContext, schemaLocation);

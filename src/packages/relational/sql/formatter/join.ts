@@ -9,8 +9,15 @@ export class JoinFormatter implements FormatHandle<JoinDescription> {
     return isJoinDescription(param);
   }
 
-  handle(param: JoinDescription, ctx: FormatContext, formatter: Formatter): string {
-    return `${this.getJoinType(param)} ${formatter.format(param.table, ctx)} ON ${formatter.format(param.condition, ctx)}`;
+  handle(
+    param: JoinDescription,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
+    return `${this.getJoinType(param)} ${formatter.format(
+      param.table,
+      ctx,
+    )} ON ${formatter.format(param.condition, ctx)}`;
   }
 
   private getJoinType(param: JoinDescription): string {

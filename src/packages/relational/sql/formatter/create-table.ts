@@ -9,19 +9,25 @@ export class CreateTableFormatter implements FormatHandle<CreateTableSql> {
     return isCreateTableSql(param);
   }
 
-  handle(param: CreateTableSql, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: CreateTableSql,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     let sql = 'CREATE TABLE';
-    if(param.ifNotExists) {
+    if (param.ifNotExists) {
       sql += ' IF NOT EXISTS';
     }
     sql += ` ${formatter.format(param.createTable, ctx)}`;
-    sql += ` (${param.columns.map(col => {
-      let fieldSql = `${ctx.escape(col.name)} ${ctx.getDataType(col.type)}`;
-      if (col.notNull) {
-        fieldSql += ` NOT NULL`;
-      }
-      return fieldSql;
-    }).join(', ')}`;
+    sql += ` (${param.columns
+      .map((col) => {
+        let fieldSql = `${ctx.escape(col.name)} ${ctx.getDataType(col.type)}`;
+        if (col.notNull) {
+          fieldSql += ` NOT NULL`;
+        }
+        return fieldSql;
+      })
+      .join(', ')}`;
 
     const primaryKeys = param.columns
       .filter((col) => col.primaryKey)
@@ -35,5 +41,4 @@ export class CreateTableFormatter implements FormatHandle<CreateTableSql> {
 
     return sql;
   }
-
 }

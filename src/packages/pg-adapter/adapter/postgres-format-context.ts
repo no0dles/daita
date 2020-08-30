@@ -1,4 +1,4 @@
-import {CounterFormatContext} from '../../relational/sql/formatter';
+import { CounterFormatContext } from '../../relational/sql/formatter';
 
 export class PostgresFormatContext extends CounterFormatContext {
   constructor() {

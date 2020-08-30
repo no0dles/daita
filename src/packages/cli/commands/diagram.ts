@@ -1,9 +1,13 @@
 import { getSchemaInformation, getSchemaLocation } from '../utils/path';
 import { AstContext } from '../ast/ast-context';
-import * as path from "path";
-import * as fs from "fs";
+import * as path from 'path';
+import * as fs from 'fs';
 
-export async function diagram(options: {cwd?: string, schema?: string, filename?: string}) {
+export async function diagram(options: {
+  cwd?: string;
+  schema?: string;
+  filename?: string;
+}) {
   const schemaLocation = await getSchemaLocation(options);
   const astContext = new AstContext();
   const schemaInfo = await getSchemaInformation(astContext, schemaLocation);
@@ -25,9 +29,13 @@ export async function diagram(options: {cwd?: string, schema?: string, filename?
 
   const relationalSchema = schemaInfo.getRelationalSchema();
   for (const table of relationalSchema.tables) {
-    content += `[${table.name}|${table.fields.map(f => `${f.name}${f.required ? '!' : ''}:${f.type}`).join(';')}]\n`;
+    content += `[${table.name}|${table.fields
+      .map((f) => `${f.name}${f.required ? '!' : ''}:${f.type}`)
+      .join(';')}]\n`;
     for (const foreignKey of table.references) {
-      content += `[${table.name}] ${foreignKey.name}${foreignKey.required ? '+' : 'o'}-> [${foreignKey.table.name}]\n`;
+      content += `[${table.name}] ${foreignKey.name}${
+        foreignKey.required ? '+' : 'o'
+      }-> [${foreignKey.table.name}]\n`;
     }
   }
 

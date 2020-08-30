@@ -8,11 +8,20 @@ import {
   RelationalDataAdapter,
   RelationalTransactionAdapter,
 } from '../../relational/adapter';
-import {Client} from '../../relational/client';
+import { Client } from '../../relational/client';
 
-export function getContext<T>(client: RelationalTransactionAdapter<T>, schema: OrmRelationalSchema): TransactionContext<T> & Client<T>
-export function getContext<T>(client: RelationalDataAdapter<T>, schema: OrmRelationalSchema): Context<T> & Client<T>
-export function getContext<T>(client: RelationalTransactionAdapter<T> | RelationalDataAdapter<T>, schema: OrmRelationalSchema): Context<T> | TransactionContext<T> {
+export function getContext<T>(
+  client: RelationalTransactionAdapter<T>,
+  schema: OrmRelationalSchema,
+): TransactionContext<T> & Client<T>;
+export function getContext<T>(
+  client: RelationalDataAdapter<T>,
+  schema: OrmRelationalSchema,
+): Context<T> & Client<T>;
+export function getContext<T>(
+  client: RelationalTransactionAdapter<T> | RelationalDataAdapter<T>,
+  schema: OrmRelationalSchema,
+): Context<T> | TransactionContext<T> {
   if (isRelationalTransactionAdapter(client)) {
     return new RelationalTransactionContext(client, schema);
   } else {

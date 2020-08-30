@@ -1,11 +1,13 @@
 import { ArrayMap } from './array-map';
 import { RelationalTableDescription } from './relational-table-description';
 import { RelationalViewDescription } from './relational-view-description';
-import {arrayClone} from '../../../common/utils';
-import {Rule} from '../../../relational/permission/description';
-import {TableDescription} from '../../../relational/sql/description';
+import { arrayClone } from '../../../common/utils';
+import { Rule } from '../../../relational/permission/description';
+import { TableDescription } from '../../../relational/sql/description';
 
-export function getTableDescriptionIdentifier(table: TableDescription<any>): string {
+export function getTableDescriptionIdentifier(
+  table: TableDescription<any>,
+): string {
   if (table.schema) {
     return `${table.schema}.${table.table}`;
   }
@@ -15,7 +17,7 @@ export function getTableDescriptionIdentifier(table: TableDescription<any>): str
 export class RelationalSchemaDescription {
   private readonly tableArrayMap = new ArrayMap<RelationalTableDescription>();
   private readonly viewArrayMap = new ArrayMap<RelationalViewDescription>();
-  private readonly rulesArrayMap = new ArrayMap<{ id: string, rule: Rule }>();
+  private readonly rulesArrayMap = new ArrayMap<{ id: string; rule: Rule }>();
 
   table(key: TableDescription<any>): RelationalTableDescription {
     const identifier = getTableDescriptionIdentifier(key);
@@ -59,7 +61,10 @@ export class RelationalSchemaDescription {
     return this.tableArrayMap.exists(getTableDescriptionIdentifier(key));
   }
 
-  addTable(key: TableDescription<any>, description: RelationalTableDescription) {
+  addTable(
+    key: TableDescription<any>,
+    description: RelationalTableDescription,
+  ) {
     this.tableArrayMap.add(getTableDescriptionIdentifier(key), description);
   }
 
@@ -75,4 +80,3 @@ export class RelationalSchemaDescription {
     this.tableArrayMap.remove(getTableDescriptionIdentifier(key));
   }
 }
-

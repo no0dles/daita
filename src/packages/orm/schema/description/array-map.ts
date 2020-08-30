@@ -1,4 +1,3 @@
-
 export class ArrayMap<T> {
   private map: { [key: string]: T } = {};
   public array: T[] = [];
@@ -18,7 +17,7 @@ export class ArrayMap<T> {
 
   update(key: string, value: T) {
     const oldValue = this.map[key];
-    if(!oldValue) {
+    if (!oldValue) {
       throw new Error('nothing to update for key ' + key);
     }
     const oldIndex = this.array.indexOf(oldValue);

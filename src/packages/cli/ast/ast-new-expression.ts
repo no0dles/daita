@@ -4,9 +4,7 @@ import { AstBlock } from './ast-block';
 import { AstNode } from './ast-node';
 
 export class AstNewExpression implements AstNode {
-  constructor(private block: AstBlock,
-              public node: NewExpression) {
-  }
+  constructor(private block: AstBlock, public node: NewExpression) {}
 
   get type() {
     const name = getName(this.node.expression, 'new expression');
@@ -17,7 +15,7 @@ export class AstNewExpression implements AstNode {
     return this.getArguments();
   }
 
-  private* getArguments() {
+  private *getArguments() {
     if (!this.node.arguments) {
       return;
     }

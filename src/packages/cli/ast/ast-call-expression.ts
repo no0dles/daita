@@ -8,12 +8,13 @@ import { AstNewExpression } from './ast-new-expression';
 import { AstNode } from './ast-node';
 
 export class AstCallExpression implements AstNode {
-  constructor(private block: AstBlock,
-              public node: CallExpression) {
-  }
+  constructor(private block: AstBlock, public node: CallExpression) {}
 
   get variableName(): string | null {
-    const propertyAccess = isKind(this.node.expression, SyntaxKind.PropertyAccessExpression);
+    const propertyAccess = isKind(
+      this.node.expression,
+      SyntaxKind.PropertyAccessExpression,
+    );
     if (propertyAccess) {
       return getName(propertyAccess.expression, 'call expression');
     }
@@ -29,7 +30,10 @@ export class AstCallExpression implements AstNode {
   }
 
   get methodName(): string {
-    const propertyAccess = isKind(this.node.expression, SyntaxKind.PropertyAccessExpression);
+    const propertyAccess = isKind(
+      this.node.expression,
+      SyntaxKind.PropertyAccessExpression,
+    );
     if (propertyAccess) {
       return getName(propertyAccess.name, 'call expression');
     }
@@ -69,7 +73,7 @@ export class AstCallExpression implements AstNode {
     return null;
   }
 
-  private* getArguments() {
+  private *getArguments() {
     for (const argument of this.node.arguments) {
       yield getValueFromExpression(this.block, argument);
     }

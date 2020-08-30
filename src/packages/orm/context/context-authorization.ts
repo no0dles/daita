@@ -1,4 +1,3 @@
-
 export type ContextAuthorization = AnonymousAuthorization | Authorized;
 
 export interface AnonymousAuthorization {

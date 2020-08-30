@@ -9,8 +9,11 @@ export class ExistsFormatter implements FormatHandle<ExistsDescription> {
     return isExistsDescription(param);
   }
 
-  handle(param: ExistsDescription, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: ExistsDescription,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     return `EXISTS (${formatter.format(param.exists, ctx)})`;
   }
-
 }

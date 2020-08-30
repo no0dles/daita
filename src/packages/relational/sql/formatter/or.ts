@@ -9,8 +9,13 @@ export class OrFormatter implements FormatHandle<OrDescription> {
     return isOrDescription(param);
   }
 
-  handle(param: OrDescription, ctx: FormatContext, formatter: Formatter): string {
-    return `(${param.or.map(condition => formatter.format(condition, ctx)).join(' OR ')})`;
+  handle(
+    param: OrDescription,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
+    return `(${param.or
+      .map((condition) => formatter.format(condition, ctx))
+      .join(' OR ')})`;
   }
-
 }

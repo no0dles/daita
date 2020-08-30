@@ -1,9 +1,15 @@
 import { TableDescription } from '../description/table';
-import {Constructable} from '../../../common/types';
+import { Constructable } from '../../../common/types';
 
-export function table(table: string, schema?: string): TableDescription<unknown>
-export function table<T>(type: Constructable<T>): TableDescription<T>
-export function table<T>(typeOrTable: Constructable<T> | string, schema?: string): TableDescription<T> {
+export function table(
+  table: string,
+  schema?: string,
+): TableDescription<unknown>;
+export function table<T>(type: Constructable<T>): TableDescription<T>;
+export function table<T>(
+  typeOrTable: Constructable<T> | string,
+  schema?: string,
+): TableDescription<T> {
   if (typeof typeOrTable === 'string') {
     if (schema) {
       return { table: typeOrTable, schema };
@@ -21,4 +27,3 @@ export function table<T>(typeOrTable: Constructable<T> | string, schema?: string
     return table;
   }
 }
-

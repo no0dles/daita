@@ -7,7 +7,6 @@ import {
   isCreateIndexSql,
 } from '../../relational/sql';
 
-
 export class CreateIndexFormatter implements FormatHandle<CreateIndexSql<any>> {
   type = [FormatType.Sql];
 
@@ -15,8 +14,15 @@ export class CreateIndexFormatter implements FormatHandle<CreateIndexSql<any>> {
     return isCreateIndexSql(param);
   }
 
-  handle(param: CreateIndexSql<any>, ctx: FormatContext, formatter: Formatter): string {
-    return `CREATE INDEX${param.unique ? ' UNIQUE' : ''} ${ctx.escape(param.createIndex)} ON ${formatter.format(param.on, ctx)} (${param.columns.map(col => ctx.escape(col as string)).join(', ')})`;
+  handle(
+    param: CreateIndexSql<any>,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
+    return `CREATE INDEX${param.unique ? ' UNIQUE' : ''} ${ctx.escape(
+      param.createIndex,
+    )} ON ${formatter.format(param.on, ctx)} (${param.columns
+      .map((col) => ctx.escape(col as string))
+      .join(', ')})`;
   }
-
 }

@@ -18,13 +18,16 @@ import { AstObjectValue } from './ast-object-value';
 import { AstKeywordValue } from './ast-keyword-value';
 import { AstValue } from './ast-value';
 import {
-  BindingPattern, EntityName,
+  BindingPattern,
+  EntityName,
   Expression,
   Identifier,
   ModifiersArray,
   PropertyName,
   QualifiedName,
-  SyntaxKind, TypeNode, Node,
+  SyntaxKind,
+  TypeNode,
+  Node,
 } from 'typescript';
 import { AstArrayType } from './ast-array-type';
 import { AstVariableDeclaration } from './ast-variable-declaration';
@@ -232,7 +235,16 @@ export function getBooleanValue(value: AstValue): boolean {
   throw new AstError(value.node, 'get boolean value');
 }
 
-export function getIdentifierName(identifier: ts.PrivateIdentifier | ts.BindingName | ts.StringLiteral | ts.NumericLiteral | ts.ComputedPropertyName | ts.Expression | ts.QualifiedName) {
+export function getIdentifierName(
+  identifier:
+    | ts.PrivateIdentifier
+    | ts.BindingName
+    | ts.StringLiteral
+    | ts.NumericLiteral
+    | ts.ComputedPropertyName
+    | ts.Expression
+    | ts.QualifiedName,
+) {
   if (identifier.kind === ts.SyntaxKind.Identifier) {
     const identfier = <ts.Identifier>identifier;
     return identfier.text;
@@ -274,7 +286,17 @@ export function parseSourceFile(fileName: string) {
   );
 }
 
-export function getName(identifier: Identifier | Expression | BindingPattern | EntityName | PropertyName | QualifiedName | string, nodeType: string) {
+export function getName(
+  identifier:
+    | Identifier
+    | Expression
+    | BindingPattern
+    | EntityName
+    | PropertyName
+    | QualifiedName
+    | string,
+  nodeType: string,
+) {
   if (typeof identifier === 'string') {
     return identifier;
   }
@@ -288,24 +310,41 @@ export function getName(identifier: Identifier | Expression | BindingPattern | E
   throw new AstError(identifier, `unable to parse name of ${nodeType}`);
 }
 
-export function hasModifier(modifiers: ModifiersArray | undefined, kind: SyntaxKind): boolean {
-  return modifiers !== undefined && modifiers.some(m => m.kind === kind);
+export function hasModifier(
+  modifiers: ModifiersArray | undefined,
+  kind: SyntaxKind,
+): boolean {
+  return modifiers !== undefined && modifiers.some((m) => m.kind === kind);
 }
 
-export function getType(block: AstBlock, node: TypeNode | undefined): AstType | null
-export function getType(block: AstBlock, node: TypeNode): AstType
-export function getType(block: AstBlock, node: TypeNode | undefined): AstType | null {
+export function getType(
+  block: AstBlock,
+  node: TypeNode | undefined,
+): AstType | null;
+export function getType(block: AstBlock, node: TypeNode): AstType;
+export function getType(
+  block: AstBlock,
+  node: TypeNode | undefined,
+): AstType | null {
   if (!node) {
     return null;
   }
 
-  if (node.kind === SyntaxKind.AnyKeyword || node.kind === SyntaxKind.UnknownKeyword ||
-    node.kind === SyntaxKind.NumberKeyword || node.kind === SyntaxKind.BigIntKeyword ||
-    node.kind === SyntaxKind.ObjectKeyword || node.kind === SyntaxKind.BooleanKeyword ||
-    node.kind === SyntaxKind.StringKeyword || node.kind === SyntaxKind.SymbolKeyword ||
-    node.kind === SyntaxKind.ThisKeyword || node.kind === SyntaxKind.VoidKeyword ||
-    node.kind === SyntaxKind.UndefinedKeyword || node.kind === SyntaxKind.NullKeyword ||
-    node.kind === SyntaxKind.NeverKeyword) {
+  if (
+    node.kind === SyntaxKind.AnyKeyword ||
+    node.kind === SyntaxKind.UnknownKeyword ||
+    node.kind === SyntaxKind.NumberKeyword ||
+    node.kind === SyntaxKind.BigIntKeyword ||
+    node.kind === SyntaxKind.ObjectKeyword ||
+    node.kind === SyntaxKind.BooleanKeyword ||
+    node.kind === SyntaxKind.StringKeyword ||
+    node.kind === SyntaxKind.SymbolKeyword ||
+    node.kind === SyntaxKind.ThisKeyword ||
+    node.kind === SyntaxKind.VoidKeyword ||
+    node.kind === SyntaxKind.UndefinedKeyword ||
+    node.kind === SyntaxKind.NullKeyword ||
+    node.kind === SyntaxKind.NeverKeyword
+  ) {
     return new AstKeywordType(node as any);
   }
 
@@ -343,19 +382,26 @@ export function getTypeFromValue(value: AstValue): AstType | null {
   } else if (value instanceof AstLiteralValue) {
     return value.type;
   } else if (value instanceof AstObjectValue) {
-
   }
 
   return null;
 }
 
-export function getValueFromExpression(block: AstBlock, expression: Expression): AstValue
-export function getValueFromExpression(block: AstBlock, expression: Expression | undefined): AstValue | null
-export function getValueFromExpression(block: AstBlock, expression: Expression | undefined): AstValue | null {
+export function getValueFromExpression(
+  block: AstBlock,
+  expression: Expression,
+): AstValue;
+export function getValueFromExpression(
+  block: AstBlock,
+  expression: Expression | undefined,
+): AstValue | null;
+export function getValueFromExpression(
+  block: AstBlock,
+  expression: Expression | undefined,
+): AstValue | null {
   if (expression === undefined) {
     return null;
   }
-
 
   const numericLiteral = isKind(expression, SyntaxKind.NumericLiteral);
   if (numericLiteral) {
@@ -409,7 +455,10 @@ export function getValueFromExpression(block: AstBlock, expression: Expression |
     return new AstCallExpression(block, callExpression);
   }
 
-  const propertyAccessExpression = isKind(expression, SyntaxKind.PropertyAccessExpression);
+  const propertyAccessExpression = isKind(
+    expression,
+    SyntaxKind.PropertyAccessExpression,
+  );
   if (propertyAccessExpression) {
     return new AstPropertyAccessExpression(block, propertyAccessExpression);
   }
@@ -419,7 +468,10 @@ export function getValueFromExpression(block: AstBlock, expression: Expression |
     return new AstSpreadElement(block, spreadElement);
   }
 
-  const regularExpressionLiteral = isKind(expression, SyntaxKind.RegularExpressionLiteral);
+  const regularExpressionLiteral = isKind(
+    expression,
+    SyntaxKind.RegularExpressionLiteral,
+  );
   if (regularExpressionLiteral) {
     return new AstRegularExpressionLiteral(block, regularExpressionLiteral);
   }
@@ -428,7 +480,11 @@ export function getValueFromExpression(block: AstBlock, expression: Expression |
   throw new AstError(expression, 'value from expression');
 }
 
-export function getTypeFromTypeOrExpression(block: AstBlock, typeNode: TypeNode | undefined, expression: Expression | undefined): AstType | null {
+export function getTypeFromTypeOrExpression(
+  block: AstBlock,
+  typeNode: TypeNode | undefined,
+  expression: Expression | undefined,
+): AstType | null {
   if (typeNode) {
     const type = getType(block, typeNode);
     if (type) {
@@ -464,7 +520,9 @@ export function isSameType(first: AstType, second: AstType): boolean {
   throw new Error('type is not comparable');
 }
 
-export function getStringOrNull(value: AstValue | null | undefined): string | null {
+export function getStringOrNull(
+  value: AstValue | null | undefined,
+): string | null {
   if (!value) {
     return null;
   }
@@ -483,7 +541,10 @@ export function getStringValue(value: AstValue): string {
   throw new AstError(value.node, 'get string value');
 }
 
-export function getArrayValue<T>(value: AstValue, fn: (element: AstValue) => T): T[] {
+export function getArrayValue<T>(
+  value: AstValue,
+  fn: (element: AstValue) => T,
+): T[] {
   const array: T[] = [];
   if (value instanceof AstArrayValue) {
     for (const element of value.elements) {
@@ -516,7 +577,9 @@ export class AstError extends Error {
     const sourceFile = this.node.getSourceFile();
     if (sourceFile) {
       const code = this.node.getFullText();
-      const pos = sourceFile.getLineAndCharacterOfPosition(this.node.getStart());
+      const pos = sourceFile.getLineAndCharacterOfPosition(
+        this.node.getStart(),
+      );
       return `${this.reason}: ${code} [${sourceFile.fileName}, line ${pos.line}, char ${pos.character}]`;
     } else {
       return this.reason;

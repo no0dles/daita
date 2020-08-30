@@ -1,6 +1,6 @@
-import {allow, authorized} from '../../../../relational/permission/function';
-import {field, table} from '../../../../relational/sql/function';
-import {RelationalSchema} from '../../../../orm/schema';
+import { allow, authorized } from '../../../../relational/permission/function';
+import { field, table } from '../../../../relational/sql/function';
+import { RelationalSchema } from '../../../../orm/schema';
 
 export class User {
   id!: string;
@@ -13,5 +13,5 @@ schema.rules([
   allow(authorized(), {
     select: field(User, 'id'),
     from: table(User),
-  })
+  }),
 ]);

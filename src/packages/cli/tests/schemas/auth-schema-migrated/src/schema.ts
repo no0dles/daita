@@ -2,7 +2,7 @@ import { User } from './models/user';
 import { Permission, RolePermission } from './models/permission';
 import { Role, UserRole } from './models/role';
 import { InitMigration } from './migrations/202016152817-init';
-import {RelationalSchema} from '../../../../../orm/schema';
+import { RelationalSchema } from '../../../../../orm/schema';
 
 const schema = new RelationalSchema();
 

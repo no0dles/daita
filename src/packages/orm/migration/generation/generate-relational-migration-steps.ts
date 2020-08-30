@@ -1,7 +1,7 @@
 import { RelationalSchemaDescription } from '../../schema/description/relational-schema-description';
 import { MigrationStep } from '../migration-step';
 import { generateRelationalTableMigrationSteps } from './generate-relational-table-migration-steps';
-import {merge} from '../../../common/utils';
+import { merge } from '../../../common/utils';
 
 export function generateRelationalMigrationSteps(
   currentSchema: RelationalSchemaDescription,
@@ -9,9 +9,21 @@ export function generateRelationalMigrationSteps(
 ) {
   const steps: MigrationStep[] = [];
 
-  const mergedTables = merge(currentSchema.tables, newSchema.tables, (first, second) => first.key === second.key);
-  const mergedViews = merge(currentSchema.views, newSchema.views, (first, second) => first.key === second.key);
-  const mergedRules = merge(currentSchema.rules, newSchema.rules, (first, second) => first.id === second.id);
+  const mergedTables = merge(
+    currentSchema.tables,
+    newSchema.tables,
+    (first, second) => first.key === second.key,
+  );
+  const mergedViews = merge(
+    currentSchema.views,
+    newSchema.views,
+    (first, second) => first.key === second.key,
+  );
+  const mergedRules = merge(
+    currentSchema.rules,
+    newSchema.rules,
+    (first, second) => first.id === second.id,
+  );
 
   for (const table of mergedTables.added) {
     steps.push({ kind: 'add_table', table: table.name });
@@ -27,9 +39,11 @@ export function generateRelationalMigrationSteps(
       });
     }
 
-    steps.push(
-      { kind: 'add_table_primary_key', table: table.name, fieldNames: table.primaryKeys.map(k => k.name) },
-    );
+    steps.push({
+      kind: 'add_table_primary_key',
+      table: table.name,
+      fieldNames: table.primaryKeys.map((k) => k.name),
+    });
 
     for (const index of table.indices) {
       steps.push({
@@ -38,7 +52,7 @@ export function generateRelationalMigrationSteps(
         schema: table.schema,
         unique: index.unique,
         name: index.name,
-        fields: index.fields.map(f => f.name),
+        fields: index.fields.map((f) => f.name),
       });
     }
 
@@ -54,7 +68,9 @@ export function generateRelationalMigrationSteps(
   }
 
   for (const merge of mergedTables.merge) {
-    steps.push(...generateRelationalTableMigrationSteps(merge.current, merge.target));
+    steps.push(
+      ...generateRelationalTableMigrationSteps(merge.current, merge.target),
+    );
   }
 
   for (const view of mergedViews.removed) {
@@ -63,7 +79,12 @@ export function generateRelationalMigrationSteps(
 
   for (const table of mergedTables.removed) {
     for (const reference of table.references) {
-      steps.push({ kind: 'drop_table_foreign_key', table: table.name, schema: table.schema, name: reference.name });
+      steps.push({
+        kind: 'drop_table_foreign_key',
+        table: table.name,
+        schema: table.schema,
+        name: reference.name,
+      });
     }
   }
 
@@ -78,8 +99,8 @@ export function generateRelationalMigrationSteps(
         table: table.name,
         schema: table.schema,
         name: foreignKey.name,
-        fieldNames: foreignKey.keys.map(key => key.field.name),
-        foreignFieldNames: foreignKey.keys.map(key => key.foreignField.name),
+        fieldNames: foreignKey.keys.map((key) => key.field.name),
+        foreignFieldNames: foreignKey.keys.map((key) => key.foreignField.name),
         foreignTable: foreignKey.table.name,
         required: foreignKey.required,
       });
@@ -87,11 +108,21 @@ export function generateRelationalMigrationSteps(
   }
 
   for (const view of mergedViews.merge) {
-    steps.push({ kind: 'alter_view', view: view.current.name, schema: view.current.schema, query: view.target.query });
+    steps.push({
+      kind: 'alter_view',
+      view: view.current.name,
+      schema: view.current.schema,
+      query: view.target.query,
+    });
   }
 
   for (const view of mergedViews.added) {
-    steps.push({ kind: 'add_view', view: view.name, schema: view.schema, query: view.query });
+    steps.push({
+      kind: 'add_view',
+      view: view.name,
+      schema: view.schema,
+      query: view.query,
+    });
   }
 
   for (const rule of mergedRules.added) {
@@ -106,7 +137,7 @@ export function generateRelationalMigrationSteps(
     steps.push({ kind: 'drop_rule', ruleId: rule.id });
   }
 
-  return steps.map(step => {
+  return steps.map((step) => {
     if (step.kind === 'drop_rule' || step.kind === 'add_rule') {
       return step;
     }

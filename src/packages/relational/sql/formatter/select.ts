@@ -5,19 +5,34 @@ import { isSelectSql, SelectSql } from '../select-sql';
 export class SelectFormatter implements FormatHandle<SelectSql<any>> {
   type = [FormatType.Sql, FormatType.Value];
 
-  private formatFields(fields: any, ctx: FormatContext, formatter: Formatter, alias: string[]): string {
+  private formatFields(
+    fields: any,
+    ctx: FormatContext,
+    formatter: Formatter,
+    alias: string[],
+  ): string {
     if (formatter.canHandle(fields)) {
       if (alias.length > 0) {
-        return `${formatter.format(fields, ctx)} AS ${ctx.escape(alias.join('.'))}`;
+        return `${formatter.format(fields, ctx)} AS ${ctx.escape(
+          alias.join('.'),
+        )}`;
       } else {
         return formatter.format(fields, ctx);
       }
     } else {
-      return Object.keys(fields).map(key => this.formatFields(fields[key], ctx, formatter, [...alias, key])).join(', ');
+      return Object.keys(fields)
+        .map((key) =>
+          this.formatFields(fields[key], ctx, formatter, [...alias, key]),
+        )
+        .join(', ');
     }
   }
 
-  handle(param: SelectSql<any>, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: SelectSql<any>,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     let sql = 'SELECT';
 
     if (typeof param.select === 'object') {
@@ -31,7 +46,9 @@ export class SelectFormatter implements FormatHandle<SelectSql<any>> {
     }
 
     if (param.join) {
-      sql += ` ${param.join.map(join => formatter.format(join, ctx)).join(' ')}`;
+      sql += ` ${param.join
+        .map((join) => formatter.format(join, ctx))
+        .join(' ')}`;
     }
 
     if (param.where) {
@@ -61,7 +78,11 @@ export class SelectFormatter implements FormatHandle<SelectSql<any>> {
     return sql;
   }
 
-  private arrayOrSingle(param: any[] | any, ctx: FormatContext, formatter: Formatter) {
+  private arrayOrSingle(
+    param: any[] | any,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ) {
     if (param instanceof Array) {
       return param.map((order: any) => formatter.format(order, ctx)).join(', ');
     } else {

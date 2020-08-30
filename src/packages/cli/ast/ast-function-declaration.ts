@@ -5,10 +5,7 @@ import { FunctionDeclaration, SyntaxKind } from 'typescript';
 import { AstNode } from './ast-node';
 
 export class AstFunctionDeclaration implements AstNode {
-  constructor(private block: AstBlock,
-              public node: FunctionDeclaration) {
-
-  }
+  constructor(private block: AstBlock, public node: FunctionDeclaration) {}
 
   get name(): string {
     if (!this.node.name) {
@@ -25,7 +22,7 @@ export class AstFunctionDeclaration implements AstNode {
     return hasModifier(this.node.modifiers, SyntaxKind.ExportKeyword);
   }
 
-  private* getParameters() {
+  private *getParameters() {
     for (const param of this.node.parameters) {
       yield new AstParameterDeclaration(this.block, param);
     }

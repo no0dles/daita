@@ -9,7 +9,16 @@ export class InFormatter implements FormatHandle<InDescription<any>> {
     return isInDescription(param);
   }
 
-  handle(param: InDescription<any>, ctx: FormatContext, formatter: Formatter): string {
-    return `${formatter.format(param.in.field, ctx)} IN (${param.in.values.map(value => formatter.format(value, ctx)).join(', ')})`;
+  handle(
+    param: InDescription<any>,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
+    return `${formatter.format(
+      param.in.field,
+      ctx,
+    )} IN (${param.in.values
+      .map((value) => formatter.format(value, ctx))
+      .join(', ')})`;
   }
 }

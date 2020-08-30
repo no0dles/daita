@@ -1,4 +1,3 @@
-
 export interface CreateAdapterOptions {
   connectionString?: string;
   database?: string;

@@ -9,7 +9,11 @@ export class IsNullFormatter implements FormatHandle<IsNullDescription<any>> {
     return isNullDescription(param);
   }
 
-  handle(param: IsNullDescription<any>, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: IsNullDescription<any>,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     return `${formatter.format(param.isNull.field, ctx)} IS NULL`;
   }
 }

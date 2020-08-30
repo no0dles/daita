@@ -7,7 +7,7 @@ export interface MergeListResult<T> {
 export function merge<T>(
   currentItems: T[],
   newItems: T[],
-  compare: (first: T, second: T) => boolean
+  compare: (first: T, second: T) => boolean,
 ): MergeListResult<T> {
   const leftItems = [...newItems];
   const result: MergeListResult<T> = { added: [], merge: [], removed: [] };

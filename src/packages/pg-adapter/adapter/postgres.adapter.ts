@@ -1,26 +1,32 @@
-import {Pool, PoolClient, types} from 'pg';
-import {PostgresDataAdapter} from './postgres-data-adapter';
+import { Pool, PoolClient, types } from 'pg';
+import { PostgresDataAdapter } from './postgres-data-adapter';
 import { postgresFormatter } from './postgres-formatter';
-import {RelationalDataAdapter, RelationalRawResult, RelationalTransactionAdapter} from '../../relational/adapter';
+import {
+  RelationalDataAdapter,
+  RelationalRawResult,
+  RelationalTransactionAdapter,
+} from '../../relational/adapter';
 
 export class PostgresAdapter implements RelationalTransactionAdapter {
   private readonly pool: Promise<Pool>;
   private readonly connectionString: string | undefined;
 
   constructor(private poolOrUrl: string | Promise<Pool> | Pool) {
-    types.setTypeParser(1700, val => parseFloat(val));
-    types.setTypeParser(701, val => parseFloat(val));
-    types.setTypeParser(20, val => parseInt(val));
+    types.setTypeParser(1700, (val) => parseFloat(val));
+    types.setTypeParser(701, (val) => parseFloat(val));
+    types.setTypeParser(20, (val) => parseInt(val));
 
     if (typeof poolOrUrl === 'string') {
       this.connectionString = poolOrUrl;
-      this.pool = Promise.resolve(new Pool({
-        connectionString: poolOrUrl,
-        connectionTimeoutMillis: 10000,
-        keepAlive: true,
-        max: 20,
-        idleTimeoutMillis: 10000,
-      }));
+      this.pool = Promise.resolve(
+        new Pool({
+          connectionString: poolOrUrl,
+          connectionTimeoutMillis: 10000,
+          keepAlive: true,
+          max: 20,
+          idleTimeoutMillis: 10000,
+        }),
+      );
     } else if (poolOrUrl instanceof Promise) {
       this.pool = poolOrUrl;
     } else {
@@ -56,7 +62,7 @@ export class PostgresAdapter implements RelationalTransactionAdapter {
   async transaction<T>(
     action: (adapter: RelationalDataAdapter) => Promise<T>,
   ): Promise<T> {
-    return await this.run(async client => {
+    return await this.run(async (client) => {
       try {
         await client.query('BEGIN');
         const adapter = new PostgresDataAdapter(client);
@@ -71,14 +77,14 @@ export class PostgresAdapter implements RelationalTransactionAdapter {
   }
 
   execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
-    return this.run(async client => {
+    return this.run(async (client) => {
       const adapter = new PostgresDataAdapter(client);
       return adapter.execRaw(sql, values);
     });
   }
 
   exec(sql: any): Promise<RelationalRawResult> {
-    return this.run(async client => {
+    return this.run(async (client) => {
       const adapter = new PostgresDataAdapter(client);
       return adapter.exec(sql as any);
     });

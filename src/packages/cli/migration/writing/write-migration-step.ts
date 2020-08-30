@@ -4,7 +4,9 @@ function createObject(object: any) {
   const keys = Object.keys(object);
   const properties = new Array<ts.ObjectLiteralElementLike>();
   for (const key of keys) {
-    properties.push(ts.createPropertyAssignment(key, createExpressionFromValue(object[key])));
+    properties.push(
+      ts.createPropertyAssignment(key, createExpressionFromValue(object[key])),
+    );
   }
   return ts.createObjectLiteral(properties);
 }
@@ -22,8 +24,10 @@ export function createExpressionFromValue(value: any): ts.Expression {
     return value ? ts.createTrue() : ts.createFalse();
   } else if (typeof value === 'object') {
     if (Array.isArray(value)) {
-      return ts.createArrayLiteral(value.map(item => createExpressionFromValue(item)));
-    } else if(value instanceof RegExp) {
+      return ts.createArrayLiteral(
+        value.map((item) => createExpressionFromValue(item)),
+      );
+    } else if (value instanceof RegExp) {
       return ts.createRegularExpressionLiteral(value.toString());
     } else {
       return createObject(value);

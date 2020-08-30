@@ -1,8 +1,8 @@
-import { Debouncer } from "./debouncer";
-import { sleep } from "./sleep";
+import { Debouncer } from './debouncer';
+import { sleep } from './sleep';
 
-describe("utils/debouncer", () => {
-  it("should not trigger before start", async () => {
+describe('utils/debouncer', () => {
+  it('should not trigger before start', async () => {
     let called = false;
     new Debouncer(() => {
       called = true;
@@ -11,7 +11,7 @@ describe("utils/debouncer", () => {
     expect(called).toBeFalsy();
   });
 
-  it("should trigger after start", async () => {
+  it('should trigger after start', async () => {
     let called = false;
     const debouncer = new Debouncer(() => {
       called = true;
@@ -21,7 +21,7 @@ describe("utils/debouncer", () => {
     expect(called).toBeTruthy();
   });
 
-  it("should delay trigger after bounce", async () => {
+  it('should delay trigger after bounce', async () => {
     let called = false;
     const debouncer = new Debouncer(() => {
       called = true;
@@ -35,7 +35,7 @@ describe("utils/debouncer", () => {
     expect(called).toBeTruthy();
   });
 
-  it("should cancel trigger after clear", async () => {
+  it('should cancel trigger after clear', async () => {
     let called = false;
     const debouncer = new Debouncer(() => {
       called = true;
@@ -47,7 +47,7 @@ describe("utils/debouncer", () => {
     expect(called).toBeFalsy();
   });
 
-  it("should trigger on flush", async () => {
+  it('should trigger on flush', async () => {
     let called = false;
     const debouncer = new Debouncer(() => {
       called = true;

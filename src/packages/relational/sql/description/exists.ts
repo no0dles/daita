@@ -1,8 +1,9 @@
 import { isSelectSql, SelectSql } from '../select-sql';
-import {isExactKind} from '../../../common/utils';
+import { isExactKind } from '../../../common/utils';
 
 export interface ExistsDescription {
-  exists: SelectSql<any>
+  exists: SelectSql<any>;
 }
 
-export const isExistsDescription = (val: any): val is ExistsDescription => isExactKind(val, ['exists']) && isSelectSql(val.exists);
+export const isExistsDescription = (val: any): val is ExistsDescription =>
+  isExactKind(val, ['exists']) && isSelectSql(val.exists);

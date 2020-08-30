@@ -1,4 +1,4 @@
-import { RuleTester } from "@typescript-eslint/experimental-utils/dist/ts-eslint";
+import { RuleTester } from '@typescript-eslint/experimental-utils/dist/ts-eslint';
 import rule from './ban-import';
 import * as path from 'path';
 
@@ -10,8 +10,8 @@ describe('ban-import', () => {
   ruleTester.run('ban-import', rule, {
     valid: [
       {
-        code: `import * as foo from '@daita/core';`
-      }
+        code: `import * as foo from '@daita/core';`,
+      },
     ],
     invalid: [
       {
@@ -21,9 +21,9 @@ describe('ban-import', () => {
             messageId: 'bannedImport',
             line: 1,
             column: 1,
-          }
-        ]
-      }
-    ]
-  })
+          },
+        ],
+      },
+    ],
+  });
 });

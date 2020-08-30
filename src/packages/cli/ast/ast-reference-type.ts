@@ -5,9 +5,7 @@ import { getName } from './utils';
 import { AstNode } from './ast-node';
 
 export class AstReferenceType implements AstNode {
-  constructor(private block: AstBlock,
-              public node: TypeReferenceNode) {
-  }
+  constructor(private block: AstBlock, public node: TypeReferenceNode) {}
 
   get referenceType(): AstType | null {
     return this.block.getType(this.node.typeName);

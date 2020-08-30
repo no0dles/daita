@@ -1,9 +1,8 @@
 export class IdGenerator {
-  constructor(private characters =
-                'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
-              private length = 12) {
-
-  }
+  constructor(
+    private characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789',
+    private length = 12,
+  ) {}
 
   next() {
     let result = '';

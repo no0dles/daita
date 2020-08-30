@@ -1,11 +1,22 @@
-import { getMigrationRelativePath, getSchemaInformation, getSchemaLocation } from '../utils/path';
+import {
+  getMigrationRelativePath,
+  getSchemaInformation,
+  getSchemaLocation,
+} from '../utils/path';
 import { AstContext } from '../ast/ast-context';
-import { addMigrationImport, addMigrationRegistration, writeMigration } from '../migration/writing/write-migration';
+import {
+  addMigrationImport,
+  addMigrationRegistration,
+  writeMigration,
+} from '../migration/writing/write-migration';
 import * as fs from 'fs';
 import { getMigrationName } from '../migration/utils';
-import {generateRelationalMigrationSteps} from '../../orm/migration/generation';
+import { generateRelationalMigrationSteps } from '../../orm/migration/generation';
 
-export async function addMigration(name: string, options: { cwd?: string, schema?: string }) {
+export async function addMigration(
+  name: string,
+  options: { cwd?: string; schema?: string },
+) {
   const schemaLocation = await getSchemaLocation(options);
 
   const astContext = new AstContext();
@@ -16,7 +27,9 @@ export async function addMigration(name: string, options: { cwd?: string, schema
   }
 
   const migrationTree = schemaInfo.getMigrationTree();
-  const currentSchema = migrationTree.getSchemaDescription({ backwardCompatible: false });
+  const currentSchema = migrationTree.getSchemaDescription({
+    backwardCompatible: false,
+  });
   const lastMigration = migrationTree.last()[0];
 
   const steps = generateRelationalMigrationSteps(
@@ -55,11 +68,7 @@ export async function addMigration(name: string, options: { cwd?: string, schema
     schemaLocation.directory,
     migrationFilePath,
   );
-  addMigrationImport(
-    schemaLocation.fileName,
-    relativePath,
-    migrationName,
-  );
+  addMigrationImport(schemaLocation.fileName, relativePath, migrationName);
   addMigrationRegistration(
     schemaLocation.fileName,
     schemaInfo.variableName,

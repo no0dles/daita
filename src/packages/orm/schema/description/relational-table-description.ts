@@ -3,24 +3,32 @@ import { ArrayMap } from './array-map';
 import { RelationalTableReferenceDescription } from './relational-table-reference-description';
 import { RelationalSchemaDescription } from './relational-schema-description';
 import { RelationalTableIndexDescription } from './relational-table-index-description';
-import {arrayClone} from '../../../common/utils';
+import { arrayClone } from '../../../common/utils';
 
 export class RelationalTableDescription {
   private primaryKeysArray: ArrayMap<RelationalTableFieldDescription>;
   private fieldArrayMap: ArrayMap<RelationalTableFieldDescription>;
   private referenceArrayMap: ArrayMap<RelationalTableReferenceDescription>;
   private indexArrayMap: ArrayMap<RelationalTableIndexDescription>;
-  private seedArrayMap: ArrayMap<{ key: string, seed: any, seedKeys: any }>;
+  private seedArrayMap: ArrayMap<{ key: string; seed: any; seedKeys: any }>;
 
-  constructor(private schemaDescription: RelationalSchemaDescription,
-              public key: string,
-              public name: string,
-              public schema?: string) {
+  constructor(
+    private schemaDescription: RelationalSchemaDescription,
+    public key: string,
+    public name: string,
+    public schema?: string,
+  ) {
     this.fieldArrayMap = new ArrayMap<RelationalTableFieldDescription>();
-    this.referenceArrayMap = new ArrayMap<RelationalTableReferenceDescription>();
+    this.referenceArrayMap = new ArrayMap<
+      RelationalTableReferenceDescription
+    >();
     this.primaryKeysArray = new ArrayMap<RelationalTableFieldDescription>();
     this.indexArrayMap = new ArrayMap<RelationalTableIndexDescription>();
-    this.seedArrayMap = new ArrayMap<{ key: string, seed: any, seedKeys: any }>();
+    this.seedArrayMap = new ArrayMap<{
+      key: string;
+      seed: any;
+      seedKeys: any;
+    }>();
   }
 
   get fields() {
@@ -90,15 +98,19 @@ export class RelationalTableDescription {
   reference(alias: string): RelationalTableReferenceDescription {
     const reference = this.referenceArrayMap.get(alias);
     if (!reference) {
-      throw new Error(`Unable to get reference ${alias} from table ${this.key}`);
+      throw new Error(
+        `Unable to get reference ${alias} from table ${this.key}`,
+      );
     }
     return reference;
   }
 
   private getKeyForSeed(seed: any) {
-    return this.primaryKeys.map(primaryKey => {
-      return seed[primaryKey.key] ?? '';
-    }).join('-');
+    return this.primaryKeys
+      .map((primaryKey) => {
+        return seed[primaryKey.key] ?? '';
+      })
+      .join('-');
   }
 
   insertSeed(seedKeys: any, seed: any) {

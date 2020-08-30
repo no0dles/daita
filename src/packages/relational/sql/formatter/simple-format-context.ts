@@ -4,8 +4,7 @@ import { ValueType } from '../description/value-type';
 export abstract class SimpleFormatContext implements FormatContext {
   private values: ValueType[] = [];
 
-  constructor(private paramKey: string) {
-  }
+  constructor(private paramKey: string) {}
 
   appendValue(value: ValueType): string {
     this.values.push(value);

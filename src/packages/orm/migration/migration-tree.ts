@@ -52,11 +52,11 @@ export class MigrationTree {
   }
 
   migrations() {
-    return Object.keys(this.migrationMap).map(id => this.migrationMap[id]);
+    return Object.keys(this.migrationMap).map((id) => this.migrationMap[id]);
   }
 
   roots() {
-    return Object.keys(this.rootMigrations).map(id => this.migrationMap[id]);
+    return Object.keys(this.rootMigrations).map((id) => this.migrationMap[id]);
   }
 
   last() {
@@ -97,9 +97,15 @@ export class MigrationTree {
 
   getSchemaDescription(options: { backwardCompatible: boolean }) {
     if (options.backwardCompatible) {
-      return getSchemaDescription(new SchemaMapper(() => new BackwardCompatibleMapper()), this.defaultPath());
+      return getSchemaDescription(
+        new SchemaMapper(() => new BackwardCompatibleMapper()),
+        this.defaultPath(),
+      );
     } else {
-      return getSchemaDescription(new SchemaMapper(() => new NormalMapper()), this.defaultPath());
+      return getSchemaDescription(
+        new SchemaMapper(() => new NormalMapper()),
+        this.defaultPath(),
+      );
     }
   }
 
@@ -117,4 +123,5 @@ export class MigrationTree {
   }
 }
 
-export const isMigrationTree = (val: any): val is MigrationTree => typeof val.path === 'function';
+export const isMigrationTree = (val: any): val is MigrationTree =>
+  typeof val.path === 'function';

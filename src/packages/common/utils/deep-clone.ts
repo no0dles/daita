@@ -8,9 +8,9 @@ export function deepClone<T>(value: T): T {
   }
 
   if (
-    typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean"
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
   ) {
     return value;
   }
@@ -20,7 +20,7 @@ export function deepClone<T>(value: T): T {
   }
 
   if (value instanceof Array) {
-    return [...value.map(item => deepClone<T>(item))] as any;
+    return [...value.map((item) => deepClone<T>(item))] as any;
   }
 
   const clone: any = Object.create(value as any);

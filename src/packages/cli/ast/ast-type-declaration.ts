@@ -5,9 +5,7 @@ import { AstType } from './ast-type';
 import { AstNode } from './ast-node';
 
 export class AstTypeDeclaration implements AstNode {
-  constructor(private block: AstBlock,
-              public node: TypeAliasDeclaration) {
-  }
+  constructor(private block: AstBlock, public node: TypeAliasDeclaration) {}
 
   get name(): string {
     return getName(this.node.name, 'type declaration');

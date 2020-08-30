@@ -2,7 +2,8 @@ import { Sql } from '../sql/sql';
 import { FieldFormatter } from '../sql/formatter/field';
 import {
   AlterTableAddColumnFormatter,
-  AlterTableAddForeignKeyFormatter, AlterTableDropColumnFormatter,
+  AlterTableAddForeignKeyFormatter,
+  AlterTableDropColumnFormatter,
   AlterTableDropConstraintFormatter,
 } from '../sql/formatter/alter-table';
 import { Formatter } from '../sql/formatter/formatter';
@@ -37,7 +38,6 @@ export class TestFormatContext extends CounterFormatContext {
     return type;
   }
 }
-
 
 export function expectedSql(sql: Sql<any>, expected: string, params?: any[]) {
   const formatter = new Formatter();

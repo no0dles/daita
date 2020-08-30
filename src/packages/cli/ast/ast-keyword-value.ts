@@ -3,8 +3,7 @@ import { AstNode } from './ast-node';
 import { AstError } from './utils';
 
 export class AstKeywordValue implements AstNode {
-  constructor(public node: KeywordTypeNode) {
-  }
+  constructor(public node: KeywordTypeNode) {}
 
   get value() {
     if (this.node.kind === SyntaxKind.NullKeyword) {

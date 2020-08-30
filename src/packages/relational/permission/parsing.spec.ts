@@ -12,16 +12,26 @@ describe('parsing', () => {
       allow(authorized(), {
         select: 'test',
         from: table('tbl'),
-        where: equal(field(table('tbl') as TableDescription<any>, 'foo'), requestContext().userId),
+        where: equal(
+          field(table('tbl') as TableDescription<any>, 'foo'),
+          requestContext().userId,
+        ),
       }),
     ];
     const jsonRules = JSON.stringify(srcRules);
     const dstRules = parseRules(jsonRules);
-    const matches = matchesRules({
-      select: 'test',
-      from: table('tbl'),
-      where: equal(field(table('tbl') as TableDescription<any>, 'foo'), 'foo')
-    }, dstRules, {isAuthorized: true, userId: 'foo'})
+    const matches = matchesRules(
+      {
+        select: 'test',
+        from: table('tbl'),
+        where: equal(
+          field(table('tbl') as TableDescription<any>, 'foo'),
+          'foo',
+        ),
+      },
+      dstRules,
+      { isAuthorized: true, userId: 'foo' },
+    );
     expect(matches).toBeTruthy();
   });
 });

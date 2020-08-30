@@ -9,8 +9,14 @@ export class EqualFormatter implements FormatHandle<EqualDescription<any>> {
     return isEqualDescription(param);
   }
 
-  handle(param: EqualDescription<any>, ctx: FormatContext, formatter: Formatter): string {
-    return `${formatter.format(param.equal.left, ctx)} = ${formatter.format(param.equal.right, ctx)}`;
+  handle(
+    param: EqualDescription<any>,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
+    return `${formatter.format(param.equal.left, ctx)} = ${formatter.format(
+      param.equal.right,
+      ctx,
+    )}`;
   }
-
 }

@@ -10,6 +10,9 @@ export class DropViewFormatter implements FormatHandle<DropViewSql> {
   }
 
   handle(param: DropViewSql, ctx: FormatContext, formatter: Formatter): string {
-    return `DROP VIEW${param.ifExists ? ' IF EXISTS ' : ' '}${formatter.format(param.dropView, ctx)}`;
+    return `DROP VIEW${param.ifExists ? ' IF EXISTS ' : ' '}${formatter.format(
+      param.dropView,
+      ctx,
+    )}`;
   }
 }

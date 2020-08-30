@@ -7,7 +7,7 @@ export interface AnonymousContextUser {
 export interface AuthorizedContextUser {
   id: string;
   username: string | null;
-  roles: string[]
+  roles: string[];
   permissions: string[];
   anonymous: false;
 }

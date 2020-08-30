@@ -7,25 +7,32 @@ import { greaterThan } from '../../sql/function';
 
 describe('select/group-by', () => {
   it('should select group by disabled and select count', () => {
-    expectedSql({
-      select: {
-        disabled: field(User, 'disabled'),
-        count: count(),
+    expectedSql(
+      {
+        select: {
+          disabled: field(User, 'disabled'),
+          count: count(),
+        },
+        from: table(User),
+        groupBy: field(User, 'disabled'),
       },
-      from: table(User),
-      groupBy: field(User, 'disabled'),
-    }, 'SELECT "auth"."user"."disabled" AS "disabled", count(*) AS "count" FROM "auth"."user" GROUP BY "auth"."user"."disabled"');
+      'SELECT "auth"."user"."disabled" AS "disabled", count(*) AS "count" FROM "auth"."user" GROUP BY "auth"."user"."disabled"',
+    );
   });
 
   it('should select group by with having', () => {
-    expectedSql({
-      select: {
-        disabled: field(User, 'disabled'),
-        count: count(),
+    expectedSql(
+      {
+        select: {
+          disabled: field(User, 'disabled'),
+          count: count(),
+        },
+        from: table(User),
+        groupBy: field(User, 'disabled'),
+        having: greaterThan(count(), 1),
       },
-      from: table(User),
-      groupBy: field(User, 'disabled'),
-      having: greaterThan(count(), 1),
-    }, 'SELECT "auth"."user"."disabled" AS "disabled", count(*) AS "count" FROM "auth"."user" GROUP BY "auth"."user"."disabled" HAVING count(*) > $1', [1]);
+      'SELECT "auth"."user"."disabled" AS "disabled", count(*) AS "count" FROM "auth"."user" GROUP BY "auth"."user"."disabled" HAVING count(*) > $1',
+      [1],
+    );
   });
 });

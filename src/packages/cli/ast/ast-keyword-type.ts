@@ -2,8 +2,7 @@ import { KeywordTypeNode, SyntaxKind } from 'typescript';
 import { AstNode } from './ast-node';
 
 export class AstKeywordType implements AstNode {
-  constructor(public node: KeywordTypeNode) {
-  }
+  constructor(public node: KeywordTypeNode) {}
 
   equals(type: AstKeywordType) {
     return this.node.kind === type.node.kind;

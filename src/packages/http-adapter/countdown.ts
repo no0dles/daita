@@ -1,8 +1,7 @@
 export class Countdown {
   private timeoutHandle: any | null = null;
 
-  constructor(private trigger: () => any) {
-  }
+  constructor(private trigger: () => any) {}
 
   setExpire(time: number) {
     if (this.timeoutHandle) {

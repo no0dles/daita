@@ -12,33 +12,44 @@ describe('allow-regex', () => {
     password!: string;
   }
 
-  const rule = allow(authorized(), update({
-    update: table(User),
-    set: {
-      username: allowRegex(/[a-z]+/),
-    },
-  }));
+  const rule = allow(
+    authorized(),
+    update({
+      update: table(User),
+      set: {
+        username: allowRegex(/[a-z]+/),
+      },
+    }),
+  );
   const ctx: RuleContext = { isAuthorized: true };
 
   it('should allow when regex matches', () => {
-    const result = evaluateRule(update({
-      update: table(User),
-      set: {
-        username: 'abc',
-      },
-    }), rule, ctx);
+    const result = evaluateRule(
+      update({
+        update: table(User),
+        set: {
+          username: 'abc',
+        },
+      }),
+      rule,
+      ctx,
+    );
     expect(result).toEqual({
       type: 'allow',
     });
   });
 
   it('should forbid when regex does not matches', () => {
-    const result = evaluateRule(update({
-      update: table(User),
-      set: {
-        username: '0123',
-      },
-    }), rule, ctx);
+    const result = evaluateRule(
+      update({
+        update: table(User),
+        set: {
+          username: '0123',
+        },
+      }),
+      rule,
+      ctx,
+    );
     expect(result).toEqual({
       type: 'next',
       error: 'set.username does not match regexp',

@@ -1,6 +1,6 @@
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { getStringValue } from '../../ast/utils';
-import {table} from '../../../relational/sql/function';
+import { table } from '../../../relational/sql/function';
 
 export function parseTableDescription(classDeclaration: AstClassDeclaration) {
   if (!classDeclaration.name) {

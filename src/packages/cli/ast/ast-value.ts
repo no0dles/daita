@@ -12,7 +12,7 @@ import { AstSpreadElement } from './ast-spread-element';
 import { AstRegularExpressionLiteral } from './ast-regular-expression-literal';
 
 export type AstValue =
-  AstType
+  | AstType
   | AstSpreadElement
   | AstVariableDeclaration
   | AstObjectPropertyValue
@@ -24,4 +24,3 @@ export type AstValue =
   | AstKeywordValue
   | AstRegularExpressionLiteral
   | AstArrayValue;
-

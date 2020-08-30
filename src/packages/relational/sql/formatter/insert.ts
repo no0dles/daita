@@ -11,19 +11,31 @@ export class InsertFormatter implements FormatHandle<InsertSql<any>> {
     return isInsertSql(param);
   }
 
-  handle(param: InsertSql<any>, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: InsertSql<any>,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     let sql = `INSERT INTO ${formatter.format(param.into, ctx)}`;
 
     if (isSelectSql(param.insert)) {
-      sql += ` (${Object.keys(param.insert.select).map(field => ctx.escape(field)).join(', ')}) ` + formatter.format(param.insert, ctx);
+      sql +=
+        ` (${Object.keys(param.insert.select)
+          .map((field) => ctx.escape(field))
+          .join(', ')}) ` + formatter.format(param.insert, ctx);
     } else {
-      const rows: any[] = param.insert instanceof Array ? param.insert : [param.insert];
+      const rows: any[] =
+        param.insert instanceof Array ? param.insert : [param.insert];
       const fields = this.getValues(rows);
-      sql += ` (${fields.map((field) => ctx.escape(field)).join(', ')}) VALUES `;
+      sql += ` (${fields
+        .map((field) => ctx.escape(field))
+        .join(', ')}) VALUES `;
       sql += rows
         .map(
           (row) =>
-            `(${fields.map(field => formatter.format(row[field], ctx)).join(', ')})`,
+            `(${fields
+              .map((field) => formatter.format(row[field], ctx))
+              .join(', ')})`,
         )
         .join(', ');
     }

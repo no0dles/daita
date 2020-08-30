@@ -1,4 +1,4 @@
-import {PasswordGrantTokenProvider} from './password-grant-token-provider';
+import { PasswordGrantTokenProvider } from './password-grant-token-provider';
 
 describe('password-grant-token-provider', () => {
   // it('should return token', async() => {

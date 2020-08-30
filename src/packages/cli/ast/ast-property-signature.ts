@@ -3,9 +3,7 @@ import { getName, getType } from './utils';
 import { PropertySignature } from 'typescript';
 
 export class AstPropertySignature {
-  constructor(private block: AstBlock,
-              private node: PropertySignature) {
-  }
+  constructor(private block: AstBlock, private node: PropertySignature) {}
 
   get canBeUndefined(): boolean {
     return this.node.questionToken !== undefined;

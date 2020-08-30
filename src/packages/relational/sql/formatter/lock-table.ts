@@ -9,8 +9,11 @@ export class LockTableFormatter implements FormatHandle<LockTableSql> {
     return isLockTableSql(param);
   }
 
-  handle(param: LockTableSql, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: LockTableSql,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     return `LOCK TABLE ${formatter.format(param.lockTable, ctx)}`;
   }
-
 }

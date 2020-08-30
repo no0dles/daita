@@ -4,10 +4,7 @@ import { ParameterDeclaration } from 'typescript';
 import { AstType } from './ast-type';
 
 export class AstParameterDeclaration {
-
-  constructor(private block: AstBlock,
-              private node: ParameterDeclaration) {
-  }
+  constructor(private block: AstBlock, private node: ParameterDeclaration) {}
 
   get type(): AstType | null {
     return getType(this.block, this.node.type);

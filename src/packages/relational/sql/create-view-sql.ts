@@ -1,6 +1,6 @@
 import { TableDescription } from './description';
 import { SelectSql } from './select-sql';
-import {isKind} from '../../common/utils';
+import { isKind } from '../../common/utils';
 
 export interface CreateViewSql<T> {
   createView: TableDescription<T>;
@@ -8,4 +8,5 @@ export interface CreateViewSql<T> {
   as: SelectSql<T>;
 }
 
-export const isCreateViewSql = (val: any): val is CreateViewSql<any> => isKind<CreateViewSql<any>>(val, ['createView', 'as']);
+export const isCreateViewSql = (val: any): val is CreateViewSql<any> =>
+  isKind<CreateViewSql<any>>(val, ['createView', 'as']);

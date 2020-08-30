@@ -1,4 +1,4 @@
-import {NameMapper} from './name-mapper';
+import { NameMapper } from './name-mapper';
 
 export class NormalMapper implements NameMapper {
   add(name: string, migrationId: string): string {

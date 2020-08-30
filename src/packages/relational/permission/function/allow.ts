@@ -1,10 +1,10 @@
 import { Sql } from '../../sql';
-import {
-  AuthDescription,
-  Rule,
-} from '../index';
+import { AuthDescription, Rule } from '../index';
 
-export function allow(auth: AuthDescription[] | AuthDescription, sql: Sql<any>): Rule {
+export function allow(
+  auth: AuthDescription[] | AuthDescription,
+  sql: Sql<any>,
+): Rule {
   return {
     type: 'allow',
     auth,

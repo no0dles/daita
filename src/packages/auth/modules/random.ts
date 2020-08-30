@@ -1,5 +1,5 @@
-import * as crypto from "crypto";
-import {Defer} from '../../common/utils';
+import * as crypto from 'crypto';
+import { Defer } from '../../common/utils';
 
 export function getRandomCode() {
   const defer = new Defer<string>();
@@ -11,4 +11,3 @@ export function getRandomCode() {
   });
   return defer.promise;
 }
-

@@ -3,9 +3,16 @@ import { client } from '../client';
 import { UserEmailVerify } from '../models/user-email-verify';
 import { User } from '../models/user';
 import { UserPool } from '../models/user-pool';
-import {and, equal, field, isNull, join, table} from '../../relational/sql/function';
+import {
+  and,
+  equal,
+  field,
+  isNull,
+  join,
+  table,
+} from '../../relational/sql/function';
 
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 router.get('/', async (req, res, next) => {
   try {
@@ -18,20 +25,26 @@ router.get('/', async (req, res, next) => {
       },
       from: table(UserEmailVerify),
       join: [
-        join(User, equal(field(User, 'username'), field(UserEmailVerify, 'userUsername'))),
+        join(
+          User,
+          equal(
+            field(User, 'username'),
+            field(UserEmailVerify, 'userUsername'),
+          ),
+        ),
         join(UserPool, equal(field(UserPool, 'id'), field(User, 'userPoolId'))),
       ],
       where: and(
         equal(field(UserEmailVerify, 'code'), req.query.code),
         isNull(field(UserEmailVerify, 'verifiedAt')),
-      )
+      ),
     });
 
     if (!verify) {
       return res.status(400).json({ message: 'invalid code' });
     }
 
-    await client.transaction(async trx => {
+    await client.transaction(async (trx) => {
       await trx.update({
         update: table(UserEmailVerify),
         set: {
@@ -50,7 +63,6 @@ router.get('/', async (req, res, next) => {
     });
 
     res.status(200).end();
-
   } catch (e) {
     next(e);
   }

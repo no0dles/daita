@@ -3,10 +3,13 @@ import { UserPool } from './models/user-pool';
 import { User } from './models/user';
 import { getRandomCode } from './modules/random';
 import { hashPassword } from './modules/hash';
-import {all, and, equal, field, table} from '../relational/sql/function';
-import {getClient} from '../relational/client';
+import { all, and, equal, field, table } from '../relational/sql/function';
+import { getClient } from '../relational/client';
 
-export const adapter = new pg.PostgresAdapter(process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/auth');
+export const adapter = new pg.PostgresAdapter(
+  process.env.DATABASE_URL ||
+    'postgres://postgres:postgres@localhost:5432/auth',
+);
 export const client = getClient(adapter);
 
 (async () => {
@@ -18,19 +21,21 @@ export const client = getClient(adapter);
   });
 
   if (!adminPool) {
-    console.log(await client.insert({
-      into: table(UserPool),
-      insert: {
-        id: 'admin',
-        name: 'Administration',
-        algorithm: 'ES512',
-        emailVerifyExpiresIn: 60 * 60 * 1000,
-        checkPasswordForBreach: true,
-        accessTokenExpiresIn: 60 * 10,
-        refreshRefreshExpiresIn: 60 * 60,
-        passwordRegex: '^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$',
-      },
-    }));
+    console.log(
+      await client.insert({
+        into: table(UserPool),
+        insert: {
+          id: 'admin',
+          name: 'Administration',
+          algorithm: 'ES512',
+          emailVerifyExpiresIn: 60 * 60 * 1000,
+          checkPasswordForBreach: true,
+          accessTokenExpiresIn: 60 * 10,
+          refreshRefreshExpiresIn: 60 * 60,
+          passwordRegex: '^(?=.*[A-Za-z])(?=.*d)[A-Za-zd]{8,}$',
+        },
+      }),
+    );
   }
 
   const adminUser = await client.selectFirst({

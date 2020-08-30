@@ -6,7 +6,7 @@ import { User } from './models/user';
 import { UserEmailVerify } from './models/user-email-verify';
 import { UserRefreshToken } from './models/user-refresh-token';
 import { UserPoolCors } from './models/user-pool-cors';
-import {all, equal, field, notEqual, table} from '../relational/sql/function';
+import { all, equal, field, notEqual, table } from '../relational/sql/function';
 
 describe('app', () => {
   beforeAll(async () => {
@@ -49,29 +49,35 @@ describe('app', () => {
   });
 
   it('should register', (done) => {
-    supertest(app).post('/default/register').send({
-      password: '123456',
-      username: 'foo',
-      email: 'foo@example.com',
-    }).expect(200, done);
+    supertest(app)
+      .post('/default/register')
+      .send({
+        password: '123456',
+        username: 'foo',
+        email: 'foo@example.com',
+      })
+      .expect(200, done);
   });
 
   it('should login', (done) => {
-    supertest(app).post('/default/login').send({
-      password: '123456',
-      username: 'foo',
-    }).expect(200, (err, res) => {
-      expect(err).toBeNull();
-      expect(res.body.token_type).toBe('bearer');
-      expect(res.body.id_token).toBeDefined();
-      expect(res.body.refresh_token).toBeDefined();
-      expect(res.body.access_token).toBeDefined();
-      expect(res.body.expires_in).toBe(3600);
-      console.log(res.body.access_token);
-      console.log(res.body.id_token);
-      console.log(res.body.refresh_token);
-      done();
-    });
+    supertest(app)
+      .post('/default/login')
+      .send({
+        password: '123456',
+        username: 'foo',
+      })
+      .expect(200, (err, res) => {
+        expect(err).toBeNull();
+        expect(res.body.token_type).toBe('bearer');
+        expect(res.body.id_token).toBeDefined();
+        expect(res.body.refresh_token).toBeDefined();
+        expect(res.body.access_token).toBeDefined();
+        expect(res.body.expires_in).toBe(3600);
+        console.log(res.body.access_token);
+        console.log(res.body.id_token);
+        console.log(res.body.refresh_token);
+        done();
+      });
   });
 
   it('should refresh', async (done) => {
@@ -79,14 +85,17 @@ describe('app', () => {
       select: all(UserRefreshToken),
       from: table(UserRefreshToken),
     });
-    supertest(app).post('/default/refresh').send({
-      refreshToken: token.token,
-    }).expect(200, (err, res) => {
-      expect(err).toBeNull();
-      expect(res.body.access_token).toBeDefined();
-      expect(res.body.refresh_token).toBeDefined();
-      done();
-    });
+    supertest(app)
+      .post('/default/refresh')
+      .send({
+        refreshToken: token.token,
+      })
+      .expect(200, (err, res) => {
+        expect(err).toBeNull();
+        expect(res.body.access_token).toBeDefined();
+        expect(res.body.refresh_token).toBeDefined();
+        done();
+      });
   });
 
   describe('resend', () => {
@@ -94,13 +103,16 @@ describe('app', () => {
 
     beforeAll(async () => {
       accessToken = await new Promise((resolve) => {
-        supertest(app).post('/default/login').send({
-          password: '123456',
-          username: 'foo',
-        }).expect(200, (err, res) => {
-          expect(err).toBeNull();
-          resolve(res.body.access_token);
-        });
+        supertest(app)
+          .post('/default/login')
+          .send({
+            password: '123456',
+            username: 'foo',
+          })
+          .expect(200, (err, res) => {
+            expect(err).toBeNull();
+            resolve(res.body.access_token);
+          });
       });
     });
 

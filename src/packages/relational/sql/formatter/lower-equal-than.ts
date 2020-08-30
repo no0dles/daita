@@ -5,14 +5,22 @@ import {
   LowerEqualThanDescription,
 } from '../description';
 
-export class LowerEqualThanFormatter implements FormatHandle<LowerEqualThanDescription<any>> {
+export class LowerEqualThanFormatter
+  implements FormatHandle<LowerEqualThanDescription<any>> {
   type = FormatType.Condition;
 
   canHandle(param: any): boolean {
     return isLowerEqualThanDescription(param);
   }
 
-  handle(param: LowerEqualThanDescription<any>, ctx: FormatContext, formatter: Formatter): string {
-    return `${formatter.format(param.lowerEqualThan.left, ctx)} <= ${formatter.format(param.lowerEqualThan.right, ctx)}`;
+  handle(
+    param: LowerEqualThanDescription<any>,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
+    return `${formatter.format(
+      param.lowerEqualThan.left,
+      ctx,
+    )} <= ${formatter.format(param.lowerEqualThan.right, ctx)}`;
   }
 }

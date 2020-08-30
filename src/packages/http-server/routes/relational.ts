@@ -2,11 +2,13 @@ import * as express from 'express';
 import {
   AppDataOptions,
   AppOptions,
-  AppTransactionOptions, ContextManager, isAppTransactionOptions,
+  AppTransactionOptions,
+  ContextManager,
+  isAppTransactionOptions,
   TransactionContextManager,
   TransactionManager,
 } from '../../http-server-common';
-import {validateRules} from '../../relational/permission';
+import { validateRules } from '../../relational/permission';
 
 export function relationalRoute(options: AppOptions) {
   if (isAppTransactionOptions(options)) {
@@ -22,7 +24,10 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
   const router = relationalDataRoute(options);
   const manager = new TransactionContextManager(options);
 
-  function getTransactionId(req: express.Request, res: express.Response): string | null {
+  function getTransactionId(
+    req: express.Request,
+    res: express.Response,
+  ): string | null {
     if (typeof req.params['tid'] === 'string') {
       return req.params['tid'];
     } else {
@@ -31,7 +36,11 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
     return null;
   }
 
-  async function getTransaction(req: express.Request, res: express.Response, fn: (transaction: TransactionManager) => Promise<any>) {
+  async function getTransaction(
+    req: express.Request,
+    res: express.Response,
+    fn: (transaction: TransactionManager) => Promise<any>,
+  ) {
     const tid = getTransactionId(req, res);
     if (!tid) {
       return;
@@ -46,16 +55,20 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
     }
   }
 
-  router.post('/trx/:tid/exec', validateSqlRules(options), async (req, res, next) => {
-    try {
-      await getTransaction(req, res, async transaction => {
-        const result = await transaction.exec(req.body.sql);
-        res.status(200).json(result);
-      });
-    } catch (e) {
-      next(e);
-    }
-  });
+  router.post(
+    '/trx/:tid/exec',
+    validateSqlRules(options),
+    async (req, res, next) => {
+      try {
+        await getTransaction(req, res, async (transaction) => {
+          const result = await transaction.exec(req.body.sql);
+          res.status(200).json(result);
+        });
+      } catch (e) {
+        next(e);
+      }
+    },
+  );
 
   router.post('/trx/:tid', async (req, res, next) => {
     try {
@@ -75,7 +88,7 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
 
   router.post('/trx/:tid/commit', async (req, res, next) => {
     try {
-      await getTransaction(req, res, async transaction => {
+      await getTransaction(req, res, async (transaction) => {
         await transaction.commit();
         res.status(200).send();
       });
@@ -86,7 +99,7 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
 
   router.post('/trx/:tid/rollback', async (req, res, next) => {
     try {
-      await getTransaction(req, res, async transaction => {
+      await getTransaction(req, res, async (transaction) => {
         await transaction.rollback();
         res.status(200).send();
       });
@@ -99,7 +112,11 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
 }
 
 export function validateSqlRules(options: AppDataOptions) {
-  return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  return (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
     try {
       let userId: string | undefined;
       let authorized = false;

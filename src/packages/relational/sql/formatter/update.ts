@@ -9,13 +9,22 @@ export class UpdateFormatter implements FormatHandle<UpdateSql<any>> {
     return isUpdateSql(param);
   }
 
-  handle(param: UpdateSql<any>, ctx: FormatContext, formatter: Formatter): string {
+  handle(
+    param: UpdateSql<any>,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
     let sql = `UPDATE ${formatter.format(param.update, ctx)} SET `;
 
     if (param.set) {
-      sql += Object.keys(param.set).map(key => {
-        return `${ctx.escape(key)} = ${formatter.format(param.set[key], ctx)}`;
-      }).join(', ');
+      sql += Object.keys(param.set)
+        .map((key) => {
+          return `${ctx.escape(key)} = ${formatter.format(
+            param.set[key],
+            ctx,
+          )}`;
+        })
+        .join(', ');
     }
 
     if (param.where) {

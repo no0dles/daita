@@ -8,9 +8,7 @@ import { AstTypeParameterDeclaration } from './ast-type-parameter-declaration';
 import { AstNode } from './ast-node';
 
 export class AstClassDeclaration implements AstNode {
-  constructor(private block: AstBlock,
-              public node: ClassDeclaration) {
-  }
+  constructor(private block: AstBlock, public node: ClassDeclaration) {}
 
   get name(): string {
     if (!this.node.name) {
@@ -35,7 +33,10 @@ export class AstClassDeclaration implements AstNode {
           return null;
         }
 
-        const extendName = getName(heritageType.expression, 'expression with type arguments');
+        const extendName = getName(
+          heritageType.expression,
+          'expression with type arguments',
+        );
         return this.block.class(extendName);
       }
     }
@@ -86,7 +87,7 @@ export class AstClassDeclaration implements AstNode {
     return null;
   }
 
-  private* getTypeParameters() {
+  private *getTypeParameters() {
     if (!this.node.typeParameters) {
       return;
     }
@@ -96,7 +97,7 @@ export class AstClassDeclaration implements AstNode {
     }
   }
 
-  private* getMethods() {
+  private *getMethods() {
     for (const member of this.node.members) {
       const methodDeclaration = isKind(member, SyntaxKind.MethodDeclaration);
       if (methodDeclaration) {
@@ -105,7 +106,7 @@ export class AstClassDeclaration implements AstNode {
     }
   }
 
-  private* getStaticProps() {
+  private *getStaticProps() {
     for (const prop of this.props) {
       if (prop.static) {
         yield prop;
@@ -113,7 +114,7 @@ export class AstClassDeclaration implements AstNode {
     }
   }
 
-  private* getAllProps() {
+  private *getAllProps() {
     const extended = this.extends;
     if (extended) {
       for (const prop of extended.allProps) {
@@ -126,9 +127,12 @@ export class AstClassDeclaration implements AstNode {
     }
   }
 
-  private* getProps() {
+  private *getProps() {
     for (const member of this.node.members) {
-      const propertyDeclaration = isKind(member, SyntaxKind.PropertyDeclaration);
+      const propertyDeclaration = isKind(
+        member,
+        SyntaxKind.PropertyDeclaration,
+      );
       if (propertyDeclaration) {
         yield new AstClassDeclarationProp(this.block, propertyDeclaration);
       }

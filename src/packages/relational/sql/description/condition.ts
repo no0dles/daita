@@ -15,7 +15,7 @@ import { LowerThanDescription } from './lower-than';
 import { LowerEqualThanDescription } from './lower-equal-than';
 
 export type Condition =
-  EqualDescription<any>
+  | EqualDescription<any>
   | ExistsDescription
   | BetweenDescription<any>
   | InDescription<any>

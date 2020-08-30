@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import { getKeyForId } from './key';
-import {Defer} from '../../common/utils';
+import { Defer } from '../../common/utils';
 
 export async function verifyToken(token: string): Promise<any> {
   const payload = jwt.decode(token, { complete: true, json: true });

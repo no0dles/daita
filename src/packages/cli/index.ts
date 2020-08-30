@@ -10,15 +10,17 @@ import { serve } from './commands/serve';
 import { generateRule } from './commands/generate-rule';
 import { upgrade } from './commands/upgrade';
 
-program.command('migration:undo')
+program
+  .command('migration:undo')
   .description('undo last migration')
   .option('--cwd <string>', 'working directory')
   .option('-s, --schema <string>', 'schema filePath')
-  .action(async opts => {
-   await undoMigration(opts)
+  .action(async (opts) => {
+    await undoMigration(opts);
   });
 
-program.command('migration:apply')
+program
+  .command('migration:apply')
   .description('applies migration')
   .option('--cwd <string>', 'working directory')
   .option('-s, --schema <string>', 'schema filePath')
@@ -27,7 +29,8 @@ program.command('migration:apply')
     await applyMigration(opts);
   });
 
-program.command('migration:add <name>')
+program
+  .command('migration:add <name>')
   .description('add migration')
   .option('--cwd <string>', 'working directory')
   .option('-s, --schema <string>', 'schema filePath')
@@ -35,7 +38,8 @@ program.command('migration:add <name>')
     await addMigration(name, opts);
   });
 
-program.command('rule:generate')
+program
+  .command('rule:generate')
   .description('generate rules')
   .option('--cwd <string>', 'working directory')
   .option('-s, --schema <string>', 'schema filePath')
@@ -43,21 +47,24 @@ program.command('rule:generate')
     await generateRule(opts);
   });
 
-program.command('docs')
+program
+  .command('docs')
   .description('open documentation website')
   .action(async () => {
     const url = 'https://docs.daita.ch';
     await cli.open(url);
   });
 
-program.command('upgrade')
+program
+  .command('upgrade')
   .option('--cwd <string>', 'working directory')
   .description('upgrade all daita packages')
   .action(async (opts) => {
     await upgrade(opts);
   });
 
-program.command('diagram')
+program
+  .command('diagram')
   .option('--cwd <string>', 'working directory')
   .option('-s, --schema <string>', 'schema filePath')
   .option('-f, --filename <string>', 'output svg filename')
@@ -66,9 +73,12 @@ program.command('diagram')
     await diagram(opts);
   });
 
-program.command('serve')
+program
+  .command('serve')
   .description('serve daita api')
-  .option('-p, --port <number>', 'serving api port', (value) => parseInt(value, 0))
+  .option('-p, --port <number>', 'serving api port', (value) =>
+    parseInt(value, 0),
+  )
   .option('-c, --context <string>', 'config context name')
   .option('--cwd <string>', 'working directory')
   .option('--disable-auth', 'disable authorization and rules', false)

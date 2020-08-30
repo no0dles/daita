@@ -2,25 +2,43 @@ import { NowFormatter } from './formatters/now-formatter';
 import {
   AliasFormatter,
   AllFormatter,
-  AlterTableAddColumnFormatter, AndFormatter,
-  AvgFormatter, BetweenFormatter,
-  ConcatFormatter, CountFormatter,
+  AlterTableAddColumnFormatter,
+  AndFormatter,
+  AvgFormatter,
+  BetweenFormatter,
+  ConcatFormatter,
+  CountFormatter,
   CreateSchemaFormatter,
   CreateTableFormatter,
-  DeleteFormatter, DropTableFormatter,
-  EqualFormatter, ExistsFormatter,
+  DeleteFormatter,
+  DropTableFormatter,
+  EqualFormatter,
+  ExistsFormatter,
   FieldFormatter,
   Formatter,
   GreaterEqualThanFormatter,
-  GreaterThanFormatter, InFormatter, InsertFormatter, IsNullFormatter,
-  JoinFormatter, LikeFormatter, LockTableFormatter,
-  LowerEqualThanFormatter, LowerThanFormatter,
+  GreaterThanFormatter,
+  InFormatter,
+  InsertFormatter,
+  IsNullFormatter,
+  JoinFormatter,
+  LikeFormatter,
+  LockTableFormatter,
+  LowerEqualThanFormatter,
+  LowerThanFormatter,
   MaxFormatter,
-  MinFormatter, NotBetweenFormatter,
-  NotEqualFormatter, NotInFormatter, OrderByFormatter, OrFormatter, SelectFormatter,
+  MinFormatter,
+  NotBetweenFormatter,
+  NotEqualFormatter,
+  NotInFormatter,
+  OrderByFormatter,
+  OrFormatter,
+  SelectFormatter,
   SubSelectFormatter,
-  SumFormatter, TableFormatter,
-  UpdateFormatter, ValueFormatter,
+  SumFormatter,
+  TableFormatter,
+  UpdateFormatter,
+  ValueFormatter,
 } from '../relational/sql/formatter';
 
 export const sqliteFormatter = new Formatter();
@@ -30,7 +48,7 @@ sqliteFormatter.add(new SubSelectFormatter());
 sqliteFormatter.add(new ValueFormatter());
 sqliteFormatter.add(new MaxFormatter());
 sqliteFormatter.add(new NotBetweenFormatter());
-sqliteFormatter.add(new AllFormatter())
+sqliteFormatter.add(new AllFormatter());
 sqliteFormatter.add(new AvgFormatter());
 sqliteFormatter.add(new TableFormatter());
 sqliteFormatter.add(new NotInFormatter());

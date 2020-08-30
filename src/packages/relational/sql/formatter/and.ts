@@ -9,7 +9,13 @@ export class AndFormatter implements FormatHandle<AndDescription> {
     return isAndDescription(param);
   }
 
-  handle(param: AndDescription, ctx: FormatContext, formatter: Formatter): string {
-    return `(${param.and.map(condition => formatter.format(condition, ctx)).join(' AND ')})`;
+  handle(
+    param: AndDescription,
+    ctx: FormatContext,
+    formatter: Formatter,
+  ): string {
+    return `(${param.and
+      .map((condition) => formatter.format(condition, ctx))
+      .join(' AND ')})`;
   }
 }

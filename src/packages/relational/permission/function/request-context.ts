@@ -11,12 +11,12 @@ export function requestContext(): { userId: string } {
 type ProxyAction = ProxyGet | ProxyCall;
 
 interface ProxyGet {
-  type: 'get'
+  type: 'get';
   property: PropertyKey;
 }
 
 interface ProxyCall {
-  type: 'call'
+  type: 'call';
   method: PropertyKey;
   args: any[];
 }
@@ -26,8 +26,7 @@ export function reviveRequestContext(actions: ProxyAction[]) {
 }
 
 function getProxy(root: boolean, actions: ProxyAction[]) {
-  return new Proxy(() => {
-  }, {
+  return new Proxy(() => {}, {
     get(target: any, p: PropertyKey, receiver: any): any {
       if (p === 'toJSON') {
         return () => ({ $requestContext: actions });
@@ -63,7 +62,8 @@ function getProxy(root: boolean, actions: ProxyAction[]) {
   });
 }
 
-export const isRequestContext = (val: any): val is RequestContextDescription => {
+export const isRequestContext = (
+  val: any,
+): val is RequestContextDescription => {
   return typeof val.getContextValue === 'function';
 };
-

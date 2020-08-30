@@ -4,9 +4,9 @@ import { User } from '../models/user';
 import { UserEmailVerify } from '../models/user-email-verify';
 import { getRandomCode } from '../modules/random';
 import { authMiddleware } from '../middlewares/auth-middleware';
-import {and, equal, field, table} from '../../relational/sql/function';
+import { and, equal, field, table } from '../../relational/sql/function';
 
-const router = express.Router({mergeParams: true});
+const router = express.Router({ mergeParams: true });
 
 router.use(authMiddleware);
 router.post('/', async (req, res, next) => {
@@ -20,7 +20,7 @@ router.post('/', async (req, res, next) => {
       from: table(User),
       where: and(
         equal(field(User, 'username'), (<any>req).token.sub),
-        equal(field(User, 'userPoolId'), req.params.userPoolId)
+        equal(field(User, 'userPoolId'), req.params.userPoolId),
       ),
     });
 

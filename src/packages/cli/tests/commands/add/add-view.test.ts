@@ -1,5 +1,5 @@
-import {equal, field, table} from '../../../../relational/sql/function';
-import {RelationalSchema} from '../../../../orm/schema';
+import { equal, field, table } from '../../../../relational/sql/function';
+import { RelationalSchema } from '../../../../orm/schema';
 
 export class User {
   id!: string;

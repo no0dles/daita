@@ -12,7 +12,17 @@ import { CreateIndexSql } from './create-index-sql';
 import { CreateViewSql } from './create-view-sql';
 import { DropViewSql } from './drop-view-sql';
 
-export type Sql<T> = SelectSql<T> | DeleteSql | UpdateSql<T> | InsertSql<T> |
-  LockTableSql | DropTableSql | AlterTableSql |
-  CreateTableSql | CreateSchemaSql | DropIndexSql | CreateIndexSql<T> |
-  CreateViewSql<T> | DropViewSql;
+export type Sql<T> =
+  | SelectSql<T>
+  | DeleteSql
+  | UpdateSql<T>
+  | InsertSql<T>
+  | LockTableSql
+  | DropTableSql
+  | AlterTableSql
+  | CreateTableSql
+  | CreateSchemaSql
+  | DropIndexSql
+  | CreateIndexSql<T>
+  | CreateViewSql<T>
+  | DropViewSql;

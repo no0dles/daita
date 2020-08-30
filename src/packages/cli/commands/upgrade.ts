@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as https from 'https';
-import {Defer} from '../../common/utils';
+import { Defer } from '../../common/utils';
 
 export async function upgrade(opts: { cwd?: string }) {
   const cwd = opts.cwd ? path.resolve(opts.cwd) : process.cwd();
@@ -15,8 +15,8 @@ export async function upgrade(opts: { cwd?: string }) {
     const content = fs.readFileSync(packagePath).toString();
     const pkg = JSON.parse(content);
     let hasChanges = false;
-    hasChanges = hasChanges || await upgradeDependencies(pkg.dependencies);
-    hasChanges = hasChanges || await upgradeDependencies(pkg.devDependencies);
+    hasChanges = hasChanges || (await upgradeDependencies(pkg.dependencies));
+    hasChanges = hasChanges || (await upgradeDependencies(pkg.devDependencies));
     if (!hasChanges) {
       console.info('all daita packages are up to date');
       return;
@@ -57,17 +57,19 @@ async function upgradeDependencies(dependencies: any) {
 function getLatest(daitaName: string): Promise<string> {
   const url = `https://registry.npmjs.org/-/package/@daita/${daitaName}/dist-tags`;
   const defer = new Defer<string>();
-  https.get(url, {}, (resp) => {
-    let data = '';
-    resp.on('data', (chunk) => {
-      data += chunk;
+  https
+    .get(url, {}, (resp) => {
+      let data = '';
+      resp.on('data', (chunk) => {
+        data += chunk;
+      });
+      resp.on('end', () => {
+        const content = JSON.parse(data);
+        defer.resolve(content.latest);
+      });
+    })
+    .on('error', (err) => {
+      defer.reject(err);
     });
-    resp.on('end', () => {
-      const content = JSON.parse(data);
-      defer.resolve(content.latest);
-    });
-  }).on('error', (err) => {
-    defer.reject(err);
-  });
   return defer.promise;
 }

@@ -1,13 +1,12 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import {spawn} from 'child_process';
+import { spawn } from 'child_process';
 
 const containersDir = path.join(__dirname, '../containers');
 const packageJson = require(path.join(__dirname, '../../package.json'));
 
-
 async function buildContainerPackageJsons(directory: string) {
-  for (const file of fs.readdirSync(directory, {withFileTypes: true})) {
+  for (const file of fs.readdirSync(directory, { withFileTypes: true })) {
     if (file.name === 'Dockerfile') {
       const dockerfile = path.join(directory, file.name);
       buildContainerPackageJson(dockerfile);
@@ -20,21 +19,38 @@ async function buildContainerPackageJsons(directory: string) {
 
 async function buildContainerImage(dockerfile: string) {
   const parts = path.dirname(dockerfile).split(path.sep);
-  const imageName = 'docker.pkg.github.com/no0dles/daita/' + parts[parts.length - 1];
-  await runCommand('docker', ['build', '-t', imageName, '-t', `${imageName}:${packageJson.version}`, '-f', dockerfile, '.'], path.join(__dirname, '../..'));
+  const imageName =
+    'docker.pkg.github.com/no0dles/daita/' + parts[parts.length - 1];
+  await runCommand(
+    'docker',
+    [
+      'build',
+      '-t',
+      imageName,
+      '-t',
+      `${imageName}:${packageJson.version}`,
+      '-f',
+      dockerfile,
+      '.',
+    ],
+    path.join(__dirname, '../..'),
+  );
 }
 
 function runCommand(cmd: string, args: string[], cwd: string) {
-  return new Promise(((resolve, reject) => {
-    const ps = spawn(cmd, args, {cwd, stdio: [process.stdin, process.stdout, process.stderr]});
-    ps.once('exit', code => {
+  return new Promise((resolve, reject) => {
+    const ps = spawn(cmd, args, {
+      cwd,
+      stdio: [process.stdin, process.stdout, process.stderr],
+    });
+    ps.once('exit', (code) => {
       if (code === 0) {
         resolve();
       } else {
         reject(code);
       }
     });
-  }));
+  });
 }
 
 function buildContainerPackageJson(dockerfile: string) {
@@ -55,7 +71,11 @@ function buildContainerPackageJson(dockerfile: string) {
   fs.writeFileSync(packagePath, JSON.stringify(pkg, null, 2));
 }
 
-function scanDependencies(file: string, dependencies: Set<string>, files: Set<string>) {
+function scanDependencies(
+  file: string,
+  dependencies: Set<string>,
+  files: Set<string>,
+) {
   files.add(file);
   const content = fs.readFileSync(file).toString();
   const regex = / from [\"'](?<import>[\.\/\-@\w]+)[\"']/g;

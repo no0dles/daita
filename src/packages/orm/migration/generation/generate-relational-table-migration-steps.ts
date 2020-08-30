@@ -1,6 +1,6 @@
 import { RelationalTableDescription } from '../../schema/description/relational-table-description';
 import { MigrationStep } from '../migration-step';
-import {merge} from '../../../common/utils';
+import { merge } from '../../../common/utils';
 
 export function generateRelationalTableMigrationSteps(
   currentTable: RelationalTableDescription,
@@ -8,7 +8,11 @@ export function generateRelationalTableMigrationSteps(
 ) {
   const steps: MigrationStep[] = [];
 
-  const mergedFields = merge(currentTable.fields, newTable.fields, (first, second) => first.name === second.name);
+  const mergedFields = merge(
+    currentTable.fields,
+    newTable.fields,
+    (first, second) => first.name === second.name,
+  );
 
   for (const addedField of mergedFields.added) {
     steps.push({
@@ -22,33 +26,58 @@ export function generateRelationalTableMigrationSteps(
     });
   }
   for (const removedField of mergedFields.removed) {
-    steps.push({ kind: 'drop_table_field', table: newTable.name, fieldName: removedField.name });
+    steps.push({
+      kind: 'drop_table_field',
+      table: newTable.name,
+      fieldName: removedField.name,
+    });
   }
   if (mergedFields.merge.length > 0) {
     // TODO throw new Error('merge not supported yet');
   }
 
-  const mergedPrimaryKeys = merge(currentTable.primaryKeys, newTable.primaryKeys, (first, second) => first.key === second.key);
+  const mergedPrimaryKeys = merge(
+    currentTable.primaryKeys,
+    newTable.primaryKeys,
+    (first, second) => first.key === second.key,
+  );
 
-  if (mergedPrimaryKeys.added.length > 0 || mergedPrimaryKeys.removed.length > 0) {
-    throw new Error(`cant change primary key for table ${currentTable.name} (${mergedPrimaryKeys.added.map(a => a.name)}/${mergedPrimaryKeys.removed.map(a => a.name)})`);
+  if (
+    mergedPrimaryKeys.added.length > 0 ||
+    mergedPrimaryKeys.removed.length > 0
+  ) {
+    throw new Error(
+      `cant change primary key for table ${
+        currentTable.name
+      } (${mergedPrimaryKeys.added.map(
+        (a) => a.name,
+      )}/${mergedPrimaryKeys.removed.map((a) => a.name)})`,
+    );
   }
 
-  const mergedReferences = merge(currentTable.references, newTable.references, (first, second) => first.name === second.name);
+  const mergedReferences = merge(
+    currentTable.references,
+    newTable.references,
+    (first, second) => first.name === second.name,
+  );
   for (const addedRef of mergedReferences.added) {
     steps.push({
       kind: 'add_table_foreign_key',
       table: currentTable.name,
       schema: currentTable.schema,
       name: addedRef.name,
-      fieldNames: addedRef.keys.map(key => key.field.name),
-      foreignFieldNames: addedRef.keys.map(key => key.foreignField.name),
+      fieldNames: addedRef.keys.map((key) => key.field.name),
+      foreignFieldNames: addedRef.keys.map((key) => key.foreignField.name),
       foreignTable: addedRef.table.name,
       required: addedRef.required,
     });
   }
 
-  const mergedIndices = merge(currentTable.indices, newTable.indices, (first, second) => first.name === second.name);
+  const mergedIndices = merge(
+    currentTable.indices,
+    newTable.indices,
+    (first, second) => first.name === second.name,
+  );
   for (const addedIndex of mergedIndices.added) {
     steps.push({
       kind: 'create_index',
@@ -56,7 +85,7 @@ export function generateRelationalTableMigrationSteps(
       schema: currentTable.schema,
       unique: addedIndex.unique,
       name: addedIndex.name,
-      fields: addedIndex.fields.map(f => f.name),
+      fields: addedIndex.fields.map((f) => f.name),
     });
   }
   for (const removedIndex of mergedIndices.removed) {
@@ -71,7 +100,11 @@ export function generateRelationalTableMigrationSteps(
     throw new Error('chaning index is not supported yet');
   }
 
-  const mergedSeeds = merge(currentTable.seeds, newTable.seeds, (first, second) => first.key === second.key);
+  const mergedSeeds = merge(
+    currentTable.seeds,
+    newTable.seeds,
+    (first, second) => first.key === second.key,
+  );
   for (const addedSeed of mergedSeeds.added) {
     steps.push({
       kind: 'insert_seed',
@@ -83,7 +116,10 @@ export function generateRelationalTableMigrationSteps(
   }
 
   for (const mergedSeed of mergedSeeds.merge) {
-    if (JSON.stringify(mergedSeed.current.seed) === JSON.stringify(mergedSeed.target.seed)) {
+    if (
+      JSON.stringify(mergedSeed.current.seed) ===
+      JSON.stringify(mergedSeed.target.seed)
+    ) {
       continue;
     }
 

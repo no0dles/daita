@@ -1,7 +1,11 @@
 import * as express from 'express';
 import { verifyToken } from '../modules/token';
 
-export const authMiddleware = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+export const authMiddleware = async (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
   try {
     const authHeader = req.header('Authorization');
     if (!authHeader) {

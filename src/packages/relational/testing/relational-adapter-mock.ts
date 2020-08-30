@@ -4,17 +4,15 @@ import {
   RelationalTransactionAdapter,
 } from '../adapter';
 
-export class RelationalAdapterMock<T = any> implements RelationalTransactionAdapter<T> {
-  constructor(private handle: (sql: T) => RelationalRawResult | null) {
-  }
+export class RelationalAdapterMock<T = any>
+  implements RelationalTransactionAdapter<T> {
+  constructor(private handle: (sql: T) => RelationalRawResult | null) {}
 
   execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
     throw new Error('not supported');
   }
 
-  async exec(
-    sql: T,
-  ): Promise<RelationalRawResult> {
+  async exec(sql: T): Promise<RelationalRawResult> {
     const result = this.handle(sql);
     if (result) {
       return result;
@@ -28,8 +26,7 @@ export class RelationalAdapterMock<T = any> implements RelationalTransactionAdap
     return action(new RelationalAdapterMock<T>(this.handle));
   }
 
-  async close() {
-  }
+  async close() {}
 
   supportsQuery(sql: any): boolean {
     const result = this.handle(sql);

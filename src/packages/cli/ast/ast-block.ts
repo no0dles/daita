@@ -5,7 +5,14 @@ import { AstVariableDeclaration } from './ast-variable-declaration';
 import { AstError, isKind } from '../ast/utils';
 import { getName } from './utils';
 import { AstValue } from './ast-value';
-import { BlockLike, createKeywordTypeNode, Expression, Identifier, QualifiedName, SyntaxKind } from 'typescript';
+import {
+  BlockLike,
+  createKeywordTypeNode,
+  Expression,
+  Identifier,
+  QualifiedName,
+  SyntaxKind,
+} from 'typescript';
 import { AstType } from './ast-type';
 import { AstEnumDeclaration } from './ast-enum-declaration';
 import { AstExpressionStatement } from './ast-expression-statement';
@@ -13,9 +20,7 @@ import { AstTypeDeclaration } from './ast-type-declaration';
 import { AstKeywordValue } from './ast-keyword-value';
 
 export class AstBlock {
-  constructor(public sourceFile: AstSourceFile,
-              private block: BlockLike) {
-  }
+  constructor(public sourceFile: AstSourceFile, private block: BlockLike) {}
 
   get classes(): Generator<AstClassDeclaration> {
     return this.getClasses();
@@ -96,7 +101,9 @@ export class AstBlock {
     const name = getName(identifier, 'identifier');
 
     if (name === 'undefined') {
-      return new AstKeywordValue(createKeywordTypeNode(SyntaxKind.UndefinedKeyword));
+      return new AstKeywordValue(
+        createKeywordTypeNode(SyntaxKind.UndefinedKeyword),
+      );
     }
 
     const variable = this.variable(name);
@@ -176,7 +183,7 @@ export class AstBlock {
     return null;
   }
 
-  private* getEnums() {
+  private *getEnums() {
     for (const statement of this.block.statements) {
       const node = isKind(statement, SyntaxKind.EnumDeclaration);
       if (node) {
@@ -185,7 +192,7 @@ export class AstBlock {
     }
   }
 
-  private* getVariables() {
+  private *getVariables() {
     for (const statement of this.block.statements) {
       const node = isKind(statement, SyntaxKind.VariableStatement);
       if (node && node.declarationList) {
@@ -196,7 +203,7 @@ export class AstBlock {
     }
   }
 
-  private* getExpressionStatements() {
+  private *getExpressionStatements() {
     for (const statement of this.block.statements) {
       const node = isKind(statement, SyntaxKind.ExpressionStatement);
       if (node) {
@@ -205,7 +212,7 @@ export class AstBlock {
     }
   }
 
-  private* getTypes() {
+  private *getTypes() {
     for (const statement of this.block.statements) {
       const node = isKind(statement, SyntaxKind.TypeAliasDeclaration);
       if (node) {
@@ -214,7 +221,7 @@ export class AstBlock {
     }
   }
 
-  private* getClasses() {
+  private *getClasses() {
     for (const statement of this.block.statements) {
       const node = isKind(statement, SyntaxKind.ClassDeclaration);
       if (node) {
@@ -223,7 +230,7 @@ export class AstBlock {
     }
   }
 
-  private* getFunctions() {
+  private *getFunctions() {
     for (const statement of this.block.statements) {
       const functionNode = isKind(statement, SyntaxKind.FunctionDeclaration);
       if (functionNode) {

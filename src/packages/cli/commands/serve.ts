@@ -3,13 +3,18 @@ import { getRelationalDataAdapter } from '../utils/data-adapter';
 import { getSchemaInformation, getSchemaLocation } from '../utils/path';
 import { AstContext } from '../ast/ast-context';
 import { getAuthorization } from '../utils/authorization';
-import {createHttpServer} from '../../http-server';
-import {anonymous, anything} from '../../relational/permission/function';
-import {getClient} from '../../relational/client';
-import {Rule} from '../../relational/permission/description';
-import {OrmRuleContext} from '../../orm/context';
+import { createHttpServer } from '../../http-server';
+import { anonymous, anything } from '../../relational/permission/function';
+import { getClient } from '../../relational/client';
+import { Rule } from '../../relational/permission/description';
+import { OrmRuleContext } from '../../orm/context';
 
-export async function serve(opts: { cwd?: string, schema?: string, port?: number, disableAuth?: boolean }) {
+export async function serve(opts: {
+  cwd?: string;
+  schema?: string;
+  port?: number;
+  disableAuth?: boolean;
+}) {
   process.env.SUPPRESS_NO_CONFIG_WARNING = 'true';
   if (opts.cwd) {
     process.env.NODE_CONFIG_DIR = path.join(opts.cwd, 'config');
@@ -36,8 +41,10 @@ export async function serve(opts: { cwd?: string, schema?: string, port?: number
     }
 
     const migrationTree = schemaInfo.getMigrationTree();
-    const currentSchema = migrationTree.getSchemaDescription({ backwardCompatible: false });
-    rules.push(...currentSchema.rules.map(r => r.rule));
+    const currentSchema = migrationTree.getSchemaDescription({
+      backwardCompatible: false,
+    });
+    rules.push(...currentSchema.rules.map((r) => r.rule));
   }
 
   const app = createHttpServer({

@@ -1,11 +1,13 @@
 import * as fs from 'fs';
-import {parseRules, Rule} from '../../packages/relational/permission';
-import {AppAuthorization} from '../../packages/http-server-common';
-import {createHttpServer} from '../../packages/http-server';
-import {RelationalTransactionAdapterFactory} from '../../packages/relational/adapter/factory';
+import { parseRules, Rule } from '../../packages/relational/permission';
+import { AppAuthorization } from '../../packages/http-server-common';
+import { createHttpServer } from '../../packages/http-server';
+import { RelationalTransactionAdapterFactory } from '../../packages/relational/adapter/factory';
 
 const DATABASE_URL = process.env.DATABASE_URL;
-const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT ? parseInt(process.env.TRANSACTION_TIMEOUT) : 4000;
+const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT
+  ? parseInt(process.env.TRANSACTION_TIMEOUT)
+  : 4000;
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const RULE_FILE = process.env.RULE_FILE || 'rules.json';
 const AUTH_FILE = process.env.AUTH_FILE || 'auth.json';
@@ -33,8 +35,14 @@ if (fs.existsSync(AUTH_FILE)) {
   const content = fs.readFileSync(AUTH_FILE, { encoding: 'utf8' });
   try {
     const parsedAuthentication = JSON.parse(content);
-    authentication.tokens = parsedAuthentication && parsedAuthentication.tokens ? parsedAuthentication.tokens : [];
-    authentication.providers = parsedAuthentication && parsedAuthentication.providers ? parsedAuthentication.providers : [];
+    authentication.tokens =
+      parsedAuthentication && parsedAuthentication.tokens
+        ? parsedAuthentication.tokens
+        : [];
+    authentication.providers =
+      parsedAuthentication && parsedAuthentication.providers
+        ? parsedAuthentication.providers
+        : [];
   } catch (e) {
     console.error('error parsing auth');
     console.error(e);
@@ -46,11 +54,10 @@ process
   .on('unhandledRejection', (reason, p) => {
     console.error(reason, 'Unhandled Rejection at Promise', p);
   })
-  .on('uncaughtException', err => {
+  .on('uncaughtException', (err) => {
     console.error(err, 'Uncaught Exception thrown');
     process.exit(1);
   });
-
 
 export async function run(factory: RelationalTransactionAdapterFactory) {
   const adapter = await factory.createTransactionAdapter({
@@ -68,7 +75,7 @@ export async function run(factory: RelationalTransactionAdapterFactory) {
   });
 
   process.on('SIGTERM', () => {
-    if(adapter) {
+    if (adapter) {
       adapter.close();
     }
     if (server) {

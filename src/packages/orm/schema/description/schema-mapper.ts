@@ -1,4 +1,4 @@
-import {NameMapper} from './name-mapper';
+import { NameMapper } from './name-mapper';
 
 export class SchemaMapper implements NameMapper {
   private table: NameMapper;
