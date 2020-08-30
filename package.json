@@ -1,7 +1,6 @@
 {
-  "name": "jest-coverage",
-  "version": "1.0.0",
-  "description": "",
+  "name": "daita",
+  "version": "0.2.49-beta.1",
   "scripts": {
     "test": "jest",
     "build": "tsc",
@@ -11,8 +10,7 @@
     "clean": "git clean -fX -d dist",
     "rebuild": "npm run clean && npm run build"
   },
-  "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "pg": "^8.3.0",
     "sqlite3": "^4.2.0",

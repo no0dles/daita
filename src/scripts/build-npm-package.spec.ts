@@ -1,5 +1,5 @@
-import { updatePath } from './build-npm-package';
 import * as path from 'path';
+import { updatePath } from './npm';
 
 describe('build-npm-package', () => {
   it('should', () => {

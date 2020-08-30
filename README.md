@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="https://daita.ch"><img src="docs/logo.svg" alt="daita" width="250"></a>
+  <a href="https://daita.ch"><img src="src/docs/static/img/logo.svg" alt="daita" width="250"></a>
 </h1>
 <h2 align="center">Daita</h2>
 
@@ -15,7 +15,7 @@ Daita does this by removing the need for a backend service to access and store d
 
 ## Documentation and examples
 The Documentation and getting started guide is available [here](https://daita.ch/). 
-Example projects are in the [packages/examples](./packages/examples) folder.
+Example projects are in the [packages/examples](./src/examples) folder.
 
 ## Packages
 A short description about the packages and their purpose.
