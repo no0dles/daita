@@ -4,6 +4,7 @@ module.exports = {
   url: 'https://daita.ch',
   baseUrl: '/',
   favicon: 'img/favicon.ico',
+  onBrokenLinks: 'warn',
   organizationName: 'no0dles', // Usually your GitHub org/user name.
   projectName: 'daita', // Usually your repo name.
   themeConfig: {
@@ -13,7 +14,7 @@ module.exports = {
         alt: 'Daita Logo',
         src: 'img/logo.svg',
       },
-      links: [
+      items: [
         {
           to: 'docs/daita/getting-started',
           activeBasePath: 'docs',
