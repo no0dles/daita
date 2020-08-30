@@ -1,0 +1,21 @@
+import { getMigrationSteps } from '../../utils.test';
+import { MigrationStep } from '../../../../orm/migration';
+
+describe('update-seed', () => {
+  let steps: MigrationStep[] = [];
+
+  beforeAll(async () => {
+    steps = await getMigrationSteps(__dirname + '/update-seed.test.ts');
+  });
+
+  it('should update seed', () => {
+    expect(steps).toIncludeAnyMembers([
+      {
+        kind: 'update_seed',
+        table: 'User',
+        keys: { id: 'a' },
+        seed: { admin: true },
+      },
+    ]);
+  });
+});

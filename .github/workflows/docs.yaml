@@ -17,17 +17,17 @@ jobs:
         with:
           path: |
             ~/.npm
-            packages/docs/node_modules
+            src/docs/node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('packages/docs/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-        working-directory: packages/docs
+        working-directory: src/docs
       - run: npm run build
-        working-directory: packages/docs
+        working-directory: src/docs
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./packages/docs/build
+          publish_dir: ./src/docs/build
           publish_branch: gh-pages

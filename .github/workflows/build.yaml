@@ -14,8 +14,6 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
-#      - name: docker-compose
-#        run: docker-compose up -d
       - uses: actions/setup-node@v1
         with:
           node-version: 14.x
@@ -29,6 +27,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm ci
-      - run: npx lerna bootstrap
-      - run: npx lerna run build
+      - run: npm run build
       #- run: npm test

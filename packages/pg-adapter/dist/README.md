@@ -1,1 +1,0 @@
-@daita/pg-adapter

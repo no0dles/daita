@@ -1,0 +1,13 @@
+import { RelationalSchema } from '../../../../orm/schema';
+
+export class User {
+  id!: string;
+  admin!: boolean;
+}
+
+const schema = new RelationalSchema();
+schema.table(User);
+schema.seed(User, [
+  { id: 'a', admin: false },
+  { id: 'b', admin: true },
+]);
