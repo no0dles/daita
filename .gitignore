@@ -1,28 +1,17 @@
-**/dist/**/*.js
-**/dist/**/*.d.ts
-**/dist/**/*.d.ts.map
-**/dist/**/*.js.map
-**/dist/package.json
-
+dist
 node_modules
 .DS_Store
 .idea
-.task
 .nyc_output
 coverage
-
-packages/auth/keys
-packages/http/container/rules.json
-packages/http/container/auth.json
-
-
-tsconfig.tsbuildinfo
 tmp
+
+src/tests
+src/containers/**/package.json
 
 .docusaurus
 .cache-loader
 
-packages/*/build
 yarn.lock
 npm-debug.log*
 yarn-debug.log*

@@ -1,6 +1,0 @@
-src
-jest.config.js
-**/tsconfig.tsbuildinfo
-node_modules
-package-lock.json
-tsconfig.json

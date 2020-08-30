@@ -1,6 +1,4 @@
+**/dist
 **/node_modules
-**/dist/**/*.js
-**/dist/**/*.js.map
-**/dist/**/*.d.ts
-packages/auth/keys
-.github
+coverage
+**/Dockerfile
