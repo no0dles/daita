@@ -1,7 +1,7 @@
-import { DocumentCollectionSchemaCollectionFieldType } from '../../schema';
+import { DocumentCollectionSchemaCollectionFieldType } from '../document-collection-schema-collection-field-type';
 
 export interface AddCollectionFieldMigrationStep {
-  kind: 'add_collection_field',
+  kind: 'add_collection_field';
   collection: string;
   fieldName: string;
   type: DocumentCollectionSchemaCollectionFieldType;

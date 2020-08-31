@@ -1,26 +1,14 @@
 import * as express from 'express';
 import {
-  AppDataOptions,
   AppOptions,
-  AppTransactionOptions,
   ContextManager,
-  isAppTransactionOptions,
   TransactionContextManager,
   TransactionManager,
 } from '../../http-server-common';
 import { validateRules } from '../../relational/permission';
+import { failNever } from '../../common/utils';
 
 export function relationalRoute(options: AppOptions) {
-  if (isAppTransactionOptions(options)) {
-    console.log('transaction route');
-    return relationalTransactionRoute(options);
-  } else {
-    console.log('data route');
-    return relationalDataRoute(options);
-  }
-}
-
-export function relationalTransactionRoute(options: AppTransactionOptions) {
   const router = relationalDataRoute(options);
   const manager = new TransactionContextManager(options);
 
@@ -77,7 +65,7 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
         return;
       }
 
-      const transaction = manager.create(tid);
+      const transaction = manager.create(req.app.adapter, tid);
       await transaction.started;
       res.setHeader('X-Transaction', tid);
       res.status(200).send();
@@ -111,7 +99,7 @@ export function relationalTransactionRoute(options: AppTransactionOptions) {
   return router;
 }
 
-export function validateSqlRules(options: AppDataOptions) {
+export function validateSqlRules(options: AppOptions) {
   return (
     req: express.Request,
     res: express.Response,
@@ -120,15 +108,17 @@ export function validateSqlRules(options: AppDataOptions) {
     try {
       let userId: string | undefined;
       let authorized = false;
-      if ((<any>req).user) {
+      if (req.user) {
         authorized = true;
-        if ((<any>req).user.type === 'jwt') {
-          userId = `${(<any>req).user.iss}|${(<any>req).user.sub}`;
-        } else if ((<any>req).user.type === 'token') {
-          userId = (<any>req).user.userId;
-        } else if ((<any>req).user.type === 'custom') {
+        if (req.user.type === 'jwt') {
+          userId = `${req.user.iss}|${req.user.sub}`;
+        } else if (req.user.type === 'token') {
+          userId = req.user.userId;
+        } else if (req.user.type === 'custom') {
           // TODO
-        } //TODO failNever and typing
+        } else {
+          failNever(req.user, 'unknown user type');
+        }
       }
 
       const result = validateRules(req.body.sql, options.rules, {
@@ -156,12 +146,12 @@ export function validateSqlRules(options: AppDataOptions) {
   };
 }
 
-export function relationalDataRoute(options: AppDataOptions) {
+export function relationalDataRoute(options: AppOptions) {
   const router = express.Router();
 
   router.post('/exec', validateSqlRules(options), async (req, res, next) => {
     try {
-      const context = new ContextManager(options.dataAdapter);
+      const context = new ContextManager(req.app.adapter);
       const result = await context.exec(req.body.sql);
       res.status(200).json(result);
     } catch (e) {

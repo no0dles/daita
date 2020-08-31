@@ -48,11 +48,12 @@ export async function serve(opts: {
   }
 
   const app = createHttpServer({
-    dataAdapter,
     authorization,
     rules,
     cors: true,
   });
+  app.adapter = dataAdapter;
+  app.client = getClient(dataAdapter);
 
   const port = opts.port || 8765;
   const server = app.listen(port, () => {

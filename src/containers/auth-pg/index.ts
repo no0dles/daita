@@ -1,9 +1,16 @@
 import { getMigrationContext } from '../../packages/orm/context';
-import { adapter, client } from '../../packages/auth/client';
 import * as schema from '../../packages/auth/schema';
-import * as app from '../../packages/auth/app';
-import * as adminApp from '../../packages/auth/admin-app';
+import { app } from '../../packages/auth/app';
+import { adminApp } from '../../packages/auth/admin-app';
+import * as pg from '../../packages/pg-adapter';
+import { getClient } from '../../packages/relational/client';
+import { seedAuthDefaults } from './client';
 
+const adapter = new pg.PostgresAdapter(
+  process.env.DATABASE_URL ||
+    'postgres://postgres:postgres@localhost:5432/auth',
+);
+const client = getClient(adapter);
 const context = getMigrationContext(client, schema);
 
 context
@@ -14,6 +21,15 @@ context
   .catch((err) => {
     console.log(err, 'failed');
   });
+
+seedAuthDefaults(client).catch((err) => {
+  console.log(err, 'failed');
+});
+
+app.adapter = adapter;
+app.client = client;
+adminApp.adapter = adapter;
+adminApp.client = client;
 
 const appServer = app.listen(4000, () => console.log(`running web at :4000`));
 const adminServer = adminApp.listen(5000, () =>

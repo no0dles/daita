@@ -2,7 +2,6 @@ import * as express from 'express';
 import { UserPool } from '../models/user-pool';
 import { User } from '../models/user';
 import { UserEmailVerify } from '../models/user-email-verify';
-import { client } from '../client';
 import { hashPassword } from '../modules/hash';
 import { getRandomCode } from '../modules/random';
 import { getLeakedCount } from '../modules/password';
@@ -12,7 +11,7 @@ const router = express.Router({ mergeParams: true });
 
 router.post('/', async (req, res, next) => {
   try {
-    const userPool = await client.selectFirst({
+    const userPool = await req.app.client.selectFirst({
       select: {
         passwordRegex: field(UserPool, 'passwordRegex'),
         checkPasswordForBreach: field(UserPool, 'checkPasswordForBreach'),
@@ -52,7 +51,7 @@ router.post('/', async (req, res, next) => {
 
     const hash = await hashPassword(req.body.password);
     const emailVerifyCode = await getRandomCode();
-    await client.transaction(async (trx) => {
+    await req.app.client.transaction(async (trx) => {
       await trx.insert({
         insert: {
           userPoolId: req.params.userPoolId,

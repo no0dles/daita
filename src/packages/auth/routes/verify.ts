@@ -1,5 +1,4 @@
 import * as express from 'express';
-import { client } from '../client';
 import { UserEmailVerify } from '../models/user-email-verify';
 import { User } from '../models/user';
 import { UserPool } from '../models/user-pool';
@@ -16,7 +15,7 @@ const router = express.Router({ mergeParams: true });
 
 router.get('/', async (req, res, next) => {
   try {
-    const verify = await client.selectFirst({
+    const verify = await req.app.client.selectFirst({
       select: {
         username: field(UserEmailVerify, 'userUsername'),
         issuedAt: field(UserEmailVerify, 'issuedAt'),
@@ -44,7 +43,7 @@ router.get('/', async (req, res, next) => {
       return res.status(400).json({ message: 'invalid code' });
     }
 
-    await client.transaction(async (trx) => {
+    await req.app.client.transaction(async (trx) => {
       await trx.update({
         update: table(UserEmailVerify),
         set: {

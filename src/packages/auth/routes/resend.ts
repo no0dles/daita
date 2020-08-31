@@ -1,5 +1,4 @@
 import * as express from 'express';
-import { client } from '../client';
 import { User } from '../models/user';
 import { UserEmailVerify } from '../models/user-email-verify';
 import { getRandomCode } from '../modules/random';
@@ -11,7 +10,7 @@ const router = express.Router({ mergeParams: true });
 router.use(authMiddleware);
 router.post('/', async (req, res, next) => {
   try {
-    const user = await client.selectFirst({
+    const user = await req.app.client.selectFirst({
       select: {
         username: field(User, 'username'),
         email: field(User, 'email'),
@@ -19,7 +18,7 @@ router.post('/', async (req, res, next) => {
       },
       from: table(User),
       where: and(
-        equal(field(User, 'username'), (<any>req).token.sub),
+        equal(field(User, 'username'), req?.token?.sub || ''),
         equal(field(User, 'userPoolId'), req.params.userPoolId),
       ),
     });
@@ -36,7 +35,7 @@ router.post('/', async (req, res, next) => {
       return res.status(400).json({ message: 'email already verified' });
     }
 
-    await client.insert({
+    await req.app.client.insert({
       into: table(UserEmailVerify),
       insert: {
         issuedAt: new Date(),

@@ -16,6 +16,7 @@ module.exports = {
     '!src/**/tests/**',
     '!src/docs/**',
     '!src/frontends/**',
+    '!src/experimental/**',
     '!src/**/*.test.ts',
     '!src/**/*.spec.ts',
   ],

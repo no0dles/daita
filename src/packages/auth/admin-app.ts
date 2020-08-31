@@ -3,37 +3,38 @@ import * as path from 'path';
 import * as bodyParser from 'body-parser';
 import * as refreshRoute from './routes/refresh';
 import * as loginRoute from './routes/login';
-import { adapter } from './client';
 import { authMiddleware } from './middlewares/auth-middleware';
 import * as helmet from 'helmet';
 import { allow, anything, authorized } from '../relational/permission/function';
 import { relationalRoute } from '../http-server';
 
-const app = express();
+export const adminApp = express();
 
-app.use(helmet());
-app.use(bodyParser.json());
+adminApp.use(helmet());
+adminApp.use(bodyParser.json());
 
-app.use('/:userPoolId/refresh', refreshRoute);
-app.use('/:userPoolId/login', loginRoute);
+adminApp.use('/:userPoolId/refresh', refreshRoute);
+adminApp.use('/:userPoolId/login', loginRoute);
 
-app.use(
+adminApp.use(
   '/api/relational',
   authMiddleware,
   relationalRoute({
-    dataAdapter: adapter,
     cors: false,
     rules: [allow(authorized(), anything())],
     transactionTimeout: 4000,
   }),
 );
 
-app.get('/', (req, res) => {
+adminApp.get('/', (req, res) => {
   return res.sendFile(path.join(process.cwd(), 'www/dist/web/index.html'));
 });
 
-app.use('/admin', express.static(path.join(process.cwd(), 'www/dist/web')));
-app.get('/admin/*', (req, res, next) => {
+adminApp.use(
+  '/admin',
+  express.static(path.join(process.cwd(), 'www/dist/web')),
+);
+adminApp.get('/admin/*', (req, res, next) => {
   if (req.accepts('html')) {
     return res.sendFile(path.join(process.cwd(), 'www/dist/web/index.html'));
   }
@@ -41,7 +42,7 @@ app.get('/admin/*', (req, res, next) => {
   next();
 });
 
-app.use(
+adminApp.use(
   (
     err: any,
     req: express.Request,
@@ -56,5 +57,3 @@ app.use(
     }
   },
 );
-
-export = app;

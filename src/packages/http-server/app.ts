@@ -61,7 +61,7 @@ export function createHttpServer(options: AppOptions) {
     }, new Map<string, string>());
 
     app.use((req, res, next) => {
-      if ((<any>req).user) {
+      if (req.user) {
         return next();
       }
 
@@ -75,7 +75,7 @@ export function createHttpServer(options: AppOptions) {
       const token = req.headers.authorization.substr('Token '.length);
       const userId = tokenMap.get(token);
       if (userId) {
-        (<any>req).user = {
+        req.user = {
           type: 'token',
           token: token,
           userId: userId,

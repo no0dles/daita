@@ -1,15 +1,28 @@
 import * as supertest from 'supertest';
-import * as app from './app';
-import { client } from './client';
+import { app } from './app';
 import { UserPool } from './models/user-pool';
 import { User } from './models/user';
 import { UserEmailVerify } from './models/user-email-verify';
 import { UserRefreshToken } from './models/user-refresh-token';
 import { UserPoolCors } from './models/user-pool-cors';
 import { all, equal, field, notEqual, table } from '../relational/sql/function';
+import * as pg from '../pg-adapter';
+import { Client, getClient, TransactionClient } from '../relational/client';
 
 describe('app', () => {
+  const connectionString =
+    process.env.DATABASE_URL ||
+    'postgres://postgres:postgres@localhost:5432/auth';
+  let client: TransactionClient<any> & Client<any>;
+
   beforeAll(async () => {
+    await pg.ensureDatabaseExists(connectionString);
+    const adapter = new pg.PostgresAdapter(connectionString);
+    client = getClient(adapter);
+
+    app.client = client;
+    app.adapter = adapter;
+
     await client.delete({
       delete: table(UserPoolCors),
     });

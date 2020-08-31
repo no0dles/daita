@@ -1,5 +1,4 @@
 import * as express from 'express';
-import { client } from '../client';
 import { UserRefreshToken } from '../models/user-refresh-token';
 import { getRandomCode } from '../modules/random';
 import { User } from '../models/user';
@@ -13,7 +12,7 @@ const router = express.Router({ mergeParams: true });
 
 router.post('/', async (req, res, next) => {
   try {
-    const token = await client.selectFirst({
+    const token = await req.app.client.selectFirst({
       select: {
         authorizedAt: field(UserRefreshToken, 'authorizedAt'),
         issuedAt: field(UserRefreshToken, 'issuedAt'),
@@ -49,7 +48,7 @@ router.post('/', async (req, res, next) => {
       token.refreshRefreshExpiresIn;
     const now = Math.floor(new Date().getTime() / 1000);
     if (now > expiresAt) {
-      await client.delete({
+      await req.app.client.delete({
         delete: table(UserRefreshToken),
         where: equal(field(UserRefreshToken, 'token'), req.body.refreshToken),
       });
@@ -58,7 +57,7 @@ router.post('/', async (req, res, next) => {
       });
     }
 
-    const roles = await client.select({
+    const roles = await req.app.client.select({
       select: field(Role, 'name'),
       from: table(Role),
       join: [
@@ -80,7 +79,7 @@ router.post('/', async (req, res, next) => {
       },
     );
 
-    await client.transaction(async (trx) => {
+    await req.app.client.transaction(async (trx) => {
       await trx.delete({
         delete: table(UserRefreshToken),
         where: equal(field(UserRefreshToken, 'token'), req.body.refreshToken),

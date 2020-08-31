@@ -10,7 +10,7 @@ import * as wellKnownRoute from './routes/well-known';
 import * as helmet from 'helmet';
 import { cors } from './middlewares/cors';
 
-const app = express();
+export const app = express();
 
 app.use(helmet());
 app.use(bodyParser.json());
@@ -58,5 +58,3 @@ app.use(
     }
   },
 );
-
-export = app;

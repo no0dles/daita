@@ -3,6 +3,7 @@ import { parseRules, Rule } from '../../packages/relational/permission';
 import { AppAuthorization } from '../../packages/http-server-common';
 import { createHttpServer } from '../../packages/http-server';
 import { RelationalTransactionAdapterFactory } from '../../packages/relational/adapter/factory';
+import { getClient } from '../../packages/relational/client';
 
 const DATABASE_URL = process.env.DATABASE_URL;
 const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT
@@ -65,10 +66,12 @@ export async function run(factory: RelationalTransactionAdapterFactory) {
   });
   const app = createHttpServer({
     transactionTimeout: TRANSACTION_TIMEOUT,
-    dataAdapter: adapter,
     authorization: authentication,
     rules,
   });
+
+  app.adapter = adapter;
+  app.client = getClient(adapter);
 
   const server = app.listen(PORT, async () => {
     console.log(`listening ${PORT}`);

@@ -1,6 +1,9 @@
-import { AppTransactionOptions } from './app-options';
 import { TransactionManager } from './transaction-manager';
-import { RelationalDataAdapter } from '../relational/adapter';
+import {
+  RelationalDataAdapter,
+  RelationalTransactionAdapter,
+} from '../relational/adapter';
+import { AppOptions } from './app-options';
 
 export class ContextManager {
   constructor(private dataAdapter: RelationalDataAdapter) {}
@@ -18,7 +21,7 @@ export class TransactionContextManager {
   private readonly transactionTimeout: number;
   private readonly transactions: { [key: string]: TransactionManager } = {};
 
-  constructor(private options: AppTransactionOptions) {
+  constructor(private options: AppOptions) {
     this.transactionTimeout = options.transactionTimeout || 5000;
   }
 
@@ -28,12 +31,12 @@ export class TransactionContextManager {
     }
   }
 
-  create(transactionId: string) {
+  create(adapter: RelationalTransactionAdapter, transactionId: string) {
     if (this.transactions[transactionId]) {
       throw new Error('transaction already exists');
     }
     const transaction = new TransactionManager(
-      this.options.dataAdapter,
+      adapter,
       this.transactionTimeout,
     );
     this.transactions[transactionId] = transaction;

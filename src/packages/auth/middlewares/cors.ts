@@ -1,5 +1,4 @@
 import * as express from 'express';
-import { client } from '../client';
 import { UserPoolCors } from '../models/user-pool-cors';
 import * as cors2 from 'cors';
 import { equal, field, table } from '../../relational/sql/function';
@@ -16,7 +15,7 @@ export function cors(
         });
       }
 
-      const urls = await client.select({
+      const urls = await req.app.client.select({
         select: field(UserPoolCors, 'url'),
         from: table(UserPoolCors),
         where: equal(field(UserPoolCors, 'userPoolId'), userPoolId),
