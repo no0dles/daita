@@ -1,6 +1,6 @@
-export interface TransactionClient<T> {
-  transaction<R>(action: (trx: T) => Promise<R>): Promise<R>;
-}
+import { Client } from './client';
 
-export const isTransactionClient = (val: any): val is TransactionClient<any> =>
-  typeof val.transaction === 'function';
+export interface TransactionClient<T> extends Client<T> {
+  transaction<R>(action: (trx: Client<T>) => Promise<R>): Promise<R>;
+  close(): Promise<void>;
+}

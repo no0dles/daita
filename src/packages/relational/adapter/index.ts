@@ -7,4 +7,4 @@ export {
   RelationalRawResult,
   isRelationalRawResult,
 } from './relational-raw-result';
-export * from './factory';
+export * from './relational-adapter-implementation';

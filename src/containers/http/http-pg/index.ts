@@ -1,7 +1,9 @@
 import { run } from '../server';
-import { adapterFactory } from '../../../packages/pg-adapter';
+import { postgresAdapter } from '../../../packages/pg-adapter/adapter-implementation';
+import { getClient } from '../../../packages/relational/client';
 
-run(adapterFactory).catch((err) => {
+const client = getClient(postgresAdapter);
+run(client).catch((err) => {
   console.error(err);
   process.exit(1);
 });

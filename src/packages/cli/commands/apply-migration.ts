@@ -1,8 +1,7 @@
 import { AstContext } from '../ast/ast-context';
 import { getSchemaInformation, getSchemaLocation } from '../utils/path';
-import { getRelationalDataAdapter } from '../utils/data-adapter';
+import { getClientFromConfig } from '../utils/data-adapter';
 import { getMigrationContext } from '../../orm/context';
-import { getClient } from '../../relational/client';
 
 export async function applyMigration(options: {
   cwd?: string;
@@ -19,13 +18,12 @@ export async function applyMigration(options: {
 
   const migrationTree = schemaInfo.getMigrationTree();
 
-  const dataAdapter = await getRelationalDataAdapter(options);
-  if (!dataAdapter) {
+  const client = await getClientFromConfig(options);
+  if (!client) {
     return;
   }
 
-  const client = getClient(dataAdapter);
   const context = getMigrationContext(client, migrationTree);
   await context.update();
-  await dataAdapter.close();
+  await client.close();
 }

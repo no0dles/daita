@@ -3,7 +3,9 @@
     "context": {
       "default": {
         "module": "../../../packages/pg-adapter",
-        "uri": "postgres://daita:daita@localhost/daita"
+        "moduleOptions": {
+          "connectionString": "postgres://daita:daita@localhost/daita"
+        }
       }
     }
   }

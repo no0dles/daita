@@ -6,7 +6,6 @@ import { AstContext } from '../ast/ast-context';
 import { parseSchemas } from '../migration/parsing/parse-schemas';
 import { SchemaDeclaration } from '../migration/parsing/schema-declaration';
 import {
-  parseSchemaMigrationCalls,
   parseSchemaMigrations,
   parseSchemaMigrationVariables,
 } from '../migration/parsing/parse-schema-migrations';

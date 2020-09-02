@@ -10,4 +10,5 @@ export interface Client<T>
     InsertClient,
     DeleteClient {
   exec(sql: T): Promise<RelationalRawResult>;
+  supportsQuery(sql: any): boolean;
 }

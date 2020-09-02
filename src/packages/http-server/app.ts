@@ -5,9 +5,21 @@ import * as JwksClient from 'jwks-rsa';
 import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import { AppOptions } from '../http-server-common';
+import { TransactionClient } from '../relational/client';
+import { UnauthorizedError } from 'express-jwt';
 
-export function createHttpServer(options: AppOptions) {
+class HttpError extends Error {
+  constructor(public statusCode: number, public responseMessage: string) {
+    super(`http status error: ${statusCode}, ${responseMessage}`);
+  }
+}
+
+export function createHttpServerApp(
+  client: TransactionClient<any>,
+  options: AppOptions,
+) {
   const app = express();
+  app.client = client;
   if (options.cors === true) {
     app.use(cors());
   } else if (typeof options.cors === 'string') {
@@ -38,7 +50,16 @@ export function createHttpServer(options: AppOptions) {
           payload: any,
           done: (err: any, secret?: string | Buffer) => void,
         ) => {
+          if (!payload) {
+            return done(null, undefined);
+          }
           const client = clients[payload.iss];
+          if (!client) {
+            return done(
+              new HttpError(400, `unknown token provider "${payload.iss}"`),
+              undefined,
+            );
+          }
           client.getSigningKey(header.kid, (err, key) => {
             if (err) {
               done(err);
@@ -93,6 +114,14 @@ export function createHttpServer(options: AppOptions) {
       res: express.Response,
       next: express.NextFunction,
     ) => {
+      if (err instanceof UnauthorizedError) {
+        return res.status(err.status).json({ message: err.message });
+      }
+      if (err instanceof HttpError) {
+        return res
+          .status(err.statusCode)
+          .json({ message: err.responseMessage });
+      }
       res.status(500);
       if (process.env.NODE_ENV === 'production') {
         res.json({ message: 'internal error' });

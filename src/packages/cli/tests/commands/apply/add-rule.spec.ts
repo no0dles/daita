@@ -2,33 +2,29 @@ import { schema, userRule, userRuleId } from './add-rule.test';
 import { all, table } from '../../../../relational/sql/function';
 import { getMigrationContext } from '../../../../orm/context';
 import { parseRule } from '../../../../relational/permission';
-import { RelationalTransactionAdapter } from '../../../../relational/adapter';
-import { getClient } from '../../../../relational/client';
-import { adapterFactory } from '../../../../pg-adapter';
+import { getClient, TransactionClient } from '../../../../relational/client';
+import { postgresAdapter } from '../../../../pg-adapter/adapter-implementation';
 
 describe('apply/add-rule', () => {
-  let dataAdapter: RelationalTransactionAdapter;
+  let client: TransactionClient<any>;
 
   beforeAll(async () => {
-    dataAdapter = await adapterFactory.createTransactionAdapter({
+    client = getClient(postgresAdapter, {
       connectionString:
         process.env.DATABASE_URL ||
         'postgres://postgres:postgres@localhost/test-cli',
       createIfNotExists: true,
       dropIfExists: true,
-      database: 'test-cli',
     });
-    const client = getClient(dataAdapter);
     const context = getMigrationContext(client, schema);
     await context.update();
   });
 
   afterAll(async () => {
-    await dataAdapter.close();
+    await client.close();
   });
 
   it('should add rules table', async () => {
-    const client = getClient(dataAdapter);
     const rules = await client.select({
       select: all<any>(),
       from: table('rules', 'daita'),

@@ -24,11 +24,7 @@ import {
 } from '../../relational/sql';
 import { failNever } from '../../common/utils';
 import { RelationDoesNotExistsError } from '../../relational/error';
-import {
-  Client,
-  SelectClient,
-  TransactionClient,
-} from '../../relational/client';
+import { Client, TransactionClient } from '../../relational/client';
 import { parseRule } from '../../relational/permission';
 
 class Migrations {
@@ -84,8 +80,7 @@ export class OrmRuleContext {
 
 export class OrmMigrationContext implements MigrationContext {
   constructor(
-    private client: TransactionClient<Client<MigrationSql> & SelectClient> &
-      SelectClient,
+    private client: TransactionClient<MigrationSql>,
     private migrationTree: MigrationTree,
   ) {}
 
@@ -298,7 +293,7 @@ export class OrmMigrationContext implements MigrationContext {
     return and(...(conditions as any));
   }
 
-  async update(trx?: Client<MigrationSql> & SelectClient): Promise<void> {
+  async update(trx?: Client<MigrationSql>): Promise<void> {
     if (trx) {
       await this.runUpdate(trx);
     } else {
@@ -308,7 +303,7 @@ export class OrmMigrationContext implements MigrationContext {
     }
   }
 
-  private async runUpdate(trx: Client<MigrationSql> & SelectClient) {
+  private async runUpdate(trx: Client<MigrationSql>) {
     const pendingSqls = await this.pendingUpdates();
     for (const sql of pendingSqls) {
       await trx.exec(sql);

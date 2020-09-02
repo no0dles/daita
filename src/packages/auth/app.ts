@@ -9,52 +9,58 @@ import * as resendRoute from './routes/resend';
 import * as wellKnownRoute from './routes/well-known';
 import * as helmet from 'helmet';
 import { cors } from './middlewares/cors';
+import { TransactionClient } from '../relational/client';
 
-export const app = express();
+export function createAuthApp(client: TransactionClient<any>) {
+  const app = express();
+  app.client = client;
 
-app.use(helmet());
-app.use(bodyParser.json());
+  app.use(helmet());
+  app.use(bodyParser.json());
 
-app.use('/:userPoolId/verify', verifyRoute);
-app.use(
-  '/:userPoolId/reset',
-  cors((req) => req.params.userPoolId),
-  resetRoute,
-);
-app.use(
-  '/:userPoolId/register',
-  cors((req) => req.params.userPoolId),
-  registerRoute,
-);
-app.use(
-  '/:userPoolId/refresh',
-  cors((req) => req.params.userPoolId),
-  refreshRoute,
-);
-app.use(
-  '/:userPoolId/resend',
-  cors((req) => req.params.userPoolId),
-  resendRoute,
-);
-app.use(
-  '/:userPoolId/login',
-  cors((req) => req.params.userPoolId),
-  loginRoute,
-);
-app.use('/.well-known', wellKnownRoute);
+  app.use('/:userPoolId/verify', verifyRoute);
+  app.use(
+    '/:userPoolId/reset',
+    cors((req) => req.params.userPoolId),
+    resetRoute,
+  );
+  app.use(
+    '/:userPoolId/register',
+    cors((req) => req.params.userPoolId),
+    registerRoute,
+  );
+  app.use(
+    '/:userPoolId/refresh',
+    cors((req) => req.params.userPoolId),
+    refreshRoute,
+  );
+  app.use(
+    '/:userPoolId/resend',
+    cors((req) => req.params.userPoolId),
+    resendRoute,
+  );
+  app.use(
+    '/:userPoolId/login',
+    cors((req) => req.params.userPoolId),
+    loginRoute,
+  );
+  app.use('/.well-known', wellKnownRoute);
 
-app.use(
-  (
-    err: any,
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    console.log(err);
-    if (process.env.NODE_ENV === 'production') {
-      res.status(500).end();
-    } else {
-      res.status(500).json({ message: err.message });
-    }
-  },
-);
+  app.use(
+    (
+      err: any,
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction,
+    ) => {
+      console.log(err);
+      if (process.env.NODE_ENV === 'production') {
+        res.status(500).end();
+      } else {
+        res.status(500).json({ message: err.message });
+      }
+    },
+  );
+
+  return app;
+}

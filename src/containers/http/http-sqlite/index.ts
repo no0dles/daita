@@ -1,7 +1,9 @@
 import { run } from '../server';
-import { adapterFactory } from '../../../packages/sqlite-adapter';
+import { sqliteAdapter } from '../../../packages/sqlite-adapter/sqlite-adapter-implementation';
+import { getClient } from '../../../packages/relational/client';
 
-run(adapterFactory).catch((err) => {
+const client = getClient(sqliteAdapter);
+run(client).catch((err) => {
   console.error(err);
   process.exit(1);
 });

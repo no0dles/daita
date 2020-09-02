@@ -2,14 +2,6 @@ import * as sqlite from 'sqlite3';
 import { sqliteFormatter } from './sqlite-formatter';
 import { SqliteFormatContext } from './sqlite-format-context';
 import {
-  CreateAdapterOptions,
-  CreateDataAdapterOptions,
-  CreateTransactionAdapterOptions,
-  DestroyAdapterOptions,
-  RelationalDataAdapterFactory,
-  RelationalTransactionAdapterFactory,
-} from '../relational/adapter/factory';
-import {
   RelationalDataAdapter,
   RelationalRawResult,
   RelationalTransactionAdapter,
@@ -176,37 +168,4 @@ export class SqliteRelationalAdapter
       }
     });
   }
-}
-
-export const adapterFactory: RelationalDataAdapterFactory &
-  RelationalTransactionAdapterFactory = {
-  async createTransactionAdapter(
-    options?: CreateTransactionAdapterOptions,
-  ): Promise<RelationalTransactionAdapter> {
-    const fileName = await getFileName(options);
-    return new SqliteRelationalAdapter(fileName);
-  },
-  async createDataAdapter(
-    options?: CreateDataAdapterOptions,
-  ): Promise<RelationalDataAdapter> {
-    const fileName = await getFileName(options);
-    return new SqliteRelationalAdapter(fileName);
-  },
-  async destroy(options?: DestroyAdapterOptions): Promise<void> {},
-  name: '@daita/sqlite-adapter',
-  canCreate(connectionString: string): boolean {
-    return (
-      connectionString === ':memory:' ||
-      connectionString.startsWith('.' || connectionString.startsWith('sqlite:'))
-    );
-  },
-};
-
-function getFileName(options?: CreateAdapterOptions) {
-  const connectionString =
-    options?.connectionString ?? process.env.DATABASE_URL;
-  if (!connectionString) {
-    throw new Error('missing connection string');
-  }
-  return connectionString;
 }

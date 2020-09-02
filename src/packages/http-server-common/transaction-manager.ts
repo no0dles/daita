@@ -4,6 +4,7 @@ import {
   RelationalTransactionAdapter,
 } from '../relational/adapter';
 import { Debouncer, Defer } from '../common/utils';
+import { Client, TransactionClient } from '../relational/client';
 
 export type TransactionResult =
   | 'committed'
@@ -13,7 +14,7 @@ export type TransactionResult =
 
 export class TransactionManager {
   private readonly commitDefer = new Defer<void>();
-  private readonly adapterDefer = new Defer<RelationalDataAdapter>();
+  private readonly adapterDefer = new Defer<Client<any>>();
   private readonly resultDefer = new Defer<TransactionResult>();
   private readonly debouncer: Debouncer;
 
@@ -26,14 +27,14 @@ export class TransactionManager {
   }
 
   constructor(
-    private transactionAdapter: RelationalTransactionAdapter,
+    private client: TransactionClient<any>,
     private transactionTimeout: number,
   ) {
     this.debouncer = new Debouncer(
       () => this.timeout(),
       this.transactionTimeout,
     );
-    this.transactionAdapter
+    this.client
       .transaction(async (adapter) => {
         this.debouncer.start();
         this.adapterDefer.resolve(adapter);
@@ -61,7 +62,7 @@ export class TransactionManager {
     }
   }
 
-  getDataAdapter() {
+  getClient() {
     return this.adapterDefer.promise;
   }
 
@@ -74,8 +75,8 @@ export class TransactionManager {
   }
 
   async exec(sql: any) {
-    const dataAdapter = await this.getDataAdapter();
-    const context = new ContextManager(dataAdapter);
+    const client = await this.getClient();
+    const context = new ContextManager(client);
     return await context.exec(sql);
   }
 

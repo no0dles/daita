@@ -63,7 +63,7 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
         );
       }
       if (e.code === '42P01') {
-        const regex = /(Error:\s)?(\w+\s)?relation "(?<schema>.*?)\.(?<relation>.*?)" does not exist/g;
+        const regex = /(Error:\s)?(\w+\s)?relation "(?<schema>.*?)\.?(?<relation>.*?)" does not exist/g;
         const groups = regex.exec(e.message)?.groups || {};
         throw new RelationDoesNotExistsError(
           e,

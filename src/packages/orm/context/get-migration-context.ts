@@ -13,19 +13,19 @@ export interface MigrationContext {
 
   pendingUpdates(): Promise<MigrationSql[]>;
 
-  update(trx?: Client<MigrationSql> & SelectClient): Promise<void>;
+  update(trx?: Client<MigrationSql>): Promise<void>;
 }
 
 export function getMigrationContext(
-  client: TransactionClient<SelectClient & Client<MigrationSql>> & SelectClient,
+  client: TransactionClient<MigrationSql>,
   schema: OrmRelationalSchema,
 ): MigrationContext;
 export function getMigrationContext(
-  client: TransactionClient<SelectClient & Client<MigrationSql>> & SelectClient,
+  client: TransactionClient<MigrationSql>,
   migrations: MigrationTree,
 ): MigrationContext;
 export function getMigrationContext(
-  client: TransactionClient<SelectClient & Client<MigrationSql>> & SelectClient,
+  client: TransactionClient<MigrationSql>,
   migrationsOrSchema: MigrationTree | OrmRelationalSchema,
 ): MigrationContext {
   if (isMigrationTree(migrationsOrSchema)) {

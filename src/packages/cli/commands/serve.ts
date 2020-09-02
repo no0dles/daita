@@ -1,11 +1,10 @@
 import * as path from 'path';
-import { getRelationalDataAdapter } from '../utils/data-adapter';
+import { getClientFromConfig } from '../utils/data-adapter';
 import { getSchemaInformation, getSchemaLocation } from '../utils/path';
 import { AstContext } from '../ast/ast-context';
 import { getAuthorization } from '../utils/authorization';
-import { createHttpServer } from '../../http-server';
+import { createHttpServerApp } from '../../http-server';
 import { anonymous, anything } from '../../relational/permission/function';
-import { getClient } from '../../relational/client';
 import { Rule } from '../../relational/permission/description';
 import { OrmRuleContext } from '../../orm/context';
 
@@ -20,12 +19,12 @@ export async function serve(opts: {
     process.env.NODE_CONFIG_DIR = path.join(opts.cwd, 'config');
   }
 
-  const dataAdapter = await getRelationalDataAdapter(opts);
-  if (!dataAdapter) {
+  const client = await getClientFromConfig(opts);
+  if (!client) {
     throw new Error('no relational adapter');
   }
 
-  const ruleContext = new OrmRuleContext(getClient(dataAdapter));
+  const ruleContext = new OrmRuleContext(client);
   const rules: Rule[] = await ruleContext.getRules();
   const authorization = getAuthorization(opts);
 
@@ -47,13 +46,11 @@ export async function serve(opts: {
     rules.push(...currentSchema.rules.map((r) => r.rule));
   }
 
-  const app = createHttpServer({
+  const app = createHttpServerApp(client, {
     authorization,
     rules,
     cors: true,
   });
-  app.adapter = dataAdapter;
-  app.client = getClient(dataAdapter);
 
   const port = opts.port || 8765;
   const server = app.listen(port, () => {
@@ -63,6 +60,6 @@ export async function serve(opts: {
   process.on('SIGINT', () => {
     console.log('stopping http server');
     server?.close();
-    dataAdapter?.close();
+    client?.close();
   });
 }

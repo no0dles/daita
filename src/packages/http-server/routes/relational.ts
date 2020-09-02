@@ -6,7 +6,17 @@ import {
   TransactionManager,
 } from '../../http-server-common';
 import { validateRules } from '../../relational/permission';
-import { failNever } from '../../common/utils';
+
+export const validateExecBody = (
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) => {
+  if (!req.body || !req.body.sql) {
+    return res.json({ message: 'missing sql in body' }).status(400);
+  }
+  return next();
+};
 
 export function relationalRoute(options: AppOptions) {
   const router = relationalDataRoute(options);
@@ -45,6 +55,7 @@ export function relationalRoute(options: AppOptions) {
 
   router.post(
     '/trx/:tid/exec',
+    validateExecBody,
     validateSqlRules(options),
     async (req, res, next) => {
       try {
@@ -65,7 +76,7 @@ export function relationalRoute(options: AppOptions) {
         return;
       }
 
-      const transaction = manager.create(req.app.adapter, tid);
+      const transaction = manager.create(req.app.client, tid);
       await transaction.started;
       res.setHeader('X-Transaction', tid);
       res.status(200).send();
@@ -110,14 +121,12 @@ export function validateSqlRules(options: AppOptions) {
       let authorized = false;
       if (req.user) {
         authorized = true;
-        if (req.user.type === 'jwt') {
-          userId = `${req.user.iss}|${req.user.sub}`;
-        } else if (req.user.type === 'token') {
+        if ('type' in req.user && req.user.type === 'token') {
           userId = req.user.userId;
-        } else if (req.user.type === 'custom') {
-          // TODO
+        } else if ('iss' in req.user && 'sub' in req.user) {
+          userId = `${req.user.iss}|${req.user.sub}`;
         } else {
-          failNever(req.user, 'unknown user type');
+          return res.status(400).json({ message: 'invalid token' });
         }
       }
 
@@ -149,15 +158,20 @@ export function validateSqlRules(options: AppOptions) {
 export function relationalDataRoute(options: AppOptions) {
   const router = express.Router();
 
-  router.post('/exec', validateSqlRules(options), async (req, res, next) => {
-    try {
-      const context = new ContextManager(req.app.adapter);
-      const result = await context.exec(req.body.sql);
-      res.status(200).json(result);
-    } catch (e) {
-      next(e);
-    }
-  });
+  router.post(
+    '/exec',
+    validateExecBody,
+    validateSqlRules(options),
+    async (req, res, next) => {
+      try {
+        const context = new ContextManager(req.app.client);
+        const result = await context.exec(req.body.sql);
+        res.status(200).json(result);
+      } catch (e) {
+        next(e);
+      }
+    },
+  );
 
   return router;
 }

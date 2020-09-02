@@ -16,4 +16,8 @@ export class RelationalTransactionClient
       return action(new RelationalClient(adapter));
     });
   }
+
+  async close() {
+    await this.transactionAdapter.close();
+  }
 }

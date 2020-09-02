@@ -1,2 +1,2 @@
-export { createHttpServer } from './app';
+export { createHttpServerApp } from './app';
 export { relationalRoute, relationalDataRoute } from './routes/relational';

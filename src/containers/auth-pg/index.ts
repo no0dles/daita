@@ -1,20 +1,18 @@
-import { getMigrationContext } from '../../packages/orm/context';
-import * as schema from '../../packages/auth/schema';
-import { app } from '../../packages/auth/app';
-import { adminApp } from '../../packages/auth/admin-app';
-import * as pg from '../../packages/pg-adapter';
+import { createAuthApp } from '../../packages/auth/app';
+import { createAuthAdminApp } from '../../packages/auth/admin-app';
 import { getClient } from '../../packages/relational/client';
 import { seedAuthDefaults } from './client';
+import { postgresAdapter } from '../../packages/pg-adapter/adapter-implementation';
+import { migrate } from '../../packages/orm/migration/migrate';
+import { authSchema } from '../../packages/auth/schema';
 
-const adapter = new pg.PostgresAdapter(
-  process.env.DATABASE_URL ||
+const client = getClient(postgresAdapter, {
+  connectionString:
+    process.env.DATABASE_URL ||
     'postgres://postgres:postgres@localhost:5432/auth',
-);
-const client = getClient(adapter);
-const context = getMigrationContext(client, schema);
+});
 
-context
-  .update()
+migrate(client, authSchema)
   .then(() => {
     console.log('migrated');
   })
@@ -26,10 +24,8 @@ seedAuthDefaults(client).catch((err) => {
   console.log(err, 'failed');
 });
 
-app.adapter = adapter;
-app.client = client;
-adminApp.adapter = adapter;
-adminApp.client = client;
+const app = createAuthApp(client);
+const adminApp = createAuthAdminApp(client);
 
 const appServer = app.listen(4000, () => console.log(`running web at :4000`));
 const adminServer = adminApp.listen(5000, () =>
@@ -46,8 +42,8 @@ process
   });
 
 process.on('SIGTERM', () => {
-  if (adapter) {
-    adapter.close();
+  if (client) {
+    client.close();
   }
   if (appServer) {
     appServer.close();

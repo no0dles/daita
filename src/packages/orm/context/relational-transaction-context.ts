@@ -8,7 +8,7 @@ export class RelationalTransactionContext
   extends RelationalContext
   implements TransactionContext<any> {
   constructor(
-    private transactionAdapter: RelationalTransactionAdapter,
+    private transactionAdapter: RelationalTransactionAdapter<any>,
     schema: OrmRelationalSchema,
   ) {
     super(transactionAdapter, schema);

@@ -13,20 +13,18 @@ import { FourthMigration } from './migrations/202060173136-fourth';
 import { FifthMigration } from './migrations/20206684348-fifth';
 import { RelationalSchema } from '../orm/schema';
 
-const schema = new RelationalSchema();
+export const authSchema = new RelationalSchema();
 
-schema.table(User, { key: 'username' });
-schema.table(UserPool);
-schema.table(Role, { key: 'name' });
-schema.table(UserRole, { key: ['userUsername', 'roleName'] });
-schema.table(UserReset, { key: 'code' });
-schema.table(UserEmailVerify, { key: 'code' });
-schema.table(UserPoolCors);
-schema.table(UserRefreshToken, { key: ['token'] });
-schema.migration(InitMigration);
-schema.migration(SecondMigration);
-schema.migration(ThirdMigration);
-schema.migration(FourthMigration);
-schema.migration(FifthMigration);
-
-export = schema;
+authSchema.table(User, { key: 'username' });
+authSchema.table(UserPool);
+authSchema.table(Role, { key: 'name' });
+authSchema.table(UserRole, { key: ['userUsername', 'roleName'] });
+authSchema.table(UserReset, { key: 'code' });
+authSchema.table(UserEmailVerify, { key: 'code' });
+authSchema.table(UserPoolCors);
+authSchema.table(UserRefreshToken, { key: ['token'] });
+authSchema.migration(InitMigration);
+authSchema.migration(SecondMigration);
+authSchema.migration(ThirdMigration);
+authSchema.migration(FourthMigration);
+authSchema.migration(FifthMigration);

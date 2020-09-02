@@ -117,4 +117,8 @@ export class RelationalClient
       return rows.map((row) => row[Object.keys(row)[0]]);
     }
   }
+
+  supportsQuery(sql: any): boolean {
+    return this.dataAdapter.supportsQuery(sql);
+  }
 }

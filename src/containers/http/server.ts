@@ -1,11 +1,9 @@
 import * as fs from 'fs';
 import { parseRules, Rule } from '../../packages/relational/permission';
 import { AppAuthorization } from '../../packages/http-server-common';
-import { createHttpServer } from '../../packages/http-server';
-import { RelationalTransactionAdapterFactory } from '../../packages/relational/adapter/factory';
-import { getClient } from '../../packages/relational/client';
+import { createHttpServerApp } from '../../packages/http-server';
+import { TransactionClient } from '../../packages/relational/client';
 
-const DATABASE_URL = process.env.DATABASE_URL;
 const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT
   ? parseInt(process.env.TRANSACTION_TIMEOUT)
   : 4000;
@@ -13,7 +11,6 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const RULE_FILE = process.env.RULE_FILE || 'rules.json';
 const AUTH_FILE = process.env.AUTH_FILE || 'auth.json';
 
-console.log(`DATABASE_URL=${DATABASE_URL}`);
 console.log(`TRANSACTION_TIMEOUT=${TRANSACTION_TIMEOUT}`);
 console.log(`PORT=${PORT}`);
 
@@ -60,26 +57,20 @@ process
     process.exit(1);
   });
 
-export async function run(factory: RelationalTransactionAdapterFactory) {
-  const adapter = await factory.createTransactionAdapter({
-    connectionString: DATABASE_URL,
-  });
-  const app = createHttpServer({
+export async function run(client: TransactionClient<any>) {
+  const app = createHttpServerApp(client, {
     transactionTimeout: TRANSACTION_TIMEOUT,
     authorization: authentication,
     rules,
   });
-
-  app.adapter = adapter;
-  app.client = getClient(adapter);
 
   const server = app.listen(PORT, async () => {
     console.log(`listening ${PORT}`);
   });
 
   process.on('SIGTERM', () => {
-    if (adapter) {
-      adapter.close();
+    if (client) {
+      client.close();
     }
     if (server) {
       server.close();

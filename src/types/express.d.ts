@@ -1,11 +1,9 @@
-import { RelationalTransactionAdapter } from '../packages/relational/adapter';
-import { Client, TransactionClient } from '../packages/relational/client';
+import { TransactionClient } from '../packages/relational/client';
 
 declare global {
   namespace Express {
     export interface Application {
-      adapter: RelationalTransactionAdapter;
-      client: TransactionClient<any> & Client<any>;
+      client: TransactionClient<any>;
     }
 
     export interface Request {
@@ -16,12 +14,8 @@ declare global {
             token: string;
           }
         | {
-            type: 'jwt';
             sub: string;
             iss: string;
-          }
-        | {
-            type: 'custom';
           };
       token?: { sub: string; issuer: string };
     }
