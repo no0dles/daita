@@ -43,7 +43,7 @@ export async function addMigration(
 
   const existing = migrationTree.get(name);
   if (existing) {
-    throw new Error('name already taken');
+    throw new Error(`migration name "${name}" is already taken`);
   }
 
   const sourceFile = writeMigration(
@@ -61,6 +61,10 @@ export async function addMigration(
   const migrationFilePath = `${
     schemaLocation.migrationDirectory
   }/${date.getFullYear()}${date.getMonth()}${date.getDay()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}-${name}.ts`;
+
+  if (fs.existsSync(migrationFilePath)) {
+    throw new Error(`migration "${migrationFilePath}" file already exists`);
+  }
 
   fs.writeFileSync(migrationFilePath, sourceFile);
 
