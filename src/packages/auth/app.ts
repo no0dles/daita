@@ -8,8 +8,8 @@ import * as loginRoute from './routes/login';
 import * as resendRoute from './routes/resend';
 import * as wellKnownRoute from './routes/well-known';
 import * as helmet from 'helmet';
-import { cors } from './middlewares/cors';
 import { TransactionClient } from '../relational/client';
+import { cors } from './middlewares/cors';
 
 export function createAuthApp(client: TransactionClient<any>) {
   const app = express();

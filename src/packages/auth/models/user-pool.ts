@@ -14,4 +14,4 @@ export class UserPool {
   checkPasswordForBreach?: boolean;
 }
 
-export type UserPoolAlgorithm = 'RS384' | 'RS512' | 'ES384' | 'ES512';
+export type UserPoolAlgorithm = 'RS256' | 'RS384' | 'RS512' | 'ES384' | 'ES512';

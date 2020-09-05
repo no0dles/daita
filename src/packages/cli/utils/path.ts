@@ -51,7 +51,7 @@ export async function getSchemaLocation(opts: {
       return resolveSchemaLocation(
         fileName,
         sourceDirectory,
-        migrationDirectory,
+        path.join(path.dirname(fileName), 'migrations'),
       );
     }
     console.warn(`schema not found at ${fileName}`);

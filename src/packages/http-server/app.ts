@@ -37,6 +37,7 @@ export function createHttpServerApp(
   ) {
     const clients: { [key: string]: JwksClient.JwksClient } = {};
     for (const provider of options.authorization.providers) {
+      console.log('registered ' + provider.issuer + ' at ' + provider.uri);
       clients[provider.issuer] = JwksClient({
         jwksUri: provider.uri,
       });

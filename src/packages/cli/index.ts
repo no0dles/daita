@@ -9,6 +9,15 @@ import { diagram } from './commands/diagram';
 import { serve } from './commands/serve';
 import { generateRule } from './commands/generate-rule';
 import { upgrade } from './commands/upgrade';
+import { init } from './commands/init';
+
+program
+  .command('init')
+  .description('init configurations')
+  .option('--cwd <string>', 'working directory')
+  .action(async (opts) => {
+    await init(opts);
+  });
 
 program
   .command('migration:undo')
@@ -81,6 +90,7 @@ program
   )
   .option('-c, --context <string>', 'config context name')
   .option('--cwd <string>', 'working directory')
+  .option('--schema <string>', 'relational schema')
   .option('--disable-auth', 'disable authorization and rules', false)
   .action(async (opts) => {
     await serve(opts);

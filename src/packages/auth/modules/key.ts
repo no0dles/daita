@@ -30,6 +30,7 @@ export function getKeyAlgorithm(algorithm: UserPoolAlgorithm) {
     case 'ES384':
     case 'ES512':
       return 'EC';
+    case 'RS256':
     case 'RS384':
     case 'RS512':
       return 'RSA';
@@ -46,7 +47,19 @@ export async function getKey(algorithm: UserPoolAlgorithm) {
     return { id: key.kid, secret: key.toPEM(true) };
   }
 
-  if (algorithm === 'RS384') {
+  if (algorithm === 'RS256') {
+    const rsaKey = crypto.generateKeyPairSync('rsa', { modulusLength: 2048 });
+    const rsaKeyPem = rsaKey.privateKey.export({
+      type: 'pkcs8',
+      format: 'pem',
+    });
+    key = jose.JWK.asKey({
+      key: rsaKeyPem,
+      format: 'pem',
+      type: 'pkcs8',
+    });
+    keystore.add(key);
+  } else if (algorithm === 'RS384') {
     const rsaKey = crypto.generateKeyPairSync('rsa', { modulusLength: 3072 });
     const rsaKeyPem = rsaKey.privateKey.export({
       type: 'pkcs8',

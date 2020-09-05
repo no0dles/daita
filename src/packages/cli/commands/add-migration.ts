@@ -58,9 +58,14 @@ export async function addMigration(
   }
 
   const migrationName = getMigrationName(name);
+  const padLeft = (val: number) => val.toString().padStart(2, '0');
   const migrationFilePath = `${
     schemaLocation.migrationDirectory
-  }/${date.getFullYear()}${date.getMonth()}${date.getDay()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}-${name}.ts`;
+  }/${date.getFullYear()}-${padLeft(date.getMonth())}-${padLeft(
+    date.getDay(),
+  )}-${date.getHours()}${padLeft(date.getMinutes())}${padLeft(
+    date.getSeconds(),
+  )}-${name}.ts`;
 
   if (fs.existsSync(migrationFilePath)) {
     throw new Error(`migration "${migrationFilePath}" file already exists`);

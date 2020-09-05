@@ -62,6 +62,7 @@ export async function run(client: TransactionClient<any>) {
     transactionTimeout: TRANSACTION_TIMEOUT,
     authorization: authentication,
     rules,
+    cors: true, //TODO make it configurable
   });
 
   const server = app.listen(PORT, async () => {

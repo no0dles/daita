@@ -119,7 +119,6 @@ export async function create() {
   fs.mkdirSync(path.join(projectDir, 'src'));
   fs.mkdirSync(path.join(projectDir, 'src/models'));
   fs.mkdirSync(path.join(projectDir, 'src/migrations'));
-  fs.mkdirSync(path.join(projectDir, 'config'));
 
   fs.writeFileSync(path.join(projectDir, 'src/index.ts'), '');
   fs.writeFileSync(

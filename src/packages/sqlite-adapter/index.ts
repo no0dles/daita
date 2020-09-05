@@ -7,6 +7,7 @@ import {
   RelationalTransactionAdapter,
 } from '../relational/adapter';
 import { Defer } from '../common/utils';
+import { sqliteAdapter } from './sqlite-adapter-implementation';
 
 export interface SerializableAction<T> {
   (): Promise<T> | T;
@@ -169,3 +170,4 @@ export class SqliteRelationalAdapter
     });
   }
 }
+export const adapter = sqliteAdapter;

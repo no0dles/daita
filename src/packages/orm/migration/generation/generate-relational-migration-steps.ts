@@ -129,10 +129,6 @@ export function generateRelationalMigrationSteps(
     steps.push({ kind: 'add_rule', rule: rule.rule, ruleId: rule.id });
   }
 
-  for (const rule of mergedRules.merge) {
-    throw new Error('there is a rule conflict, duplicate id');
-  }
-
   for (const rule of mergedRules.removed) {
     steps.push({ kind: 'drop_rule', ruleId: rule.id });
   }

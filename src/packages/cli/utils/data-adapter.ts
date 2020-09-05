@@ -4,7 +4,7 @@ import { getClient, TransactionClient } from '../../relational/client';
 
 export interface DaitaContextConfig {
   module: string;
-  moduleOptions?: string;
+  moduleOptions?: any;
   authorization?: AppAuthorization;
 }
 

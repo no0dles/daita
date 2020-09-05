@@ -1,7 +1,13 @@
 import { Rule } from '../../../relational/permission/description';
 
 export function getRuleId(rule: Rule): string {
-  const content = JSON.stringify(rule);
+  const content = JSON.stringify(rule, (key, value) => {
+    if (value instanceof RegExp) {
+      return value.toString();
+    } else {
+      return value;
+    }
+  });
   let a = 1,
     c = 0,
     h,
