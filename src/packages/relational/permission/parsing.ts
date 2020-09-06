@@ -1,6 +1,22 @@
 import { Rule } from './description';
 import { allow, forbid, reviveRequestContext } from './function';
 
+export function serializeRules(rules: Rule[]): string {
+  return JSON.stringify(rules, replacer);
+}
+
+export function serializeRule(rule: Rule): string {
+  return JSON.stringify(rule, replacer);
+}
+
+const replacer = (key: string, value: any) => {
+  if (value instanceof RegExp) {
+    return { $regex: value.toString() };
+  } else {
+    return value;
+  }
+};
+
 export function parseRules(content: string): Rule[] {
   const rules = reviveRuleJson<Rule[]>(content);
   const result: Rule[] = [];
@@ -32,6 +48,10 @@ function reviveRuleJson<T>(content: string): T {
     } else if (typeof value === 'object') {
       if (value['$requestContext']) {
         return value['$requestContext'];
+      } else if (value['$regex']) {
+        return new RegExp(
+          value['$regex'].substr(1, value['$regex'].length - 2),
+        );
       }
     }
     return value;

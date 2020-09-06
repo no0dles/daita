@@ -7,6 +7,7 @@ RUN npm install
 
 COPY tsconfig.json .
 COPY src/types src/types
+COPY src/testing src/testing
 COPY src/containers src/containers
 COPY src/packages src/packages
 RUN npm run build

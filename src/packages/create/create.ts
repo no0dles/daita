@@ -123,7 +123,7 @@ export async function create() {
   fs.writeFileSync(path.join(projectDir, 'src/index.ts'), '');
   fs.writeFileSync(
     path.join(projectDir, 'config/default.json'),
-    JSON.stringify(defaultConfig, null, 2),
+    JSON.stringify(defaultConfig, null, 2), //TODO remove, use new config
   );
   fs.writeFileSync(
     path.join(projectDir, 'tsconfig.json'),

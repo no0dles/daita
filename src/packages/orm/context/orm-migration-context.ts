@@ -25,7 +25,7 @@ import {
 import { failNever } from '../../common/utils';
 import { RelationDoesNotExistsError } from '../../relational/error';
 import { Client, TransactionClient } from '../../relational/client';
-import { parseRule } from '../../relational/permission';
+import { parseRule, serializeRule } from '../../relational/permission';
 
 class Migrations {
   static schema = 'daita';
@@ -223,7 +223,7 @@ export class OrmMigrationContext implements MigrationContext {
           } else if (step.kind === 'add_rule') {
             sqls.push({
               into: table(Rules),
-              insert: { id: step.ruleId, rule: JSON.stringify(step.rule) },
+              insert: { id: step.ruleId, rule: serializeRule(step.rule) },
             });
           } else if (step.kind === 'drop_rule') {
             sqls.push({

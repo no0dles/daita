@@ -118,7 +118,7 @@ export function generateRelationalTableMigrationSteps(
   for (const mergedSeed of mergedSeeds.merge) {
     if (
       JSON.stringify(mergedSeed.current.seed) ===
-      JSON.stringify(mergedSeed.target.seed)
+      JSON.stringify(mergedSeed.target.seed) //TODO does not work for regex
     ) {
       continue;
     }

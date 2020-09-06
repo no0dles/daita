@@ -1,32 +1,33 @@
-import { allow, authorized, requestContext } from './function';
-import { parseRules } from './parsing';
-import { equal } from '../sql/function';
+import { allow, allowRegex, authorized, requestContext } from './function';
+import { parseRules, serializeRules } from './parsing';
+import { and, equal } from '../sql/function';
 import { field } from '../sql/function/field';
 import { table } from '../sql/function/table';
 import { TableDescription } from '../sql/description';
 import { matchesRules } from './validate';
 
 describe('parsing', () => {
-  it('should', () => {
+  it('should serialize request context and regexp', () => {
+    const tbl = table('tbl') as TableDescription<any>;
     const srcRules = [
       allow(authorized(), {
         select: 'test',
-        from: table('tbl'),
-        where: equal(
-          field(table('tbl') as TableDescription<any>, 'foo'),
-          requestContext().userId,
+        from: tbl,
+        where: and(
+          equal(field(tbl, 'foo'), requestContext().userId),
+          equal(field(tbl, 'bar'), allowRegex(/^[a-zA-Z]+$/)),
         ),
       }),
     ];
-    const jsonRules = JSON.stringify(srcRules);
+    const jsonRules = serializeRules(srcRules);
     const dstRules = parseRules(jsonRules);
     const matches = matchesRules(
       {
         select: 'test',
-        from: table('tbl'),
-        where: equal(
-          field(table('tbl') as TableDescription<any>, 'foo'),
-          'foo',
+        from: tbl,
+        where: and(
+          equal(field(tbl, 'foo'), 'foo'),
+          equal(field(tbl, 'bar'), 'abc'),
         ),
       },
       dstRules,

@@ -1,32 +1,18 @@
 import * as fs from 'fs';
-import { parseRules, Rule } from '../../packages/relational/permission';
 import { AppAuthorization } from '../../packages/http-server-common';
 import { createHttpServerApp } from '../../packages/http-server';
 import { TransactionClient } from '../../packages/relational/client';
+import { OrmRuleContext } from '../../packages/orm/context';
+import { Rule } from '../../packages/relational/permission/description';
 
 const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT
   ? parseInt(process.env.TRANSACTION_TIMEOUT)
   : 4000;
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
-const RULE_FILE = process.env.RULE_FILE || 'rules.json';
 const AUTH_FILE = process.env.AUTH_FILE || 'auth.json';
 
 console.log(`TRANSACTION_TIMEOUT=${TRANSACTION_TIMEOUT}`);
 console.log(`PORT=${PORT}`);
-
-const rules: Rule[] = [];
-if (fs.existsSync(RULE_FILE)) {
-  const content = fs.readFileSync(RULE_FILE, { encoding: 'utf8' });
-  try {
-    rules.push(...parseRules(content));
-  } catch (e) {
-    console.error('error parsing rules');
-    console.error(e);
-    process.exit(1);
-  }
-} else {
-  console.log('No rules configured');
-}
 
 const authentication: AppAuthorization = { providers: [], tokens: [] };
 if (fs.existsSync(AUTH_FILE)) {
@@ -58,6 +44,9 @@ process
   });
 
 export async function run(client: TransactionClient<any>) {
+  const ruleContext = new OrmRuleContext(client);
+  const rules: Rule[] = await ruleContext.getRules(); //TODO reload
+
   const app = createHttpServerApp(client, {
     transactionTimeout: TRANSACTION_TIMEOUT,
     authorization: authentication,

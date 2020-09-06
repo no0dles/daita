@@ -55,7 +55,7 @@ export function convertValue(value: AstValue): any {
     return value.regexp;
   } else if (value instanceof AstPropertyAccessExpression) {
     const srcValue = convertValue(value.source);
-    return JSON.parse(JSON.stringify(srcValue[value.name]));
+    return JSON.parse(JSON.stringify(srcValue[value.name])); //TODO check if regexp are a problem
   } else {
     throw new AstError(value.node, 'unable to convert to value');
   }

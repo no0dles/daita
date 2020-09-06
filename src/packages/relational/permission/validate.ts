@@ -7,6 +7,7 @@ import { RuleValidateForbidResult } from './description/rule-validation-forbid-r
 import { isAllowRegex, isRequestContext } from './function';
 import { RuleContext, RuleValidateResult } from './description';
 import { failNever } from '../../common/utils';
+import { getRuleId } from '../../orm/migration/generation';
 
 export function matchesObject(
   ruleContext: RuleContext,
@@ -169,13 +170,13 @@ export function validateRules(
   rules: Rule[],
   ctx: RuleContext,
 ): RuleValidateAllowResult | RuleValidateForbidResult {
-  const details: string[] = [];
+  const details: { message: string; ruleId: string }[] = [];
   for (const rule of rules) {
     const res = evaluateRule(sql, rule, ctx);
     if (res.type === 'allow' || res.type === 'forbid') {
       return res;
     } else if (res.error) {
-      details.push(res.error);
+      details.push({ message: res.error, ruleId: getRuleId(rule) });
     }
   }
   return { type: 'forbid', error: 'no matching rule', details };
