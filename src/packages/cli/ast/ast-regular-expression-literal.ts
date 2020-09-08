@@ -6,6 +6,6 @@ export class AstRegularExpressionLiteral implements AstNode {
   constructor(private block: AstBlock, public node: RegularExpressionLiteral) {}
 
   get regexp() {
-    return new RegExp(this.node.text.slice(1, this.node.text.length - 2));
+    return new RegExp(this.node.text.slice(1, this.node.text.length - 1));
   }
 }

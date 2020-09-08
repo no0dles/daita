@@ -5,7 +5,7 @@ export class User {
   admin!: boolean;
 }
 
-const schema = new RelationalSchema();
+const schema = new RelationalSchema('test');
 schema.table(User);
 schema.seed(User, [
   { id: 'a', admin: false },

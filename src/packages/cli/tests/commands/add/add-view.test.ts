@@ -10,7 +10,7 @@ export class AdminUser {
   id!: string;
 }
 
-const schema = new RelationalSchema();
+const schema = new RelationalSchema('test');
 schema.table(User);
 schema.view(AdminUser, {
   select: { id: field(User, 'id') },

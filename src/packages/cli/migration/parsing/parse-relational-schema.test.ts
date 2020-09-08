@@ -68,7 +68,7 @@ export const userRules = [
   allow(authorized(), { select: all(), from: table(User) }),
 ];
 
-const schema = new RelationalSchema();
+const schema = new RelationalSchema('test');
 schema.table(User, {
   indices: {
     username: {

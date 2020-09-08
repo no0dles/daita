@@ -2,11 +2,13 @@ import { parseSchemaMigration } from './parse-schema-migration';
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { getObjectValue } from '../../ast/utils';
 import { MigrationTree } from '../../../orm/migration';
+import { parseRelationalSchemaName } from './parse-relational-schema';
 
 export function parseSchemaMigrations(
   schemaVariable: AstVariableDeclaration,
 ): MigrationTree {
-  const migrationTree = new MigrationTree();
+  const nameValue = parseRelationalSchemaName(schemaVariable);
+  const migrationTree = new MigrationTree(nameValue);
 
   for (const migrationCall of parseSchemaMigrationCalls(schemaVariable)) {
     const migration = parseSchemaMigration(migrationCall);

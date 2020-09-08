@@ -15,6 +15,20 @@ export function copyReadme(packageDir: string, packageName: string) {
   }
 }
 
+export function createNpmIgnore(packageDir: string) {
+  const target = path.join(packageDir, '.npmignore');
+  fs.writeFileSync(
+    target,
+    [
+      '*.tar',
+      '**/*.spec.js',
+      '**/*.spec.d.ts',
+      '**/*.test.js',
+      '**/*.test.d.ts',
+    ].join('\n') + '\n',
+  );
+}
+
 export function* getNpmPackages() {
   const packagesDir = path.join(__dirname, '../../dist/packages');
 
@@ -53,6 +67,13 @@ export function createPackageJson(
   };
   for (const dep of packages) {
     if (dep.startsWith('@daita/')) {
+      if (
+        !fs.existsSync(
+          path.join(packageDir, '..', dep.substr('@daita/'.length)),
+        )
+      ) {
+        throw new Error(`invalid daita dependency ${dep}`);
+      }
       content.dependencies[dep] = `^${rootPackageJson.version}`;
     } else {
       content.dependencies[dep] = rootPackageJson.dependencies[dep];
@@ -107,7 +128,11 @@ export function updatePaths(
 }
 
 export function updatePath(packages: Set<string>, root: string, file: string) {
-  if (!file.endsWith('.js')) {
+  if (
+    !file.endsWith('.js') ||
+    file.endsWith('.spec.js') ||
+    file.endsWith('.test.js')
+  ) {
     return;
   }
 
@@ -117,7 +142,7 @@ export function updatePath(packages: Set<string>, root: string, file: string) {
     regex,
     (substring: string, importPath: string) => {
       if (importPath.startsWith('.')) {
-        const fullImportPath = path.join(path.dirname(file), importPath);
+        const fullImportPath = path.join(path.dirname(file), importPath); //TODO verify if export exists
         const relativeImportPath = path.relative(root, fullImportPath);
         if (relativeImportPath.startsWith('..')) {
           const packageName = relativeImportPath.split(path.sep)[1];
@@ -141,6 +166,7 @@ export function buildNpmPackages() {
     updatePaths(packages, pkg.path, pkg.path);
     createPackageJson(pkg.path, pkg.name, packages);
     copyReadme(pkg.path, pkg.name);
+    createNpmIgnore(pkg.path);
   }
 }
 

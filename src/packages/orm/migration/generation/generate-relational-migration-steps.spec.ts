@@ -249,7 +249,7 @@ interface ExpectedSchema {
 }
 
 function createSchema(schema: ExpectedSchema) {
-  const description = new RelationalSchemaDescription();
+  const description = new RelationalSchemaDescription('test');
   if (schema.tables) {
     for (const tableKey of Object.keys(schema.tables)) {
       const expectedTable = schema.tables[tableKey];

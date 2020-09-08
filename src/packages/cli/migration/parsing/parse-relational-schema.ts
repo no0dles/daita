@@ -4,11 +4,33 @@ import { parseRelationalSchemaTableRules } from './parse-relational-schema-table
 import { parseRelationalSchemaViews } from './parse-relational-schema-views';
 import { parseRelationalSchemaTableSeed } from './parse-relational-schema-table-seed';
 import { RelationalSchemaDescription } from '../../../orm/schema';
+import { AstNewExpression } from '../../ast/ast-new-expression';
+import { AstError } from '../../ast/utils';
+import { convertValue } from './convert-value';
+
+export function parseRelationalSchemaName(
+  schemaVariable: AstVariableDeclaration,
+) {
+  const initializer = schemaVariable.value;
+  if (!initializer || !(initializer instanceof AstNewExpression)) {
+    throw new AstError(
+      initializer?.node ?? schemaVariable.node,
+      'missing initalizer',
+    );
+  }
+
+  const nameArg = initializer.argumentAt(0);
+  if (!nameArg) {
+    throw new AstError(initializer.node, 'missing name argument');
+  }
+  return convertValue(nameArg);
+}
 
 export function parseRelationalSchema(
   schemaVariable: AstVariableDeclaration,
 ): RelationalSchemaDescription {
-  const schema = new RelationalSchemaDescription();
+  const nameValue = parseRelationalSchemaName(schemaVariable);
+  const schema = new RelationalSchemaDescription(nameValue);
 
   parseRelationalSchemaTables(schema, schemaVariable);
   parseRelationalSchemaTableSeed(schema, schemaVariable);

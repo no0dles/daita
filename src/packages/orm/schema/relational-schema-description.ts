@@ -11,10 +11,11 @@ import { failNever } from '../../common/utils';
 import { table } from '../../relational/sql/function';
 
 export function getSchemaDescription(
+  name: string,
   schemaMapper: SchemaMapper,
   paths: MigrationDescription[],
 ): RelationalSchemaDescription {
-  const schema = new RelationalSchemaDescription();
+  const schema = new RelationalSchemaDescription(name);
 
   for (const path of paths) {
     for (const step of path.steps) {

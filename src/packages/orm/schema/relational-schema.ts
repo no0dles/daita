@@ -16,7 +16,7 @@ import { SelectSql } from '../../relational/sql';
 import { Rule } from '../../relational/permission/description';
 
 export class RelationalSchema implements OrmRelationalSchema {
-  private migrationTree = new MigrationTree();
+  private migrationTree = new MigrationTree(this.name);
   private _rules: Rule[] = [];
   private tables: Constructable<any>[] = [];
   private views: { view: Constructable<any>; query: SelectSql<any> }[] = [];
@@ -24,7 +24,7 @@ export class RelationalSchema implements OrmRelationalSchema {
 
   schema: string | null = null;
 
-  constructor(private options?: RelationalSchemaOptions) {
+  constructor(private name: string, private options?: RelationalSchemaOptions) {
     if (options && options.schema) {
       this.schema = options.schema;
     }

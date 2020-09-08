@@ -8,7 +8,7 @@ class User {
   email!: string;
 }
 
-const schema = new RelationalSchema();
+const schema = new RelationalSchema('auth-test');
 
 schema.table(User, { key: ['username'] });
 schema.migration({

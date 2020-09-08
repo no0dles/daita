@@ -14,7 +14,7 @@ export const userRule = allow(authorized(), {
 });
 export const userRuleId = getRuleId(userRule);
 
-export const schema = new RelationalSchema();
+export const schema = new RelationalSchema('test');
 schema.table(User);
 schema.rules([userRule]);
 

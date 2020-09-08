@@ -32,6 +32,17 @@ class Migrations {
   static table = 'migrations';
 
   id!: string;
+  schema!: string;
+}
+
+class MigrationSteps {
+  static schema = 'daita';
+  static table = 'migrationSteps';
+
+  migrationId!: string;
+  migrationSchema!: string;
+  index!: number;
+  step!: string;
 }
 
 class Rules {
@@ -91,12 +102,13 @@ export class OrmMigrationContext implements MigrationContext {
 
   async pendingUpdates(): Promise<MigrationSql[]> {
     const sqls: MigrationSql[] = [];
-    const appliedMigrations: { id: string }[] = [];
+    const appliedMigrations: { id: string; schema: string }[] = [];
 
     try {
       const result = await this.client.select({
         select: {
           id: field(Migrations, 'id'),
+          schema: field(Migrations, 'schema'),
         },
         from: table(Migrations),
       });
@@ -109,7 +121,43 @@ export class OrmMigrationContext implements MigrationContext {
           ifNotExists: true,
           columns: [
             { name: 'id', type: 'string', notNull: true, primaryKey: true },
+            {
+              name: 'schema',
+              type: 'string',
+              notNull: true,
+              primaryKey: true,
+            },
           ],
+        });
+        sqls.push({
+          createTable: table(MigrationSteps),
+          ifNotExists: true,
+          columns: [
+            {
+              name: 'migrationId',
+              type: 'string',
+              notNull: true,
+              primaryKey: true,
+            },
+            {
+              name: 'migrationSchema',
+              type: 'string',
+              notNull: true,
+              primaryKey: true,
+            },
+            { name: 'index', type: 'number', notNull: true, primaryKey: true },
+            { name: 'step', type: 'string', notNull: true, primaryKey: false },
+          ],
+        });
+        sqls.push({
+          alterTable: table(MigrationSteps),
+          add: {
+            foreignKey: ['migrationId', 'migrationSchema'],
+            references: {
+              table: table(Migrations),
+              primaryKeys: ['id', 'schema'],
+            },
+          },
         });
       } else {
         throw e;
@@ -136,9 +184,21 @@ export class OrmMigrationContext implements MigrationContext {
 
       const currentMigration = currentMigrations[0];
 
-      if (!appliedMigrations.some((m) => m.id === currentMigration.id)) {
+      if (
+        !appliedMigrations.some(
+          (m) =>
+            m.id === currentMigration.id &&
+            m.schema === this.migrationTree.name,
+        )
+      ) {
+        sqls.push({
+          insert: { id: currentMigration.id, schema: this.migrationTree.name },
+          into: table(Migrations),
+        });
+
         const createTables: { [key: string]: CreateTableSql } = {};
 
+        let index = 0;
         for (const step of currentMigration.steps) {
           if (step.kind === 'add_table') {
             const tbl = table(step.table, step.schema);
@@ -266,12 +326,17 @@ export class OrmMigrationContext implements MigrationContext {
           } else {
             failNever(step, 'unknown migration step');
           }
-        }
 
-        sqls.push({
-          insert: { id: currentMigration.id },
-          into: table(Migrations),
-        });
+          sqls.push({
+            insert: {
+              migrationId: currentMigration.id,
+              migrationSchema: this.migrationTree.name,
+              step: JSON.stringify(step),
+              index: index++,
+            },
+            into: table(MigrationSteps),
+          });
+        }
       }
 
       currentMigrations = this.migrationTree.next(currentMigration.id);

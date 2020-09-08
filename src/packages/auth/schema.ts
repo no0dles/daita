@@ -13,7 +13,7 @@ import { FourthMigration } from './migrations/202060173136-fourth';
 import { FifthMigration } from './migrations/20206684348-fifth';
 import { RelationalSchema } from '../orm/schema';
 
-export const authSchema = new RelationalSchema();
+export const authSchema = new RelationalSchema('auth');
 
 authSchema.table(User, { key: 'username' });
 authSchema.table(UserPool);

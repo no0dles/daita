@@ -5,7 +5,7 @@ export class User {
   admin!: boolean;
 }
 
-const schema = new RelationalSchema();
+const schema = new RelationalSchema('test');
 schema.table(User);
 schema.migration({
   id: 'first',

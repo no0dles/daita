@@ -7,10 +7,7 @@ import { createAuthApp } from './app';
 import { migrate } from '../orm/migration';
 import { authSchema } from './schema';
 import { clientTest } from '../../testing/client-test';
-import {
-  createDefaultUser,
-  createDefaultUserPool,
-} from '../../testing/auth-test';
+import { createDefaultUserPool } from '../../testing/auth-test';
 
 describe(
   'app',

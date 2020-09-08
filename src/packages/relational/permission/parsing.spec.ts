@@ -1,5 +1,10 @@
 import { allow, allowRegex, authorized, requestContext } from './function';
-import { parseRules, serializeRules } from './parsing';
+import {
+  parseRule,
+  parseRules,
+  serializeRule,
+  serializeRules,
+} from './parsing';
 import { and, equal } from '../sql/function';
 import { field } from '../sql/function/field';
 import { table } from '../sql/function/table';
@@ -34,5 +39,13 @@ describe('parsing', () => {
       { isAuthorized: true, userId: 'foo' },
     );
     expect(matches).toBeTruthy();
+  });
+
+  it('should serialize regexp', () => {
+    const serialized = serializeRule(
+      allow(authorized(), allowRegex(/^[a-z]+$/) as any),
+    );
+    const deserialized = parseRule(serialized);
+    console.log(deserialized);
   });
 });

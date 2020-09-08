@@ -17,7 +17,7 @@ export class MigrationTree {
 
   migrationCount = 0;
 
-  constructor(migrations: MigrationDescription[] = []) {
+  constructor(public name: string, migrations: MigrationDescription[] = []) {
     for (const migration of migrations) {
       this.add(migration);
     }
@@ -98,11 +98,13 @@ export class MigrationTree {
   getSchemaDescription(options: { backwardCompatible: boolean }) {
     if (options.backwardCompatible) {
       return getSchemaDescription(
+        this.name,
         new SchemaMapper(() => new BackwardCompatibleMapper()),
         this.defaultPath(),
       );
     } else {
       return getSchemaDescription(
+        this.name,
         new SchemaMapper(() => new NormalMapper()),
         this.defaultPath(),
       );

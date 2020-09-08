@@ -30,7 +30,9 @@ export function matchesObject(
     if (authSql.allowRegex.regExp.test(ctxSql)) {
       return null;
     } else {
-      return `${path.join('.')} does not match regexp`;
+      return `${path.join('.')} does not match regexp ${
+        authSql.allowRegex.regExp
+      }`;
     }
   } else if (
     typeof authSql === 'string' ||

@@ -4,7 +4,7 @@ import { Role, UserRole } from './models/role';
 import { InitMigration } from './migrations/202016152817-init';
 import { RelationalSchema } from '../../../../../orm/schema';
 
-const schema = new RelationalSchema();
+const schema = new RelationalSchema('auth-test');
 
 schema.table(User, { key: ['username'] });
 schema.table(UserRole, { key: ['roleName', 'userUsername'] });

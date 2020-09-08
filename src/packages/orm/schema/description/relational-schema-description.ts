@@ -19,6 +19,8 @@ export class RelationalSchemaDescription {
   private readonly viewArrayMap = new ArrayMap<RelationalViewDescription>();
   private readonly rulesArrayMap = new ArrayMap<{ id: string; rule: Rule }>();
 
+  constructor(public name: string) {}
+
   table(key: TableDescription<any>): RelationalTableDescription {
     const identifier = getTableDescriptionIdentifier(key);
     const tableDescription = this.tableArrayMap.get(identifier);
