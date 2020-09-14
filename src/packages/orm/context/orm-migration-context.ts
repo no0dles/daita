@@ -361,7 +361,7 @@ export class OrmMigrationContext implements MigrationContext {
     }
 
     if (pendingSqls.length > 0) {
-      const notifySql: PostgresNotifySql = { notify: 'data_migrations' };
+      const notifySql: PostgresNotifySql = { notify: 'daita_migrations' };
       if (trx.supportsQuery(notifySql)) {
         await trx.exec(notifySql);
       }

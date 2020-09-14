@@ -6,9 +6,7 @@ import { OrmRuleContext } from '../../packages/orm/context';
 import { Rule } from '../../packages/relational/permission/description';
 import { getRuleId } from '../../packages/orm/migration/generation';
 
-const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT
-  ? parseInt(process.env.TRANSACTION_TIMEOUT)
-  : 4000;
+const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT ? parseInt(process.env.TRANSACTION_TIMEOUT) : 4000;
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const AUTH_FILE = process.env.AUTH_FILE || 'auth.json';
 
@@ -20,14 +18,9 @@ if (fs.existsSync(AUTH_FILE)) {
   const content = fs.readFileSync(AUTH_FILE, { encoding: 'utf8' });
   try {
     const parsedAuthentication = JSON.parse(content);
-    authentication.tokens =
-      parsedAuthentication && parsedAuthentication.tokens
-        ? parsedAuthentication.tokens
-        : [];
+    authentication.tokens = parsedAuthentication && parsedAuthentication.tokens ? parsedAuthentication.tokens : [];
     authentication.providers =
-      parsedAuthentication && parsedAuthentication.providers
-        ? parsedAuthentication.providers
-        : [];
+      parsedAuthentication && parsedAuthentication.providers ? parsedAuthentication.providers : [];
   } catch (e) {
     console.error('error parsing auth');
     console.error(e);
@@ -44,13 +37,8 @@ process
     process.exit(1);
   });
 
-export async function run(client: TransactionClient<any>) {
-  const ruleContext = new OrmRuleContext(client);
-  const rules: Rule[] = await ruleContext.getRules(); //TODO reload
-
-  console.log(
-    `${rules.length} RULES: ${rules.map((r) => getRuleId(r)).join(', ')}`,
-  );
+export async function run(client: TransactionClient<any>, rules: Rule[]) {
+  console.log(`${rules.length} RULES: ${rules.map((r) => getRuleId(r)).join(', ')}`);
 
   console.log(authentication);
 

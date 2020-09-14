@@ -4,6 +4,7 @@ import { Pool } from 'pg';
 import { dropDatabase, ensureDatabaseExists } from './postgres.util';
 import { failNever, isKind } from '../common/utils';
 import { RelationalAdapterImplementation } from '../relational/adapter/relational-adapter-implementation';
+import { PostgresSql } from './sql/postgres-sql';
 
 export interface PostgresAdapterBaseOptions {
   listenForNotifications?: boolean;
@@ -72,7 +73,7 @@ export type PostgresAdapterOptions = (
 ) &
   PostgresAdapterBaseOptions;
 
-export const postgresAdapter: RelationalAdapterImplementation<any, PostgresAdapterOptions> = {
+export const postgresAdapter: RelationalAdapterImplementation<PostgresSql, PostgresAdapterOptions> = {
   getAdapter(options?: PostgresAdapterOptions): RelationalTransactionAdapter<any> {
     return new PostgresAdapter(
       new Promise((resolve, reject) => {
