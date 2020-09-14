@@ -10,17 +10,13 @@ export function getDockerFiles() {
   return getRecursiveDockerFiles(containersDir);
 }
 
-function* getRecursiveDockerFiles(
-  directory: string,
-): Generator<{ dockerfile: string; path: string }> {
+function* getRecursiveDockerFiles(directory: string): Generator<{ dockerfile: string; path: string }> {
   for (const file of fs.readdirSync(directory, { withFileTypes: true })) {
     if (file.name === 'Dockerfile') {
       const dockerfile = path.join(directory, file.name);
       yield { dockerfile, path: directory };
     } else if (!file.isFile()) {
-      for (const result of getRecursiveDockerFiles(
-        path.join(directory, file.name),
-      )) {
+      for (const result of getRecursiveDockerFiles(path.join(directory, file.name))) {
         yield result;
       }
     }
@@ -44,19 +40,18 @@ export async function pushContainerImages() {
 }
 
 function getImageNames(dockerfile: string): string[] {
+  const version = process.argv[2];
+  if (!version) {
+    throw new Error('missing version argument');
+  }
   const parts = path.dirname(dockerfile).split(path.sep);
-  const imageName =
-    'docker.pkg.github.com/no0dles/daita/' + parts[parts.length - 1];
-  return [imageName, `${imageName}:${rootPackageJson.version}`];
+  const imageName = 'docker.pkg.github.com/no0dles/daita/' + parts[parts.length - 1];
+  return [`${imageName}:${version}`];
 }
 
 async function buildContainerImage(dockerfile: string) {
   for (const imageName of getImageNames(dockerfile)) {
-    await shell(
-      'docker',
-      ['build', '-t', imageName, '-f', dockerfile, '.'],
-      path.join(__dirname, '../..'),
-    );
+    await shell('docker', ['build', '-t', imageName, '-f', dockerfile, '.'], path.join(__dirname, '../..'));
   }
 }
 

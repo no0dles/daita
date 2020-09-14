@@ -26,6 +26,8 @@ import { failNever } from '../../common/utils';
 import { RelationDoesNotExistsError } from '../../relational/error';
 import { Client, TransactionClient } from '../../relational/client';
 import { parseRule, serializeRule } from '../../relational/permission';
+import { PostgresAdapter } from '../../pg-adapter';
+import { PostgresNotifySql } from '../../pg-adapter/sql/notify-sql';
 
 class Migrations {
   static schema = 'daita';
@@ -90,10 +92,7 @@ export class OrmRuleContext {
 }
 
 export class OrmMigrationContext implements MigrationContext {
-  constructor(
-    private client: TransactionClient<MigrationSql>,
-    private migrationTree: MigrationTree,
-  ) {}
+  constructor(private client: TransactionClient<MigrationSql>, private migrationTree: MigrationTree) {}
 
   async needsUpdate(): Promise<boolean> {
     const updates = await this.pendingUpdates();
@@ -184,13 +183,7 @@ export class OrmMigrationContext implements MigrationContext {
 
       const currentMigration = currentMigrations[0];
 
-      if (
-        !appliedMigrations.some(
-          (m) =>
-            m.id === currentMigration.id &&
-            m.schema === this.migrationTree.name,
-        )
-      ) {
+      if (!appliedMigrations.some((m) => m.id === currentMigration.id && m.schema === this.migrationTree.name)) {
         sqls.push({
           insert: { id: currentMigration.id, schema: this.migrationTree.name },
           into: table(Migrations),
@@ -232,9 +225,7 @@ export class OrmMigrationContext implements MigrationContext {
             const tbl = table(step.table, step.schema);
             const key = getTableDescriptionIdentifier(tbl);
             for (const fieldName of step.fieldNames) {
-              const field = createTables[key].columns.filter(
-                (c) => c.name === fieldName,
-              )[0];
+              const field = createTables[key].columns.filter((c) => c.name === fieldName)[0];
               field.primaryKey = true;
             }
             //TODO optimize
@@ -345,13 +336,8 @@ export class OrmMigrationContext implements MigrationContext {
     return sqls;
   }
 
-  private getWhere(
-    tableDescription: TableDescription<any>,
-    keys: any,
-  ): Condition {
-    const conditions = Object.keys(keys).map((key) =>
-      equal(field(tableDescription, key), keys[key]),
-    );
+  private getWhere(tableDescription: TableDescription<any>, keys: any): Condition {
+    const conditions = Object.keys(keys).map((key) => equal(field(tableDescription, key), keys[key]));
     if (conditions.length === 0) {
       throw new Error('seed requires at least 1 key');
     }
@@ -372,6 +358,13 @@ export class OrmMigrationContext implements MigrationContext {
     const pendingSqls = await this.pendingUpdates();
     for (const sql of pendingSqls) {
       await trx.exec(sql);
+    }
+
+    if (pendingSqls.length > 0) {
+      const notifySql: PostgresNotifySql = { notify: 'data_migrations' };
+      if (trx.supportsQuery(notifySql)) {
+        await trx.exec(notifySql);
+      }
     }
   }
 }

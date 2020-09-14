@@ -47,6 +47,8 @@ import {
   UpdateFormatter,
   ValueFormatter,
 } from '../../relational/sql/formatter';
+import { NotifyFormatter } from '../formatters/notify-formatter';
+import { ListenFormatter } from '../formatters/listen-formatter';
 
 export const postgresFormatter = new Formatter();
 postgresFormatter.add(new AllFormatter());
@@ -95,3 +97,5 @@ postgresFormatter.add(new AlterTableDropColumnFormatter());
 postgresFormatter.add(new AlterTableDropConstraintFormatter());
 postgresFormatter.add(new CreateIndexFormatter());
 postgresFormatter.add(new DropIndexFormatter());
+postgresFormatter.add(new NotifyFormatter());
+postgresFormatter.add(new ListenFormatter());

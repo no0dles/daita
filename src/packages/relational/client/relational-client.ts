@@ -24,14 +24,8 @@ import { InsertClient } from './insert-client';
 import { isAllDescription } from '../sql/description/all';
 import { deepClone } from '../../common/utils';
 
-export class RelationalClient
-  implements
-    SelectClient,
-    UpdateClient,
-    DeleteClient,
-    InsertClient,
-    Client<any> {
-  constructor(private dataAdapter: RelationalDataAdapter<any>) {}
+export class RelationalClient implements SelectClient, UpdateClient, DeleteClient, InsertClient, Client<any> {
+  constructor(public dataAdapter: RelationalDataAdapter<any>) {}
 
   async selectFirst<T>(sql: SelectSql<T>): Promise<T> {
     const clonedSql = deepClone(sql);

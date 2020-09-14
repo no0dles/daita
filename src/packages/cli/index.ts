@@ -85,13 +85,12 @@ program
 program
   .command('serve')
   .description('serve daita api')
-  .option('-p, --port <number>', 'serving api port', (value) =>
-    parseInt(value, 0),
-  )
+  .option('-p, --port <number>', 'serving api port', (value) => parseInt(value, 0))
   .option('-c, --context <string>', 'config context name')
   .option('--cwd <string>', 'working directory')
   .option('--schema <string>', 'relational schema')
   .option('--disable-auth', 'disable authorization and rules', false)
+  .option('--disable-watch', 'disable watching migrations and rules', false)
   .action(async (opts) => {
     await serve(opts);
   });

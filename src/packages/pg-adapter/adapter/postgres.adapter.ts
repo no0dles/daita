@@ -1,17 +1,21 @@
 import { Pool, PoolClient, types } from 'pg';
 import { PostgresDataAdapter } from './postgres-data-adapter';
 import { postgresFormatter } from './postgres-formatter';
-import {
-  RelationalDataAdapter,
-  RelationalRawResult,
-  RelationalTransactionAdapter,
-} from '../../relational/adapter';
+import { RelationalDataAdapter, RelationalRawResult, RelationalTransactionAdapter } from '../../relational/adapter';
+import { PostgresSql } from '../sql/postgres-sql';
 
-export class PostgresAdapter implements RelationalTransactionAdapter {
+export interface PostgresNotificationSubscriber {
+  (msg: string | undefined): void;
+}
+
+export class PostgresAdapter implements RelationalTransactionAdapter<PostgresSql> {
   private readonly pool: Promise<Pool>;
   private readonly connectionString: string | undefined;
 
-  constructor(private poolOrUrl: string | Promise<Pool> | Pool) {
+  private notificationPoolClient: PoolClient | undefined = undefined;
+  private notificationSubscribers: { [key: string]: PostgresNotificationSubscriber[] } = {};
+
+  constructor(private poolOrUrl: string | Promise<Pool> | Pool, private options: { listenForNotifications: boolean }) {
     types.setTypeParser(1700, (val) => parseFloat(val));
     types.setTypeParser(701, (val) => parseFloat(val));
     types.setTypeParser(20, (val) => parseInt(val));
@@ -32,9 +36,44 @@ export class PostgresAdapter implements RelationalTransactionAdapter {
     } else {
       this.pool = Promise.resolve(poolOrUrl);
     }
+
+    if (this.options.listenForNotifications) {
+      this.listenForNotification();
+    }
+  }
+
+  private async listenForNotification() {
+    const pool = await this.pool;
+    this.notificationPoolClient = await pool.connect();
+    this.notificationPoolClient.on('notification', (msg) => {
+      const subscribers = this.notificationSubscribers[msg.channel] ?? [];
+      for (const subscriber of subscribers) {
+        subscriber(msg.payload);
+      }
+    });
+  }
+
+  addNotificationListener(channel: string, callback: PostgresNotificationSubscriber) {
+    if (!this.notificationSubscribers[channel]) {
+      this.notificationSubscribers[channel] = [];
+    }
+    this.notificationSubscribers[channel].push(callback);
+  }
+
+  removeNotificationListener(channel: string, callback: PostgresNotificationSubscriber) {
+    if (!this.notificationSubscribers[channel]) {
+      return;
+    }
+    const index = this.notificationSubscribers[channel].indexOf(callback);
+    if (index >= 0) {
+      this.notificationSubscribers[channel].splice(index, 1);
+    }
   }
 
   async close() {
+    if (this.notificationPoolClient) {
+      await this.notificationPoolClient.release();
+    }
     const pool = await this.pool;
     await pool.end();
   }
@@ -59,9 +98,7 @@ export class PostgresAdapter implements RelationalTransactionAdapter {
     }
   }
 
-  async transaction<T>(
-    action: (adapter: RelationalDataAdapter) => Promise<T>,
-  ): Promise<T> {
+  async transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
     return await this.run(async (client) => {
       try {
         await client.query('BEGIN');

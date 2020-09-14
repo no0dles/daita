@@ -5,40 +5,30 @@ import { dropDatabase, ensureDatabaseExists } from './postgres.util';
 import { failNever, isKind } from '../common/utils';
 import { RelationalAdapterImplementation } from '../relational/adapter/relational-adapter-implementation';
 
+export interface PostgresAdapterBaseOptions {
+  listenForNotifications?: boolean;
+}
+
 export interface PostgresAdapterConnectionStringOptions {
   connectionString: string;
 }
 
-const isConnectionStringOptions = (
-  val: any,
-): val is PostgresAdapterConnectionStringOptions =>
+const isConnectionStringOptions = (val: any): val is PostgresAdapterConnectionStringOptions =>
   isKind<PostgresAdapterConnectionStringOptions>(val, ['connectionString']);
 
-export interface PostgresAdapterConnectionStringDropOptions
-  extends PostgresAdapterConnectionStringOptions {
+export interface PostgresAdapterConnectionStringDropOptions extends PostgresAdapterConnectionStringOptions {
   dropIfExists: boolean;
 }
 
-const isConnectionStringDropOptions = (
-  val: any,
-): val is PostgresAdapterConnectionStringDropOptions =>
-  isKind<PostgresAdapterConnectionStringDropOptions>(val, [
-    'connectionString',
-    'dropIfExists',
-  ]);
+const isConnectionStringDropOptions = (val: any): val is PostgresAdapterConnectionStringDropOptions =>
+  isKind<PostgresAdapterConnectionStringDropOptions>(val, ['connectionString', 'dropIfExists']);
 
-export interface PostgresAdapterConnectionStringCreateOptions
-  extends PostgresAdapterConnectionStringOptions {
+export interface PostgresAdapterConnectionStringCreateOptions extends PostgresAdapterConnectionStringOptions {
   createIfNotExists: boolean;
 }
 
-const isConnectionStringCreateOptions = (
-  val: any,
-): val is PostgresAdapterConnectionStringCreateOptions =>
-  isKind<PostgresAdapterConnectionStringCreateOptions>(val, [
-    'connectionString',
-    'createIfNotExists',
-  ]);
+const isConnectionStringCreateOptions = (val: any): val is PostgresAdapterConnectionStringCreateOptions =>
+  isKind<PostgresAdapterConnectionStringCreateOptions>(val, ['connectionString', 'createIfNotExists']);
 
 export interface PostgresAdapterHostOptions {
   host: string;
@@ -51,59 +41,39 @@ export interface PostgresAdapterHostOptions {
 const isHostOptions = (val: any): val is PostgresAdapterHostOptions =>
   isKind<PostgresAdapterHostOptions>(val, ['host']);
 
-export interface PostgresAdapterHostWithDatabaseOptions
-  extends PostgresAdapterHostOptions {
+export interface PostgresAdapterHostWithDatabaseOptions extends PostgresAdapterHostOptions {
   database: string;
 }
 
-const isHostWithDatabaseOptions = (
-  val: any,
-): val is PostgresAdapterHostWithDatabaseOptions =>
+const isHostWithDatabaseOptions = (val: any): val is PostgresAdapterHostWithDatabaseOptions =>
   isKind<PostgresAdapterHostWithDatabaseOptions>(val, ['host', 'database']);
 
-export interface PostgresAdapterHostWithDatabaseDropOptions
-  extends PostgresAdapterHostWithDatabaseOptions {
+export interface PostgresAdapterHostWithDatabaseDropOptions extends PostgresAdapterHostWithDatabaseOptions {
   dropIfExists: boolean;
 }
 
-const isHostWithDatabaseDropOptions = (
-  val: any,
-): val is PostgresAdapterHostWithDatabaseDropOptions =>
-  isKind<PostgresAdapterHostWithDatabaseDropOptions>(val, [
-    'host',
-    'database',
-    'dropIfExists',
-  ]);
+const isHostWithDatabaseDropOptions = (val: any): val is PostgresAdapterHostWithDatabaseDropOptions =>
+  isKind<PostgresAdapterHostWithDatabaseDropOptions>(val, ['host', 'database', 'dropIfExists']);
 
-export interface PostgresAdapterHostWithDatabaseCreateOptions
-  extends PostgresAdapterHostWithDatabaseOptions {
+export interface PostgresAdapterHostWithDatabaseCreateOptions extends PostgresAdapterHostWithDatabaseOptions {
   createIfNotExists: boolean;
 }
 
-const isHostWithDatabaseCreateOptions = (
-  val: any,
-): val is PostgresAdapterHostWithDatabaseCreateOptions =>
-  isKind<PostgresAdapterHostWithDatabaseCreateOptions>(val, [
-    'host',
-    'database',
-    'createIfNotExists',
-  ]);
+const isHostWithDatabaseCreateOptions = (val: any): val is PostgresAdapterHostWithDatabaseCreateOptions =>
+  isKind<PostgresAdapterHostWithDatabaseCreateOptions>(val, ['host', 'database', 'createIfNotExists']);
 
-export type PostgresAdapterOptions =
+export type PostgresAdapterOptions = (
   | PostgresAdapterConnectionStringOptions
   | PostgresAdapterConnectionStringDropOptions
   | PostgresAdapterConnectionStringCreateOptions
   | PostgresAdapterHostOptions
   | PostgresAdapterHostWithDatabaseCreateOptions
-  | PostgresAdapterHostWithDatabaseDropOptions;
+  | PostgresAdapterHostWithDatabaseDropOptions
+) &
+  PostgresAdapterBaseOptions;
 
-export const postgresAdapter: RelationalAdapterImplementation<
-  any,
-  PostgresAdapterOptions
-> = {
-  getAdapter(
-    options?: PostgresAdapterOptions,
-  ): RelationalTransactionAdapter<any> {
+export const postgresAdapter: RelationalAdapterImplementation<any, PostgresAdapterOptions> = {
+  getAdapter(options?: PostgresAdapterOptions): RelationalTransactionAdapter<any> {
     return new PostgresAdapter(
       new Promise((resolve, reject) => {
         prepareDatabase(options)
@@ -122,6 +92,7 @@ export const postgresAdapter: RelationalAdapterImplementation<
             reject(err);
           });
       }),
+      { listenForNotifications: options?.listenForNotifications ?? false },
     );
   },
 };
@@ -164,14 +135,8 @@ async function prepareDatabase(options?: PostgresAdapterOptions) {
   }
 }
 
-function getConnectionString(
-  options: PostgresAdapterHostOptions | PostgresAdapterHostWithDatabaseOptions,
-) {
-  return `postgres://${options.username || ''}${options.password ? ':' : ''}${
-    options.password || ''
-  }@${options.host}${
-    options.port !== null && options.port !== undefined
-      ? `:${options.port}`
-      : ''
+function getConnectionString(options: PostgresAdapterHostOptions | PostgresAdapterHostWithDatabaseOptions) {
+  return `postgres://${options.username || ''}${options.password ? ':' : ''}${options.password || ''}@${options.host}${
+    options.port !== null && options.port !== undefined ? `:${options.port}` : ''
   }${options.database ? `/${options.database}` : ''}`;
 }
