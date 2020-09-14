@@ -1,7 +1,13 @@
 **/dist
+**/build
+**/keys
 **/node_modules
 coverage
 keys
 .github
+src/docs
+src/examples
+src/experimental
+src/tests
 **/Dockerfile
 *.tgz

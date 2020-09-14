@@ -30,7 +30,7 @@ export class HttpTransactionDataAdapter
       sql,
       values,
     });
-    const timeout = response.headers['x-transaction-timeout'];
+    const timeout = parseInt(response.headers['x-transaction-timeout']);
     if (timeout && timeout > 0) {
       this.countDown.setExpire(timeout);
     }
@@ -45,7 +45,7 @@ export class HttpTransactionDataAdapter
     const response = await this.send(`trx/${this.transactionId}/exec`, {
       sql: sql,
     });
-    const timeout = response.headers['x-transaction-timeout'];
+    const timeout = parseInt(response.headers['x-transaction-timeout']);
     if (timeout && timeout > 0) {
       this.countDown.setExpire(timeout);
     }

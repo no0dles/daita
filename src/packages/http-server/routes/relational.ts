@@ -134,20 +134,18 @@ export function validateSqlRules(options: AppOptions) {
         isAuthorized: authorized,
         userId: userId,
       });
+      console.log('validate rules');
+      console.log(result);
       if (result.type === 'allow') {
         next();
       } else if (process.env.NODE_ENV === 'production') {
         res.status(403).end();
       } else {
-        if (options.rules.length === 0) {
-          res.status(403).json({
-            messages: ['no rules defined'],
-          });
-        } else {
-          res.status(403).json({
-            messages: result.details,
-          });
-        }
+        res.status(403).json({
+          message: result.error,
+          path: result.path,
+          ruleId: result.ruleId,
+        });
       }
     } catch (e) {
       next(e);

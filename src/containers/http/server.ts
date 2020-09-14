@@ -4,6 +4,7 @@ import { createHttpServerApp } from '../../packages/http-server';
 import { TransactionClient } from '../../packages/relational/client';
 import { OrmRuleContext } from '../../packages/orm/context';
 import { Rule } from '../../packages/relational/permission/description';
+import { getRuleId } from '../../packages/orm/migration/generation';
 
 const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT
   ? parseInt(process.env.TRANSACTION_TIMEOUT)
@@ -46,6 +47,12 @@ process
 export async function run(client: TransactionClient<any>) {
   const ruleContext = new OrmRuleContext(client);
   const rules: Rule[] = await ruleContext.getRules(); //TODO reload
+
+  console.log(
+    `${rules.length} RULES: ${rules.map((r) => getRuleId(r)).join(', ')}`,
+  );
+
+  console.log(authentication);
 
   const app = createHttpServerApp(client, {
     transactionTimeout: TRANSACTION_TIMEOUT,

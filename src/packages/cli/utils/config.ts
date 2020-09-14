@@ -8,7 +8,7 @@ export function getConfig(options: { cwd?: string; context?: string }) {
     throw new Error(`Missing daita.json configuration, try "npx daita init"`);
   }
 
-  const config = require(configPath);
+  const config = JSON.parse(fs.readFileSync(configPath).toString());
   const contextName = options.context || 'default';
   if (!config || !config.context || !config.context[contextName]) {
     throw new Error(`Missing daita context ${contextName} configuration`);

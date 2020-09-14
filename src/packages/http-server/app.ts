@@ -8,6 +8,28 @@ import { AppOptions } from '../http-server-common';
 import { TransactionClient } from '../relational/client';
 import { UnauthorizedError } from 'express-jwt';
 
+declare global {
+  namespace Express {
+    export interface Application {
+      client: TransactionClient<any>;
+    }
+
+    export interface Request {
+      user?:
+        | {
+            type: 'token';
+            userId: string;
+            token: string;
+          }
+        | {
+            sub: string;
+            iss: string;
+          };
+      token?: { sub: string; issuer: string };
+    }
+  }
+}
+
 class HttpError extends Error {
   constructor(public statusCode: number, public responseMessage: string) {
     super(`http status error: ${statusCode}, ${responseMessage}`);

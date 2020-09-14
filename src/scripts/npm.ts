@@ -65,6 +65,7 @@ export function createPackageJson(
     types: 'index.d.ts',
     dependencies: {},
   };
+  const blacklist = ['path', 'fs', 'crypto', 'https', 'http', 'child_process'];
   for (const dep of packages) {
     if (dep.startsWith('@daita/')) {
       if (
@@ -75,7 +76,10 @@ export function createPackageJson(
         throw new Error(`invalid daita dependency ${dep}`);
       }
       content.dependencies[dep] = `^${rootPackageJson.version}`;
-    } else {
+    } else if (blacklist.indexOf(dep) === -1) {
+      if (!rootPackageJson.dependencies[dep]) {
+        throw new Error(`could not find ${dep} in ${packageName}`);
+      }
       content.dependencies[dep] = rootPackageJson.dependencies[dep];
     }
   }

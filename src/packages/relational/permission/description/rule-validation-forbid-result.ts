@@ -1,5 +1,6 @@
 export interface RuleValidateForbidResult {
   type: 'forbid';
+  ruleId?: string;
   error: string;
-  details: { message: string; ruleId: string }[];
+  path?: string[];
 }

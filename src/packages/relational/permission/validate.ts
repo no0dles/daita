@@ -9,30 +9,61 @@ import { RuleContext, RuleValidateResult } from './description';
 import { failNever } from '../../common/utils';
 import { getRuleId } from '../../orm/migration/generation';
 
+export type MatchResult = MatchesResult | MismatchResult;
+
+export interface MatchesResult {
+  matches: true;
+  score: number;
+}
+
+export interface MismatchResult {
+  matches: false;
+  message: string;
+  score: number;
+  path: string[];
+}
+
 export function matchesObject(
   ruleContext: RuleContext,
   authSql: any,
   ctxSql: any,
   path: string[],
-): string | null {
+  score: number,
+): MatchResult {
   if (isAnything(authSql)) {
-    return null;
+    return { matches: true, score };
   } else if (isRequestContext(authSql)) {
     const contextValue = authSql.getContextValue(ruleContext);
     if (ctxSql === contextValue) {
-      return null;
+      return { matches: true, score };
     }
-    return `${path.join('.')} does not match request context`;
+    return {
+      matches: false,
+      message: `should match to request context value "${contextValue}"`,
+      path: path,
+      score,
+    };
   } else if (isAllowRegex(authSql)) {
     if (typeof ctxSql !== 'string') {
-      return `${path.join('.')} should be a string`;
+      return {
+        message: 'should be a string',
+        matches: false,
+        path,
+        score,
+      };
     }
     if (authSql.allowRegex.regExp.test(ctxSql)) {
-      return null;
+      return {
+        matches: true,
+        score,
+      };
     } else {
-      return `${path.join('.')} does not match regexp ${
-        authSql.allowRegex.regExp
-      }`;
+      return {
+        score,
+        matches: false,
+        path,
+        message: `should match regexp ${authSql.allowRegex.regExp}`,
+      };
     }
   } else if (
     typeof authSql === 'string' ||
@@ -43,25 +74,51 @@ export function matchesObject(
     typeof ctxSql === 'number'
   ) {
     if (authSql === ctxSql) {
-      return null;
+      return {
+        matches: true,
+        score,
+      };
     } else {
-      return `${path.join('.')} ${ctxSql} should be ${authSql}`;
+      return {
+        path,
+        matches: false,
+        score,
+        message: `should be equal to "${authSql}"`,
+      };
     }
   } else if (authSql instanceof Array || ctxSql instanceof Array) {
     if (authSql instanceof Array && !(ctxSql instanceof Array)) {
-      return `${path.join('.')} expected an array`;
+      return {
+        path,
+        matches: false,
+        score,
+        message: 'should be an array',
+      };
     }
     if (!(authSql instanceof Array) && ctxSql instanceof Array) {
-      return `${path.join('.')} unexpected array`;
+      return {
+        path,
+        matches: false,
+        score,
+        message: 'should not be an array',
+      };
     }
     if (authSql.length !== ctxSql.length) {
-      return `${path.join('.')} array length does not match`;
+      return {
+        path,
+        matches: false,
+        score,
+        message: `should have array length of ${authSql.length}`,
+      };
     }
     for (let i = 0; i < authSql.length; i++) {
-      const res = matchesObject(ruleContext, authSql[i], ctxSql[i], [
-        ...path,
-        '0',
-      ]);
+      const res = matchesObject(
+        ruleContext,
+        authSql[i],
+        ctxSql[i],
+        [...path, '0'],
+        score + 1,
+      );
       if (res) {
         return res;
       }
@@ -74,28 +131,40 @@ export function matchesObject(
   for (const key of authKeys) {
     const index = ctxKeys.indexOf(key);
     if (index === -1) {
-      return `${path.join('.')} requires ${key} value`;
+      return {
+        message: `should contain "${key}"`,
+        path,
+        score,
+        matches: false,
+      };
     }
     ctxKeys.splice(index, 1);
   }
 
   if (ctxKeys.length > 0) {
-    return `${path.join('.')} does not allow ${ctxKeys
-      .map((k) => k)
-      .join(', ')}`;
+    const keys = ctxKeys.map((k) => `"${k}"`).join(', ');
+    return {
+      matches: false,
+      path,
+      score,
+      message: `should not contain ${keys}`,
+    };
   }
 
   for (const key of authKeys) {
-    const error = matchesObject(ruleContext, authSql[key], ctxSql[key], [
-      ...path,
-      key,
-    ]);
-    if (error) {
-      return error;
+    const result = matchesObject(
+      ruleContext,
+      authSql[key],
+      ctxSql[key],
+      [...path, key],
+      score + 1,
+    );
+    if (result) {
+      return result;
     }
   }
 
-  return null;
+  return { matches: true, score };
 }
 
 export function matchesAuthsDescription(
@@ -143,25 +212,44 @@ export function evaluateRule(
 ): RuleValidateResult {
   if (rule.type === 'allow') {
     if (!matchesAuthsDescription(rule.auth, ctx)) {
-      return { type: 'next' };
+      return {
+        type: 'next',
+        error: 'did not match auth description',
+        path: [],
+        score: 0,
+      };
     }
 
-    const error = matchesObject(ctx, rule.sql, sql, []);
-    if (!error) {
+    const error = matchesObject(ctx, rule.sql, sql, [], 1);
+    if (error.matches) {
       return { type: 'allow' };
     }
 
-    return { type: 'next', error };
+    return {
+      type: 'next',
+      error: error.message,
+      path: error.path,
+      score: error.score,
+    };
   } else if (rule.type === 'forbid') {
     if (!matchesAuthsDescription(rule.auth, ctx)) {
-      return { type: 'next' };
+      return {
+        type: 'next',
+        error: 'did not match auth description',
+        path: [],
+        score: 0,
+      };
     }
 
-    const error = matchesObject(ctx, rule.sql, sql, []);
-    if (error) {
-      return { type: 'forbid', error, details: [] };
+    const error = matchesObject(ctx, rule.sql, sql, [], 1);
+    if (error.matches) {
+      return {
+        type: 'forbid',
+        error: 'should not match forbid rule',
+        ruleId: getRuleId(rule),
+      };
     }
-    return { type: 'next' };
+    return { type: 'next', error: '', score: 0, path: [] }; // TODO not optimal type
   } else {
     failNever(rule.type, 'unknown rule type');
   }
@@ -172,14 +260,33 @@ export function validateRules(
   rules: Rule[],
   ctx: RuleContext,
 ): RuleValidateAllowResult | RuleValidateForbidResult {
-  const details: { message: string; ruleId: string }[] = [];
+  let error: {
+    ruleId: string;
+    error: string;
+    score: number;
+    path: string[];
+  } | null = null;
   for (const rule of rules) {
     const res = evaluateRule(sql, rule, ctx);
     if (res.type === 'allow' || res.type === 'forbid') {
       return res;
-    } else if (res.error) {
-      details.push({ message: res.error, ruleId: getRuleId(rule) });
+    } else if (!error || res.score > error.score) {
+      error = {
+        error: res.error,
+        ruleId: getRuleId(rule),
+        score: res.score,
+        path: res.path,
+      };
     }
   }
-  return { type: 'forbid', error: 'no matching rule', details };
+  if (error) {
+    return {
+      type: 'forbid',
+      error: error?.error,
+      path: error?.path,
+      ruleId: error?.ruleId,
+    };
+  } else {
+    return { type: 'forbid', error: 'no rules defined' };
+  }
 }

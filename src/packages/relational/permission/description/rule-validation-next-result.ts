@@ -1,4 +1,6 @@
 export interface RuleValidateNextResult {
   type: 'next';
-  error?: string;
+  error: string;
+  path: string[];
+  score: number;
 }

@@ -12,7 +12,7 @@ export class HttpBase {
     url: string,
     data?: any,
     query?: { [key: string]: string },
-  ) {
+  ): Promise<{ data: any; headers: { [key: string]: string } }> {
     try {
       const qs = query
         ? Object.keys(query)
