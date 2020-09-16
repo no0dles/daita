@@ -30,7 +30,7 @@ COPY src/frontends/auth/tailwind.config.js .
 
 COPY src/packages/auth/models /build/packages/auth/models
 
-RUN npm run build
+RUN npx ng build --prod
 
 
 ###############
