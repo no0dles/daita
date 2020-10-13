@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 
 export function shell(cmd: string, args: string[], cwd: string) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     const ps = spawn(cmd, args, {
       cwd,
       stdio: [process.stdin, process.stdout, process.stderr],
