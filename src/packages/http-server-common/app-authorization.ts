@@ -1,6 +1,6 @@
 export interface AppAuthorization {
-  providers: AppAuthorizationProvider[];
-  tokens: AppAuthorizationToken[];
+  providers?: AppAuthorizationProvider[];
+  tokens?: AppAuthorizationToken[];
 }
 
 export interface AppAuthorizationToken {

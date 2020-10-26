@@ -36,30 +36,24 @@ function deepClone(sourceDir: string, targetDir: string) {
   fs.mkdirSync(targetDir, { recursive: true });
   for (const file of fs.readdirSync(sourceDir, { withFileTypes: true })) {
     if (file.isDirectory()) {
-      deepClone(
-        path.join(sourceDir, file.name),
-        path.join(targetDir, file.name),
-      );
+      deepClone(path.join(sourceDir, file.name), path.join(targetDir, file.name));
     } else {
       const srcFile = path.join(sourceDir, file.name);
       const targetFile = path.join(targetDir, file.name);
       const content = fs.readFileSync(srcFile).toString();
       const regex = / from [\"'](?<import>[\.\/\-@\w]+)[\"']/g;
-      const result = content.replace(
-        regex,
-        (substring: string, importPath: string) => {
-          if (importPath.startsWith('.')) {
-            const fullImportPath = path.join(path.dirname(srcFile), importPath);
-            if (fullImportPath.indexOf('cli') === -1) {
-              //TODO improve check condition
-              return ` from '${path.relative(targetDir, fullImportPath)}'`;
-            }
-            return substring;
-          } else {
-            return substring;
+      const result = content.replace(regex, (substring: string, importPath: string) => {
+        if (importPath.startsWith('.')) {
+          const fullImportPath = path.join(path.dirname(srcFile), importPath);
+          if (fullImportPath.indexOf('cli') === -1) {
+            //TODO improve check condition
+            return ` from '${path.relative(targetDir, fullImportPath)}'`;
           }
-        },
-      );
+          return substring;
+        } else {
+          return substring;
+        }
+      });
       fs.writeFileSync(targetFile, result);
     }
   }
@@ -89,15 +83,8 @@ export interface RunResult {
 
 export type CliEnvironmentCallback = (ctx: CliEnvironment) => Promise<any>;
 
-export function setupEnv(
-  testName: string,
-  callback: CliEnvironmentCallback,
-  options?: { schema?: string },
-) {
-  const scenarioResultRoot = path.join(
-    __dirname,
-    '../../../tests/tmp/scenario',
-  );
+export function setupEnv(testName: string, callback: CliEnvironmentCallback, options?: { schema?: string }) {
+  const scenarioResultRoot = path.join(__dirname, '../../../tests/tmp/scenario');
   const resultPath = path.join(scenarioResultRoot, testName);
 
   function exists(dir: string, file?: RegExp): Promise<boolean> {
@@ -107,27 +94,23 @@ export function setupEnv(
           resolve(false);
           //assert.fail(null, dir, `expected path ${dir} to exist`);
         } else if (file) {
-          fs.readdir(
-            path.join(resultPath, dir),
-            { withFileTypes: true },
-            (e, listedFiles) => {
-              if (e) {
-                resolve(false);
-                //assert.fail(`could not list files in ${path.join(resultPath, dir)}`);
-              } else {
-                for (const listedFile of listedFiles) {
-                  if (!listedFile.isDirectory()) {
-                    if (file.test(listedFile.name)) {
-                      resolve(true);
-                      return;
-                    }
+          fs.readdir(path.join(resultPath, dir), { withFileTypes: true }, (e, listedFiles) => {
+            if (e) {
+              resolve(false);
+              //assert.fail(`could not list files in ${path.join(resultPath, dir)}`);
+            } else {
+              for (const listedFile of listedFiles) {
+                if (!listedFile.isDirectory()) {
+                  if (file.test(listedFile.name)) {
+                    resolve(true);
+                    return;
                   }
                 }
-                resolve(false);
-                //assert.fail(`could not find matching file for ${file}`);
               }
-            },
-          );
+              resolve(false);
+              //assert.fail(`could not find matching file for ${file}`);
+            }
+          });
         } else {
           resolve(true);
         }
@@ -154,14 +137,10 @@ export function setupEnv(
         envs[name] = value;
       },
       run: (args) => {
-        const proc = childProcess.spawn(
-          `node`,
-          ['-r', 'ts-node/register', cliPath, ...args.split(' ')],
-          {
-            cwd: resultPath,
-            env: { ...process.env, ...envs },
-          },
-        );
+        const proc = childProcess.spawn(`node`, ['-r', 'ts-node/register', cliPath, ...args.split(' ')], {
+          cwd: resultPath,
+          env: { ...process.env, ...envs },
+        });
         const finishedDefer = new Defer<number>();
         proc.on('exit', (code) => {
           if (code !== 0) {
@@ -213,20 +192,16 @@ export function setupEnv(
       },
       contains(dir: string, expectedFiles: string[]): Promise<void> {
         return new Promise<void>((resolve) => {
-          fs.readdir(
-            path.join(resultPath, dir),
-            { withFileTypes: true },
-            (e, listedFiles) => {
-              if (e) {
-                expect(e).toBeUndefined();
-                //.fail(`could not list files in ${path.join(resultPath, dir)}`);
-              } else {
-                const actualFiles = listedFiles.map((f) => f.name);
-                expect(actualFiles.sort()).toEqual(expectedFiles.sort());
-                resolve();
-              }
-            },
-          );
+          fs.readdir(path.join(resultPath, dir), { withFileTypes: true }, (e, listedFiles) => {
+            if (e) {
+              expect(e).toBeUndefined();
+              //.fail(`could not list files in ${path.join(resultPath, dir)}`);
+            } else {
+              const actualFiles = listedFiles.map((f) => f.name);
+              expect(actualFiles.sort()).toEqual(expectedFiles.sort());
+              resolve();
+            }
+          });
         });
       },
       notExists(dir: string, file?: RegExp): Promise<void> {
@@ -253,7 +228,6 @@ export async function getMigrationSteps(fileName: string) {
     fileName,
     directory: path.dirname(fileName),
     migrationDirectory: path.join(path.dirname(fileName), 'migrations'),
-    sourceDirectory: path.dirname(fileName),
   };
 
   const astContext = new AstContext();
@@ -267,8 +241,5 @@ export async function getMigrationSteps(fileName: string) {
     backwardCompatible: false,
   });
 
-  return generateRelationalMigrationSteps(
-    currentSchema,
-    schemaInfo.getRelationalSchema(),
-  );
+  return generateRelationalMigrationSteps(currentSchema, schemaInfo.getRelationalSchema());
 }

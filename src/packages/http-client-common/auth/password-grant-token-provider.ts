@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { TokenAuthProvider } from './token-auth-provider';
+import { Http } from '../http';
 
 export class PasswordGrantTokenProvider implements TokenAuthProvider {
   private refreshToken: string | null = null;
@@ -7,12 +7,7 @@ export class PasswordGrantTokenProvider implements TokenAuthProvider {
   private clearTimeout: number | null = null;
   private refreshTimeout: number | null = null;
 
-  constructor(
-    private tokenUrl: string,
-    private clientId: string,
-    private username: string,
-    private password: string,
-  ) {}
+  constructor(private http: Http, private clientId: string, private username: string, private password: string) {}
 
   async getToken(): Promise<string | null> {
     if (this.accessToken) {
@@ -31,14 +26,6 @@ export class PasswordGrantTokenProvider implements TokenAuthProvider {
     if (this.refreshTimeout) {
       clearTimeout(this.refreshTimeout);
     }
-  }
-
-  private encodeForm(data: any) {
-    return Object.keys(data)
-      .map(
-        (key) => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]),
-      )
-      .join('&');
   }
 
   private async fetch() {
@@ -60,24 +47,18 @@ export class PasswordGrantTokenProvider implements TokenAuthProvider {
   }
 
   private async sendRequest(formData: any) {
-    const res = await axios.post(this.tokenUrl, this.encodeForm(formData), {});
+    const res = await this.http.sendFormData('', formData);
     this.accessToken = res.data.access_token;
     this.refreshToken = res.data.refresh_token;
     this.setTimeouts(res.data.expires_in, res.data.refresh_expires_in);
   }
 
-  private setTimeouts(
-    accessTokenExpiresIn: number,
-    refreshTokenExpiresIn: number,
-  ) {
+  private setTimeouts(accessTokenExpiresIn: number, refreshTokenExpiresIn: number) {
     this.close();
 
     const expiresIn = Math.min(accessTokenExpiresIn, refreshTokenExpiresIn);
     const refreshIn = Math.max(10, expiresIn * 0.1);
-    const resetIn =
-      accessTokenExpiresIn - 5 < 0
-        ? accessTokenExpiresIn
-        : accessTokenExpiresIn - 5;
+    const resetIn = accessTokenExpiresIn - 5 < 0 ? accessTokenExpiresIn : accessTokenExpiresIn - 5;
 
     this.clearTimeout = setTimeout(() => {
       this.accessToken = null;

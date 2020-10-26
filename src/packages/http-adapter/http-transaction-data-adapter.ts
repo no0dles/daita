@@ -1,36 +1,24 @@
-import { HttpBase } from './http-base';
 import { Countdown } from './countdown';
-import { AuthProvider } from '../http-client-common/auth';
-import {
-  RelationalDataAdapter,
-  RelationalRawResult,
-} from '../relational/adapter';
+import { RelationalDataAdapter, RelationalRawResult } from '../relational/adapter';
 import { Defer } from '../common/utils';
+import { Http } from '../http-client-common/http';
 
-export class HttpTransactionDataAdapter
-  extends HttpBase
-  implements RelationalDataAdapter {
+export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   private resultDefer = new Defer<any>();
   private countDown = new Countdown(() => this.timeout());
 
-  constructor(
-    private transactionId: string,
-    baseUrl: string,
-    authProvider: AuthProvider | null | undefined,
-  ) {
-    super(baseUrl, authProvider);
-  }
+  constructor(private transactionId: string, private http: Http) {}
 
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
     if (this.resultDefer.isRejected || this.resultDefer.isResolved) {
       throw new Error('transaction already closed');
     }
 
-    const response = await this.send(`trx/${this.transactionId}/exec`, {
+    const response = await this.http.sendJson(`api/relational/trx/${this.transactionId}/exec`, {
       sql,
       values,
     });
-    const timeout = parseInt(response.headers['x-transaction-timeout']);
+    const timeout = response.headers['x-transaction-timeout'];
     if (timeout && timeout > 0) {
       this.countDown.setExpire(timeout);
     }
@@ -42,10 +30,10 @@ export class HttpTransactionDataAdapter
       throw new Error('transaction already closed');
     }
 
-    const response = await this.send(`trx/${this.transactionId}/exec`, {
+    const response = await this.http.sendJson(`api/relational/trx/${this.transactionId}/exec`, {
       sql: sql,
     });
-    const timeout = parseInt(response.headers['x-transaction-timeout']);
+    const timeout = response.headers['x-transaction-timeout'];
     if (timeout && timeout > 0) {
       this.countDown.setExpire(timeout);
     }
@@ -59,7 +47,7 @@ export class HttpTransactionDataAdapter
   async close(): Promise<void> {}
 
   async run(action: () => Promise<any>): Promise<any> {
-    await this.send(`trx/${this.transactionId}`);
+    await this.http.sendJson(`api/relational/trx/${this.transactionId}`);
     action()
       .then(async (result) => {
         this.resultDefer.resolve(result);
@@ -84,10 +72,10 @@ export class HttpTransactionDataAdapter
   }
 
   private async commit() {
-    await this.send(`trx/${this.transactionId}/commit`);
+    await this.http.sendJson(`api/relational/trx/${this.transactionId}/commit`);
   }
 
   private async rollback() {
-    await this.send(`trx/${this.transactionId}/rollback`);
+    await this.http.sendJson(`api/relational/trx/${this.transactionId}/rollback`);
   }
 }

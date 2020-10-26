@@ -1,0 +1,160 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "definitions": {
+    "contexts": {
+      "type": "object",
+      "patternProperties": {
+        "^[A-Za-z0-9_]+$": {
+          "type": "object",
+          "anyOf": [{"$ref": "#/definitions/postgresContext"},{"$ref": "#/definitions/sqliteContext"}]
+        }
+      }
+    },
+    "sqliteContext": {
+      "type": "object",
+      "properties": {
+        "module": {
+          "const": "@daita/sqlite-adapter"
+        },
+        "moduleOptions": {
+          "$ref": "#/definitions/sqliteModuleOptions"
+        },
+        "schemaLocation": {
+          "type": "string"
+        },
+        "schemaName": {
+          "type": "string"
+        },
+        "migrationLocation": {
+          "type": "string"
+        },
+        "authorization": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/authorization"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "required": ["module", "moduleOptions", "authorization", "schemaLocation"]
+    },
+    "postgresContext": {
+      "type": "object",
+      "properties": {
+        "module": {
+          "const": "@daita/pg-adapter"
+        },
+        "moduleOptions": {
+          "$ref": "#/definitions/postgresModuleOptions"
+        },
+        "schemaLocation": {
+          "type": "string"
+        },
+        "schemaName": {
+          "type": "string"
+        },
+        "migrationLocation": {
+          "type": "string"
+        },
+        "authorization": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/authorization"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "required": [
+        "module", "moduleOptions", "authorization", "schemaLocation"
+      ]
+    },
+    "authorization": {
+      "type": "object",
+      "properties": {
+        "providers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/authorizationProvider"
+          }
+        },
+        "tokens": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/authorizationToken"
+          }
+        }
+      }
+    },
+    "authorizationProvider": {
+      "type": "object",
+      "properties": {
+        "uri": {
+          "type": "string"
+        },
+        "issuer": {
+          "type": "string"
+        }
+      },
+      "required": ["issuer", "uri"]
+    },
+    "authorizationToken": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "sqliteModuleOptions": {
+      "type": "object",
+      "anyOf": [{
+        "properties": {
+          "file": {
+            "type": "string"
+          },
+          "dropIfExists": {
+            "type": "boolean"
+          }
+        },
+        "required": ["file"]
+      }, {
+        "properties": {
+          "memory": {
+            "type": "boolean"
+          }
+        },
+        "required": ["memory"]
+      }]
+    },
+    "postgresModuleOptions": {
+      "type": "object",
+      "properties": {
+        "connectionString": {
+          "type": "string"
+        },
+        "createIfNotExists": {
+          "type": "boolean"
+        }
+      },
+      "required": ["connectionString"]
+    }
+  },
+  "properties": {
+    "context": {
+      "$ref": "#/definitions/contexts"
+    }
+  },
+  "required": [
+    "context"
+  ]
+}

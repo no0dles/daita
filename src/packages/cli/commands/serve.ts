@@ -1,6 +1,5 @@
 import { getClientFromConfig } from '../utils/data-adapter';
-import { getSchemaInformation, getSchemaLocation } from '../utils/path';
-import { AstContext } from '../ast/ast-context';
+import { getSchemaLocation } from '../utils/path';
 import { getAuthorization } from '../utils/authorization';
 import { createHttpServerApp } from '../../http-server';
 import { anonymous, anything } from '../../relational/permission/function';
@@ -30,12 +29,16 @@ export async function serve(opts: {
 
   const rules: Rule[] = [];
   const authorization = getAuthorization(opts);
+  const disableAuth = !authorization || opts.disableAuth;
 
   const schemaLocation = await getSchemaLocation(opts);
   const reloadDebouncer = new Debouncer(async () => {
     console.log('reload');
     await applyMigration(opts);
-    await updateRules();
+
+    if (!disableAuth) {
+      await updateRules();
+    }
   }, 500);
 
   async function updateRules() {
@@ -45,7 +48,7 @@ export async function serve(opts: {
     rules.push(...newRules);
   }
 
-  if (opts.disableAuth) {
+  if (disableAuth) {
     rules.push({ auth: anonymous(), type: 'allow', sql: anything() });
   } else {
     await updateRules();

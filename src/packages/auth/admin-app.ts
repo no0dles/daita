@@ -24,6 +24,7 @@ export function createAuthAdminApp(client: TransactionClient<any>) {
     '/api/relational',
     authMiddleware,
     relationalRoute({
+      authorization: false,
       cors: false,
       rules: [allow(authorized(), anything())],
       transactionTimeout: 4000,
@@ -34,10 +35,7 @@ export function createAuthAdminApp(client: TransactionClient<any>) {
     return res.sendFile(path.join(process.cwd(), 'www/dist/web/index.html'));
   });
 
-  adminApp.use(
-    '/admin',
-    express.static(path.join(process.cwd(), 'www/dist/web')),
-  );
+  adminApp.use('/admin', express.static(path.join(process.cwd(), 'www/dist/web')));
   adminApp.get('/admin/*', (req, res, next) => {
     if (req.accepts('html')) {
       return res.sendFile(path.join(process.cwd(), 'www/dist/web/index.html'));
@@ -46,21 +44,14 @@ export function createAuthAdminApp(client: TransactionClient<any>) {
     next();
   });
 
-  adminApp.use(
-    (
-      err: any,
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction,
-    ) => {
-      console.log(err);
-      if (process.env.NODE_ENV === 'production') {
-        res.status(500).end();
-      } else {
-        res.status(500).json({ message: err.message });
-      }
-    },
-  );
+  adminApp.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.log(err);
+    if (process.env.NODE_ENV === 'production') {
+      res.status(500).end();
+    } else {
+      res.status(500).json({ message: err.message });
+    }
+  });
 
   return adminApp;
 }

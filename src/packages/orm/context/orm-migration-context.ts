@@ -26,8 +26,6 @@ import { failNever } from '../../common/utils';
 import { RelationDoesNotExistsError } from '../../relational/error';
 import { Client, TransactionClient } from '../../relational/client';
 import { parseRule, serializeRule } from '../../relational/permission';
-import { PostgresAdapter } from '../../pg-adapter';
-import { PostgresNotifySql } from '../../pg-adapter/sql/notify-sql';
 
 class Migrations {
   static schema = 'daita';
@@ -113,54 +111,50 @@ export class OrmMigrationContext implements MigrationContext {
       });
       appliedMigrations.push(...result);
     } catch (e) {
-      if (e instanceof RelationDoesNotExistsError) {
-        sqls.push({ createSchema: 'daita', ifNotExists: true });
-        sqls.push({
-          createTable: table(Migrations),
-          ifNotExists: true,
-          columns: [
-            { name: 'id', type: 'string', notNull: true, primaryKey: true },
-            {
-              name: 'schema',
-              type: 'string',
-              notNull: true,
-              primaryKey: true,
-            },
-          ],
-        });
-        sqls.push({
-          createTable: table(MigrationSteps),
-          ifNotExists: true,
-          columns: [
-            {
-              name: 'migrationId',
-              type: 'string',
-              notNull: true,
-              primaryKey: true,
-            },
-            {
-              name: 'migrationSchema',
-              type: 'string',
-              notNull: true,
-              primaryKey: true,
-            },
-            { name: 'index', type: 'number', notNull: true, primaryKey: true },
-            { name: 'step', type: 'string', notNull: true, primaryKey: false },
-          ],
-        });
-        sqls.push({
-          alterTable: table(MigrationSteps),
-          add: {
-            foreignKey: ['migrationId', 'migrationSchema'],
-            references: {
-              table: table(Migrations),
-              primaryKeys: ['id', 'schema'],
-            },
+      sqls.push({ createSchema: 'daita', ifNotExists: true });
+      sqls.push({
+        createTable: table(Migrations),
+        ifNotExists: true,
+        columns: [
+          { name: 'id', type: 'string', notNull: true, primaryKey: true },
+          {
+            name: 'schema',
+            type: 'string',
+            notNull: true,
+            primaryKey: true,
           },
-        });
-      } else {
-        throw e;
-      }
+        ],
+      });
+      sqls.push({
+        createTable: table(MigrationSteps),
+        ifNotExists: true,
+        columns: [
+          {
+            name: 'migrationId',
+            type: 'string',
+            notNull: true,
+            primaryKey: true,
+          },
+          {
+            name: 'migrationSchema',
+            type: 'string',
+            notNull: true,
+            primaryKey: true,
+          },
+          { name: 'index', type: 'number', notNull: true, primaryKey: true },
+          { name: 'step', type: 'string', notNull: true, primaryKey: false },
+        ],
+      });
+      sqls.push({
+        alterTable: table(MigrationSteps),
+        add: {
+          foreignKey: ['migrationId', 'migrationSchema'],
+          references: {
+            table: table(Migrations),
+            primaryKeys: ['id', 'schema'],
+          },
+        },
+      });
     }
 
     sqls.push({ lockTable: table(Migrations) });
@@ -361,7 +355,7 @@ export class OrmMigrationContext implements MigrationContext {
     }
 
     if (pendingSqls.length > 0) {
-      const notifySql: PostgresNotifySql = { notify: 'daita_migrations' };
+      const notifySql = { notify: 'daita_migrations' };
       if (trx.supportsQuery(notifySql)) {
         await trx.exec(notifySql);
       }

@@ -1,15 +1,8 @@
 import { PoolClient, QueryResult } from 'pg';
 import { postgresFormatter } from './postgres-formatter';
 import { PostgresFormatContext } from './postgres-format-context';
-import {
-  DuplicateKeyError,
-  RelationDoesNotExistsError,
-  UnknownError,
-} from '../../relational/error';
-import {
-  RelationalDataAdapter,
-  RelationalRawResult,
-} from '../../relational/adapter';
+import { DuplicateKeyError, RelationDoesNotExistsError, UnknownError } from '../../relational/error';
+import { RelationalDataAdapter, RelationalRawResult } from '../../relational/adapter';
 
 export class PostgresDataAdapter implements RelationalDataAdapter {
   constructor(private client: PoolClient) {}
@@ -34,11 +27,7 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
     return { sql, values: formatCtx.getValues() };
   }
 
-  private async mapError(
-    run: Promise<QueryResult<any>>,
-    sql: string,
-    values: any[],
-  ): Promise<RelationalRawResult> {
+  private async mapError(run: Promise<QueryResult<any>>, sql: string, values: any[]): Promise<RelationalRawResult> {
     try {
       const result = await run;
       return { rows: result.rows, rowCount: result.rowCount };
@@ -52,26 +41,12 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
         for (let i = 0; i < keys.length; i++) {
           obj[keys[i]] = values[i];
         }
-        throw new DuplicateKeyError(
-          e,
-          sql,
-          values,
-          e.schema,
-          e.table,
-          e.constraint,
-          obj,
-        );
+        throw new DuplicateKeyError(e, sql, values, e.schema, e.table, e.constraint, obj);
       }
       if (e.code === '42P01') {
-        const regex = /(Error:\s)?(\w+\s)?relation "(?<schema>.*?)\.?(?<relation>.*?)" does not exist/g;
+        const regex = /(Error:\s)?(\w+\s)?(R|r)elation "(?<schema>.*?)\.?(?<relation>.*?)" does not exist/g;
         const groups = regex.exec(e.message)?.groups || {};
-        throw new RelationDoesNotExistsError(
-          e,
-          sql,
-          values,
-          groups.schema,
-          groups.relation,
-        );
+        throw new RelationDoesNotExistsError(e, sql, values, groups.schema, groups.relation);
       }
       throw new UnknownError(e, sql, values);
     }

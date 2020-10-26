@@ -19,13 +19,7 @@ export function createNpmIgnore(packageDir: string) {
   const target = path.join(packageDir, '.npmignore');
   fs.writeFileSync(
     target,
-    [
-      '*.tar',
-      '**/*.spec.js',
-      '**/*.spec.d.ts',
-      '**/*.test.js',
-      '**/*.test.d.ts',
-    ].join('\n') + '\n',
+    ['*.tar', '**/*.spec.js', '**/*.spec.d.ts', '**/*.test.js', '**/*.test.d.ts'].join('\n') + '\n',
   );
 }
 
@@ -40,11 +34,7 @@ export function* getNpmPackages() {
   }
 }
 
-export function createPackageJson(
-  packageDir: string,
-  packageName: string,
-  packages: Set<string>,
-) {
+export function createPackageJson(packageDir: string, packageName: string, packages: Set<string>) {
   const fileName = path.join(packageDir, 'package.json');
   const content: any = {
     name: `@daita/${packageName}`,
@@ -63,16 +53,21 @@ export function createPackageJson(
     },
     main: 'index.js',
     types: 'index.d.ts',
+    module: 'esm/index.js',
     dependencies: {},
   };
-  const blacklist = ['path', 'fs', 'crypto', 'https', 'http', 'child_process'];
+
+  if (packageName === 'cli') {
+    content.bin = {
+      daita: 'index.js',
+    };
+  } else if (fs.existsSync(path.join(packageDir, 'esm/browser.js'))) {
+    content.browser = 'esm/browser.js';
+  }
+  const blacklist = ['path', 'fs', 'crypto', 'https', 'http', 'child_process', 'url'];
   for (const dep of packages) {
     if (dep.startsWith('@daita/')) {
-      if (
-        !fs.existsSync(
-          path.join(packageDir, '..', dep.substr('@daita/'.length)),
-        )
-      ) {
+      if (!fs.existsSync(path.join(packageDir, '..', dep.substr('@daita/'.length)))) {
         throw new Error(`invalid daita dependency ${dep}`);
       }
       content.dependencies[dep] = `^${rootPackageJson.version}`;
@@ -86,11 +81,7 @@ export function createPackageJson(
   fs.writeFileSync(fileName, JSON.stringify(content, null, 2));
 }
 
-export function scanDependencies(
-  file: string,
-  dependencies: Set<string>,
-  files: Set<string>,
-) {
+export function scanDependencies(file: string, dependencies: Set<string>, files: Set<string>) {
   files.add(file);
   const content = fs.readFileSync(file).toString();
   const regex = / from [\"'](?<import>[\.\/\-@\w]+)[\"']/g;
@@ -117,11 +108,7 @@ export function scanDependencies(
   });
 }
 
-export function updatePaths(
-  packages: Set<string>,
-  root: string,
-  directory: string,
-) {
+export function updatePaths(packages: Set<string>, root: string, directory: string) {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
     if (entry.isFile()) {
       updatePath(packages, root, path.join(directory, entry.name));
@@ -132,50 +119,86 @@ export function updatePaths(
 }
 
 export function updatePath(packages: Set<string>, root: string, file: string) {
-  if (
-    !file.endsWith('.js') ||
-    file.endsWith('.spec.js') ||
-    file.endsWith('.test.js')
-  ) {
+  if (!file.endsWith('.js') || file.endsWith('.spec.js') || file.endsWith('.test.js')) {
     return;
   }
 
   const content = fs.readFileSync(file).toString();
   const regex = /require\(\"(?<import>[\.\/\-@\w]+)\"\)/g;
-  const result = content.replace(
-    regex,
-    (substring: string, importPath: string) => {
-      if (importPath.startsWith('.')) {
-        const fullImportPath = path.join(path.dirname(file), importPath); //TODO verify if export exists
-        const relativeImportPath = path.relative(root, fullImportPath);
-        if (relativeImportPath.startsWith('..')) {
-          const packageName = relativeImportPath.split(path.sep)[1];
-          packages.add(`@daita/${packageName}`);
-          return `require("@daita/${packageName}")`;
-        }
-        return substring;
-      } else {
-        packages.add(importPath);
-        return substring;
+  let result = content.replace(regex, (substring: string, importPath: string) => {
+    if (importPath.startsWith('.')) {
+      const fullImportPath = path.join(path.dirname(file), importPath); //TODO verify if export exists
+      const relativeImportPath = path.relative(root, fullImportPath);
+      if (relativeImportPath.startsWith('..')) {
+        const packageName = relativeImportPath.split(path.sep)[1];
+        packages.add(`@daita/${packageName}`);
+        return `require("@daita/${packageName}")`;
       }
-    },
-  );
+      return substring;
+    } else {
+      packages.add(importPath);
+      return substring;
+    }
+  });
+
+  const esRegex = / from '(?<import>[\.\/\-@\w]+)'/g;
+  result = result.replace(esRegex, (substring: string, importPath: string) => {
+    if (importPath.startsWith('.')) {
+      const fullImportPath = path.join(path.dirname(file), importPath); //TODO verify if export exists
+      const relativeImportPath = path.relative(root, fullImportPath);
+      if (relativeImportPath.startsWith('..')) {
+        const packageName = relativeImportPath.split(path.sep)[1];
+        packages.add(`@daita/${packageName}`);
+        return ` from '@daita/${packageName}'`;
+      }
+      return substring;
+    } else {
+      packages.add(importPath);
+      return substring;
+    }
+  });
 
   fs.writeFileSync(file, result);
 }
 
-export function buildNpmPackages() {
+export async function buildNpmPackages() {
+  await shell('node_modules/.bin/tsc', [], path.join(__dirname, '../..'));
+  await shell('node_modules/.bin/tsc', ['-p', 'tsconfig-esm.json'], path.join(__dirname, '../..'));
+
   for (const pkg of getNpmPackages()) {
     const packages = new Set<string>();
+    const esmPath = path.join(pkg.path, '../../esm/packages', pkg.name);
+    updatePaths(packages, esmPath, esmPath);
+    copyDir(esmPath, path.join(pkg.path, 'esm'));
     updatePaths(packages, pkg.path, pkg.path);
     createPackageJson(pkg.path, pkg.name, packages);
     copyReadme(pkg.path, pkg.name);
+    copyJson(pkg.path, pkg.name);
     createNpmIgnore(pkg.path);
   }
 }
 
+function copyJson(packageDir: string, packageName: string) {
+  const sourceDir = path.join(process.cwd(), 'src/packages', packageName);
+  copyDir(sourceDir, packageDir, (file) => file.name.endsWith('.json'));
+}
+
+function copyDir(from: string, to: string, filter?: (file: fs.Dirent) => boolean) {
+  if (!fs.existsSync(to)) {
+    fs.mkdirSync(to);
+  }
+  for (const file of fs.readdirSync(from, { withFileTypes: true })) {
+    if (file.isFile()) {
+      if (!filter || filter(file)) {
+        fs.copyFileSync(path.join(from, file.name), path.join(to, file.name));
+      }
+    } else {
+      copyDir(path.join(from, file.name), path.join(to, file.name), filter);
+    }
+  }
+}
+
 export async function publishNpmPackages() {
-  await shell('node_modules/.bin/tsc', [], path.join(__dirname, '../..'));
   await buildNpmPackages();
 
   for (const pkg of getNpmPackages()) {

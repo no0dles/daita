@@ -1,21 +1,13 @@
 import * as path from 'path';
-import * as fs from 'fs';
-import cli from 'cli-ux';
-import * as inquirer from 'inquirer';
 import { AstContext } from '../ast/ast-context';
 import { parseSchemas } from '../migration/parsing/parse-schemas';
 import { SchemaDeclaration } from '../migration/parsing/schema-declaration';
-import {
-  parseSchemaMigrations,
-  parseSchemaMigrationVariables,
-} from '../migration/parsing/parse-schema-migrations';
+import { parseSchemaMigrations, parseSchemaMigrationVariables } from '../migration/parsing/parse-schema-migrations';
 import { parseRelationalSchema } from '../migration/parsing/parse-relational-schema';
 import { RelationalSchemaDescription } from '../../orm/schema';
+import { getConfig } from './config';
 
-export function getMigrationRelativePath(
-  schemaFilePath: string,
-  migrationFilePath: string,
-) {
+export function getMigrationRelativePath(schemaFilePath: string, migrationFilePath: string) {
   const relativePath = path.relative(schemaFilePath, migrationFilePath);
   return './' + relativePath.substr(0, relativePath.length - 3);
 }
@@ -24,77 +16,27 @@ export interface SchemaLocation {
   fileName: string;
   directory: string;
   migrationDirectory: string;
-  sourceDirectory: string;
+  schemaName?: string;
 }
 
-export async function getSchemaLocation(opts: {
-  schema?: string;
-  cwd?: string;
-}): Promise<SchemaLocation> {
-  const cwd = opts.cwd ? path.resolve(opts.cwd) : process.cwd();
-  let sourceDirectory = path.join(cwd, 'src');
-  const tsconfigFileName = path.join(cwd, 'tsconfig.json');
-  if (fs.existsSync(tsconfigFileName)) {
-    const tsconfig = JSON.parse(fs.readFileSync(tsconfigFileName).toString());
-    if (tsconfig.compilerOptions && tsconfig.compilerOptions.rootDir) {
-      sourceDirectory = path.join(cwd, tsconfig.compilerOptions.rootDir);
-    }
-  }
+export async function getSchemaLocation(opts: { schema?: string; cwd?: string }): Promise<SchemaLocation> {
+  const config = getConfig(opts);
 
-  const migrationDirectory = path.join(sourceDirectory, 'migrations');
-
-  let fileName = '';
-  if (opts.schema) {
-    fileName = path.join(cwd, opts.schema);
-
-    if (fs.existsSync(fileName)) {
-      return resolveSchemaLocation(
-        fileName,
-        sourceDirectory,
-        path.join(path.dirname(fileName), 'migrations'),
-      );
-    }
-    console.warn(`schema not found at ${fileName}`);
-  } else {
-    fileName = path.join(sourceDirectory, 'schema.ts');
-    if (fs.existsSync(fileName)) {
-      return resolveSchemaLocation(
-        fileName,
-        sourceDirectory,
-        migrationDirectory,
-      );
-    }
-  }
-
-  fileName = path.relative(cwd, path.join(sourceDirectory, 'schema.ts'));
-
-  while (true) {
-    fileName = await cli.prompt('Where is your schema file?', {
-      default: fileName,
-    });
-    if (!fs.existsSync(path.join(cwd, fileName))) {
-      console.warn(`schema not found at ${fileName}`);
-      continue;
-    }
-
-    return resolveSchemaLocation(
-      path.join(cwd, fileName),
-      sourceDirectory,
-      migrationDirectory,
-    );
-  }
+  const migrationDirectory = path.join(opts.cwd || process.cwd(), config.migrationLocation || 'src/migrations');
+  const schemaPath = path.join(opts.cwd || process.cwd(), opts.schema || config.schemaLocation || 'src/schema.ts');
+  return resolveSchemaLocation(schemaPath, migrationDirectory, config.schemaName);
 }
 
 function resolveSchemaLocation(
   fileName: string,
-  sourceDirectory: string,
   migrationDirectory: string,
+  schemaName: string | undefined,
 ): SchemaLocation {
   return {
     fileName,
     directory: path.dirname(fileName),
-    sourceDirectory,
     migrationDirectory,
+    schemaName,
   };
 }
 
@@ -114,20 +56,19 @@ export async function getSchemaInformation(
     return null;
   }
 
-  let schema = schemas[0];
   if (schemas.length > 1) {
-    const response: any = await inquirer.prompt([
-      {
-        name: 'schema',
-        message: 'select a schema',
-        type: 'list',
-        choices: schemas.map((s) => s.variable.name),
-      },
-    ]);
-    schema = schemas.filter((s) => s.variable.name === response.schema)[0];
+    const schema = schemas.filter((s) => s.variable.name === location.schemaName)[0];
+    if (!schema) {
+      if (location.schemaName) {
+        throw new Error(`unable to find schema ${location.schemaName} in ${location.fileName}`);
+      } else {
+        throw new Error(`multiple schemas in ${location.fileName}, please set schemaName in daita.json`);
+      }
+    }
+    return new SchemaInformation(schema);
+  } else {
+    return new SchemaInformation(schemas[0]);
   }
-
-  return new SchemaInformation(schema);
 }
 
 export class SchemaInformation {
