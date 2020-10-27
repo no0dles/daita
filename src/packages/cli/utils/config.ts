@@ -35,7 +35,7 @@ function getConfigValue(options: { cwd?: string }) {
 
 function getJsonSchema() {
   let currentPath = __dirname;
-  while (!fs.existsSync(path.join(currentPath, 'package.json'))) {
+  while (!fs.existsSync(path.join(currentPath, 'schema.json'))) {
     currentPath = path.join(currentPath, '..');
   }
 

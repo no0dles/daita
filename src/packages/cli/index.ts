@@ -10,6 +10,7 @@ import { serve } from './commands/serve';
 import { generateRule } from './commands/generate-rule';
 import { upgrade } from './commands/upgrade';
 import { init } from './commands/init';
+import { login } from './commands/login';
 
 program
   .command('init')
@@ -62,6 +63,13 @@ program
   .action(async () => {
     const url = 'https://docs.daita.ch';
     await cli.open(url);
+  });
+
+program
+  .command('login')
+  .description('login on cloud.daita.ch')
+  .action(async () => {
+    await login();
   });
 
 program

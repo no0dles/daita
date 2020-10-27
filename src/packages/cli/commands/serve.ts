@@ -10,6 +10,7 @@ import { migrate } from '../../orm/migration';
 import { Debouncer } from '../../common/utils';
 import { applyMigration } from './apply-migration';
 import { OrmRuleContext } from '../../orm/context';
+import { getConfig } from '../utils/config';
 
 export async function serve(opts: {
   cwd?: string;
@@ -20,6 +21,7 @@ export async function serve(opts: {
   disableAuth?: boolean;
   disableWatch?: boolean;
 }) {
+  const contextConfig = getConfig(opts);
   const client = await getClientFromConfig(opts);
   if (!client) {
     throw new Error('no relational adapter');
@@ -80,16 +82,9 @@ export async function serve(opts: {
       emailVerifyExpiresIn: 3600,
       refreshRefreshExpiresIn: 3600,
     });
-    await seedUserPoolCors(client, {
-      id: 'cli-cors-2',
-      url: 'http://localhost:8080',
-      userPoolId: 'cli',
-    }); // TODO make them configurable
-    await seedUserPoolCors(client, {
-      id: 'cli-cors-1',
-      url: 'http://localhost:4200',
-      userPoolId: 'cli',
-    });
+
+    const corsUrls = (contextConfig.authorization && contextConfig.authorization.cors) || [];
+    await seedUserPoolCors(client, 'cli', corsUrls);
     const authApp = createAuthApp(client);
     const authPort = opts.authPort || 8766;
 
@@ -106,12 +101,8 @@ export async function serve(opts: {
   process.on('SIGINT', async () => {
     reloadDebouncer.clear();
     server?.close();
-    console.log('stopping http server');
     authServer?.close();
-    console.log('stopping auth server');
     await watcher?.close();
-    console.log('stopping file watcher');
     await client?.close();
-    console.log('stopping client');
   });
 }

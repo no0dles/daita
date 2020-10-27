@@ -1,20 +1,28 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import * as jwt from 'jwt-decode';
+import jwt from 'jwt-decode';
 import { Router } from '@angular/router';
 import { Defer } from '@daita/common';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private identityToken: { sub: string, iss: string, email: string, emailVerified: boolean, exp: number, iat: number, roles: string[] } | null = null;
-  private accessToken: { sub: string, iss: string, exp: number, iat: number, roles: string[] } | null = null;
+  private identityToken: {
+    sub: string;
+    iss: string;
+    email: string;
+    emailVerified: boolean;
+    exp: number;
+    iat: number;
+    roles: string[];
+  } | null = null;
+  private accessToken: { sub: string; iss: string; exp: number; iat: number; roles: string[] } | null = null;
   private refreshToken: string | null = null;
   private refreshDefer: Defer<boolean> | null = null;
 
-  constructor(private http: HttpClient,
-              private router: Router) {
+  constructor(private http: HttpClient, private router: Router) {
     this.load();
   }
 
@@ -64,7 +72,7 @@ export class AuthService {
     }
   }
 
-  private save(response: { access_token: string, id_token: string, refresh_token: string }) {
+  private save(response: { access_token: string; id_token: string; refresh_token: string }) {
     this.accessToken = jwt(response.access_token);
     this.identityToken = jwt(response.id_token);
     this.refreshToken = response.refresh_token;
@@ -75,7 +83,7 @@ export class AuthService {
   }
 
   private async refresh() {
-    if(this.refreshDefer) {
+    if (this.refreshDefer) {
       return this.refreshDefer.promise;
     }
 
@@ -83,9 +91,14 @@ export class AuthService {
     this.refreshDefer = defer;
 
     try {
-      const response = await this.http.post<{ refresh_token: string, access_token: string }>(`/${this.accessToken.iss}/refresh`, {
-        refreshToken: this.refreshToken,
-      }).toPromise();
+      const response = await this.http
+        .post<{ refresh_token: string; access_token: string }>(
+          `${environment.authUrl}/${this.accessToken.iss}/refresh`,
+          {
+            refreshToken: this.refreshToken,
+          },
+        )
+        .toPromise();
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('refresh_token', response.refresh_token);
       this.accessToken = jwt(response.access_token);
@@ -108,34 +121,32 @@ export class AuthService {
     return defer.promise;
   }
 
-  async login(options: { userPoolId: string, username: string, password: string }) {
-    const response = await this.http.post<{
-      refresh_token: string,
-      access_token: string,
-      id_token: string,
-      expires_in: number,
-      token_type: string
-    }>(`/${options.userPoolId}/login`, {
-      username: options.username,
-      password: options.password,
-    }).toPromise();
+  async login(options: { userPoolId: string; username: string; password: string }) {
+    const response = await this.http
+      .post<{
+        refresh_token: string;
+        access_token: string;
+        id_token: string;
+        expires_in: number;
+        token_type: string;
+      }>(`${environment.authUrl}/${options.userPoolId}/login`, {
+        username: options.username,
+        password: options.password,
+      })
+      .toPromise();
 
     this.save(response);
   }
 
-  async register(options: {
-    userPoolId: string,
-    username: string,
-    password: string,
-    email: string,
-    phone?: string,
-  }) {
-    await this.http.post(`/${options.userPoolId}/register`, {
-      username: options.username,
-      password: options.password,
-      email: options.email,
-      phone: options.phone,
-    }).toPromise();
+  async register(options: { userPoolId: string; username: string; password: string; email: string; phone?: string }) {
+    await this.http
+      .post(`${environment.authUrl}/${options.userPoolId}/register`, {
+        username: options.username,
+        password: options.password,
+        email: options.email,
+        phone: options.phone,
+      })
+      .toPromise();
     await this.login({
       userPoolId: options.userPoolId,
       username: options.username,
@@ -147,7 +158,6 @@ export class AuthService {
     if (!this.identityToken) {
       throw new Error(`requires authorization`);
     }
-    await this.http.post(`/${this.identityToken.iss}/resend`, {})
-      .toPromise();
+    await this.http.post(`${environment.authUrl}/${this.identityToken.iss}/resend`, {}).toPromise();
   }
 }

@@ -7,30 +7,24 @@ import { migrate } from '../../packages/orm/migration/migrate';
 import { authSchema } from '../../packages/auth/schema';
 
 const client = getClient(postgresAdapter, {
-  connectionString:
-    process.env.DATABASE_URL ||
-    'postgres://postgres:postgres@localhost:5432/auth',
+  connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/auth',
 });
 
 migrate(client, authSchema)
-  .then(() => {
+  .then(async () => {
     console.log('migrated');
+
+    await seedAuthDefaults(client);
   })
   .catch((err) => {
     console.log(err, 'failed');
   });
 
-seedAuthDefaults(client).catch((err) => {
-  console.log(err, 'failed');
-});
-
 const app = createAuthApp(client);
 const adminApp = createAuthAdminApp(client);
 
 const appServer = app.listen(4000, () => console.log(`running web at :4000`));
-const adminServer = adminApp.listen(5000, () =>
-  console.log('running admin web at :5000'),
-);
+const adminServer = adminApp.listen(5000, () => console.log('running admin web at :5000'));
 
 process
   .on('unhandledRejection', (reason, p) => {

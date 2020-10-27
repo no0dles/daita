@@ -12,6 +12,8 @@ import { ThirdMigration } from './migrations/202060134311-third';
 import { FourthMigration } from './migrations/202060173136-fourth';
 import { FifthMigration } from './migrations/20206684348-fifth';
 import { RelationalSchema } from '../orm/schema';
+import { UserToken } from './models/user-token';
+import { UserTokenMigration } from './migrations/2020-09-02-210718-user-token';
 
 export const authSchema = new RelationalSchema('auth');
 
@@ -23,8 +25,10 @@ authSchema.table(UserReset, { key: 'code' });
 authSchema.table(UserEmailVerify, { key: 'code' });
 authSchema.table(UserPoolCors);
 authSchema.table(UserRefreshToken, { key: ['token'] });
+authSchema.table(UserToken, { key: ['token'] });
 authSchema.migration(InitMigration);
 authSchema.migration(SecondMigration);
 authSchema.migration(ThirdMigration);
 authSchema.migration(FourthMigration);
 authSchema.migration(FifthMigration);
+authSchema.migration(UserTokenMigration);

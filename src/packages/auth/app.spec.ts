@@ -116,6 +116,22 @@ describe(
             done();
           });
       });
+
+      it('should create token', async (done) => {
+        supertest(app)
+          .post('/default/token')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .send()
+          .expect(200, async (err, res) => {
+            if (err) {
+              return done(err);
+            }
+
+            expect(res.body.token).not.toBeNull();
+            expect(res.body.token).not.toBeUndefined();
+            done();
+          });
+      });
     });
 
     it('should verify', async (done) => {
@@ -123,10 +139,7 @@ describe(
         select: all(UserEmailVerify),
         from: table(UserEmailVerify),
       });
-      supertest(app)
-        .get('/default/verify')
-        .query({ code: verify.code })
-        .expect(200, done);
+      supertest(app).get('/default/verify').query({ code: verify.code }).expect(200, done);
     });
   }),
 );

@@ -7,72 +7,61 @@
       "patternProperties": {
         "^[A-Za-z0-9_]+$": {
           "type": "object",
-          "anyOf": [{"$ref": "#/definitions/postgresContext"},{"$ref": "#/definitions/sqliteContext"}]
+          "anyOf": [
+            {"$ref": "#/definitions/postgresContext"},
+            {"$ref": "#/definitions/sqliteContext"}
+          ]
         }
       }
     },
+    "context": {
+      "schemaLocation": {
+        "type": "string"
+      },
+      "schemaName": {
+        "type": "string"
+      },
+      "migrationLocation": {
+        "type": "string"
+      },
+      "authorization": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/authorization"
+          },
+          {
+            "type": "boolean"
+          }
+        ]
+      },
+      "required": ["authorization", "schemaLocation"]
+    },
     "sqliteContext": {
       "type": "object",
+      "allOf": ["#/definitions/context"],
       "properties": {
         "module": {
           "const": "@daita/sqlite-adapter"
         },
         "moduleOptions": {
           "$ref": "#/definitions/sqliteModuleOptions"
-        },
-        "schemaLocation": {
-          "type": "string"
-        },
-        "schemaName": {
-          "type": "string"
-        },
-        "migrationLocation": {
-          "type": "string"
-        },
-        "authorization": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/authorization"
-            },
-            {
-              "type": "boolean"
-            }
-          ]
         }
       },
-      "required": ["module", "moduleOptions", "authorization", "schemaLocation"]
+      "required": ["module", "moduleOptions"]
     },
     "postgresContext": {
       "type": "object",
+      "allOf": ["#/definitions/context"],
       "properties": {
         "module": {
           "const": "@daita/pg-adapter"
         },
         "moduleOptions": {
           "$ref": "#/definitions/postgresModuleOptions"
-        },
-        "schemaLocation": {
-          "type": "string"
-        },
-        "schemaName": {
-          "type": "string"
-        },
-        "migrationLocation": {
-          "type": "string"
-        },
-        "authorization": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/authorization"
-            },
-            {
-              "type": "boolean"
-            }
-          ]
         }
       },
       "required": [
-        "module", "moduleOptions", "authorization", "schemaLocation"
+        "module", "moduleOptions"
       ]
     },
     "authorization": {
@@ -88,6 +77,12 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/authorizationToken"
+          }
+        },
+        "cors": {
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }

@@ -3,11 +3,9 @@ import { UserPool } from './models/user-pool';
 import { all, equal, field, table } from '../relational/sql/function';
 import { ExcludeNonPrimitive } from '../common/types';
 import { UserPoolCors } from './models/user-pool-cors';
+import { generateRandomPassword } from '../create/create';
 
-export async function seedUserPool(
-  client: TransactionClient<any>,
-  userPool: ExcludeNonPrimitive<UserPool>,
-) {
+export async function seedUserPool(client: TransactionClient<any>, userPool: ExcludeNonPrimitive<UserPool>) {
   const existingUserPool = await client.selectFirst({
     select: all(UserPool),
     from: table(UserPool),
@@ -21,27 +19,28 @@ export async function seedUserPool(
   }
 }
 
-export async function seedUserPoolCors(
-  client: TransactionClient<any>,
-  userPoolCors: ExcludeNonPrimitive<UserPoolCors>,
-) {
-  const existingUserPool = await client.selectFirst({
+export async function seedUserPoolCors(client: TransactionClient<any>, userPoolId: string, cors: string[]) {
+  const existingCors = await client.select({
     select: all(UserPoolCors),
     from: table(UserPoolCors),
-    where: equal(field(UserPoolCors, 'id'), userPoolCors.id),
+    where: equal(field(UserPoolCors, 'userPoolId'), userPoolId),
   });
-  if (!existingUserPool) {
-    await client.insert({
-      insert: userPoolCors,
-      into: table(UserPoolCors),
-    });
-  } else if (existingUserPool.url !== userPoolCors.url) {
-    await client.update({
-      update: table(UserPoolCors),
-      set: {
-        url: userPoolCors.url,
-      },
-      where: equal(field(UserPoolCors, 'id'), userPoolCors.id),
+  for (const corsUrl of cors) {
+    const existingCorsUrl = existingCors.find((c) => c.url === corsUrl);
+    if (!existingCorsUrl) {
+      await client.insert({
+        insert: { url: corsUrl, userPoolId, id: generateRandomPassword() },
+        into: table(UserPoolCors),
+      });
+    } else {
+      const index = existingCors.indexOf(existingCorsUrl);
+      existingCors.splice(index, 1);
+    }
+  }
+  for (const existingCorsUrl of existingCors) {
+    await client.delete({
+      delete: table(UserPoolCors),
+      where: equal(field(UserPoolCors, 'id'), existingCorsUrl.id),
     });
   }
 }

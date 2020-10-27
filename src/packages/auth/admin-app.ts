@@ -2,6 +2,7 @@ import * as express from 'express';
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
 import * as refreshRoute from './routes/refresh';
+import * as adminTokenRoute from './routes/admin-token';
 import * as loginRoute from './routes/login';
 import { authMiddleware } from './middlewares/auth-middleware';
 import * as helmet from 'helmet';
@@ -19,6 +20,7 @@ export function createAuthAdminApp(client: TransactionClient<any>) {
 
   adminApp.use('/:userPoolId/refresh', refreshRoute);
   adminApp.use('/:userPoolId/login', loginRoute);
+  adminApp.use('/:userPoolId/token', adminTokenRoute);
 
   adminApp.use(
     '/api/relational',

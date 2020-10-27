@@ -18,7 +18,7 @@ router.post('/', async (req, res, next) => {
       },
       from: table(User),
       where: and(
-        equal(field(User, 'username'), req?.token?.sub || ''),
+        equal(field(User, 'username'), req?.user?.sub || ''),
         equal(field(User, 'userPoolId'), req.params.userPoolId),
       ),
     });
