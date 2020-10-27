@@ -6,6 +6,9 @@ export function shell(cmd: string, args: string[], cwd: string) {
       cwd,
       stdio: [process.stdin, process.stdout, process.stderr],
     });
+    ps.on('error', (err) => {
+      reject(err);
+    });
     ps.once('exit', (code) => {
       if (code === 0) {
         resolve();

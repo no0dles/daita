@@ -1,12 +1,7 @@
 import { createHttpServerApp } from './app';
 import { authSchema, createAuthApp } from '../auth';
 import { clientTest } from '../../testing/client-test';
-import {
-  createDefaultUser,
-  createDefaultUserPool,
-  login,
-  loginWithDefaultUser,
-} from '../../testing/auth-test';
+import { createDefaultUser, createDefaultUserPool, login, loginWithDefaultUser } from '../../testing/auth-test';
 import { migrate } from '../orm/migration';
 import { getServer, httpGet, httpPost } from '../../testing/http-server';
 import { allow, authorized } from '../relational/permission/function';
@@ -25,7 +20,6 @@ describe(
               uri: `http://localhost:${authApp.port}/.well-known/jwks.json`,
             },
           ],
-          tokens: [],
         },
         cors: false,
         rules: [
