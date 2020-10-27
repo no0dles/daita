@@ -6,7 +6,6 @@ COPY package.json .
 RUN npm install
 
 COPY tsconfig.json .
-COPY src/types src/types
 COPY src/testing src/testing
 COPY src/containers src/containers
 COPY src/packages src/packages
@@ -18,7 +17,7 @@ FROM node:14-alpine AS web
 WORKDIR /build/frontends/auth
 COPY src/frontends/auth/package.json .
 COPY src/frontends/auth/package-lock.json .
-RUN npm install
+RUN npm ci
 
 COPY src/frontends/auth/src src
 COPY src/frontends/auth/angular.json .

@@ -3,10 +3,9 @@ FROM node:13-alpine
 WORKDIR /build
 COPY package.json .
 COPY package-lock.json .
-RUN npm i
+RUN npm install
 
 COPY tsconfig.json .
-COPY src/types src/types
 COPY src/testing src/testing
 COPY src/containers src/containers
 COPY src/packages src/packages
