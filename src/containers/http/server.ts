@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import { AppAuthorization } from '../../packages/http-server-common';
 import { createHttpServerApp } from '../../packages/http-server';
 import { TransactionClient } from '../../packages/relational/client';
-import { OrmRuleContext } from '../../packages/orm/context';
 import { Rule } from '../../packages/relational/permission/description';
 import { getRuleId } from '../../packages/orm/migration/generation';
 
@@ -13,12 +12,13 @@ const AUTH_FILE = process.env.AUTH_FILE || 'auth.json';
 console.log(`TRANSACTION_TIMEOUT=${TRANSACTION_TIMEOUT}`);
 console.log(`PORT=${PORT}`);
 
-const authentication: AppAuthorization = { providers: [], tokens: [] };
+const authentication: AppAuthorization = { providers: [] };
 if (fs.existsSync(AUTH_FILE)) {
   const content = fs.readFileSync(AUTH_FILE, { encoding: 'utf8' });
   try {
     const parsedAuthentication = JSON.parse(content);
-    authentication.tokens = parsedAuthentication && parsedAuthentication.tokens ? parsedAuthentication.tokens : [];
+    authentication.tokenEndpoint =
+      parsedAuthentication && parsedAuthentication.tokenEndpoint ? parsedAuthentication.tokenEndpoint : undefined;
     authentication.providers =
       parsedAuthentication && parsedAuthentication.providers ? parsedAuthentication.providers : [];
   } catch (e) {
