@@ -5,7 +5,7 @@ import { SchemaDeclaration } from '../migration/parsing/schema-declaration';
 import { parseSchemaMigrations, parseSchemaMigrationVariables } from '../migration/parsing/parse-schema-migrations';
 import { parseRelationalSchema } from '../migration/parsing/parse-relational-schema';
 import { RelationalSchemaDescription } from '../../orm/schema';
-import { getConfig } from './config';
+import { getProjectConfig } from './config';
 
 export function getMigrationRelativePath(schemaFilePath: string, migrationFilePath: string) {
   const relativePath = path.relative(schemaFilePath, migrationFilePath);
@@ -20,7 +20,7 @@ export interface SchemaLocation {
 }
 
 export async function getSchemaLocation(opts: { schema?: string; cwd?: string }): Promise<SchemaLocation> {
-  const config = getConfig(opts);
+  const config = getProjectConfig(opts);
 
   const migrationDirectory = path.join(opts.cwd || process.cwd(), config.migrationLocation || 'src/migrations');
   const schemaPath = path.join(opts.cwd || process.cwd(), opts.schema || config.schemaLocation || 'src/schema.ts');

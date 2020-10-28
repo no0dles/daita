@@ -10,7 +10,7 @@ import { migrate } from '../../orm/migration';
 import { Debouncer } from '../../common/utils';
 import { applyMigration } from './apply-migration';
 import { OrmRuleContext } from '../../orm/context';
-import { getConfig } from '../utils/config';
+import { getProjectConfig } from '../utils/config';
 
 export async function serve(opts: {
   cwd?: string;
@@ -21,7 +21,7 @@ export async function serve(opts: {
   disableAuth?: boolean;
   disableWatch?: boolean;
 }) {
-  const contextConfig = getConfig(opts);
+  const contextConfig = getProjectConfig(opts);
   const client = await getClientFromConfig(opts);
   if (!client) {
     throw new Error('no relational adapter');

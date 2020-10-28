@@ -11,6 +11,7 @@ import { generateRule } from './commands/generate-rule';
 import { upgrade } from './commands/upgrade';
 import { init } from './commands/init';
 import { login } from './commands/login';
+import { listDatabases } from './commands/list-databases';
 
 program
   .command('init')
@@ -70,6 +71,13 @@ program
   .description('login on cloud.daita.ch')
   .action(async () => {
     await login();
+  });
+
+program
+  .command('list:dbs')
+  .description('list databases on cloud.daita.ch')
+  .action(async () => {
+    await listDatabases();
   });
 
 program
