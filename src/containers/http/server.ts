@@ -17,8 +17,8 @@ if (fs.existsSync(AUTH_FILE)) {
   const content = fs.readFileSync(AUTH_FILE, { encoding: 'utf8' });
   try {
     const parsedAuthentication = JSON.parse(content);
-    authentication.tokenEndpoint =
-      parsedAuthentication && parsedAuthentication.tokenEndpoint ? parsedAuthentication.tokenEndpoint : undefined;
+    authentication.tokenEndpoints =
+      parsedAuthentication && parsedAuthentication.tokenEndpoints ? parsedAuthentication.tokenEndpoints : [];
     authentication.providers =
       parsedAuthentication && parsedAuthentication.providers ? parsedAuthentication.providers : [];
   } catch (e) {

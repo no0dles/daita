@@ -41,11 +41,15 @@ export function createHttpServerApp(client: TransactionClient<any>, options: App
   }
   app.use(bodyParser.json());
 
+  if (
+    options.authorization &&
+    options.authorization.tokenEndpoints &&
+    options.authorization.tokenEndpoints.length > 0
+  ) {
+    app.use(tokenAuth(options.authorization.tokenEndpoints));
+  }
   if (options.authorization && options.authorization.providers && options.authorization.providers.length > 0) {
     app.use(jwtAuth(options.authorization.providers));
-  }
-  if (options.authorization && options.authorization.tokenEndpoint) {
-    app.use(tokenAuth(options.authorization.tokenEndpoint));
   }
 
   app.use('/api/relational', relationalRoute(options));

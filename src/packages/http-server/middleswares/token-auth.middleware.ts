@@ -6,7 +6,7 @@ import { parse } from 'url';
 
 class TokenCache {
   private cache: { [key: string]: TokenUser } = {};
-  private requestMethod = this.tokenEndpoint.url.startsWith('https:') ? httpsRequest : httpRequest;
+  private requestMethod = this.tokenEndpoint.uri.startsWith('https:') ? httpsRequest : httpRequest;
   constructor(private tokenEndpoint: AppAuthorizationTokenEndpoint) {}
 
   async get(token: string): Promise<TokenUser | null> {
@@ -20,7 +20,7 @@ class TokenCache {
       }
     }
 
-    const parsedUrl = parse(this.tokenEndpoint.url + token);
+    const parsedUrl = parse(`${this.tokenEndpoint.uri}/${this.tokenEndpoint.issuer}/token/${token}`);
     const reqOptions: RequestOptions = {
       hostname: parsedUrl.hostname,
       port: parsedUrl.port,
@@ -30,8 +30,10 @@ class TokenCache {
 
     return new Promise<TokenUser | null>((resolve, reject) => {
       const req = this.requestMethod(reqOptions, (res) => {
-        if (res.statusCode === 404) {
+        if (res.statusCode === 401) {
           return resolve(null);
+        } else if (res.statusCode === 404) {
+          return reject(new Error('Token endpoint wrong configured'));
         }
 
         let data = '';
@@ -60,8 +62,11 @@ export interface TokenUser {
   iat: number;
 }
 
-export function tokenAuth(tokenEndpoint: AppAuthorizationTokenEndpoint) {
-  const cache = new TokenCache(tokenEndpoint);
+export function tokenAuth(tokenEndpoints: AppAuthorizationTokenEndpoint[]) {
+  const endpointCaches: { [key: string]: TokenCache } = {};
+  for (const tokenEndpoint of tokenEndpoints) {
+    endpointCaches[tokenEndpoint.issuer] = new TokenCache(tokenEndpoint);
+  }
   return async (req: Request, res: Response, next: NextFunction) => {
     if (req.user) {
       return next();
@@ -72,9 +77,18 @@ export function tokenAuth(tokenEndpoint: AppAuthorizationTokenEndpoint) {
     }
 
     const token = req.headers.authorization.substr('Token '.length);
+    const tokenParts = token.split(':');
+    if (tokenParts.length !== 2) {
+      return res.status(400).json({ message: 'invalid token format' });
+    }
+    const cache = endpointCaches[tokenParts[0]];
+    if (!cache) {
+      return res.status(400).json({ message: 'invalid issuer' });
+    }
+
     const user = await cache.get(token);
     if (!user) {
-      return res.status(401).json({ message: '' });
+      return res.status(401).json({ message: 'invalid token' });
     }
 
     req.user = user;

@@ -45,7 +45,7 @@ router.post('/', async (req, res, next) => {
     });
 
     res.status(200).json({
-      token,
+      token: `${req.params.userPoolId}:${token}`,
     });
   } catch (e) {
     next(e);

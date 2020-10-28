@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { equal, field, join, table } from '../../relational/sql/function';
+import { and, equal, field, join, table } from '../../relational/sql/function';
 import { UserToken } from '../models/user-token';
 import { User } from '../models/user';
 import { Role } from '../models/role';
@@ -20,11 +20,14 @@ router.post('/:token', async (req, res, next) => {
       },
       from: table(UserToken),
       join: [join(table(User), equal(field(User, 'username'), field(UserToken, 'userUsername')))],
-      where: equal(field(UserToken, 'token'), hashedToken),
+      where: and(
+        equal(field(UserToken, 'token'), hashedToken),
+        equal(field(User, 'userPoolId'), req.params.userPoolId),
+      ),
     });
 
     if (!token) {
-      return res.status(404).end();
+      return res.status(401).end();
     }
 
     const roles = await req.app.client.select({

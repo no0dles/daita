@@ -1,11 +1,12 @@
 export interface AppAuthorization {
   providers?: AppAuthorizationProvider[];
-  tokenEndpoint?: AppAuthorizationTokenEndpoint;
+  tokenEndpoints?: AppAuthorizationTokenEndpoint[];
   cors?: string[];
 }
 
 export interface AppAuthorizationTokenEndpoint {
-  url: string;
+  issuer: string;
+  uri: string;
 }
 
 export interface AppAuthorizationProvider {

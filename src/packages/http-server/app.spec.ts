@@ -1,7 +1,7 @@
 import { createHttpServerApp } from './app';
-import { authSchema, createAuthApp } from '../auth';
+import { authSchema, createAuthAdminApp, createAuthApp } from '../auth';
 import { clientTest } from '../../testing/client-test';
-import { createDefaultUser, createDefaultUserPool, login, loginWithDefaultUser } from '../../testing/auth-test';
+import { createDefaultUser, createDefaultUserPool, loginWithDefaultUser } from '../../testing/auth-test';
 import { migrate } from '../orm/migration';
 import { getServer, httpGet, httpPost } from '../../testing/http-server';
 import { allow, authorized } from '../relational/permission/function';
@@ -11,6 +11,7 @@ describe(
   'http-server/app',
   clientTest((client) => {
     const authApp = getServer(createAuthApp(client));
+    const authAdminApp = getServer(createAuthAdminApp(client));
     const httpApp = getServer(
       createHttpServerApp(client, {
         authorization: {
@@ -18,6 +19,12 @@ describe(
             {
               issuer: 'default',
               uri: `http://localhost:${authApp.port}/.well-known/jwks.json`,
+            },
+          ],
+          tokenEndpoints: [
+            {
+              uri: `http://localhost:${authAdminApp.port}`,
+              issuer: 'default',
             },
           ],
         },
@@ -39,11 +46,13 @@ describe(
       await createDefaultUser(client);
 
       await authApp.start();
+      await authAdminApp.start();
       await httpApp.start();
     });
 
     afterAll(async () => {
       await authApp.close();
+      await authAdminApp.close();
       await httpApp.close();
     });
 
@@ -66,7 +75,37 @@ describe(
       expect(res.body).toEqual({ message: 'jwt malformed' });
     });
 
-    it('should', async () => {
+    it('should login with token', async () => {
+      const accessToken = await loginWithDefaultUser(authApp);
+      const tokenRes = await httpPost(
+        authApp,
+        `/default/token`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      const apiToken = tokenRes.body.token;
+      const res = await httpPost(
+        httpApp,
+        '/api/relational/exec',
+        {
+          sql: {
+            select: now(),
+          },
+        },
+        {
+          headers: { Authorization: `Token ${apiToken}` },
+        },
+      );
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.rowCount).toEqual(1);
+      expect(res.body.rows[0]).not.toBeUndefined();
+    });
+
+    it('should return result', async () => {
       const token = await loginWithDefaultUser(authApp);
       const res = await httpPost(
         httpApp,
@@ -80,7 +119,9 @@ describe(
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-      console.log(res);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.rowCount).toEqual(1);
+      expect(res.body.rows[0]).not.toBeUndefined();
     });
   }),
 );

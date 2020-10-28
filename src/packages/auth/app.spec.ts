@@ -129,6 +129,7 @@ describe(
 
             expect(res.body.token).not.toBeNull();
             expect(res.body.token).not.toBeUndefined();
+            expect(res.body.token).toStartWith('default:');
             done();
           });
       });
