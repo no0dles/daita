@@ -86,7 +86,7 @@ export function tokenAuth(tokenEndpoints: AppAuthorizationTokenEndpoint[]) {
       return res.status(400).json({ message: 'invalid issuer' });
     }
 
-    const user = await cache.get(token);
+    const user = await cache.get(tokenParts[1]);
     if (!user) {
       return res.status(401).json({ message: 'invalid token' });
     }

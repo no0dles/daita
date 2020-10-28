@@ -19,6 +19,10 @@ export function jwtAuth(providers: AppAuthorizationProvider[]) {
       return next();
     }
 
+    if (!req.headers.authorization || !req.headers.authorization.startsWith('Bearer ')) {
+      return next();
+    }
+
     jwt({
       algorithms: ['RS256', 'RS384', 'RS512'],
       secret: (req: express.Request, header: any, payload: any, done: (err: any, secret?: string | Buffer) => void) => {
