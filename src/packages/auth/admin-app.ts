@@ -34,7 +34,7 @@ export function createAuthAdminApp(client: TransactionClient<any>) {
   );
 
   adminApp.get('/', (req, res) => {
-    return res.sendFile(path.join(process.cwd(), 'www/dist/web/index.html'));
+    return res.redirect('/admin');
   });
 
   adminApp.use('/admin', express.static(path.join(process.cwd(), 'www/dist/web')));

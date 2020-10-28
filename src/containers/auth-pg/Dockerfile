@@ -29,7 +29,7 @@ COPY src/frontends/auth/tailwind.config.js .
 
 COPY src/packages/auth/models /build/packages/auth/models
 
-RUN npx ng build --prod
+RUN npx ng build --prod --base-href /admin/
 
 
 ###############
