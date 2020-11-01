@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { httpAdapter } from '@daita/http-adapter';
+import { adapter } from '@daita/http-adapter';
 import { AuthService } from './auth.service';
 import { InsertSql, RelationalClient, RelationalTransactionAdapter, SelectSql } from '@daita/relational';
 import { environment } from '../../environments/environment';
@@ -12,7 +12,7 @@ export class ApiService {
   private readonly client: RelationalClient;
 
   constructor(private auth: AuthService) {
-    this.adapter = httpAdapter.getAdapter({
+    this.adapter = adapter.getAdapter({
       baseUrl: environment.authUrl,
       authProvider: {
         async getToken(): Promise<string | null> {

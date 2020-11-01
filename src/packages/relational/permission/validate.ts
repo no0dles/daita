@@ -112,13 +112,7 @@ export function matchesObject(
       };
     }
     for (let i = 0; i < authSql.length; i++) {
-      const res = matchesObject(
-        ruleContext,
-        authSql[i],
-        ctxSql[i],
-        [...path, '0'],
-        score + 1,
-      );
+      const res = matchesObject(ruleContext, authSql[i], ctxSql[i], [...path, '0'], score + 1);
       if (res) {
         return res;
       }
@@ -152,13 +146,7 @@ export function matchesObject(
   }
 
   for (const key of authKeys) {
-    const result = matchesObject(
-      ruleContext,
-      authSql[key],
-      ctxSql[key],
-      [...path, key],
-      score + 1,
-    );
+    const result = matchesObject(ruleContext, authSql[key], ctxSql[key], [...path, key], score + 1);
     if (result) {
       return result;
     }
@@ -167,10 +155,7 @@ export function matchesObject(
   return { matches: true, score };
 }
 
-export function matchesAuthsDescription(
-  auths: AuthDescription[] | AuthDescription,
-  ctx: RuleContext,
-): boolean {
+export function matchesAuthsDescription(auths: AuthDescription[] | AuthDescription, ctx: RuleContext): boolean {
   if (auths instanceof Array) {
     for (const item of auths) {
       if (matchesAuthDescription(item, ctx)) {
@@ -183,33 +168,24 @@ export function matchesAuthsDescription(
   }
 }
 
-export function matchesAuthDescription(
-  auth: AuthDescription,
-  ctx: RuleContext,
-): boolean {
+export function matchesAuthDescription(auth: AuthDescription, ctx: RuleContext): boolean {
   if (auth.type === 'anonymous') {
     return !ctx.isAuthorized;
   } else if (auth.type === 'authorized') {
     return ctx.isAuthorized;
+  } else if (auth.type === 'role') {
+    return ctx.roles instanceof Array && ctx.roles.indexOf(auth.role) >= 0;
   } else {
     failNever(auth, 'unknown auth description');
   }
 }
 
-export function matchesRules(
-  sql: Sql<any>,
-  rules: Rule[],
-  ctx: RuleContext,
-): boolean {
+export function matchesRules(sql: Sql<any>, rules: Rule[], ctx: RuleContext): boolean {
   const res = validateRules(sql, rules, ctx);
   return res.type === 'allow';
 }
 
-export function evaluateRule(
-  sql: Sql<any>,
-  rule: Rule,
-  ctx: RuleContext,
-): RuleValidateResult {
+export function evaluateRule(sql: Sql<any>, rule: Rule, ctx: RuleContext): RuleValidateResult {
   if (rule.type === 'allow') {
     if (!matchesAuthsDescription(rule.auth, ctx)) {
       return {

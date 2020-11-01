@@ -1,45 +1,52 @@
-import { encodeFormData, getQueryString, Http, HttpSendResult } from './http';
-import { AuthProvider, isTokenAuthProvider } from './auth';
-import { failNever } from '../common/utils';
+import { encodeFormData, getQueryString, Http, HttpRequestOptions, HttpSendResult } from './http';
+import { AuthProvider, TokenIssuer } from './auth-provider';
+import { getTokenIssuer } from './shared-http';
 
 export class BrowserHttp implements Http {
-  constructor(protected baseUrl: string, protected authProvider: AuthProvider | null | undefined) {}
+  private readonly tokenProvider: TokenIssuer;
 
-  async sendFormData(path: string, data: any): Promise<HttpSendResult> {
-    const url = `${this.baseUrl}/${path}`;
-    const httpHeader = new Headers({
-      'Content-Type': 'application/x-www-form-urlencoded',
-    });
-    const result = await fetch(url, { method: 'POST', body: encodeFormData(data), headers: httpHeader });
-    const timeout = result.headers.get('x-transaction-timeout');
-    return {
-      data: await result.json(),
-      headers: {
-        'x-transaction-timeout': timeout ? parseInt(timeout, 0) : undefined,
-      },
-    };
+  constructor(protected baseUrl: string, authProvider: AuthProvider | null | undefined) {
+    this.tokenProvider = getTokenIssuer(authProvider, this);
   }
 
-  async sendJson<T>(url: string, data?: any, query?: { [p: string]: string }): Promise<HttpSendResult> {
-    try {
-      const qs = getQueryString(query);
-      const reqUrl = `${this.baseUrl}/${url}${qs.length > 0 ? '?' + qs : ''}`;
+  formData(options: HttpRequestOptions): Promise<HttpSendResult> {
+    return this.sendRequest({
+      authorized: options.authorized,
+      data: encodeFormData(options.data),
+      headers: {
+        ...(options.headers || {}),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      path: options.path,
+      query: options.query,
+    });
+  }
 
-      const httpHeader = new Headers({
+  json<T>(options: HttpRequestOptions): Promise<HttpSendResult> {
+    return this.sendRequest({
+      path: options.path,
+      headers: {
+        ...(options.headers || {}),
         'Content-Type': 'application/json',
-      });
-      if (this.authProvider) {
-        const authProvider = this.authProvider;
-        if (isTokenAuthProvider(authProvider)) {
-          const token = await authProvider.getToken();
-          if (token) {
-            httpHeader.append('Authorization', `Bearer ${token}`);
-          }
-        } else {
-          failNever(authProvider, 'unknown auth provider');
-        }
+      },
+      data: JSON.stringify(options.data),
+      query: options.query,
+      authorized: options.authorized,
+    });
+  }
+
+  private async sendRequest(options: HttpRequestOptions) {
+    const qs = getQueryString(options.query);
+    const url = `${this.baseUrl}/${options.path}${qs.length > 0 ? '?' + qs : ''}`;
+    const httpHeader = new Headers(options.headers);
+    if (options.authorized) {
+      const token = await this.tokenProvider.getToken();
+      if (token) {
+        httpHeader.set('Authorization', token);
       }
-      const result = await fetch(reqUrl, { method: 'POST', body: JSON.stringify(data), headers: httpHeader });
+    }
+    try {
+      const result = await fetch(url, { method: 'POST', body: options.data, headers: httpHeader });
       const timeout = result.headers.get('x-transaction-timeout');
       return {
         data: await result.json(),

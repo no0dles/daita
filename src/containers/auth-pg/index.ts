@@ -36,13 +36,15 @@ process
   });
 
 process.on('SIGTERM', () => {
-  if (client) {
-    client.close();
-  }
-  if (appServer) {
-    appServer.close();
-  }
-  if (adminServer) {
-    adminServer.close();
-  }
+  setTimeout(() => {
+    if (client) {
+      client.close();
+    }
+    if (appServer) {
+      appServer.close();
+    }
+    if (adminServer) {
+      adminServer.close();
+    }
+  }, 15000);
 });

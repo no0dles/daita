@@ -14,9 +14,12 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
       throw new Error('transaction already closed');
     }
 
-    const response = await this.http.sendJson(`api/relational/trx/${this.transactionId}/exec`, {
-      sql,
-      values,
+    const response = await this.http.json({
+      path: `api/relational/trx/${this.transactionId}/exec`,
+      data: {
+        sql,
+        values,
+      },
     });
     const timeout = response.headers['x-transaction-timeout'];
     if (timeout && timeout > 0) {
@@ -30,8 +33,11 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
       throw new Error('transaction already closed');
     }
 
-    const response = await this.http.sendJson(`api/relational/trx/${this.transactionId}/exec`, {
-      sql: sql,
+    const response = await this.http.json({
+      path: `api/relational/trx/${this.transactionId}/exec`,
+      data: {
+        sql: sql,
+      },
     });
     const timeout = response.headers['x-transaction-timeout'];
     if (timeout && timeout > 0) {
@@ -47,7 +53,7 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   async close(): Promise<void> {}
 
   async run(action: () => Promise<any>): Promise<any> {
-    await this.http.sendJson(`api/relational/trx/${this.transactionId}`);
+    await this.http.json({ path: `api/relational/trx/${this.transactionId}` });
     action()
       .then(async (result) => {
         this.resultDefer.resolve(result);
@@ -72,10 +78,10 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   }
 
   private async commit() {
-    await this.http.sendJson(`api/relational/trx/${this.transactionId}/commit`);
+    await this.http.json({ path: `api/relational/trx/${this.transactionId}/commit` });
   }
 
   private async rollback() {
-    await this.http.sendJson(`api/relational/trx/${this.transactionId}/rollback`);
+    await this.http.json({ path: `api/relational/trx/${this.transactionId}/rollback` });
   }
 }

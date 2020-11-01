@@ -1,26 +1,56 @@
-import { encodeFormData, getQueryString, Http, HttpSendResult } from './http';
-import { AuthProvider, isTokenAuthProvider } from './auth';
+import { encodeFormData, getQueryString, Http, HttpRequestOptions, HttpSendResult } from './http';
 import { request as httpsRequest, RequestOptions } from 'https';
 import { request as httpRequest } from 'http';
 import { parse } from 'url';
-import { failNever } from '../common/utils';
+import { AuthProvider, TokenIssuer } from './auth-provider';
+import { getTokenIssuer } from './shared-http';
 
 export class NodeHttp implements Http {
-  constructor(protected baseUrl: string, protected authProvider: AuthProvider | null | undefined) {}
+  private readonly tokenProvider: TokenIssuer;
 
-  sendFormData(path: string, data: any): Promise<HttpSendResult> {
-    const url = `${this.baseUrl}/${path}`;
-    return this.sendRequest(
-      url,
-      {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      },
-      encodeFormData(data),
-    );
+  constructor(protected baseUrl: string, authProvider: AuthProvider | null | undefined) {
+    this.tokenProvider = getTokenIssuer(authProvider, this);
   }
 
-  private sendRequest(reqUrl: string, options: RequestOptions, data: any) {
-    const parsedUrl = parse(reqUrl);
+  formData(options: HttpRequestOptions): Promise<HttpSendResult> {
+    return this.sendRequest({
+      authorized: options.authorized,
+      data: encodeFormData(options.data),
+      headers: {
+        ...(options.headers || {}),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      path: options.path,
+      query: options.query,
+    });
+  }
+
+  json<T>(options: HttpRequestOptions): Promise<HttpSendResult> {
+    return this.sendRequest({
+      path: options.path,
+      headers: {
+        ...(options.headers || {}),
+        'Content-Type': 'application/json',
+      },
+      data: JSON.stringify(options.data),
+      query: options.query,
+      authorized: options.authorized,
+    });
+  }
+
+  private async sendRequest(options: HttpRequestOptions) {
+    const qs = getQueryString(options.query);
+    const url = `${this.baseUrl}/${options.path}${qs.length > 0 ? '?' + qs : ''}`;
+
+    const headers = options.headers || {};
+    if (options.authorized) {
+      const authHeader = await this.tokenProvider.getToken();
+      if (authHeader) {
+        headers['Authorization'] = authHeader;
+      }
+    }
+
+    const parsedUrl = parse(url);
     const reqOptions: RequestOptions = {
       ...options,
       hostname: parsedUrl.hostname,
@@ -51,34 +81,10 @@ export class NodeHttp implements Http {
       }).on('error', (err) => {
         reject(err);
       });
-      req.write(data);
+      if (options.data !== null && options.data !== undefined) {
+        req.write(options.data);
+      }
       req.end();
     });
-  }
-
-  async sendJson<T>(path: string, data?: any, query?: { [p: string]: string }): Promise<HttpSendResult> {
-    const qs = getQueryString(query);
-    const url = `${this.baseUrl}/${path}${qs.length > 0 ? '?' + qs : ''}`;
-
-    const httpHeader: { [key: string]: string } = { 'Content-Type': 'application/json' };
-    if (this.authProvider) {
-      const authProvider = this.authProvider;
-      if (isTokenAuthProvider(authProvider)) {
-        const token = await authProvider.getToken();
-        if (token) {
-          httpHeader['Authorization'] = `Bearer ${token}`;
-        }
-      } else {
-        failNever(authProvider, 'unknown auth provider');
-      }
-    }
-
-    return this.sendRequest(
-      url,
-      {
-        headers: httpHeader,
-      },
-      JSON.stringify(data),
-    );
   }
 }

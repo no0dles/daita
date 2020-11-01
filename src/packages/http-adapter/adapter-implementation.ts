@@ -1,4 +1,4 @@
-import { AuthProvider } from '../http-client-common/auth';
+import { AuthProvider } from '../http-client-common/auth-provider';
 
 export interface HttpAdapterOptions {
   baseUrl: string;

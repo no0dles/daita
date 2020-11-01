@@ -6,63 +6,115 @@
       "type": "object",
       "patternProperties": {
         "^[A-Za-z0-9_]+$": {
-          "type": "object",
-          "anyOf": [
-            {"$ref": "#/definitions/postgresContext"},
-            {"$ref": "#/definitions/sqliteContext"}
-          ]
+          "$ref": "#/definitions/context"
         }
       }
     },
     "context": {
-      "schemaLocation": {
-        "type": "string"
+      "if": {
+        "properties": {
+          "connectionString": {
+            "pattern": "sqlite://.+"
+          }
+        }
       },
-      "schemaName": {
-        "type": "string"
-      },
-      "migrationLocation": {
-        "type": "string"
-      },
-      "authorization": {
-        "anyOf": [
-          {
+      "then": {
+        "properties": {
+          "connectionString": {
+            "type": "string"
+          },
+          "schemaLocation": {
+            "type": "string"
+          },
+          "schemaName": {
+            "type": "string"
+          },
+          "migrationLocation": {
+            "type": "string"
+          },
+          "authorization": {
             "$ref": "#/definitions/authorization"
           },
-          {
-            "type": "boolean"
+          "options": {
+            "properties": {
+              "dropIfExists": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
           }
-        ]
-      },
-      "required": ["authorization", "schemaLocation"]
-    },
-    "sqliteContext": {
-      "type": "object",
-      "allOf": ["#/definitions/context"],
-      "properties": {
-        "module": {
-          "const": "@daita/sqlite-adapter"
         },
-        "moduleOptions": {
-          "$ref": "#/definitions/sqliteModuleOptions"
-        }
+        "required": ["connectionString"],
+        "additionalProperties": false
       },
-      "required": ["module", "moduleOptions"]
-    },
-    "postgresContext": {
-      "type": "object",
-      "allOf": ["#/definitions/context"],
-      "properties": {
-        "module": {
-          "const": "@daita/pg-adapter"
+      "else": {
+        "if": {
+          "properties": {
+            "connectionString": {
+              "pattern": "postgres://.+"
+            }
+          }
         },
-        "moduleOptions": {
-          "$ref": "#/definitions/postgresModuleOptions"
+        "then": {
+          "properties": {
+            "connectionString": {
+              "type": "string"
+            },
+            "schemaLocation": {
+              "type": "string"
+            },
+            "schemaName": {
+              "type": "string"
+            },
+            "migrationLocation": {
+              "type": "string"
+            },
+            "authorization": {
+              "$ref": "#/definitions/authorization"
+            },
+            "options": {
+              "properties": {
+                "createIfNotExists": {
+                  "type": "boolean"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "required": ["connectionString"],
+          "additionalProperties": false
+        },
+        "else": {
+          "if": {
+            "properties": {
+              "connectionString": {
+                "pattern": "(http|https)://.+"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "connectionString": {
+                "type": "string"
+              },
+              "schemaLocation": {
+                "type": "string"
+              },
+              "schemaName": {
+                "type": "string"
+              },
+              "migrationLocation": {
+                "type": "string"
+              }
+            },
+            "required": ["connectionString"],
+            "additionalProperties": false
+          },
+          "else": {
+            "additionalProperties": false
+          }
         }
-      },
-      "required": [
-        "module", "moduleOptions"
-      ]
+      }
     },
     "authorization": {
       "type": "object",
@@ -85,7 +137,8 @@
             "type": "string"
           }
         }
-      }
+      },
+      "additionalProperties": false
     },
     "authorizationProvider": {
       "type": "object",
@@ -97,51 +150,20 @@
           "type": "string"
         }
       },
+      "additionalProperties": false,
       "required": ["issuer", "uri"]
     },
     "authorizationToken": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "userId": {
+        "uri": {
           "type": "string"
         },
-        "token": {
+        "issuer": {
           "type": "string"
         }
       }
-    },
-    "sqliteModuleOptions": {
-      "type": "object",
-      "anyOf": [{
-        "properties": {
-          "file": {
-            "type": "string"
-          },
-          "dropIfExists": {
-            "type": "boolean"
-          }
-        },
-        "required": ["file"]
-      }, {
-        "properties": {
-          "memory": {
-            "type": "boolean"
-          }
-        },
-        "required": ["memory"]
-      }]
-    },
-    "postgresModuleOptions": {
-      "type": "object",
-      "properties": {
-        "connectionString": {
-          "type": "string"
-        },
-        "createIfNotExists": {
-          "type": "boolean"
-        }
-      },
-      "required": ["connectionString"]
     }
   },
   "properties": {

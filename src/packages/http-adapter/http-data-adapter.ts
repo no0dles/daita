@@ -4,11 +4,11 @@ import { Http } from '../http-client-common/http';
 export class HttpDataAdapter implements RelationalDataAdapter {
   constructor(protected http: Http) {}
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
-    const result = await this.http.sendJson('api/relational/execRaw', { sql, values });
+    const result = await this.http.json({ path: 'api/relational/execRaw', data: { sql, values } });
     return result.data;
   }
   async exec(sql: any): Promise<RelationalRawResult> {
-    const result = await this.http.sendJson('api/relational/exec', { sql });
+    const result = await this.http.json({ path: 'api/relational/exec', data: { sql } });
     return result.data;
   }
   supportsQuery(sql: any): boolean {

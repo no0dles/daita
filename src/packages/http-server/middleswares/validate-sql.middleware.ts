@@ -15,6 +15,7 @@ export function validateSqlRules(options: AppOptions) {
       const result = validateRules(req.body.sql, options.rules, {
         isAuthorized: authorized,
         userId: userId,
+        roles: req.user?.roles,
       });
       console.log('validate rules');
       console.log(result);

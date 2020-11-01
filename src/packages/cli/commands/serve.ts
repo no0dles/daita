@@ -70,7 +70,7 @@ export async function serve(opts: {
   });
 
   let authServer: any;
-  if (!opts.disableAuth) {
+  if (!disableAuth) {
     await migrate(client, authSchema);
     await seedUserPool(client, {
       id: 'cli',

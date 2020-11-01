@@ -15,7 +15,7 @@ export function init(options: { cwd?: string }) {
   const config: { context: { [key: string]: DaitaContextConfig } } = {
     context: {
       default: {
-        module: '@daita/pg-adapter',
+        connectionString: `postgres://daita:${password}@localhost/daita`, //TODO use package.json name?
         authorization: {
           providers: [
             {
@@ -25,8 +25,7 @@ export function init(options: { cwd?: string }) {
           ],
         },
         schemaLocation: 'src/schema.ts',
-        moduleOptions: {
-          connectionString: `postgres://daita:${password}@localhost/daita`, //TODO use package.json name?
+        options: {
           createIfNotExists: true,
         },
       },

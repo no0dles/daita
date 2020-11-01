@@ -1,6 +1,14 @@
 export interface Http {
-  sendJson<T>(url: string, data?: any, query?: { [key: string]: string }): Promise<HttpSendResult>;
-  sendFormData(url: string, data: any): Promise<HttpSendResult>;
+  json<T>(options: HttpRequestOptions): Promise<HttpSendResult>;
+  formData(options: HttpRequestOptions): Promise<HttpSendResult>;
+}
+
+export interface HttpRequestOptions {
+  path: string;
+  data?: any;
+  headers?: { [key: string]: string };
+  query?: { [key: string]: string };
+  authorized?: boolean;
 }
 
 export interface HttpSendResult {
