@@ -2,12 +2,12 @@
        [ngClass]="{'text-red-700': invalid, 'text-gray-700': !invalid}">
   {{name}}
 </label>
-<div class="mt-1 rounded-md shadow-sm relative" [formGroup]="form">
+<div class="mt-1 rounded-md border border-gray-300 relative" [formGroup]="form">
   <input [id]="id"
          [type]="type"
          [formControlName]="id"
          [ngClass]="{'border-red-300 text-red-900 placeholder-red-300 focus:border-red-300': invalid}"
-         class="form-input block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5">
+         class="form-input block rounded-md w-full transition duration-150 py-2 px-2 ease-in-out sm:text-sm sm:leading-5">
   <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none" *ngIf="prefix">
       <span class="text-gray-500 sm:text-sm sm:leading-5">
         {{prefix}}
