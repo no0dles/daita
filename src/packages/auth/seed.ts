@@ -3,7 +3,7 @@ import { UserPool } from './models/user-pool';
 import { all, equal, field, table } from '../relational/sql/function';
 import { ExcludeNonPrimitive } from '../common/types';
 import { UserPoolCors } from './models/user-pool-cors';
-import { generateRandomPassword } from '../create/create';
+import { randomString } from '../common/utils/random-string';
 
 export async function seedUserPool(client: TransactionClient<any>, userPool: ExcludeNonPrimitive<UserPool>) {
   const existingUserPool = await client.selectFirst({
@@ -29,7 +29,7 @@ export async function seedUserPoolCors(client: TransactionClient<any>, userPoolI
     const existingCorsUrl = existingCors.find((c) => c.url === corsUrl);
     if (!existingCorsUrl) {
       await client.insert({
-        insert: { url: corsUrl, userPoolId, id: generateRandomPassword() },
+        insert: { url: corsUrl, userPoolId, id: randomString() },
         into: table(UserPoolCors),
       });
     } else {

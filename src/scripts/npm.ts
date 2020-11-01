@@ -64,7 +64,7 @@ export function createPackageJson(packageDir: string, packageName: string, packa
   } else if (fs.existsSync(path.join(packageDir, 'esm/browser.js'))) {
     content.browser = 'esm/browser.js';
   }
-  const blacklist = ['path', 'fs', 'crypto', 'https', 'http', 'child_process', 'url'];
+  const blacklist = require('module').builtinModules;
   for (const dep of packages) {
     if (dep.startsWith('@daita/')) {
       if (!fs.existsSync(path.join(packageDir, '..', dep.substr('@daita/'.length)))) {

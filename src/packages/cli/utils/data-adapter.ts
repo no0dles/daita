@@ -38,13 +38,20 @@ export async function getClientFromConfig(options: any): Promise<TransactionClie
     throw new Error('missing connection string');
   }
 
-  if (contextConfig.connectionString.startsWith('postgres:')) {
+  if (contextConfig.connectionString.startsWith('postgres://')) {
     const adapter: RelationalAdapterImplementation<any, PostgresAdapterOptions> = require('@daita/pg-adapter').adapter;
-    return getClient(adapter, contextConfig.options);
-  } else if (contextConfig.connectionString.startsWith('sqlite:')) {
+    return getClient(adapter, { ...(contextConfig.options || {}), connectionString: contextConfig.connectionString });
+  } else if (contextConfig.connectionString.startsWith('sqlite://')) {
     const adapter: RelationalAdapterImplementation<any, SqliteAdapterOptions> = require('@daita/sqlite-adapter')
       .adapter;
-    return getClient(adapter, contextConfig.options);
+    if (contextConfig.connectionString === 'sqlite://:memory:') {
+      return getClient(adapter, { ...(contextConfig.options || {}), memory: true });
+    } else {
+      return getClient(adapter, {
+        ...(contextConfig.options || {}),
+        file: contextConfig.connectionString.substr('sqlite://'.length),
+      });
+    }
   } else if (
     contextConfig.connectionString.startsWith('http:') ||
     contextConfig.connectionString.startsWith('https:')

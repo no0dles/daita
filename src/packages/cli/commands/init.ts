@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { DaitaContextConfig } from '../utils/data-adapter';
 import * as yaml from 'yaml';
-import { generateRandomPassword } from '../utils/password';
+import { randomString } from '../../common/utils/random-string';
 
 export function init(options: { cwd?: string }) {
   const cliFile = path.join(options.cwd || process.cwd(), 'daita.json');
@@ -11,7 +11,7 @@ export function init(options: { cwd?: string }) {
     return;
   }
 
-  const password = generateRandomPassword();
+  const password = randomString(20);
   const config: { context: { [key: string]: DaitaContextConfig } } = {
     context: {
       default: {

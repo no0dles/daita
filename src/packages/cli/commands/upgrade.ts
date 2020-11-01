@@ -2,8 +2,9 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as https from 'https';
 import { Defer } from '../../common/utils';
+import { spawn } from 'child_process';
 
-export async function upgrade(opts: { cwd?: string }) {
+export async function upgrade(opts: { cwd?: string; npmClient?: string }) {
   const cwd = opts.cwd ? path.resolve(opts.cwd) : process.cwd();
   const packagePath = path.join(cwd, 'package.json');
   if (!fs.existsSync(packagePath)) {
@@ -24,10 +25,27 @@ export async function upgrade(opts: { cwd?: string }) {
 
     fs.writeFileSync(packagePath, JSON.stringify(pkg, null, 2));
     console.info('updated daita packages successfully');
+    await runCommand(opts.npmClient || 'npm', ['install'], cwd);
   } catch (e) {
     console.error('unable to parse package.json');
     return;
   }
+}
+
+function runCommand(cmd: string, args: string[], cwd: string) {
+  return new Promise((resolve, reject) => {
+    const ps = spawn(cmd, args, {
+      cwd,
+      stdio: [process.stdin, process.stdout, process.stderr],
+    });
+    ps.once('exit', (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(code);
+      }
+    });
+  });
 }
 
 async function upgradeDependencies(dependencies: any) {

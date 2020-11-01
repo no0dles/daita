@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'yaml';
 import { spawn } from 'child_process';
+import { randomString } from '../common/utils/random-string';
 
 export async function create() {
   const dir = process.cwd();
@@ -39,7 +40,7 @@ export async function create() {
   const answers = await prompts;
   const createPackageJson = getOwnPackageJson();
   const projectDir = path.join(dir, answers.projectName);
-  const password = generateRandomPassword();
+  const password = randomString(20);
   const daitaVersion = `^${createPackageJson.version}`;
 
   const packageJson: any = {
@@ -99,11 +100,7 @@ export async function create() {
   if (answers.adapter === 'pg') {
     dockerCompose.services['postgres'] = {
       image: 'postgres',
-      environment: [
-        'POSTGRES_USER=daita',
-        `POSTGRES_PASSWORD=${password}`,
-        `POSTGRES_DB=${answers.projectName}`,
-      ],
+      environment: ['POSTGRES_USER=daita', `POSTGRES_PASSWORD=${password}`, `POSTGRES_DB=${answers.projectName}`],
       ports: ['5432:5432'],
       volumes: ['postgres-data:/var/lib/postgresql/data'],
     };
@@ -125,20 +122,11 @@ export async function create() {
     path.join(projectDir, 'config/default.json'),
     JSON.stringify(defaultConfig, null, 2), //TODO remove, use new config
   );
-  fs.writeFileSync(
-    path.join(projectDir, 'tsconfig.json'),
-    JSON.stringify(tsConfig, null, 2),
-  );
-  fs.writeFileSync(
-    path.join(projectDir, 'package.json'),
-    JSON.stringify(packageJson, null, 2),
-  );
+  fs.writeFileSync(path.join(projectDir, 'tsconfig.json'), JSON.stringify(tsConfig, null, 2));
+  fs.writeFileSync(path.join(projectDir, 'package.json'), JSON.stringify(packageJson, null, 2));
   fs.writeFileSync(path.join(projectDir, 'README.md'), '');
   if (Object.keys(dockerCompose.services).length > 0) {
-    fs.writeFileSync(
-      path.join(projectDir, 'docker-compose.yaml'),
-      yaml.stringify(dockerCompose, { indent: 2 }),
-    );
+    fs.writeFileSync(path.join(projectDir, 'docker-compose.yaml'), yaml.stringify(dockerCompose, { indent: 2 }));
   }
   if (answers.npmClient === 'yarn') {
     await runCommand('yarn', ['install'], projectDir);
@@ -155,19 +143,6 @@ function getOwnPackageJson() {
   } else {
     throw new Error('unable to get package version');
   }
-}
-
-const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz'.split(
-  '',
-);
-const eventIdLength = 22;
-
-export function generateRandomPassword() {
-  let id = '';
-  for (let i = 0; i < eventIdLength; i++) {
-    id += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return id;
 }
 
 function runCommand(cmd: string, args: string[], cwd: string) {
