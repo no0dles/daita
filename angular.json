@@ -81,6 +81,27 @@
           }
         }
       }
-    }},
+    },
+    "angular": {
+      "projectType": "library",
+      "root": "src/frontends/angular",
+      "sourceRoot": "src/frontends/angular",
+      "prefix": "daita",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "tsConfig": "tsconfig.angular.json",
+            "project": "src/frontends/angular/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "tsconfig.angular-lib.json"
+            }
+          }
+        }
+      }
+    }
+  },
   "defaultProject": "auth"
 }

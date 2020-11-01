@@ -16,8 +16,14 @@
       "dom"
     ]
   },
+  "angularCompilerOptions": {
+    "skipTemplateCodegen": true,
+    "strictMetadataEmit": true,
+    "enableResourceInlining": true
+  },
   "files": [
     "src/frontends/auth/main.ts",
+    "src/frontends/angular/public-api.ts",
     "src/frontends/auth/polyfills.ts"
   ],
   "include": [
