@@ -20,6 +20,7 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
         sql,
         values,
       },
+      authorized: true,
     });
     const timeout = response.headers['x-transaction-timeout'];
     if (timeout && timeout > 0) {
@@ -38,6 +39,7 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
       data: {
         sql: sql,
       },
+      authorized: true,
     });
     const timeout = response.headers['x-transaction-timeout'];
     if (timeout && timeout > 0) {
@@ -53,7 +55,7 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   async close(): Promise<void> {}
 
   async run(action: () => Promise<any>): Promise<any> {
-    await this.http.json({ path: `api/relational/trx/${this.transactionId}` });
+    await this.http.json({ path: `api/relational/trx/${this.transactionId}`, authorized: true });
     action()
       .then(async (result) => {
         this.resultDefer.resolve(result);
@@ -78,10 +80,10 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   }
 
   private async commit() {
-    await this.http.json({ path: `api/relational/trx/${this.transactionId}/commit` });
+    await this.http.json({ path: `api/relational/trx/${this.transactionId}/commit`, authorized: true });
   }
 
   private async rollback() {
-    await this.http.json({ path: `api/relational/trx/${this.transactionId}/rollback` });
+    await this.http.json({ path: `api/relational/trx/${this.transactionId}/rollback`, authorized: true });
   }
 }

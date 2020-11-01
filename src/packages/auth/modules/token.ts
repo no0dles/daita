@@ -8,7 +8,7 @@ export async function verifyToken(token: string): Promise<any> {
     return null;
   }
 
-  const key = await getKeyForId(payload.header.kid);
+  const key = await getKeyForId(payload.payload.iss, payload.header.kid);
 
   const defer = new Defer<any>();
   jwt.verify(token, key.toPEM(), (err) => {

@@ -9,6 +9,7 @@ import * as helmet from 'helmet';
 import { allow, anything, authorized } from '../relational/permission/function';
 import { relationalRoute } from '../http-server';
 import { TransactionClient } from '../relational/client';
+import * as cors from 'cors';
 
 export function createAuthAdminApp(client: TransactionClient<any>) {
   const adminApp = express();
@@ -17,6 +18,10 @@ export function createAuthAdminApp(client: TransactionClient<any>) {
 
   adminApp.use(helmet());
   adminApp.use(bodyParser.json());
+
+  if (process.env.NODE_ENV !== 'production') {
+    adminApp.use(cors());
+  }
 
   adminApp.use('/:userPoolId/refresh', refreshRoute);
   adminApp.use('/:userPoolId/login', loginRoute);

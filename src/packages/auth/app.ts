@@ -44,7 +44,7 @@ export function createAuthApp(client: TransactionClient<any>) {
     cors((req) => req.params.userPoolId),
     loginRoute,
   );
-  app.use('/.well-known', wellKnownRoute);
+  app.use('/:userPoolId/.well-known', wellKnownRoute);
 
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.log(err);

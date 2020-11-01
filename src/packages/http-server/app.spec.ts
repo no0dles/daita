@@ -18,7 +18,7 @@ describe(
           providers: [
             {
               issuer: 'default',
-              uri: `http://localhost:${authApp.port}/.well-known/jwks.json`,
+              uri: `http://localhost:${authApp.port}`,
             },
           ],
           tokenEndpoints: [

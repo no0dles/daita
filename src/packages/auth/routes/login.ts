@@ -7,14 +7,7 @@ import { UserRefreshToken } from '../models/user-refresh-token';
 import { compareHash } from '../modules/hash';
 import { getAccessToken } from '../modules/key';
 import { getRandomCode } from '../modules/random';
-import {
-  and,
-  equal,
-  field,
-  join,
-  or,
-  table,
-} from '../../relational/sql/function';
+import { and, equal, field, join, or, table } from '../../relational/sql/function';
 
 const router = express.Router({ mergeParams: true });
 
@@ -33,17 +26,9 @@ router.post('/', async (req, res, next) => {
         },
       },
       from: table(User),
-      join: [
-        join(
-          table(UserPool),
-          equal(field(UserPool, 'id'), field(User, 'userPoolId')),
-        ),
-      ],
+      join: [join(table(UserPool), equal(field(UserPool, 'id'), field(User, 'userPoolId')))],
       where: and(
-        or(
-          equal(field(User, 'username'), req.body.username),
-          equal(field(User, 'email'), req.body.username),
-        ),
+        or(equal(field(User, 'username'), req.body.username), equal(field(User, 'email'), req.body.username)),
         equal(field(User, 'userPoolId'), req.params.userPoolId),
       ),
     });
@@ -60,14 +45,13 @@ router.post('/', async (req, res, next) => {
     const roles = await req.app.client.select({
       select: field(Role, 'name'),
       from: table(Role),
-      join: [
-        join(UserRole, equal(field(UserRole, 'roleName'), field(Role, 'name'))),
-      ],
+      join: [join(UserRole, equal(field(UserRole, 'roleName'), field(Role, 'name')))],
       where: equal(field(UserRole, 'userUsername'), user.username),
     });
 
     const refreshToken = await getRandomCode();
     const accessToken = await getAccessToken(
+      req.params.userPoolId,
       {
         roles,
       },
@@ -79,6 +63,7 @@ router.post('/', async (req, res, next) => {
       },
     );
     const idToken = await getAccessToken(
+      req.params.userPoolId,
       {
         roles,
         email: user.email,

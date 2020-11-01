@@ -19,7 +19,7 @@ export function init(options: { cwd?: string }) {
         authorization: {
           providers: [
             {
-              uri: 'http://localhost:8766/.well-known/jwks.json',
+              uri: 'http://localhost:8766',
               issuer: 'default',
             },
           ],

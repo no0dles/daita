@@ -48,8 +48,16 @@ export class BrowserHttp implements Http {
     try {
       const result = await fetch(url, { method: 'POST', body: options.data, headers: httpHeader });
       const timeout = result.headers.get('x-transaction-timeout');
+      let data = '';
+
+      const contentType = result.headers.get('content-type');
+      if (contentType && contentType.indexOf('application/json') !== -1) {
+        data = await result.json();
+      } else {
+        data = await result.text();
+      }
       return {
-        data: await result.json(),
+        data,
         headers: {
           'x-transaction-timeout': timeout ? parseInt(timeout, 0) : undefined,
         },

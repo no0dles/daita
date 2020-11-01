@@ -42,6 +42,8 @@ export class LoginComponent implements OnInit {
       if (e instanceof HttpErrorResponse && e.status === 400 && e.error && e.error.message === 'invalid credentials') {
         this.errorMessage = 'Invalid Username / Password';
         this.invalidCredentials = true;
+      } else if (e instanceof HttpErrorResponse && e.status === 500) {
+        this.errorMessage = 'Internal Server Error';
       }
     }
   }

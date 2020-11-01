@@ -24,13 +24,7 @@ router.post('/', async (req, res, next) => {
       },
       from: table(UserRefreshToken),
       join: [
-        join(
-          User,
-          equal(
-            field(User, 'username'),
-            field(UserRefreshToken, 'userUsername'),
-          ),
-        ),
+        join(User, equal(field(User, 'username'), field(UserRefreshToken, 'userUsername'))),
         join(UserPool, equal(field(User, 'userPoolId'), field(UserPool, 'id'))),
       ],
       where: and(
@@ -43,9 +37,7 @@ router.post('/', async (req, res, next) => {
       return res.status(400).json({ message: 'invalid token' });
     }
 
-    const expiresAt =
-      Math.floor(token.issuedAt.getTime() / 1000) +
-      token.refreshRefreshExpiresIn;
+    const expiresAt = Math.floor(token.issuedAt.getTime() / 1000) + token.refreshRefreshExpiresIn;
     const now = Math.floor(new Date().getTime() / 1000);
     if (now > expiresAt) {
       await req.app.client.delete({
@@ -60,14 +52,13 @@ router.post('/', async (req, res, next) => {
     const roles = await req.app.client.select({
       select: field(Role, 'name'),
       from: table(Role),
-      join: [
-        join(UserRole, equal(field(UserRole, 'roleName'), field(Role, 'name'))),
-      ],
+      join: [join(UserRole, equal(field(UserRole, 'roleName'), field(Role, 'name')))],
       where: equal(field(UserRole, 'userUsername'), token.userUsername),
     });
 
     const refreshToken = await getRandomCode();
     const accessToken = await getAccessToken(
+      req.params.userPoolId,
       {
         roles,
       },

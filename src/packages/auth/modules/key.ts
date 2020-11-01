@@ -6,22 +6,29 @@ import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
 import { Defer } from '../../common/utils';
 
-const keystore = new jose.JWKS.KeyStore([]);
-const keysOnDisk = new Promise((resolve, reject) => {
-  const keyPath = path.join(process.cwd(), 'keys');
-  if (!fs.existsSync(keyPath)) {
-    return resolve();
-  }
-  for (const keyFile of fs.readdirSync(keyPath)) {
-    const content = fs.readFileSync(path.join(keyPath, keyFile));
-    const key = jose.JWK.asKey(content);
-    keystore.add(key);
-  }
-  resolve();
-});
+const keyStores: { [key: string]: Promise<jose.JWKS.KeyStore> } = {};
 
-export async function getKeyForId(id: string) {
-  await keysOnDisk;
+function getKeystore(userPoolId: string) {
+  if (!keyStores[userPoolId]) {
+    keyStores[userPoolId] = new Promise((resolve, reject) => {
+      const keystore = new jose.JWKS.KeyStore([]);
+      const keyPath = path.join(process.cwd(), 'keys');
+      if (!fs.existsSync(keyPath)) {
+        return resolve(keystore);
+      }
+      for (const keyFile of fs.readdirSync(keyPath)) {
+        const content = fs.readFileSync(path.join(keyPath, keyFile));
+        const key = jose.JWK.asKey(content);
+        keystore.add(key);
+      }
+      resolve(keystore);
+    });
+  }
+  return keyStores[userPoolId];
+}
+
+export async function getKeyForId(userPoolId: string, id: string) {
+  const keystore = await getKeystore(userPoolId);
   return keystore.get({ kid: id });
 }
 
@@ -37,8 +44,8 @@ export function getKeyAlgorithm(algorithm: UserPoolAlgorithm) {
   }
 }
 
-export async function getKey(algorithm: UserPoolAlgorithm) {
-  await keysOnDisk;
+export async function getKey(userPoolId: string, algorithm: UserPoolAlgorithm) {
+  const keystore = await getKeystore(userPoolId);
   let key = keystore.get({
     kty: getKeyAlgorithm(algorithm),
   });
@@ -114,12 +121,13 @@ export async function getKey(algorithm: UserPoolAlgorithm) {
   return { id: key.kid, secret: key.toPEM(true) };
 }
 
-export async function getKeys() {
-  await keysOnDisk;
+export async function getKeys(userPoolId: string) {
+  const keystore = await getKeystore(userPoolId);
   return keystore.toJWKS(false);
 }
 
 export async function getAccessToken<T>(
+  userPoolId: string,
   payload: any,
   options: {
     subject: string;
@@ -129,17 +137,12 @@ export async function getAccessToken<T>(
   },
 ) {
   const defer = new Defer<string>();
-  const key = await getKey(options.algorithm);
-  jwt.sign(
-    payload,
-    key.secret,
-    { ...options, keyid: key.id },
-    (err, encoded) => {
-      if (err) {
-        return defer.reject(err);
-      }
-      defer.resolve(encoded);
-    },
-  );
+  const key = await getKey(userPoolId, options.algorithm);
+  jwt.sign(payload, key.secret, { ...options, keyid: key.id }, (err, encoded) => {
+    if (err) {
+      return defer.reject(err);
+    }
+    defer.resolve(encoded);
+  });
   return defer.promise;
 }

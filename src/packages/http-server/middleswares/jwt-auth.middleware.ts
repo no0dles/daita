@@ -10,7 +10,7 @@ export function jwtAuth(providers: AppAuthorizationProvider[]) {
   for (const provider of providers) {
     console.log('registered ' + provider.issuer + ' at ' + provider.uri);
     clients[provider.issuer] = JwksClient({
-      jwksUri: provider.uri,
+      jwksUri: provider.uri + '/' + provider.issuer + '/.well-known/jwks.json',
     });
   }
 
