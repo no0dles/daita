@@ -1,7 +1,7 @@
-import { RelationalSchemaDescription } from '../schema';
-import { MigrationTree } from '../migration';
-import { RelationalMapper } from '../context';
-import { Rule } from '../../relational/permission/description';
+import { RelationalMapper } from '../context/relational-mapper';
+import { RelationalSchemaDescription } from './description/relational-schema-description';
+import { MigrationTree } from '../migration/migration-tree';
+import { Rule } from '../../relational/permission/description/rule';
 
 export interface OrmRelationalSchema {
   schema: string | null;

@@ -1,4 +1,4 @@
-import { SimpleFormatContext } from '../relational/sql/formatter';
+import { SimpleFormatContext } from '../relational/sql/formatter/simple-format-context';
 
 export class SqliteFormatContext extends SimpleFormatContext {
   constructor() {

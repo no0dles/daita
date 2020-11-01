@@ -1,10 +1,8 @@
 import { getRuleId } from './rule-id';
-import {
-  allowRegex,
-  authorized,
-} from '../../../relational/permission/function';
-import { table } from '../../../relational/sql/function';
-import { Rule } from '../../../relational/permission/description';
+import { authorized } from '../../../relational/permission/function/authorized';
+import { allowRegex } from '../../../relational/permission/function/allow-regex';
+import { Rule } from '../../../relational/permission/description/rule';
+import { table } from '../../../relational/sql/function/table';
 
 describe('orm/rule-id', () => {
   it('should have different id', () => {

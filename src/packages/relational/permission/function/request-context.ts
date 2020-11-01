@@ -1,4 +1,4 @@
-import { RuleContext } from '../description';
+import { RuleContext } from '../description/rule-context';
 
 export interface RequestContextDescription {
   getContextValue: (req: RuleContext) => any;
@@ -62,8 +62,6 @@ function getProxy(root: boolean, actions: ProxyAction[]) {
   });
 }
 
-export const isRequestContext = (
-  val: any,
-): val is RequestContextDescription => {
+export const isRequestContext = (val: any): val is RequestContextDescription => {
   return typeof val.getContextValue === 'function';
 };

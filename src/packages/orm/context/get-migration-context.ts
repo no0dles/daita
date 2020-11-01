@@ -1,12 +1,8 @@
 import { MigrationSql, OrmMigrationContext } from './orm-migration-context';
-import { OrmRelationalSchema } from '../schema';
-import { MigrationTree } from '../migration';
-import { isMigrationTree } from '../migration/migration-tree';
-import {
-  Client,
-  SelectClient,
-  TransactionClient,
-} from '../../relational/client';
+import { isMigrationTree, MigrationTree } from '../migration/migration-tree';
+import { OrmRelationalSchema } from '../schema/orm-relational-schema';
+import { TransactionClient } from '../../relational/client/transaction-client';
+import { Client } from '../../relational/client/client';
 
 export interface MigrationContext {
   needsUpdate(): Promise<boolean>;

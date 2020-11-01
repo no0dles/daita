@@ -1,45 +1,43 @@
 import { NowFormatter } from './formatters/now-formatter';
-import {
-  AliasFormatter,
-  AllFormatter,
-  AlterTableAddColumnFormatter,
-  AndFormatter,
-  AvgFormatter,
-  BetweenFormatter,
-  ConcatFormatter,
-  CountFormatter,
-  CreateSchemaFormatter,
-  CreateTableFormatter,
-  DeleteFormatter,
-  DropTableFormatter,
-  EqualFormatter,
-  ExistsFormatter,
-  FieldFormatter,
-  Formatter,
-  GreaterEqualThanFormatter,
-  GreaterThanFormatter,
-  InFormatter,
-  InsertFormatter,
-  IsNullFormatter,
-  JoinFormatter,
-  LikeFormatter,
-  LockTableFormatter,
-  LowerEqualThanFormatter,
-  LowerThanFormatter,
-  MaxFormatter,
-  MinFormatter,
-  NotBetweenFormatter,
-  NotEqualFormatter,
-  NotInFormatter,
-  OrderByFormatter,
-  OrFormatter,
-  SelectFormatter,
-  SubSelectFormatter,
-  SumFormatter,
-  TableFormatter,
-  UpdateFormatter,
-  ValueFormatter,
-} from '../relational/sql/formatter';
+import { FieldFormatter } from '../relational/sql/formatter/field';
+import { NotEqualFormatter } from '../relational/sql/formatter/not-equal';
+import { AlterTableAddColumnFormatter } from '../relational/sql/formatter/alter-table';
+import { ConcatFormatter } from '../relational/sql/formatter/concat';
+import { SubSelectFormatter } from '../relational/sql/formatter/sub-select';
+import { Formatter } from '../relational/sql/formatter/formatter';
+import { AvgFormatter } from '../relational/sql/formatter/avg';
+import { CreateTableFormatter } from '../relational/sql/formatter/create-table';
+import { EqualFormatter } from '../relational/sql/formatter/equal';
+import { GreaterThanFormatter } from '../relational/sql/formatter/greater-than';
+import { UpdateFormatter } from '../relational/sql/formatter/update';
+import { SumFormatter } from '../relational/sql/formatter/sum';
+import { JoinFormatter } from '../relational/sql/formatter/join';
+import { MinFormatter } from '../relational/sql/formatter/min';
+import { DeleteFormatter } from '../relational/sql/formatter/delete';
+import { CreateSchemaFormatter } from '../relational/sql/formatter/create-schema';
+import { MaxFormatter } from '../relational/sql/formatter/max';
+import { LowerEqualThanFormatter } from '../relational/sql/formatter/lower-equal-than';
+import { GreaterEqualThanFormatter } from '../relational/sql/formatter/greater-equal-than';
+import { BetweenFormatter } from '../relational/sql/formatter/between';
+import { CountFormatter } from '../relational/sql/formatter/count';
+import { ExistsFormatter } from '../relational/sql/formatter/exists';
+import { LockTableFormatter } from '../relational/sql/formatter/lock-table';
+import { NotInFormatter } from '../relational/sql/formatter/not-in';
+import { OrderByFormatter } from '../relational/sql/formatter/order-by';
+import { SelectFormatter } from '../relational/sql/formatter/select';
+import { IsNullFormatter } from '../relational/sql/formatter/is-null';
+import { InsertFormatter } from '../relational/sql/formatter/insert';
+import { LikeFormatter } from '../relational/sql/formatter/like';
+import { LowerThanFormatter } from '../relational/sql/formatter/lower-than';
+import { AndFormatter } from '../relational/sql/formatter/and';
+import { TableFormatter } from '../relational/sql/formatter/table';
+import { OrFormatter } from '../relational/sql/formatter/or';
+import { NotBetweenFormatter } from '../relational/sql/formatter/not-between';
+import { AllFormatter } from '../relational/sql/formatter/all';
+import { InFormatter } from '../relational/sql/formatter/in';
+import { DropTableFormatter } from '../relational/sql/formatter/drop-table';
+import { ValueFormatter } from '../relational/sql/formatter/value';
+import { AliasFormatter } from '../relational/sql/formatter/alias';
 
 export const sqliteFormatter = new Formatter();
 sqliteFormatter.add(new SelectFormatter());

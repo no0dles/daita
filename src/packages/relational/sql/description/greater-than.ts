@@ -1,11 +1,9 @@
-import { isExactKind } from '../../../common/utils';
 import { ExpressionDescription } from './expression';
+import { isExactKind } from '../../../common/utils/is-exact-kind';
 
 export interface GreaterThanDescription<T> {
   greaterThan: ExpressionDescription<T>;
 }
 
-export const isGreaterThanDescription = (
-  val: any,
-): val is GreaterThanDescription<any> =>
+export const isGreaterThanDescription = (val: any): val is GreaterThanDescription<any> =>
   isExactKind<GreaterThanDescription<any>>(val, ['greaterThan']);

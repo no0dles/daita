@@ -1,5 +1,5 @@
 import { AppAuthorization } from './app-authorization';
-import { Rule } from '../relational/permission/description';
+import { Rule } from '../relational/permission/description/rule';
 
 export interface AppOptions {
   transactionTimeout?: number;

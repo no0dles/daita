@@ -3,7 +3,10 @@ import { User } from '../models/user';
 import { UserEmailVerify } from '../models/user-email-verify';
 import { getRandomCode } from '../modules/random';
 import { authMiddleware } from '../middlewares/auth-middleware';
-import { and, equal, field, table } from '../../relational/sql/function';
+import { field } from '../../relational/sql/function/field';
+import { and } from '../../relational/sql/function/and';
+import { table } from '../../relational/sql/function/table';
+import { equal } from '../../relational/sql/function/equal';
 
 const router = express.Router({ mergeParams: true });
 

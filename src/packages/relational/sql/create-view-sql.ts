@@ -1,6 +1,6 @@
-import { TableDescription } from './description';
 import { SelectSql } from './select-sql';
-import { isKind } from '../../common/utils';
+import { TableDescription } from './description/table';
+import { isKind } from '../../common/utils/is-kind';
 
 export interface CreateViewSql<T> {
   createView: TableDescription<T>;

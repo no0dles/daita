@@ -1,10 +1,11 @@
-import { RelationalTransactionAdapter } from '../relational/adapter';
 import { PostgresAdapter } from './adapter/postgres.adapter';
 import { Pool } from 'pg';
 import { dropDatabase, ensureDatabaseExists } from './postgres.util';
-import { failNever, isKind } from '../common/utils';
 import { RelationalAdapterImplementation } from '../relational/adapter/relational-adapter-implementation';
 import { PostgresSql } from './sql/postgres-sql';
+import { isKind } from '../common/utils/is-kind';
+import { RelationalTransactionAdapter } from '../relational/adapter/relational-transaction-adapter';
+import { failNever } from '../common/utils/fail-never';
 
 export interface PostgresAdapterBaseOptions {
   listenForNotifications?: boolean;
@@ -73,7 +74,7 @@ export type PostgresAdapterOptions = (
 ) &
   PostgresAdapterBaseOptions;
 
-export const postgresAdapter: RelationalAdapterImplementation<PostgresSql, PostgresAdapterOptions> = {
+export const adapter: RelationalAdapterImplementation<PostgresSql, PostgresAdapterOptions> = {
   getAdapter(options?: PostgresAdapterOptions): RelationalTransactionAdapter<any> {
     return new PostgresAdapter(
       new Promise((resolve, reject) => {

@@ -1,8 +1,11 @@
 import { getMigrationSteps } from '../../utils.test';
 import { User } from './add-view.test';
-import { allow, authorized } from '../../../../relational/permission/function';
-import { field, table } from '../../../../relational/sql/function';
-import { getRuleId, MigrationStep } from '../../../../orm/migration';
+import { allow } from '../../../../relational/permission/function/allow';
+import { field } from '../../../../relational/sql/function/field';
+import { authorized } from '../../../../relational/permission/function/authorized';
+import { MigrationStep } from '../../../../orm/migration/migration-step';
+import { getRuleId } from '../../../../orm/migration/generation/rule-id';
+import { table } from '../../../../relational/sql/function/table';
 
 describe('add-rule', () => {
   let steps: MigrationStep[] = [];

@@ -1,13 +1,11 @@
 import { ArrayMap } from './array-map';
 import { RelationalTableDescription } from './relational-table-description';
 import { RelationalViewDescription } from './relational-view-description';
-import { arrayClone } from '../../../common/utils';
-import { Rule } from '../../../relational/permission/description';
-import { TableDescription } from '../../../relational/sql/description';
+import { arrayClone } from '../../../common/utils/array-clone';
+import { TableDescription } from '../../../relational/sql/description/table';
+import { Rule } from '../../../relational/permission/description/rule';
 
-export function getTableDescriptionIdentifier(
-  table: TableDescription<any>,
-): string {
+export function getTableDescriptionIdentifier(table: TableDescription<any>): string {
   if (table.schema) {
     return `${table.schema}.${table.table}`;
   }
@@ -63,10 +61,7 @@ export class RelationalSchemaDescription {
     return this.tableArrayMap.exists(getTableDescriptionIdentifier(key));
   }
 
-  addTable(
-    key: TableDescription<any>,
-    description: RelationalTableDescription,
-  ) {
+  addTable(key: TableDescription<any>, description: RelationalTableDescription) {
     this.tableArrayMap.add(getTableDescriptionIdentifier(key), description);
   }
 

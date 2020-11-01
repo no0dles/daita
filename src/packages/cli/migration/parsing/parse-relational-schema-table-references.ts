@@ -3,13 +3,11 @@ import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { parseTableDescription } from './parse-table-description';
 import { AstReferenceType } from '../../ast/ast-reference-type';
 import { isRequiredProperty } from './parse-relational-type';
-import {
-  RelationalSchemaDescription,
-  RelationalTableDescription,
-  RelationalTableFieldDescription,
-  RelationalTableReferenceDescription,
-  RelationalTableReferenceKeyDescription,
-} from '../../../orm/schema';
+import { RelationalTableReferenceKeyDescription } from '../../../orm/schema/description/relational-table-reference-key-description';
+import { RelationalTableFieldDescription } from '../../../orm/schema/description/relational-table-field-description';
+import { RelationalTableReferenceDescription } from '../../../orm/schema/description/relational-table-reference-description';
+import { RelationalSchemaDescription } from '../../../orm/schema/description/relational-schema-description';
+import { RelationalTableDescription } from '../../../orm/schema/description/relational-table-description';
 
 export function parseRelationalSchemaTableReferences(
   schema: RelationalSchemaDescription,
@@ -59,22 +57,13 @@ export function parseRelationalSchemaTableReferences(
       } else {
         keyField = table.field(key);
         if (keyField.type !== primaryKey.type) {
-          throw new Error(
-            `property ${key} type ${keyField.type} is not as foreign key type ${primaryKey.type}`,
-          );
+          throw new Error(`property ${key} type ${keyField.type} is not as foreign key type ${primaryKey.type}`);
         }
       }
 
       keys.push({ field: keyField, foreignField: primaryKey });
     }
 
-    table.addReference(
-      property.name,
-      new RelationalTableReferenceDescription(
-        property.name,
-        referenceTable,
-        keys,
-      ),
-    );
+    table.addReference(property.name, new RelationalTableReferenceDescription(property.name, referenceTable, keys));
   }
 }

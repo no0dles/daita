@@ -1,7 +1,7 @@
 import { setupEnv } from '../tests/utils.test';
 import { HttpTransactionAdapter } from '../../http-adapter';
-import { Defer } from '../../common/utils';
 import { NodeHttp } from '../../http-client-common/node-http';
+import { Defer } from '../../common/utils/defer';
 
 describe('cli serve', () => {
   it(

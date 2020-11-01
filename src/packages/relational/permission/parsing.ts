@@ -1,5 +1,7 @@
-import { Rule } from './description';
-import { allow, forbid, reviveRequestContext } from './function';
+import { allow } from './function/allow';
+import { reviveRequestContext } from './function/request-context';
+import { forbid } from './function/forbid';
+import { Rule } from './description/rule';
 
 export function serializeRules(rules: Rule[]): string {
   return JSON.stringify(rules, replacer);
@@ -49,9 +51,7 @@ function reviveRuleJson<T>(content: string): T {
       if (value['$requestContext']) {
         return value['$requestContext'];
       } else if (value['$regex']) {
-        return new RegExp(
-          value['$regex'].substr(1, value['$regex'].length - 2),
-        );
+        return new RegExp(value['$regex'].substr(1, value['$regex'].length - 2));
       }
     }
     return value;

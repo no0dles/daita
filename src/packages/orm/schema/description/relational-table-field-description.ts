@@ -1,6 +1,6 @@
 import { RelationalTableSchemaTableFieldType } from '../relational-table-schema-table-field-type';
 import { RelationalTableDescription } from './relational-table-description';
-import { failNever } from '../../../common/utils';
+import { failNever } from '../../../common/utils/fail-never';
 
 export class RelationalTableFieldDescription {
   constructor(

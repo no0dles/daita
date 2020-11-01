@@ -1,5 +1,5 @@
-import { Sql } from '../../sql';
-import { AuthDescription } from '../index';
+import { AuthDescription } from './auth-description';
+import { Sql } from '../../sql/sql';
 
 export interface Rule {
   type: 'allow' | 'forbid';

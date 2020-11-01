@@ -1,13 +1,11 @@
 import * as sqlite from 'sqlite3';
 import { sqliteFormatter } from './sqlite-formatter';
 import { SqliteFormatContext } from './sqlite-format-context';
-import {
-  RelationalDataAdapter,
-  RelationalRawResult,
-  RelationalTransactionAdapter,
-} from '../relational/adapter';
-import { Defer } from '../common/utils';
 import { sqliteAdapter } from './sqlite-adapter-implementation';
+import { RelationalTransactionAdapter } from '../relational/adapter/relational-transaction-adapter';
+import { RelationalRawResult } from '../relational/adapter/relational-raw-result';
+import { RelationalDataAdapter } from '../relational/adapter/relational-data-adapter';
+import { Defer } from '../common/utils/defer';
 
 export interface SerializableAction<T> {
   (): Promise<T> | T;
@@ -119,9 +117,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
                 for (const key of Object.keys(row)) {
                   if (
                     typeof row[key] === 'string' &&
-                    /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z/.test(
-                      row[key],
-                    )
+                    /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z/.test(row[key])
                   ) {
                     row[key] = new Date(row[key]);
                   }
@@ -147,16 +143,12 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
   }
 }
 
-export class SqliteRelationalAdapter
-  extends SqliteRelationalDataAdapter
-  implements RelationalTransactionAdapter {
+export class SqliteRelationalAdapter extends SqliteRelationalDataAdapter implements RelationalTransactionAdapter {
   constructor(private fileName: string) {
     super(new (sqlite.verbose().Database)(fileName));
   }
 
-  transaction<T>(
-    action: (adapter: RelationalDataAdapter) => Promise<T>,
-  ): Promise<T> {
+  transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
     return this.transactionSerializable.run(async () => {
       await this.db.run('BEGIN');
       try {

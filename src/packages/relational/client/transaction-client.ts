@@ -1,5 +1,5 @@
 import { Client } from './client';
-import { RelationalDataAdapter } from '../adapter';
+import { RelationalDataAdapter } from '../adapter/relational-data-adapter';
 
 export interface TransactionClient<T> extends Client<T> {
   dataAdapter: RelationalDataAdapter<T>;

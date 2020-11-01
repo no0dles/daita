@@ -1,5 +1,5 @@
-import { Rule } from '../../../relational/permission/description';
-import { serializeRule } from '../../../relational/permission';
+import { serializeRule } from '../../../relational/permission/parsing';
+import { Rule } from '../../../relational/permission/description/rule';
 
 export function getRuleId(rule: Rule): string {
   const content = serializeRule(rule);

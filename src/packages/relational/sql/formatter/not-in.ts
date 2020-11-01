@@ -1,6 +1,6 @@
 import { FormatHandle, Formatter, FormatType } from './formatter';
 import { FormatContext } from './format-context';
-import { isNotInDescription, NotInDescription } from '../description';
+import { isNotInDescription, NotInDescription } from '../description/not-in';
 
 export class NotInFormatter implements FormatHandle<NotInDescription<any>> {
   type = FormatType.Condition;
@@ -9,14 +9,9 @@ export class NotInFormatter implements FormatHandle<NotInDescription<any>> {
     return isNotInDescription(param);
   }
 
-  handle(
-    param: NotInDescription<any>,
-    ctx: FormatContext,
-    formatter: Formatter,
-  ): string {
-    return `${formatter.format(
-      param.notIn.field,
-      ctx,
-    )} NOT IN (${param.notIn.values.map((v) => formatter.format(v, ctx))})`;
+  handle(param: NotInDescription<any>, ctx: FormatContext, formatter: Formatter): string {
+    return `${formatter.format(param.notIn.field, ctx)} NOT IN (${param.notIn.values.map((v) =>
+      formatter.format(v, ctx),
+    )})`;
   }
 }

@@ -1,14 +1,8 @@
-import {
-  getRawValue,
-  isRequiredProperty,
-  parseRelationalType,
-} from './parse-relational-type';
+import { getRawValue, isRequiredProperty, parseRelationalType } from './parse-relational-type';
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { AstReferenceType } from '../../ast/ast-reference-type';
-import {
-  RelationalTableDescription,
-  RelationalTableFieldDescription,
-} from '../../../orm/schema';
+import { RelationalTableFieldDescription } from '../../../orm/schema/description/relational-table-field-description';
+import { RelationalTableDescription } from '../../../orm/schema/description/relational-table-description';
 
 export function parseRelationalSchemaTableFields(
   table: RelationalTableDescription,
@@ -23,10 +17,7 @@ export function parseRelationalSchemaTableFields(
       throw new Error('missing prop type');
     }
 
-    if (
-      property.type instanceof AstReferenceType &&
-      property.type.referenceType instanceof AstClassDeclaration
-    ) {
+    if (property.type instanceof AstReferenceType && property.type.referenceType instanceof AstClassDeclaration) {
       continue;
     }
 

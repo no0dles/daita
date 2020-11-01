@@ -1,18 +1,18 @@
 import { schema, userRule, userRuleId } from './add-rule.test';
-import { all, table } from '../../../../relational/sql/function';
-import { getMigrationContext } from '../../../../orm/context';
-import { parseRule } from '../../../../relational/permission';
-import { getClient, TransactionClient } from '../../../../relational/client';
-import { postgresAdapter } from '../../../../pg-adapter/adapter-implementation';
+import { adapter } from '../../../../pg-adapter/adapter-implementation';
+import { getMigrationContext } from '../../../../orm/context/get-migration-context';
+import { parseRule } from '../../../../relational/permission/parsing';
+import { TransactionClient } from '../../../../relational/client/transaction-client';
+import { getClient } from '../../../../relational/client/get-client';
+import { all } from '../../../../relational/sql/function/all';
+import { table } from '../../../../relational/sql/function/table';
 
 describe('apply/add-rule', () => {
   let client: TransactionClient<any>;
 
   beforeAll(async () => {
-    client = getClient(postgresAdapter, {
-      connectionString:
-        process.env.DATABASE_URL ||
-        'postgres://postgres:postgres@localhost/test-cli',
+    client = getClient(adapter, {
+      connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost/test-cli',
       createIfNotExists: true,
       dropIfExists: true,
     });

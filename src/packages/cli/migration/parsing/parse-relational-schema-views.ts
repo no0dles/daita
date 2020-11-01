@@ -3,10 +3,8 @@ import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { convertValue } from './convert-value';
 import { AstError } from '../../ast/utils';
 import { parseTableDescription } from './parse-table-description';
-import {
-  RelationalSchemaDescription,
-  RelationalViewDescription,
-} from '../../../orm/schema';
+import { RelationalViewDescription } from '../../../orm/schema/description/relational-view-description';
+import { RelationalSchemaDescription } from '../../../orm/schema/description/relational-schema-description';
 
 export function parseRelationalSchemaViews(
   schema: RelationalSchemaDescription,

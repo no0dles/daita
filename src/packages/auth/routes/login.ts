@@ -7,7 +7,12 @@ import { UserRefreshToken } from '../models/user-refresh-token';
 import { compareHash } from '../modules/hash';
 import { getAccessToken } from '../modules/key';
 import { getRandomCode } from '../modules/random';
-import { and, equal, field, join, or, table } from '../../relational/sql/function';
+import { or } from '../../relational/sql/function/or';
+import { field } from '../../relational/sql/function/field';
+import { and } from '../../relational/sql/function/and';
+import { table } from '../../relational/sql/function/table';
+import { equal } from '../../relational/sql/function/equal';
+import { join } from '../../relational/sql/function/join';
 
 const router = express.Router({ mergeParams: true });
 

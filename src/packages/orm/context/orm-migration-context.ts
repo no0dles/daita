@@ -1,31 +1,30 @@
-import { getTableDescriptionIdentifier } from '../schema';
-import { MigrationTree } from '../migration';
 import { MigrationContext } from './get-migration-context';
-import {
-  AlterTableSql,
-  and,
-  Condition,
-  CreateIndexSql,
-  CreateSchemaSql,
-  CreateTableSql,
-  CreateViewSql,
-  DeleteSql,
-  DropIndexSql,
-  DropTableSql,
-  DropViewSql,
-  equal,
-  field,
-  InsertSql,
-  LockTableSql,
-  SelectSql,
-  table,
-  TableDescription,
-  UpdateSql,
-} from '../../relational/sql';
-import { failNever } from '../../common/utils';
-import { RelationDoesNotExistsError } from '../../relational/error';
-import { Client, TransactionClient } from '../../relational/client';
-import { parseRule, serializeRule } from '../../relational/permission';
+import { DropTableSql } from '../../relational/sql/drop-table-sql';
+import { failNever } from '../../common/utils/fail-never';
+import { getTableDescriptionIdentifier } from '../schema/description/relational-schema-description';
+import { TableDescription } from '../../relational/sql/description/table';
+import { DeleteSql } from '../../relational/sql/delete-sql';
+import { DropIndexSql } from '../../relational/sql/drop-index-sql';
+import { RelationDoesNotExistsError } from '../../relational/error/relational-error';
+import { parseRule, serializeRule } from '../../relational/permission/parsing';
+import { and } from '../../relational/sql/function/and';
+import { CreateIndexSql } from '../../relational/sql/create-index-sql';
+import { Condition } from '../../relational/sql/description/condition';
+import { UpdateSql } from '../../relational/sql/update-sql';
+import { LockTableSql } from '../../relational/sql/lock-table-sql';
+import { CreateSchemaSql } from '../../relational/sql/create-schema-sql';
+import { MigrationTree } from '../migration/migration-tree';
+import { InsertSql } from '../../relational/sql/insert-sql';
+import { AlterTableSql } from '../../relational/sql/alter-table-sql';
+import { CreateViewSql } from '../../relational/sql/create-view-sql';
+import { field } from '../../relational/sql/function/field';
+import { DropViewSql } from '../../relational/sql/drop-view-sql';
+import { TransactionClient } from '../../relational/client/transaction-client';
+import { CreateTableSql } from '../../relational/sql/create-table-sql';
+import { SelectSql } from '../../relational/sql/select-sql';
+import { Client } from '../../relational/client/client';
+import { equal } from '../../relational/sql/function/equal';
+import { table } from '../../relational/sql/function/table';
 
 class Migrations {
   static schema = 'daita';

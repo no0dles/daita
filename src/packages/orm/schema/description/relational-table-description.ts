@@ -3,7 +3,7 @@ import { ArrayMap } from './array-map';
 import { RelationalTableReferenceDescription } from './relational-table-reference-description';
 import { RelationalSchemaDescription } from './relational-schema-description';
 import { RelationalTableIndexDescription } from './relational-table-index-description';
-import { arrayClone } from '../../../common/utils';
+import { arrayClone } from '../../../common/utils/array-clone';
 
 export class RelationalTableDescription {
   private primaryKeysArray: ArrayMap<RelationalTableFieldDescription>;
@@ -19,9 +19,7 @@ export class RelationalTableDescription {
     public schema?: string,
   ) {
     this.fieldArrayMap = new ArrayMap<RelationalTableFieldDescription>();
-    this.referenceArrayMap = new ArrayMap<
-      RelationalTableReferenceDescription
-    >();
+    this.referenceArrayMap = new ArrayMap<RelationalTableReferenceDescription>();
     this.primaryKeysArray = new ArrayMap<RelationalTableFieldDescription>();
     this.indexArrayMap = new ArrayMap<RelationalTableIndexDescription>();
     this.seedArrayMap = new ArrayMap<{
@@ -98,9 +96,7 @@ export class RelationalTableDescription {
   reference(alias: string): RelationalTableReferenceDescription {
     const reference = this.referenceArrayMap.get(alias);
     if (!reference) {
-      throw new Error(
-        `Unable to get reference ${alias} from table ${this.key}`,
-      );
+      throw new Error(`Unable to get reference ${alias} from table ${this.key}`);
     }
     return reference;
   }

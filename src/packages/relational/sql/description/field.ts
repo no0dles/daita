@@ -1,6 +1,6 @@
 import { TableDescription } from './table';
-import { isExactKind } from '../../../common/utils';
 import { TableAliasDescription } from './table-alias';
+import { isExactKind } from '../../../common/utils/is-exact-kind';
 
 export interface FieldDescription {
   field: {

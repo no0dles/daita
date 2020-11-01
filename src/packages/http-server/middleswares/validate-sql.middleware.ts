@@ -1,6 +1,6 @@
-import { AppOptions } from '../../http-server-common';
 import * as express from 'express';
-import { validateRules } from '../../relational/permission';
+import { validateRules } from '../../relational/permission/validate';
+import { AppOptions } from '../../http-server-common/app-options';
 
 export function validateSqlRules(options: AppOptions) {
   return (req: express.Request, res: express.Response, next: express.NextFunction) => {

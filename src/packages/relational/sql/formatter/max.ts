@@ -1,6 +1,6 @@
 import { FormatHandle, Formatter, FormatType } from './formatter';
 import { FormatContext } from './format-context';
-import { isMaxDescription, MaxDescription } from '../description';
+import { isMaxDescription, MaxDescription } from '../description/max';
 
 export class MaxFormatter implements FormatHandle<MaxDescription> {
   type = FormatType.Value;
@@ -9,11 +9,7 @@ export class MaxFormatter implements FormatHandle<MaxDescription> {
     return isMaxDescription(param);
   }
 
-  handle(
-    param: MaxDescription,
-    ctx: FormatContext,
-    formatter: Formatter,
-  ): string {
+  handle(param: MaxDescription, ctx: FormatContext, formatter: Formatter): string {
     return `max(${formatter.format(param.max, ctx)})`;
   }
 }

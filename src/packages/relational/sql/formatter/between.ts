@@ -1,6 +1,6 @@
 import { FormatHandle, Formatter, FormatType } from './formatter';
 import { FormatContext } from './format-context';
-import { BetweenDescription, isBetweenDescription } from '../description';
+import { BetweenDescription, isBetweenDescription } from '../description/between';
 
 export class BetweenFormatter implements FormatHandle<BetweenDescription<any>> {
   type = FormatType.Condition;
@@ -9,15 +9,8 @@ export class BetweenFormatter implements FormatHandle<BetweenDescription<any>> {
     return isBetweenDescription(param);
   }
 
-  handle(
-    param: BetweenDescription<any>,
-    ctx: FormatContext,
-    formatter: Formatter,
-  ): string {
-    return `${formatter.format(
-      param.between.value,
-      ctx,
-    )} BETWEEN ${formatter.format(
+  handle(param: BetweenDescription<any>, ctx: FormatContext, formatter: Formatter): string {
+    return `${formatter.format(param.between.value, ctx)} BETWEEN ${formatter.format(
       param.between.min,
       ctx,
     )} AND ${formatter.format(param.between.max, ctx)}`;

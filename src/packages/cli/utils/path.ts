@@ -4,8 +4,8 @@ import { parseSchemas } from '../migration/parsing/parse-schemas';
 import { SchemaDeclaration } from '../migration/parsing/schema-declaration';
 import { parseSchemaMigrations, parseSchemaMigrationVariables } from '../migration/parsing/parse-schema-migrations';
 import { parseRelationalSchema } from '../migration/parsing/parse-relational-schema';
-import { RelationalSchemaDescription } from '../../orm/schema';
 import { getProjectConfig } from './config';
+import { RelationalSchemaDescription } from '../../orm/schema/description/relational-schema-description';
 
 export function getMigrationRelativePath(schemaFilePath: string, migrationFilePath: string) {
   const relativePath = path.relative(schemaFilePath, migrationFilePath);

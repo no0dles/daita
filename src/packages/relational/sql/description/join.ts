@@ -1,6 +1,6 @@
 import { SourceTableDescription } from './source-table';
 import { Condition } from './condition';
-import { isExactKind } from '../../../common/utils';
+import { isExactKind } from '../../../common/utils/is-exact-kind';
 
 export interface JoinDescription {
   join: 'inner' | 'left' | 'right' | 'full' | 'cross';

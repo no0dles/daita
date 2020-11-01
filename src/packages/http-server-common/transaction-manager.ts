@@ -1,16 +1,10 @@
 import { ContextManager } from './context-manager';
-import {
-  RelationalDataAdapter,
-  RelationalTransactionAdapter,
-} from '../relational/adapter';
-import { Debouncer, Defer } from '../common/utils';
-import { Client, TransactionClient } from '../relational/client';
+import { TransactionClient } from '../relational/client/transaction-client';
+import { Debouncer } from '../common/utils/debouncer';
+import { Defer } from '../common/utils/defer';
+import { Client } from '../relational/client/client';
 
-export type TransactionResult =
-  | 'committed'
-  | 'timeout'
-  | 'rollback'
-  | 'canceled';
+export type TransactionResult = 'committed' | 'timeout' | 'rollback' | 'canceled';
 
 export class TransactionManager {
   private readonly commitDefer = new Defer<void>();
@@ -26,14 +20,8 @@ export class TransactionManager {
     return this.adapterDefer.promise.then(() => {});
   }
 
-  constructor(
-    private client: TransactionClient<any>,
-    private transactionTimeout: number,
-  ) {
-    this.debouncer = new Debouncer(
-      () => this.timeout(),
-      this.transactionTimeout,
-    );
+  constructor(private client: TransactionClient<any>, private transactionTimeout: number) {
+    this.debouncer = new Debouncer(() => this.timeout(), this.transactionTimeout);
     this.client
       .transaction(async (adapter) => {
         this.debouncer.start();
@@ -44,11 +32,7 @@ export class TransactionManager {
         this.resultDefer.resolve('committed');
       })
       .catch((err) => {
-        if (
-          err.message === 'canceled' ||
-          err.message === 'rollback' ||
-          err.message === 'timeout'
-        ) {
+        if (err.message === 'canceled' || err.message === 'rollback' || err.message === 'timeout') {
           this.resultDefer.resolve(err.message);
         } else {
           this.resultDefer.reject(err);

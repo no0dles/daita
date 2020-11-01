@@ -1,13 +1,12 @@
-import { allow, authorized } from '../../../relational/permission/function';
-import {
-  all,
-  equal,
-  field,
-  join,
-  table,
-} from '../../../relational/sql/function';
-import { UUID } from '../../../relational/types';
-import { RelationalSchema } from '../../../orm/schema';
+import { allow } from '../../../relational/permission/function/allow';
+import { field } from '../../../relational/sql/function/field';
+import { authorized } from '../../../relational/permission/function/authorized';
+import { UUID } from '../../../relational/types/uuid';
+import { RelationalSchema } from '../../../orm/schema/relational-schema';
+import { table } from '../../../relational/sql/function/table';
+import { join } from '../../../relational/sql/function/join';
+import { equal } from '../../../relational/sql/function/equal';
+import { all } from '../../../relational/sql/function/all';
 
 export class BaseTable {
   createdDate!: Date;
@@ -64,9 +63,7 @@ export class UserPermissions {
   permissionName!: string;
 }
 
-export const userRules = [
-  allow(authorized(), { select: all(), from: table(User) }),
-];
+export const userRules = [allow(authorized(), { select: all(), from: table(User) })];
 
 const schema = new RelationalSchema('test');
 schema.table(User, {
@@ -90,10 +87,7 @@ schema.view(UserPermissions, {
   join: [
     join(UserRole, equal(field(User, 'id'), field(UserRole, 'userId'))),
     join(Role, equal(field(Role, 'name'), field(UserRole, 'roleName'))),
-    join(
-      RolePermission,
-      equal(field(Role, 'name'), field(RolePermission, 'roleName')),
-    ),
+    join(RolePermission, equal(field(Role, 'name'), field(RolePermission, 'roleName'))),
   ],
 });
 schema.rules(userRules);

@@ -1,22 +1,11 @@
-import {
-  getMigrationRelativePath,
-  getSchemaInformation,
-  getSchemaLocation,
-} from '../utils/path';
+import { getMigrationRelativePath, getSchemaInformation, getSchemaLocation } from '../utils/path';
 import { AstContext } from '../ast/ast-context';
-import {
-  addMigrationImport,
-  addMigrationRegistration,
-  writeMigration,
-} from '../migration/writing/write-migration';
+import { addMigrationImport, addMigrationRegistration, writeMigration } from '../migration/writing/write-migration';
 import * as fs from 'fs';
 import { getMigrationName } from '../migration/utils';
-import { generateRelationalMigrationSteps } from '../../orm/migration/generation';
+import { generateRelationalMigrationSteps } from '../../orm/migration/generation/generate-relational-migration-steps';
 
-export async function addMigration(
-  name: string,
-  options: { cwd?: string; schema?: string },
-) {
+export async function addMigration(name: string, options: { cwd?: string; schema?: string }) {
   const schemaLocation = await getSchemaLocation(options);
 
   const astContext = new AstContext();
@@ -32,10 +21,7 @@ export async function addMigration(
   });
   const lastMigration = migrationTree.last()[0];
 
-  const steps = generateRelationalMigrationSteps(
-    currentSchema,
-    schemaInfo.getRelationalSchema(),
-  );
+  const steps = generateRelationalMigrationSteps(currentSchema, schemaInfo.getRelationalSchema());
   if (steps.length === 0) {
     console.log('no changes to migrate from');
     return;
@@ -46,12 +32,7 @@ export async function addMigration(
     throw new Error(`migration name "${name}" is already taken`);
   }
 
-  const sourceFile = writeMigration(
-    name,
-    lastMigration ? lastMigration.id : undefined,
-    undefined,
-    steps,
-  );
+  const sourceFile = writeMigration(name, lastMigration ? lastMigration.id : undefined, undefined, steps);
   const date = new Date();
   if (!fs.existsSync(schemaLocation.migrationDirectory)) {
     fs.mkdirSync(schemaLocation.migrationDirectory, { recursive: true });
@@ -59,13 +40,9 @@ export async function addMigration(
 
   const migrationName = getMigrationName(name);
   const padLeft = (val: number) => val.toString().padStart(2, '0');
-  const migrationFilePath = `${
-    schemaLocation.migrationDirectory
-  }/${date.getFullYear()}-${padLeft(date.getMonth())}-${padLeft(
-    date.getDay(),
-  )}-${date.getHours()}${padLeft(date.getMinutes())}${padLeft(
-    date.getSeconds(),
-  )}-${name}.ts`;
+  const migrationFilePath = `${schemaLocation.migrationDirectory}/${date.getFullYear()}-${padLeft(
+    date.getMonth(),
+  )}-${padLeft(date.getDay())}-${date.getHours()}${padLeft(date.getMinutes())}${padLeft(date.getSeconds())}-${name}.ts`;
 
   if (fs.existsSync(migrationFilePath)) {
     throw new Error(`migration "${migrationFilePath}" file already exists`);
@@ -73,14 +50,7 @@ export async function addMigration(
 
   fs.writeFileSync(migrationFilePath, sourceFile);
 
-  const relativePath = getMigrationRelativePath(
-    schemaLocation.directory,
-    migrationFilePath,
-  );
+  const relativePath = getMigrationRelativePath(schemaLocation.directory, migrationFilePath);
   addMigrationImport(schemaLocation.fileName, relativePath, migrationName);
-  addMigrationRegistration(
-    schemaLocation.fileName,
-    schemaInfo.variableName,
-    migrationName,
-  );
+  addMigrationRegistration(schemaLocation.fileName, schemaInfo.variableName, migrationName);
 }

@@ -5,7 +5,9 @@ import { UserEmailVerify } from '../models/user-email-verify';
 import { hashPassword } from '../modules/hash';
 import { getRandomCode } from '../modules/random';
 import { getLeakedCount } from '../modules/password';
-import { equal, field, table } from '../../relational/sql/function';
+import { field } from '../../relational/sql/function/field';
+import { table } from '../../relational/sql/function/table';
+import { equal } from '../../relational/sql/function/equal';
 
 const router = express.Router({ mergeParams: true });
 
@@ -26,26 +28,20 @@ router.post('/', async (req, res, next) => {
     }
 
     if (!userPool.allowRegistration) {
-      return res
-        .status(400)
-        .json({ message: 'user pool does not allow registration' });
+      return res.status(400).json({ message: 'user pool does not allow registration' });
     }
 
     if (userPool.passwordRegex) {
       const regexp = new RegExp(userPool.passwordRegex);
       if (!regexp.test(req.body.password)) {
-        return res
-          .status(400)
-          .json({ message: 'password does not match password rules' });
+        return res.status(400).json({ message: 'password does not match password rules' });
       }
     }
 
     if (userPool.checkPasswordForBreach) {
       const leakedCount = await getLeakedCount(req.body.password);
       if (leakedCount > 0) {
-        return res
-          .status(400)
-          .json({ message: `password got leaked ${leakedCount} times` });
+        return res.status(400).json({ message: `password got leaked ${leakedCount} times` });
       }
     }
 

@@ -1,16 +1,11 @@
-import { RelationalSchemaDescription } from '../schema';
 import { RelationalMapper } from './relational-mapper';
-import { failNever } from '../../common/utils';
-import {
-  FieldDescription,
-  isFieldDescription,
-  isTableAliasDescription,
-  isTableDescription,
-  SourceTableDescription,
-  TableAliasDescription,
-  TableDescription,
-} from '../../relational/sql/description';
-import { isSelectSql, SelectSql } from '../../relational/sql';
+import { failNever } from '../../common/utils/fail-never';
+import { isTableAliasDescription, TableAliasDescription } from '../../relational/sql/description/table-alias';
+import { isSelectSql, SelectSql } from '../../relational/sql/select-sql';
+import { RelationalSchemaDescription } from '../schema/description/relational-schema-description';
+import { FieldDescription, isFieldDescription } from '../../relational/sql/description/field';
+import { isTableDescription, TableDescription } from '../../relational/sql/description/table';
+import { SourceTableDescription } from '../../relational/sql/description/source-table';
 
 export class RelationalNormalMapper implements RelationalMapper {
   normalizeData<T>(table: TableDescription<T>, data: T[]): T[] {
@@ -101,9 +96,7 @@ export class RelationalBackwardCompatibleMapper implements RelationalMapper {
       };
     } else {
       if (isTableDescription(field.field.table.alias.table)) {
-        const tableDescription = this.schemaDescription.table(
-          field.field.table.alias.table,
-        );
+        const tableDescription = this.schemaDescription.table(field.field.table.alias.table);
         return {
           field: {
             key: tableDescription.field(field.field.key).name,
@@ -131,9 +124,7 @@ export class RelationalBackwardCompatibleMapper implements RelationalMapper {
     }
   }
 
-  private normalizeTableAlias(
-    from: TableAliasDescription<any>,
-  ): TableAliasDescription<any> {
+  private normalizeTableAlias(from: TableAliasDescription<any>): TableAliasDescription<any> {
     if (isTableDescription(from.alias.table)) {
       return {
         alias: {
@@ -151,9 +142,7 @@ export class RelationalBackwardCompatibleMapper implements RelationalMapper {
     }
   }
 
-  private normalizeFrom(
-    from: SourceTableDescription<any>,
-  ): SourceTableDescription<any> {
+  private normalizeFrom(from: SourceTableDescription<any>): SourceTableDescription<any> {
     if (isTableDescription(from)) {
       return this.normalizeTable(from);
     } else if (isTableAliasDescription(from)) {

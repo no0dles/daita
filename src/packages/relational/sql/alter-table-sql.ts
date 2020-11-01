@@ -1,5 +1,6 @@
 import { TableDescription } from './description/table';
-import { isExactKind, isKind } from '../../common/utils';
+import { isExactKind } from '../../common/utils/is-exact-kind';
+import { isKind } from '../../common/utils/is-kind';
 
 export type AlterTableSql =
   | AlterTableAddColumnSql
@@ -13,33 +14,24 @@ export interface AlterTableDropColumnSql {
   drop: { column: string };
 }
 
-export const isAlterTableDropColumnSql = (
-  val: any,
-): val is AlterTableDropColumnSql =>
-  isExactKind<AlterTableDropColumnSql>(val, ['alterTable', 'drop']) &&
-  isExactKind(val.drop, ['column']);
+export const isAlterTableDropColumnSql = (val: any): val is AlterTableDropColumnSql =>
+  isExactKind<AlterTableDropColumnSql>(val, ['alterTable', 'drop']) && isExactKind(val.drop, ['column']);
 
 export interface AlterTableDropConstraintSql {
   alterTable: TableDescription<any>;
   drop: { constraint: string };
 }
 
-export const isAlterTableDropConstraintSql = (
-  val: any,
-): val is AlterTableDropConstraintSql =>
-  isExactKind<AlterTableDropConstraintSql>(val, ['alterTable', 'drop']) &&
-  isExactKind(val.drop, ['constraint']);
+export const isAlterTableDropConstraintSql = (val: any): val is AlterTableDropConstraintSql =>
+  isExactKind<AlterTableDropConstraintSql>(val, ['alterTable', 'drop']) && isExactKind(val.drop, ['constraint']);
 
 export interface AlterTableAddColumnSql {
   alterTable: TableDescription<any>;
   add: { column: string; type: string };
 }
 
-export const isAlterTableAddColumnSql = (
-  val: any,
-): val is AlterTableAddColumnSql =>
-  isExactKind<AlterTableAddColumnSql>(val, ['alterTable', 'add']) &&
-  isExactKind(val.add, ['column', 'type']);
+export const isAlterTableAddColumnSql = (val: any): val is AlterTableAddColumnSql =>
+  isExactKind<AlterTableAddColumnSql>(val, ['alterTable', 'add']) && isExactKind(val.add, ['column', 'type']);
 
 export interface AlterTableAddForeignKeySql<T> {
   alterTable: TableDescription<any>;
@@ -53,8 +45,6 @@ export interface AlterTableAddForeignKeySql<T> {
   };
 }
 
-export const isAlterTableAddForeignKeySql = (
-  val: any,
-): val is AlterTableAddForeignKeySql<any> =>
+export const isAlterTableAddForeignKeySql = (val: any): val is AlterTableAddForeignKeySql<any> =>
   isExactKind<AlterTableAddForeignKeySql<any>>(val, ['alterTable', 'add']) &&
   isKind(val.add, ['foreignKey', 'references']);

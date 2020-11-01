@@ -3,7 +3,7 @@ import { JoinDescription } from './description/join';
 import { OrderByDescription } from './description/order-by';
 import { ValueType } from './description/value-type';
 import { SourceTableDescription } from './description/source-table';
-import { isKind } from '../../common/utils';
+import { isKind } from '../../common/utils/is-kind';
 
 export interface SelectSql<T> {
   select: T;
@@ -17,5 +17,4 @@ export interface SelectSql<T> {
   offset?: number | null;
 }
 
-export const isSelectSql = (val: any): val is SelectSql<any> =>
-  isKind<SelectSql<any>>(val, ['select']);
+export const isSelectSql = (val: any): val is SelectSql<any> => isKind<SelectSql<any>>(val, ['select']);

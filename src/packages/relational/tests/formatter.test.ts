@@ -29,9 +29,9 @@ import { AliasFormatter } from '../sql/formatter/alias';
 import { AllFormatter } from '../sql/formatter/all';
 import { NotEqualFormatter } from '../sql/formatter/not-equal';
 import { SubSelectFormatter } from '../sql/formatter/sub-select';
-import { InFormatter } from '../sql/formatter';
 import { IsNullFormatter } from '../sql/formatter/is-null';
 import { UpdateFormatter } from '../sql/formatter/update';
+import { InFormatter } from '../sql/formatter/in';
 
 export class TestFormatContext extends CounterFormatContext {
   getDataType(type: string): string {

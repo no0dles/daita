@@ -1,16 +1,11 @@
 import { TransactionContext } from './transaction-context';
 import { RelationalContext } from './relational-context';
-import { OrmRelationalSchema } from '../schema';
-import { RelationalTransactionAdapter } from '../../relational/adapter';
-import { Client } from '../../relational/client';
+import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
+import { OrmRelationalSchema } from '../schema/orm-relational-schema';
+import { Client } from '../../relational/client/client';
 
-export class RelationalTransactionContext
-  extends RelationalContext
-  implements TransactionContext<any> {
-  constructor(
-    private transactionAdapter: RelationalTransactionAdapter<any>,
-    schema: OrmRelationalSchema,
-  ) {
+export class RelationalTransactionContext extends RelationalContext implements TransactionContext<any> {
+  constructor(private transactionAdapter: RelationalTransactionAdapter<any>, schema: OrmRelationalSchema) {
     super(transactionAdapter, schema);
   }
 

@@ -1,19 +1,14 @@
-import { MigrationDescription, MigrationTree } from '../migration';
-import {
-  SchemaTableOptions,
-  SchemaTableRequiredKeyOptions,
-} from './schema-table-options';
+import { SchemaTableOptions, SchemaTableRequiredKeyOptions } from './schema-table-options';
 import { RelationalSchemaOptions } from './relational-schema-options';
 import { RelationalSchemaDescription } from './description/relational-schema-description';
 import { RelationalMapper } from '../context/relational-mapper';
-import {
-  RelationalBackwardCompatibleMapper,
-  RelationalNormalMapper,
-} from '../context/orm-mapper';
+import { RelationalBackwardCompatibleMapper, RelationalNormalMapper } from '../context/orm-mapper';
 import { OrmRelationalSchema } from './orm-relational-schema';
 import { Constructable, DefaultConstructable } from '../../common/types';
-import { SelectSql } from '../../relational/sql';
-import { Rule } from '../../relational/permission/description';
+import { SelectSql } from '../../relational/sql/select-sql';
+import { MigrationDescription } from '../migration/migration-description';
+import { MigrationTree } from '../migration/migration-tree';
+import { Rule } from '../../relational/permission/description/rule';
 
 export class RelationalSchema implements OrmRelationalSchema {
   private migrationTree = new MigrationTree(this.name);
@@ -30,18 +25,9 @@ export class RelationalSchema implements OrmRelationalSchema {
     }
   }
 
-  table<T extends { id: any }>(
-    model: DefaultConstructable<T>,
-    options?: SchemaTableOptions<T>,
-  ): void;
-  table<T>(
-    model: DefaultConstructable<T>,
-    options: SchemaTableRequiredKeyOptions<T>,
-  ): void;
-  table<T>(
-    model: DefaultConstructable<T>,
-    options?: SchemaTableOptions<T>,
-  ): void {
+  table<T extends { id: any }>(model: DefaultConstructable<T>, options?: SchemaTableOptions<T>): void;
+  table<T>(model: DefaultConstructable<T>, options: SchemaTableRequiredKeyOptions<T>): void;
+  table<T>(model: DefaultConstructable<T>, options?: SchemaTableOptions<T>): void {
     this.tables.push(model);
   }
 
@@ -77,9 +63,7 @@ export class RelationalSchema implements OrmRelationalSchema {
 
   getMapper(): RelationalMapper {
     if (this.options?.backwardCompatible) {
-      return new RelationalBackwardCompatibleMapper(
-        this.getSchemaDescription(),
-      );
+      return new RelationalBackwardCompatibleMapper(this.getSchemaDescription());
     } else {
       return new RelationalNormalMapper();
     }

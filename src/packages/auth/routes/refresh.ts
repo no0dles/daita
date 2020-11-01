@@ -6,7 +6,11 @@ import { UserPool, UserPoolAlgorithm } from '../models/user-pool';
 import { getAccessToken } from '../modules/key';
 import { Role } from '../models/role';
 import { UserRole } from '../models/user-role';
-import { and, equal, field, join, table } from '../../relational/sql/function';
+import { field } from '../../relational/sql/function/field';
+import { and } from '../../relational/sql/function/and';
+import { table } from '../../relational/sql/function/table';
+import { join } from '../../relational/sql/function/join';
+import { equal } from '../../relational/sql/function/equal';
 
 const router = express.Router({ mergeParams: true });
 

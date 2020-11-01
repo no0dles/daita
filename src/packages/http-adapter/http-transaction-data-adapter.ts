@@ -1,7 +1,8 @@
 import { Countdown } from './countdown';
-import { RelationalDataAdapter, RelationalRawResult } from '../relational/adapter';
-import { Defer } from '../common/utils';
 import { Http } from '../http-client-common/http';
+import { RelationalRawResult } from '../relational/adapter/relational-raw-result';
+import { RelationalDataAdapter } from '../relational/adapter/relational-data-adapter';
+import { Defer } from '../common/utils/defer';
 
 export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   private resultDefer = new Defer<any>();

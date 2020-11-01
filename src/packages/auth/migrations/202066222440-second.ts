@@ -1,4 +1,4 @@
-import { MigrationDescription } from '../../orm/migration';
+import { MigrationDescription } from '../../orm/migration/migration-description';
 
 export const SecondMigration: MigrationDescription = {
   id: 'second',

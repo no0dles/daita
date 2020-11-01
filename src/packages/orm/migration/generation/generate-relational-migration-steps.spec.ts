@@ -3,12 +3,10 @@ import { RelationalTableSchemaTableFieldType } from '../../schema/relational-tab
 import { RelationalSchemaDescription } from '../../schema/description/relational-schema-description';
 import { RelationalTableDescription } from '../../schema/description/relational-table-description';
 import { RelationalTableFieldDescription } from '../../schema/description/relational-table-field-description';
-import {
-  RelationalTableIndexDescription,
-  RelationalTableReferenceDescription,
-  RelationalTableReferenceKeyDescription,
-} from '../../schema';
-import { table } from '../../../relational/sql/function';
+import { RelationalTableReferenceKeyDescription } from '../../schema/description/relational-table-reference-key-description';
+import { RelationalTableReferenceDescription } from '../../schema/description/relational-table-reference-description';
+import { RelationalTableIndexDescription } from '../../schema/description/relational-table-index-description';
+import { table } from '../../../relational/sql/function/table';
 
 describe('get-migration-steps', () => {
   it('should add table', () => {
@@ -253,11 +251,7 @@ function createSchema(schema: ExpectedSchema) {
   if (schema.tables) {
     for (const tableKey of Object.keys(schema.tables)) {
       const expectedTable = schema.tables[tableKey];
-      const tableDescription = new RelationalTableDescription(
-        description,
-        tableKey,
-        tableKey,
-      );
+      const tableDescription = new RelationalTableDescription(description, tableKey, tableKey);
       for (const fieldKey of Object.keys(expectedTable.fields)) {
         const field = schema.tables[tableKey].fields[fieldKey];
         const fieldDescription = new RelationalTableFieldDescription(
@@ -305,10 +299,7 @@ function createSchema(schema: ExpectedSchema) {
               field: currentTable.field(ref.keys[i]),
             });
           }
-          currentTable.addReference(
-            key,
-            new RelationalTableReferenceDescription(key, refTable, refKeys),
-          );
+          currentTable.addReference(key, new RelationalTableReferenceDescription(key, refTable, refKeys));
         }
       }
     }

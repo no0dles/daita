@@ -1,6 +1,6 @@
 import { FormatHandle, Formatter, FormatType } from './formatter';
 import { FormatContext } from './format-context';
-import { isNullDescription, IsNullDescription } from '../description';
+import { IsNullDescription, isNullDescription } from '../description/is-null';
 
 export class IsNullFormatter implements FormatHandle<IsNullDescription<any>> {
   type = FormatType.Condition;
@@ -9,11 +9,7 @@ export class IsNullFormatter implements FormatHandle<IsNullDescription<any>> {
     return isNullDescription(param);
   }
 
-  handle(
-    param: IsNullDescription<any>,
-    ctx: FormatContext,
-    formatter: Formatter,
-  ): string {
+  handle(param: IsNullDescription<any>, ctx: FormatContext, formatter: Formatter): string {
     return `${formatter.format(param.isNull.field, ctx)} IS NULL`;
   }
 }

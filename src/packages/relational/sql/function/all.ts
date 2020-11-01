@@ -1,6 +1,7 @@
-import { TableAliasDescription, TableDescription } from '../description';
 import { table } from './table';
 import { Constructable, ExcludeNonPrimitive } from '../../../common/types';
+import { TableAliasDescription } from '../description/table-alias';
+import { TableDescription } from '../description/table';
 
 export function all<T>(
   tbl?: TableDescription<T> | TableAliasDescription<T> | Constructable<T>,

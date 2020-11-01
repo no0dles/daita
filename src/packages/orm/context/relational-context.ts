@@ -1,21 +1,15 @@
 import { Context } from './context';
 import { RelationalBaseContext } from './relational-base-context';
-import { OrmRelationalSchema } from '../schema';
-import { RuleContext, validateRules } from '../../relational/permission';
-import {
-  RelationalDataAdapter,
-  RelationalRawResult,
-} from '../../relational/adapter';
+import { validateRules } from '../../relational/permission/validate';
+import { OrmRelationalSchema } from '../schema/orm-relational-schema';
+import { RelationalRawResult } from '../../relational/adapter/relational-raw-result';
+import { RelationalDataAdapter } from '../../relational/adapter/relational-data-adapter';
+import { RuleContext } from '../../relational/permission/description/rule-context';
 
-export class RelationalContext
-  extends RelationalBaseContext
-  implements Context<any> {
+export class RelationalContext extends RelationalBaseContext implements Context<any> {
   auth: RuleContext = { isAuthorized: false };
 
-  constructor(
-    adapter: RelationalDataAdapter<any>,
-    schema: OrmRelationalSchema,
-  ) {
+  constructor(adapter: RelationalDataAdapter<any>, schema: OrmRelationalSchema) {
     super(adapter, schema);
   }
 

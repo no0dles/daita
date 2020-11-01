@@ -1,9 +1,12 @@
-import { TransactionClient } from '../relational/client';
 import { UserPool } from './models/user-pool';
-import { all, equal, field, table } from '../relational/sql/function';
 import { ExcludeNonPrimitive } from '../common/types';
 import { UserPoolCors } from './models/user-pool-cors';
 import { randomString } from '../common/utils/random-string';
+import { field } from '../relational/sql/function/field';
+import { TransactionClient } from '../relational/client/transaction-client';
+import { all } from '../relational/sql/function/all';
+import { table } from '../relational/sql/function/table';
+import { equal } from '../relational/sql/function/equal';
 
 export async function seedUserPool(client: TransactionClient<any>, userPool: ExcludeNonPrimitive<UserPool>) {
   const existingUserPool = await client.selectFirst({

@@ -1,0 +1,57 @@
+<div class="min-h-screen bg-white flex">
+  <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:px-20 xl:px-24">
+    <div class="mx-auto w-full max-w-sm">
+      <div>
+        <img class="h-12 w-auto" src="../../../assets/logo.svg" alt="Daita Logo">
+        <h2 class="mt-6 text-3xl leading-9 font-extrabold text-gray-900">
+          Sign in to your account
+        </h2>
+      </div>
+
+      <div class="mt-8">
+        <div class="mt-6">
+          <form [formGroup]="form" (ngSubmit)="login()">
+            <app-form-layout-input [id]="'username'" [form]="form" [name]="'Username'"></app-form-layout-input>
+            <app-form-layout-input class="mt-6" [ngClass]="{'has-error': invalidCredentials}" [id]="'password'" [form]="form" [name]="'Password'" [type]="'password'"></app-form-layout-input>
+
+            <div class="mt-6 flex items-center justify-end">
+              <div class="text-sm leading-5">
+                <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition ease-in-out duration-150">
+                  Forgot your password?
+                </a>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <span class="block w-full rounded-md shadow-sm">
+                <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700 transition duration-150 ease-in-out">
+                  Sign in
+                </button>
+              </span>
+            </div>
+
+            <div class="absolute bottom-0 max-w-sm w-full" *ngIf="errorMessage">
+              <div class="rounded-md bg-red-50 p-4 mb-4 w-full">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  <div class="ml-3">
+                    <h3 class="text-sm leading-5 font-medium text-red-800">
+                      {{errorMessage}}
+                    </h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hidden lg:block relative w-0 flex-1">
+    <img class="absolute inset-0 h-full w-full object-cover" src="https://unsplash.com/photos/2D4GrXu7Mv8/download?force=true&w=1920" alt="">
+  </div>
+</div>

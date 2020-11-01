@@ -1,5 +1,5 @@
-import { AllowRegexDescription } from '../description';
-import { isExactKind } from '../../../common/utils';
+import { isExactKind } from '../../../common/utils/is-exact-kind';
+import { AllowRegexDescription } from '../description/allow-regex-description';
 
 export function allowRegex(regExp: RegExp): string {
   return (<AllowRegexDescription>{ allowRegex: { regExp } }) as any;

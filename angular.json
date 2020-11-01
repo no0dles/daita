@@ -1,0 +1,86 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "auth": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src/frontends/auth",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-builders/custom-webpack:browser",
+          "options": {
+            "customWebpackConfig": {
+              "path": "./src/frontends/auth/webpack.config.js"
+            },
+            "outputPath": "dist/frontends/auth",
+            "index": "src/frontends/auth/index.html",
+            "main": "src/frontends/auth/main.ts",
+            "polyfills": "src/frontends/auth/polyfills.ts",
+            "tsConfig": "tsconfig.angular.json",
+            "aot": true,
+            "assets": [
+              "src/frontends/auth/favicon.ico",
+              "src/frontends/auth/assets"
+            ],
+            "styles": [
+              "src/frontends/auth/styles.scss"
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/frontends/auth/environments/environment.ts",
+                  "with": "src/frontends/auth/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-builders/custom-webpack:dev-server",
+          "options": {
+            "customWebpackConfig": {
+              "path": "./src/frontends/auth/webpack.config.js"
+            },
+            "browserTarget": "auth:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "auth:build:production"
+            }
+          }
+        }
+      }
+    }},
+  "defaultProject": "auth"
+}

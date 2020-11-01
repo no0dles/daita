@@ -1,5 +1,5 @@
 import { isSelectSql, SelectSql } from '../select-sql';
-import { isExactKind } from '../../../common/utils';
+import { isExactKind } from '../../../common/utils/is-exact-kind';
 
 export interface ExistsDescription {
   exists: SelectSql<any>;

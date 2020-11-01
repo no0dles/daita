@@ -1,5 +1,5 @@
 import { FormatContext } from './format-context';
-import { ValueType } from '../description';
+import { ValueType } from '../description/value-type';
 
 export class InlineFormatContext implements FormatContext {
   constructor(private baseFormatContext: FormatContext) {}
@@ -13,10 +13,7 @@ export class InlineFormatContext implements FormatContext {
       return value.toString().toUpperCase();
     } else if (value instanceof Date) {
       const date = `${value.getFullYear()}-${value.getMonth()}-${value.getDay()}`;
-      const time = `${value
-        .getHours()
-        .toString()
-        .padStart(2, '0')}:${value
+      const time = `${value.getHours().toString().padStart(2, '0')}:${value
         .getMinutes()
         .toString()
         .padStart(2, '0')}:${value.getSeconds().toString().padStart(2, '0')}`;

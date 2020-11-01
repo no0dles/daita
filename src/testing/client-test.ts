@@ -1,6 +1,6 @@
-import { getClient, TransactionClient } from '../packages/relational/client';
-import { postgresAdapter } from '../packages/pg-adapter';
-import { Defer } from '../packages/common/utils';
+import { adapter } from '../packages/pg-adapter/adapter-implementation';
+import { TransactionClient } from '../packages/relational/client/transaction-client';
+import { getClient } from '../packages/relational/client/get-client';
 
 export type TestCaseCallback = (client: TransactionClient<any>) => void;
 
@@ -46,25 +46,18 @@ let testIndex = 0;
 
 export function clientTest(name: string, fn: TestCaseCallback): () => void;
 export function clientTest(fn: TestCaseCallback): () => void;
-export function clientTest(
-  nameOrFn: string | TestCaseCallback,
-  fn?: TestCaseCallback,
-): () => void {
+export function clientTest(nameOrFn: string | TestCaseCallback, fn?: TestCaseCallback): () => void {
   if (typeof nameOrFn === 'string') {
-    const client = getClient(postgresAdapter, {
-      connectionString:
-        process.env.DATABASE_URL ||
-        `postgres://postgres:postgres@localhost:5432/${nameOrFn}`,
+    const client = getClient(adapter, {
+      connectionString: process.env.DATABASE_URL || `postgres://postgres:postgres@localhost:5432/${nameOrFn}`,
       dropIfExists: true,
     });
     return () => {
       fn!(client);
     };
   } else {
-    const client = getClient(postgresAdapter, {
-      connectionString:
-        process.env.DATABASE_URL ||
-        'postgres://postgres:postgres@localhost:5432/test-' + testIndex++,
+    const client = getClient(adapter, {
+      connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/test-' + testIndex++,
       dropIfExists: true,
     });
     return () => {

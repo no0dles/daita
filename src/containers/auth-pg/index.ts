@@ -1,12 +1,12 @@
 import { createAuthApp } from '../../packages/auth/app';
 import { createAuthAdminApp } from '../../packages/auth/admin-app';
-import { getClient } from '../../packages/relational/client';
 import { seedAuthDefaults } from './client';
-import { postgresAdapter } from '../../packages/pg-adapter/adapter-implementation';
+import { adapter } from '../../packages/pg-adapter/adapter-implementation';
 import { migrate } from '../../packages/orm/migration/migrate';
 import { authSchema } from '../../packages/auth/schema';
+import { getClient } from '../../packages/relational/client/get-client';
 
-const client = getClient(postgresAdapter, {
+const client = getClient(adapter, {
   connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/auth',
 });
 

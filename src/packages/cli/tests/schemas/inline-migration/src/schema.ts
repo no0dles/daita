@@ -1,4 +1,4 @@
-import { RelationalSchema } from '../../../../../orm/schema';
+import { RelationalSchema } from '../../../../../orm/schema/relational-schema';
 
 class User {
   username!: string;

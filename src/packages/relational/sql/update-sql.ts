@@ -1,6 +1,6 @@
 import { Condition } from './description/condition';
 import { TableDescription } from './description/table';
-import { isKind } from '../../common/utils';
+import { isKind } from '../../common/utils/is-kind';
 
 export interface UpdateSql<T> {
   update: TableDescription<T>;
@@ -8,5 +8,4 @@ export interface UpdateSql<T> {
   where?: Condition;
 }
 
-export const isUpdateSql = (val: any): val is UpdateSql<any> =>
-  isKind<UpdateSql<any>>(val, ['update', 'set']);
+export const isUpdateSql = (val: any): val is UpdateSql<any> => isKind<UpdateSql<any>>(val, ['update', 'set']);

@@ -1,16 +1,19 @@
 import { getClientFromConfig } from '../utils/data-adapter';
 import { getSchemaLocation } from '../utils/path';
 import { getAuthorization } from '../utils/authorization';
-import { createHttpServerApp } from '../../http-server';
-import { anonymous, anything } from '../../relational/permission/function';
-import { Rule } from '../../relational/permission/description';
 import { watch, FSWatcher } from 'chokidar';
-import { authSchema, createAuthApp, seedUserPool, seedUserPoolCors } from '../../auth';
-import { migrate } from '../../orm/migration';
-import { Debouncer } from '../../common/utils';
 import { applyMigration } from './apply-migration';
-import { OrmRuleContext } from '../../orm/context';
 import { getProjectConfig } from '../utils/config';
+import { createAuthApp } from '../../auth/app';
+import { createHttpServerApp } from '../../http-server/app';
+import { authSchema } from '../../auth/schema';
+import { anonymous } from '../../relational/permission/function/anonymous';
+import { seedUserPool, seedUserPoolCors } from '../../auth/seed';
+import { Debouncer } from '../../common/utils/debouncer';
+import { OrmRuleContext } from '../../orm/context/orm-migration-context';
+import { migrate } from '../../orm/migration/migrate';
+import { Rule } from '../../relational/permission/description/rule';
+import { anything } from '../../relational/permission/function/anything';
 
 export async function serve(opts: {
   cwd?: string;

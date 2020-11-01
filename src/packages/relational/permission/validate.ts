@@ -1,13 +1,15 @@
 import { isAnything } from './function/anything';
 import { AuthDescription } from './description/auth-description';
-import { Sql } from '../sql';
 import { Rule } from './description/rule';
 import { RuleValidateAllowResult } from './description/rule-validation-allow-result';
 import { RuleValidateForbidResult } from './description/rule-validation-forbid-result';
-import { isAllowRegex, isRequestContext } from './function';
-import { RuleContext, RuleValidateResult } from './description';
-import { failNever } from '../../common/utils';
-import { getRuleId } from '../../orm/migration/generation';
+import { RuleValidateResult } from './description/rule-validation-result';
+import { failNever } from '../../common/utils/fail-never';
+import { isRequestContext } from './function/request-context';
+import { isAllowRegex } from './function/allow-regex';
+import { Sql } from '../sql/sql';
+import { getRuleId } from '../../orm/migration/generation/rule-id';
+import { RuleContext } from './description/rule-context';
 
 export type MatchResult = MatchesResult | MismatchResult;
 

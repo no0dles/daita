@@ -1,7 +1,7 @@
-import * as express from 'express';
+import { Router } from 'express';
 import { getKeys } from '../../modules/key';
 
-const router = express.Router();
+const router = Router();
 
 router.get('/jwks.json', async (req, res, next) => {
   try {

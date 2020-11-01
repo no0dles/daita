@@ -3,8 +3,8 @@ import * as path from 'path';
 import * as childProcess from 'child_process';
 import { getSchemaInformation, SchemaLocation } from '../utils/path';
 import { AstContext } from '../ast/ast-context';
-import { generateRelationalMigrationSteps } from '../../orm/migration/generation';
-import { Defer } from '../../common/utils';
+import { generateRelationalMigrationSteps } from '../../orm/migration/generation/generate-relational-migration-steps';
+import { Defer } from '../../common/utils/defer';
 
 export function isNotNull<T>(value: T): asserts value is NonNullable<T> {
   expect(value).not.toBeUndefined();

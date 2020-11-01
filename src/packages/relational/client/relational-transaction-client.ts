@@ -1,17 +1,13 @@
 import { RelationalClient } from './relational-client';
-import { RelationalTransactionAdapter } from '../adapter';
 import { TransactionClient } from './transaction-client';
+import { RelationalTransactionAdapter } from '../adapter/relational-transaction-adapter';
 
-export class RelationalTransactionClient
-  extends RelationalClient
-  implements TransactionClient<RelationalClient> {
+export class RelationalTransactionClient extends RelationalClient implements TransactionClient<RelationalClient> {
   constructor(private transactionAdapter: RelationalTransactionAdapter<any>) {
     super(transactionAdapter);
   }
 
-  async transaction<T>(
-    action: (trx: RelationalClient) => Promise<T>,
-  ): Promise<T> {
+  async transaction<T>(action: (trx: RelationalClient) => Promise<T>): Promise<T> {
     return this.transactionAdapter.transaction<T>(async (adapter) => {
       return action(new RelationalClient(adapter));
     });

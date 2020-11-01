@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { Defer } from '../../common/utils';
+import { Defer } from '../../common/utils/defer';
 
 export function getSha1(text: string) {
   const sha = crypto.createHash('sha1');

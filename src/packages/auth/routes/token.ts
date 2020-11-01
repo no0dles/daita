@@ -1,9 +1,12 @@
 import * as express from 'express';
-import { and, equal, field, table } from '../../relational/sql/function';
 import { UserToken } from '../models/user-token';
 import { authMiddleware } from '../middlewares/auth-middleware';
 import { getRandomCode } from '../modules/random';
 import { getSha1 } from '../modules/hash';
+import { field } from '../../relational/sql/function/field';
+import { and } from '../../relational/sql/function/and';
+import { table } from '../../relational/sql/function/table';
+import { equal } from '../../relational/sql/function/equal';
 
 const router = express.Router({ mergeParams: true });
 

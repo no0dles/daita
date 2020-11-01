@@ -1,5 +1,5 @@
 import { RelationalRawResult } from './relational-raw-result';
-import { Sql } from '../sql';
+import { Sql } from '../sql/sql';
 
 export interface RelationalDataAdapter<TQuery = Sql<any>> {
   execRaw(sql: string, values: any[]): Promise<RelationalRawResult>;

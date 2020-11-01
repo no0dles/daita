@@ -1,7 +1,7 @@
 import { User } from './models/user';
 import { Permission, RolePermission } from './models/permission';
 import { Role, UserRole } from './models/role';
-import { RelationalSchema } from '../../../../../orm/schema';
+import { RelationalSchema } from '../../../../../orm/schema/relational-schema';
 
 const schema = new RelationalSchema('auth-test');
 

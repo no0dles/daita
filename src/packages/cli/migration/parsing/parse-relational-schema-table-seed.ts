@@ -4,7 +4,7 @@ import { convertValue } from './convert-value';
 import { AstError } from '../../ast/utils';
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { parseTableDescription } from './parse-table-description';
-import { RelationalSchemaDescription } from '../../../orm/schema';
+import { RelationalSchemaDescription } from '../../../orm/schema/description/relational-schema-description';
 
 export function parseRelationalSchemaTableSeed(
   schema: RelationalSchemaDescription,
@@ -16,10 +16,7 @@ export function parseRelationalSchemaTableSeed(
     let seedValue = seed.argumentAt(1);
 
     if (!(classArgument instanceof AstClassDeclaration)) {
-      throw new AstError(
-        classArgument?.node ?? seed.node,
-        'invalid seed argument without class',
-      );
+      throw new AstError(classArgument?.node ?? seed.node, 'invalid seed argument without class');
     }
     const tableDescription = parseTableDescription(classArgument);
     const table = schema.table(tableDescription);

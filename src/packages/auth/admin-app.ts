@@ -1,15 +1,17 @@
-import * as express from 'express';
+import express from 'express';
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
-import * as refreshRoute from './routes/refresh';
-import * as adminTokenRoute from './routes/admin-token';
-import * as loginRoute from './routes/login';
+import refreshRoute from './routes/refresh';
+import adminTokenRoute from './routes/admin-token';
+import loginRoute from './routes/login';
 import { authMiddleware } from './middlewares/auth-middleware';
-import * as helmet from 'helmet';
-import { allow, anything, authorized } from '../relational/permission/function';
-import { relationalRoute } from '../http-server';
-import { TransactionClient } from '../relational/client';
-import * as cors from 'cors';
+import helmet from 'helmet';
+import cors from 'cors';
+import { allow } from '../relational/permission/function/allow';
+import { TransactionClient } from '../relational/client/transaction-client';
+import { authorized } from '../relational/permission/function/authorized';
+import { relationalRoute } from '../http-server/routes/relational';
+import { anything } from '../relational/permission/function/anything';
 
 export function createAuthAdminApp(client: TransactionClient<any>) {
   const adminApp = express();

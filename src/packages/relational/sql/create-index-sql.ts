@@ -1,5 +1,5 @@
-import { TableDescription } from './description';
-import { isKind } from '../../common/utils';
+import { TableDescription } from './description/table';
+import { isKind } from '../../common/utils/is-kind';
 
 export interface CreateIndexSql<T> {
   createIndex: string;
@@ -8,5 +8,4 @@ export interface CreateIndexSql<T> {
   columns: (keyof T)[];
 }
 
-export const isCreateIndexSql = (val: any): val is CreateIndexSql<any> =>
-  isKind(val, ['createIndex', 'on', 'columns']);
+export const isCreateIndexSql = (val: any): val is CreateIndexSql<any> => isKind(val, ['createIndex', 'on', 'columns']);

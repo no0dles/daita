@@ -1,15 +1,33 @@
-import * as express from 'express';
+import express from 'express';
 import * as bodyParser from 'body-parser';
-import * as verifyRoute from './routes/verify';
-import * as registerRoute from './routes/register';
-import * as refreshRoute from './routes/refresh';
-import * as loginRoute from './routes/login';
-import * as resendRoute from './routes/resend';
-import * as tokenRoute from './routes/token';
-import * as wellKnownRoute from './routes/well-known';
-import * as helmet from 'helmet';
-import { TransactionClient } from '../relational/client';
+import verifyRoute from './routes/verify';
+import registerRoute from './routes/register';
+import refreshRoute from './routes/refresh';
+import loginRoute from './routes/login';
+import resendRoute from './routes/resend';
+import tokenRoute from './routes/token';
+import wellKnownRoute from './routes/well-known';
+import helmet from 'helmet';
 import { cors } from './middlewares/cors';
+import { TransactionClient } from '../relational/client/transaction-client';
+
+declare global {
+  namespace Express {
+    export interface Application {
+      client: TransactionClient<any>;
+    }
+
+    export interface Request {
+      user?: {
+        sub: string;
+        iss: string;
+        iat?: number;
+        exp?: number;
+        roles?: string[];
+      };
+    }
+  }
+}
 
 export function createAuthApp(client: TransactionClient<any>) {
   const app = express();

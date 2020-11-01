@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as https from 'https';
-import { Defer } from '../../common/utils';
 import { spawn } from 'child_process';
+import { Defer } from '../../common/utils/defer';
 
 export async function upgrade(opts: { cwd?: string; npmClient?: string }) {
   const cwd = opts.cwd ? path.resolve(opts.cwd) : process.cwd();

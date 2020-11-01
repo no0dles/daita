@@ -1,4 +1,4 @@
-import { isExactKind } from '../../../common/utils';
+import { isExactKind } from '../../../common/utils/is-exact-kind';
 
 export interface NotInDescription<T> {
   notIn: { field: T; values: T[] };

@@ -2,14 +2,12 @@ import * as express from 'express';
 import { UserEmailVerify } from '../models/user-email-verify';
 import { User } from '../models/user';
 import { UserPool } from '../models/user-pool';
-import {
-  and,
-  equal,
-  field,
-  isNull,
-  join,
-  table,
-} from '../../relational/sql/function';
+import { field } from '../../relational/sql/function/field';
+import { and } from '../../relational/sql/function/and';
+import { table } from '../../relational/sql/function/table';
+import { join } from '../../relational/sql/function/join';
+import { equal } from '../../relational/sql/function/equal';
+import { isNull } from '../../relational/sql/function/is-null';
 
 const router = express.Router({ mergeParams: true });
 
@@ -24,19 +22,10 @@ router.get('/', async (req, res, next) => {
       },
       from: table(UserEmailVerify),
       join: [
-        join(
-          User,
-          equal(
-            field(User, 'username'),
-            field(UserEmailVerify, 'userUsername'),
-          ),
-        ),
+        join(User, equal(field(User, 'username'), field(UserEmailVerify, 'userUsername'))),
         join(UserPool, equal(field(UserPool, 'id'), field(User, 'userPoolId'))),
       ],
-      where: and(
-        equal(field(UserEmailVerify, 'code'), req.query.code),
-        isNull(field(UserEmailVerify, 'verifiedAt')),
-      ),
+      where: and(equal(field(UserEmailVerify, 'code'), req.query.code), isNull(field(UserEmailVerify, 'verifiedAt'))),
     });
 
     if (!verify) {

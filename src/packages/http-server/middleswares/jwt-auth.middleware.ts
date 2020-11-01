@@ -1,6 +1,5 @@
-import * as jwt from 'express-jwt';
-import * as express from 'express';
-import * as JwksClient from 'jwks-rsa';
+import jwt from 'express-jwt';
+import JwksClient from 'jwks-rsa';
 import { AppAuthorizationProvider } from '../../http-server-common/app-authorization';
 import { HttpError } from '../http-error';
 import { NextFunction, Request, Response } from 'express';
@@ -25,7 +24,7 @@ export function jwtAuth(providers: AppAuthorizationProvider[]) {
 
     jwt({
       algorithms: ['RS256', 'RS384', 'RS512'],
-      secret: (req: express.Request, header: any, payload: any, done: (err: any, secret?: string | Buffer) => void) => {
+      secret: (req: Request, header: any, payload: any, done: (err: any, secret?: string | Buffer) => void) => {
         if (!payload) {
           return done(null, undefined);
         }

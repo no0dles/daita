@@ -2,14 +2,12 @@ import { UserPool } from '../../packages/auth/models/user-pool';
 import { User } from '../../packages/auth/models/user';
 import { getRandomCode } from '../../packages/auth/modules/random';
 import { hashPassword } from '../../packages/auth/modules/hash';
-import {
-  all,
-  and,
-  equal,
-  field,
-  table,
-} from '../../packages/relational/sql/function';
-import { Client } from '../../packages/relational/client';
+import { field } from '../../packages/relational/sql/function/field';
+import { and } from '../../packages/relational/sql/function/and';
+import { Client } from '../../packages/relational/client/client';
+import { all } from '../../packages/relational/sql/function/all';
+import { table } from '../../packages/relational/sql/function/table';
+import { equal } from '../../packages/relational/sql/function/equal';
 
 export async function seedAuthDefaults(client: Client<any>) {
   const adminPool = await client.selectFirst({
@@ -37,10 +35,7 @@ export async function seedAuthDefaults(client: Client<any>) {
   const adminUser = await client.selectFirst({
     select: all(User),
     from: table(User),
-    where: and(
-      equal(field(User, 'username'), 'admin'),
-      equal(field(User, 'userPoolId'), 'admin'),
-    ),
+    where: and(equal(field(User, 'username'), 'admin'), equal(field(User, 'userPoolId'), 'admin')),
   });
   if (!adminUser) {
     const password = (await getRandomCode()).substr(0, 14);

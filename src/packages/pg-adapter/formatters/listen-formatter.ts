@@ -1,10 +1,6 @@
-import {
-  FormatContext,
-  FormatHandle,
-  Formatter,
-  FormatType,
-} from '../../relational/sql/formatter';
 import { isListenSql, PostgresListenSql } from '../sql/listen-sql';
+import { FormatContext } from '../../relational/sql/formatter/format-context';
+import { FormatHandle, Formatter, FormatType } from '../../relational/sql/formatter/formatter';
 
 export class ListenFormatter implements FormatHandle<PostgresListenSql> {
   type = FormatType.Sql;
@@ -13,11 +9,7 @@ export class ListenFormatter implements FormatHandle<PostgresListenSql> {
     return isListenSql(param);
   }
 
-  handle(
-    param: PostgresListenSql,
-    ctx: FormatContext,
-    formatter: Formatter,
-  ): string {
+  handle(param: PostgresListenSql, ctx: FormatContext, formatter: Formatter): string {
     return `LISTEN ${param.listen}`;
   }
 }

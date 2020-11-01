@@ -1,7 +1,7 @@
 import { RelationalSchemaDescription } from '../../schema/description/relational-schema-description';
 import { MigrationStep } from '../migration-step';
 import { generateRelationalTableMigrationSteps } from './generate-relational-table-migration-steps';
-import { merge } from '../../../common/utils';
+import { merge } from '../../../common/utils/merge';
 
 export function generateRelationalMigrationSteps(
   currentSchema: RelationalSchemaDescription,
@@ -9,21 +9,9 @@ export function generateRelationalMigrationSteps(
 ) {
   const steps: MigrationStep[] = [];
 
-  const mergedTables = merge(
-    currentSchema.tables,
-    newSchema.tables,
-    (first, second) => first.key === second.key,
-  );
-  const mergedViews = merge(
-    currentSchema.views,
-    newSchema.views,
-    (first, second) => first.key === second.key,
-  );
-  const mergedRules = merge(
-    currentSchema.rules,
-    newSchema.rules,
-    (first, second) => first.id === second.id,
-  );
+  const mergedTables = merge(currentSchema.tables, newSchema.tables, (first, second) => first.key === second.key);
+  const mergedViews = merge(currentSchema.views, newSchema.views, (first, second) => first.key === second.key);
+  const mergedRules = merge(currentSchema.rules, newSchema.rules, (first, second) => first.id === second.id);
 
   for (const table of mergedTables.added) {
     steps.push({ kind: 'add_table', table: table.name });
@@ -68,9 +56,7 @@ export function generateRelationalMigrationSteps(
   }
 
   for (const merge of mergedTables.merge) {
-    steps.push(
-      ...generateRelationalTableMigrationSteps(merge.current, merge.target),
-    );
+    steps.push(...generateRelationalTableMigrationSteps(merge.current, merge.target));
   }
 
   for (const view of mergedViews.removed) {

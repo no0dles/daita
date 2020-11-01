@@ -1,25 +1,19 @@
-import { table } from '../packages/relational/sql/function';
 import { UserPool } from '../packages/auth/models/user-pool';
-import { TransactionClient } from '../packages/relational/client';
 import { User } from '../packages/auth/models/user';
 import { ExcludeNonPrimitive } from '../packages/common/types';
 import { hashPassword } from '../packages/auth/modules/hash';
 import { httpPost, HttpServerApp } from './http-server';
+import { TransactionClient } from '../packages/relational/client/transaction-client';
+import { table } from '../packages/relational/sql/function/table';
 
-export async function createUserPool(
-  client: TransactionClient<any>,
-  userPool: UserPool,
-) {
+export async function createUserPool(client: TransactionClient<any>, userPool: UserPool) {
   await client.insert({
     into: table(UserPool),
     insert: userPool,
   });
 }
 
-export async function createUser(
-  client: TransactionClient<any>,
-  user: ExcludeNonPrimitive<User>,
-) {
+export async function createUser(client: TransactionClient<any>, user: ExcludeNonPrimitive<User>) {
   await client.insert({
     into: table(User),
     insert: user,
@@ -48,11 +42,7 @@ export async function createDefaultUser(client: TransactionClient<any>) {
   });
 }
 
-export async function login(
-  authApp: HttpServerApp,
-  username: string,
-  password: string,
-) {
+export async function login(authApp: HttpServerApp, username: string, password: string) {
   const res = await httpPost(authApp, `/default/login`, {
     username,
     password,

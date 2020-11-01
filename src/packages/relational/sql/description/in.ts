@@ -1,4 +1,4 @@
-import { isExactKind } from '../../../common/utils';
+import { isExactKind } from '../../../common/utils/is-exact-kind';
 
 export interface InDescription<T> {
   in: {
@@ -7,5 +7,4 @@ export interface InDescription<T> {
   };
 }
 
-export const isInDescription = (val: any): val is InDescription<any> =>
-  isExactKind<InDescription<any>>(val, ['in']);
+export const isInDescription = (val: any): val is InDescription<any> => isExactKind<InDescription<any>>(val, ['in']);

@@ -124,7 +124,7 @@ export function updatePath(packages: Set<string>, root: string, file: string) {
   }
 
   const content = fs.readFileSync(file).toString();
-  const regex = /require\(\"(?<import>[\.\/\-@\w]+)\"\)/g;
+  const regex = /require\([\"'](?<import>[\.\/\-@\w]+)[\"']\)/g;
   let result = content.replace(regex, (substring: string, importPath: string) => {
     if (importPath.startsWith('.')) {
       const fullImportPath = path.join(path.dirname(file), importPath); //TODO verify if export exists
@@ -169,6 +169,7 @@ export async function buildNpmPackages() {
     const packages = new Set<string>();
     const esmPath = path.join(pkg.path, '../../esm/packages', pkg.name);
     updatePaths(packages, esmPath, esmPath);
+    createIndex();
     copyDir(esmPath, path.join(pkg.path, 'esm'));
     updatePaths(packages, pkg.path, pkg.path);
     createPackageJson(pkg.path, pkg.name, packages);
@@ -177,6 +178,8 @@ export async function buildNpmPackages() {
     createNpmIgnore(pkg.path);
   }
 }
+
+function createIndex() {}
 
 function copyJson(packageDir: string, packageName: string) {
   const sourceDir = path.join(process.cwd(), 'src/packages', packageName);

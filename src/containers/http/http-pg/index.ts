@@ -1,14 +1,14 @@
 import { RuleConfig, run } from '../server';
-import { postgresAdapter } from '../../../packages/pg-adapter/adapter-implementation';
-import { getClient } from '../../../packages/relational/client';
-import { OrmRuleContext } from '../../../packages/orm/context';
-import { PostgresAdapter } from '../../../packages/pg-adapter';
+import { adapter } from '../../../packages/pg-adapter/adapter-implementation';
+import { getClient } from '../../../packages/relational/client/get-client';
+import { PostgresAdapter } from '../../../packages/pg-adapter/adapter/postgres.adapter';
+import { OrmRuleContext } from '../../../packages/orm/context/orm-migration-context';
 
-const client = getClient(postgresAdapter);
-const adapter = client.dataAdapter as PostgresAdapter;
+const client = getClient(adapter);
+const postgresAdapter = client.dataAdapter as PostgresAdapter;
 const ruleContext = new RuleConfig(new OrmRuleContext(client));
 
-adapter.addNotificationListener('daita_migrations', () => {
+postgresAdapter.addNotificationListener('daita_migrations', () => {
   console.log('reload rules');
   ruleContext.reload();
 });

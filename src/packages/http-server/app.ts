@@ -1,12 +1,12 @@
 import { relationalRoute } from './routes/relational';
-import * as express from 'express';
-import * as cors from 'cors';
+import express from 'express';
+import cors from 'cors';
 import * as bodyParser from 'body-parser';
-import { AppOptions } from '../http-server-common';
-import { TransactionClient } from '../relational/client';
 import { jwtAuth } from './middleswares/jwt-auth.middleware';
 import { errorMiddleware } from './middleswares/error.middleware';
 import { tokenAuth } from './middleswares/token-auth.middleware';
+import { TransactionClient } from '../relational/client/transaction-client';
+import { AppOptions } from '../http-server-common/app-options';
 
 declare global {
   namespace Express {

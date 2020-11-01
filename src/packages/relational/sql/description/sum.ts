@@ -1,5 +1,5 @@
 import { FieldDescription, isFieldDescription } from './field';
-import { isExactKind } from '../../../common/utils';
+import { isExactKind } from '../../../common/utils/is-exact-kind';
 
 export interface SumDescription {
   sum: FieldDescription;

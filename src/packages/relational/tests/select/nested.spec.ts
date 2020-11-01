@@ -1,7 +1,7 @@
 import { expectedSql } from '../formatter.test';
-import { field } from '../../sql/function';
 import { User } from '../schema/user';
 import { table } from '../../sql/function/table';
+import { field } from '../../sql/function/field';
 
 describe('select/nested', () => {
   it('should handle nested result', () => {

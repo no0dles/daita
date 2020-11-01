@@ -1,5 +1,5 @@
 import { getMigrationSteps } from '../../utils.test';
-import { MigrationStep } from '../../../../orm/migration';
+import { MigrationStep } from '../../../../orm/migration/migration-step';
 
 describe('add-seed', () => {
   let steps: MigrationStep[] = [];

@@ -1,19 +1,11 @@
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { AstArrayValue } from '../../ast/ast-array-value';
 import { AstError, getArrayValue, getStringValue } from '../../ast/utils';
-import {
-  AstLiteralValue,
-  AstStringLiteralValue,
-} from '../../ast/ast-literal-value';
-import {
-  RelationalTableDescription,
-  RelationalTableIndexDescription,
-} from '../../../orm/schema';
+import { AstLiteralValue, AstStringLiteralValue } from '../../ast/ast-literal-value';
+import { RelationalTableDescription } from '../../../orm/schema/description/relational-table-description';
+import { RelationalTableIndexDescription } from '../../../orm/schema/description/relational-table-index-description';
 
-export function parseRelationalSchemaTableIndices(
-  table: RelationalTableDescription,
-  optionsArgument: AstObjectValue,
-) {
+export function parseRelationalSchemaTableIndices(table: RelationalTableDescription, optionsArgument: AstObjectValue) {
   const index = optionsArgument.prop('indices');
   if (!index) {
     return;
@@ -36,23 +28,12 @@ export function parseRelationalSchemaTableIndices(
     } else if (indexValue instanceof AstObjectValue) {
       const columnsProp = indexValue.requiredProp('columns').value;
       if (columnsProp instanceof AstArrayValue) {
-        const columns = getArrayValue(columnsProp, (elm) =>
-          getStringValue(elm),
-        );
-        const unique = indexValue.hasProp('unique')
-          ? indexValue.booleanProp('unique')
-          : false;
+        const columns = getArrayValue(columnsProp, (elm) => getStringValue(elm));
+        const unique = indexValue.hasProp('unique') ? indexValue.booleanProp('unique') : false;
         addIndex(table, indexProperty.name, columns, unique);
       } else if (columnsProp instanceof AstStringLiteralValue) {
-        const unique = indexValue.hasProp('unique')
-          ? indexValue.booleanProp('unique')
-          : false;
-        addIndex(
-          table,
-          indexProperty.name,
-          [getStringValue(columnsProp)],
-          unique,
-        );
+        const unique = indexValue.hasProp('unique') ? indexValue.booleanProp('unique') : false;
+        addIndex(table, indexProperty.name, [getStringValue(columnsProp)], unique);
       } else {
         throw new AstError(indexValue.node, 'invalid index');
       }
@@ -66,12 +47,7 @@ export function parseRelationalSchemaTableIndices(
   }
 }
 
-function addIndex(
-  table: RelationalTableDescription,
-  name: string,
-  columns: string[],
-  unique: boolean,
-) {
+function addIndex(table: RelationalTableDescription, name: string, columns: string[], unique: boolean) {
   const idx = new RelationalTableIndexDescription(
     name,
     table,

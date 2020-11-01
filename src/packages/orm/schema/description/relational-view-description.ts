@@ -1,5 +1,5 @@
 import { RelationalSchemaDescription } from './relational-schema-description';
-import { SelectSql } from '../../../relational/sql';
+import { SelectSql } from '../../../relational/sql/select-sql';
 
 export class RelationalViewDescription {
   constructor(

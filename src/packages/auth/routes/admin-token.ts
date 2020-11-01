@@ -1,10 +1,14 @@
 import * as express from 'express';
-import { and, equal, field, join, table } from '../../relational/sql/function';
 import { UserToken } from '../models/user-token';
 import { User } from '../models/user';
 import { Role } from '../models/role';
 import { UserRole } from '../models/user-role';
 import { getSha1 } from '../modules/hash';
+import { field } from '../../relational/sql/function/field';
+import { and } from '../../relational/sql/function/and';
+import { table } from '../../relational/sql/function/table';
+import { join } from '../../relational/sql/function/join';
+import { equal } from '../../relational/sql/function/equal';
 
 const router = express.Router({ mergeParams: true });
 

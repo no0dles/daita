@@ -1,6 +1,7 @@
 import { TransactionManager } from './transaction-manager';
 import { AppOptions } from './app-options';
-import { Client, TransactionClient } from '../relational/client';
+import { TransactionClient } from '../relational/client/transaction-client';
+import { Client } from '../relational/client/client';
 
 export class ContextManager {
   constructor(private client: Client<any>) {}

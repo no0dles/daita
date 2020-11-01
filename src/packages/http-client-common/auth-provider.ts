@@ -1,4 +1,5 @@
-import { isExactKind, isKind } from '../common/utils';
+import { isExactKind } from '../common/utils/is-exact-kind';
+import { isKind } from '../common/utils/is-kind';
 
 export type AuthProvider = TokenProvider | AccessTokenProvider | TokenIssuer;
 

@@ -1,7 +1,7 @@
 import { Express } from 'express';
 import { Server } from 'http';
-import { Defer } from '../packages/common/utils';
 import axios from 'axios';
+import { Defer } from '../packages/common/utils/defer';
 
 export interface HttpServerApp {
   start(): Promise<void>;
@@ -65,11 +65,9 @@ export async function httpPost<T = any>(
   options?: { headers: any },
 ): Promise<GetResult<T>> {
   try {
-    const res = await axios.post(
-      app.uri + (path.startsWith('/') ? path : `/${path}`),
-      json,
-      { headers: options?.headers },
-    );
+    const res = await axios.post(app.uri + (path.startsWith('/') ? path : `/${path}`), json, {
+      headers: options?.headers,
+    });
     return {
       statusCode: res.status,
       body: res.data,
@@ -88,10 +86,7 @@ export async function httpGet<T = any>(
   options?: { headers: any },
 ): Promise<GetResult<T>> {
   try {
-    const res = await axios.get(
-      app.uri + (path.startsWith('/') ? path : `/${path}`),
-      { headers: options?.headers },
-    );
+    const res = await axios.get(app.uri + (path.startsWith('/') ? path : `/${path}`), { headers: options?.headers });
     return {
       statusCode: res.status,
       body: res.data,

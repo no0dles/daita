@@ -1,5 +1,4 @@
 import { AstCallExpression } from '../../ast/ast-call-expression';
-import * as relational from '../../../relational';
 import { AstValue } from '../../ast/ast-value';
 import { AstArrayValue } from '../../ast/ast-array-value';
 import { AstObjectValue } from '../../ast/ast-object-value';
@@ -12,7 +11,7 @@ import { AstRegularExpressionLiteral } from '../../ast/ast-regular-expression-li
 import { AstPropertyAccessExpression } from '../../ast/ast-property-access-expression';
 
 function convertFn(value: AstCallExpression) {
-  const fn = (relational as any)[value.methodName];
+  const fn = require('../../../relational')[value.methodName];
   const args: any[] = [];
   for (const arg of value.arguments) {
     args.push(convertValue(arg));

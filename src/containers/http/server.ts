@@ -1,9 +1,9 @@
 import * as fs from 'fs';
-import { AppAuthorization } from '../../packages/http-server-common';
-import { createHttpServerApp } from '../../packages/http-server';
-import { TransactionClient } from '../../packages/relational/client';
-import { Rule } from '../../packages/relational/permission/description';
-import { OrmRuleContext } from '../../packages/orm/context';
+import { AppAuthorization } from '../../packages/http-server-common/app-authorization';
+import { createHttpServerApp } from '../../packages/http-server/app';
+import { TransactionClient } from '../../packages/relational/client/transaction-client';
+import { OrmRuleContext } from '../../packages/orm/context/orm-migration-context';
+import { Rule } from '../../packages/relational/permission/description/rule';
 
 const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT ? parseInt(process.env.TRANSACTION_TIMEOUT) : 4000;
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;

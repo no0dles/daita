@@ -1,18 +1,3 @@
-import {
-  DeleteSql,
-  InsertSql,
-  isAvgDescription,
-  isConcatDescription,
-  isCountDescription,
-  isFieldDescription,
-  isMaxDescription,
-  isMinDescription,
-  isNowDescription,
-  isSumDescription,
-  SelectSql,
-  UpdateSql,
-} from '../sql';
-import { RelationalDataAdapter, RelationalRawResult } from '../adapter';
 import { RelationalUpdateResult } from './relational-update-result';
 import { SelectClient } from './select-client';
 import { Client } from './client';
@@ -22,7 +7,21 @@ import { RelationalInsertResult } from './relational-insert-result';
 import { DeleteClient } from './delete-client';
 import { InsertClient } from './insert-client';
 import { isAllDescription } from '../sql/description/all';
-import { deepClone } from '../../common/utils';
+import { UpdateSql } from '../sql/update-sql';
+import { isMaxDescription } from '../sql/description/max';
+import { isAvgDescription } from '../sql/description/avg';
+import { isSumDescription } from '../sql/description/sum';
+import { isCountDescription } from '../sql/description/count';
+import { isNowDescription } from '../sql/description/now';
+import { RelationalRawResult } from '../adapter/relational-raw-result';
+import { isConcatDescription } from '../sql/description/concat';
+import { InsertSql } from '../sql/insert-sql';
+import { DeleteSql } from '../sql/delete-sql';
+import { SelectSql } from '../sql/select-sql';
+import { deepClone } from '../../common/utils/deep-clone';
+import { isMinDescription } from '../sql/description/min';
+import { isFieldDescription } from '../sql/description/field';
+import { RelationalDataAdapter } from '../adapter/relational-data-adapter';
 
 export class RelationalClient implements SelectClient, UpdateClient, DeleteClient, InsertClient, Client<any> {
   constructor(public dataAdapter: RelationalDataAdapter<any>) {}

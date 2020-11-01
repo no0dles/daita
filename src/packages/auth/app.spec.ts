@@ -1,13 +1,16 @@
-import * as supertest from 'supertest';
+import supertest from 'supertest';
 import { UserEmailVerify } from './models/user-email-verify';
 import { UserRefreshToken } from './models/user-refresh-token';
-import { all, field, notEqual, table } from '../relational/sql/function';
 import { Express } from 'express';
 import { createAuthApp } from './app';
-import { migrate } from '../orm/migration';
 import { authSchema } from './schema';
 import { clientTest } from '../../testing/client-test';
 import { createDefaultUserPool } from '../../testing/auth-test';
+import { field } from '../relational/sql/function/field';
+import { migrate } from '../orm/migration/migrate';
+import { all } from '../relational/sql/function/all';
+import { table } from '../relational/sql/function/table';
+import { notEqual } from '../relational/sql/function/not-equal';
 
 describe(
   'app',

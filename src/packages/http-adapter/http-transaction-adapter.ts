@@ -1,7 +1,8 @@
 import { HttpDataAdapter } from './http-data-adapter';
 import { HttpTransactionDataAdapter } from './http-transaction-data-adapter';
-import { RelationalDataAdapter, RelationalTransactionAdapter } from '../relational/adapter';
-import { IdGenerator } from '../http-client-common';
+import { RelationalTransactionAdapter } from '../relational/adapter/relational-transaction-adapter';
+import { RelationalDataAdapter } from '../relational/adapter/relational-data-adapter';
+import { IdGenerator } from '../http-client-common/id-generator';
 
 export class HttpTransactionAdapter extends HttpDataAdapter implements RelationalTransactionAdapter {
   private idGenerator = new IdGenerator();

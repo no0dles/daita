@@ -1,13 +1,6 @@
-import {
-  isNowDescription,
-  NowDescription,
-} from '../../relational/sql/description';
-import {
-  FormatContext,
-  FormatHandle,
-  Formatter,
-  FormatType,
-} from '../../relational/sql/formatter';
+import { isNowDescription, NowDescription } from '../../relational/sql/description/now';
+import { FormatContext } from '../../relational/sql/formatter/format-context';
+import { FormatHandle, Formatter, FormatType } from '../../relational/sql/formatter/formatter';
 
 export class NowFormatter implements FormatHandle<NowDescription> {
   type = FormatType.Value;
@@ -16,11 +9,7 @@ export class NowFormatter implements FormatHandle<NowDescription> {
     return isNowDescription(param);
   }
 
-  handle(
-    param: NowDescription,
-    ctx: FormatContext,
-    formatter: Formatter,
-  ): string {
+  handle(param: NowDescription, ctx: FormatContext, formatter: Formatter): string {
     return `now()`;
   }
 }

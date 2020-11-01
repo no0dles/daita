@@ -1,5 +1,6 @@
-import { RelationalDataAdapter, RelationalRawResult } from '../relational/adapter';
 import { Http } from '../http-client-common/http';
+import { RelationalRawResult } from '../relational/adapter/relational-raw-result';
+import { RelationalDataAdapter } from '../relational/adapter/relational-data-adapter';
 
 export class HttpDataAdapter implements RelationalDataAdapter {
   constructor(protected http: Http) {}

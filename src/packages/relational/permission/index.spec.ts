@@ -1,14 +1,15 @@
-import {
-  allow,
-  anything,
-  authorized,
-  matchesRules,
-  requestContext,
-  RuleContext,
-} from './index';
-import { equal, insert, select, update } from '../sql/function';
 import { field } from '../sql/function/field';
 import { table } from '../sql/function/table';
+import { allow } from './function/allow';
+import { select } from '../sql/function/select';
+import { matchesRules } from './validate';
+import { requestContext } from './function/request-context';
+import { authorized } from './function/authorized';
+import { update } from '../sql/function/update';
+import { insert } from '../sql/function/insert';
+import { anything } from './function/anything';
+import { equal } from '../sql/function/equal';
+import { RuleContext } from './description/rule-context';
 
 describe('permission', () => {
   class User {

@@ -1,10 +1,11 @@
 import { getGlobalConfig, getProjectConfig } from './config';
-import { AppAuthorization } from '../../http-server-common';
-import { getClient, TransactionClient } from '../../relational/client';
-import { RelationalAdapterImplementation } from '../../relational/adapter';
 import { HttpAdapterOptions } from '../../http-adapter/adapter-implementation';
 import { SqliteAdapterOptions } from '../../sqlite-adapter/sqlite-adapter-implementation';
 import { PostgresAdapterOptions } from '../../pg-adapter/adapter-implementation';
+import { AppAuthorization } from '../../http-server-common/app-authorization';
+import { TransactionClient } from '../../relational/client/transaction-client';
+import { RelationalAdapterImplementation } from '../../relational/adapter/relational-adapter-implementation';
+import { getClient } from '../../relational/client/get-client';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;
 

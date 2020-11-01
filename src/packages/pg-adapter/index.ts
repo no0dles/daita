@@ -1,7 +1,7 @@
-import { postgresAdapter } from './adapter-implementation';
-
-export { PostgresAdapter } from './adapter/postgres.adapter';
-export { PostgresDataAdapter } from './adapter/postgres-data-adapter';
-export { postgresAdapter } from './adapter-implementation';
-
-export const adapter = postgresAdapter;
+// import { adapter } from './adapter-implementation';
+//
+// export { PostgresAdapter } from './adapter/postgres.adapter';
+// export { PostgresDataAdapter } from './adapter/postgres-data-adapter';
+// export { adapter } from './adapter-implementation';
+//
+// export const adapter = adapter;

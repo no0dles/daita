@@ -11,9 +11,9 @@ import { SecondMigration } from './migrations/202066222440-second';
 import { ThirdMigration } from './migrations/202060134311-third';
 import { FourthMigration } from './migrations/202060173136-fourth';
 import { FifthMigration } from './migrations/20206684348-fifth';
-import { RelationalSchema } from '../orm/schema';
 import { UserToken } from './models/user-token';
 import { UserTokenMigration } from './migrations/2020-09-02-210718-user-token';
+import { RelationalSchema } from '../orm/schema/relational-schema';
 
 export const authSchema = new RelationalSchema('auth');
 

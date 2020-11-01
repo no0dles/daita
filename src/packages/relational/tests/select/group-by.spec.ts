@@ -3,7 +3,7 @@ import { count } from '../../sql/function/count';
 import { table } from '../../sql/function/table';
 import { expectedSql } from '../formatter.test';
 import { User } from '../schema/user';
-import { greaterThan } from '../../sql/function';
+import { greaterThan } from '../../sql/function/greater-than';
 
 describe('select/group-by', () => {
   it('should select group by disabled and select count', () => {

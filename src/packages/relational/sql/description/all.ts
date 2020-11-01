@@ -1,6 +1,6 @@
 import { TableAliasDescription } from './table-alias';
 import { TableDescription } from './table';
-import { isExactKind } from '../../../common/utils';
+import { isExactKind } from '../../../common/utils/is-exact-kind';
 
 export interface AllDescription<T> {
   all: { table?: TableAliasDescription<T> | TableDescription<T> };

@@ -1,10 +1,6 @@
-import {
-  FormatContext,
-  FormatHandle,
-  Formatter,
-  FormatType,
-} from '../../relational/sql/formatter';
 import { isNotifySql, PostgresNotifySql } from '../sql/notify-sql';
+import { FormatContext } from '../../relational/sql/formatter/format-context';
+import { FormatHandle, Formatter, FormatType } from '../../relational/sql/formatter/formatter';
 
 export class NotifyFormatter implements FormatHandle<PostgresNotifySql> {
   type = FormatType.Sql;
@@ -13,13 +9,7 @@ export class NotifyFormatter implements FormatHandle<PostgresNotifySql> {
     return isNotifySql(param);
   }
 
-  handle(
-    param: PostgresNotifySql,
-    ctx: FormatContext,
-    formatter: Formatter,
-  ): string {
-    return `NOTIFY ${param.notify}${
-      param.payload ? ` ${ctx.appendValue(param.payload)}` : ''
-    }`;
+  handle(param: PostgresNotifySql, ctx: FormatContext, formatter: Formatter): string {
+    return `NOTIFY ${param.notify}${param.payload ? ` ${ctx.appendValue(param.payload)}` : ''}`;
   }
 }

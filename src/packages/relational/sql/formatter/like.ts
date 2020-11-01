@@ -1,6 +1,6 @@
 import { FormatHandle, Formatter, FormatType } from './formatter';
 import { FormatContext } from './format-context';
-import { isLikeDescription, LikeDescription } from '../description';
+import { isLikeDescription, LikeDescription } from '../description/like';
 
 export class LikeFormatter implements FormatHandle<LikeDescription<any>> {
   type = FormatType.Condition;
@@ -9,14 +9,7 @@ export class LikeFormatter implements FormatHandle<LikeDescription<any>> {
     return isLikeDescription(param);
   }
 
-  handle(
-    param: LikeDescription<any>,
-    ctx: FormatContext,
-    formatter: Formatter,
-  ): string {
-    return `${formatter.format(param.like.left, ctx)} LIKE ${formatter.format(
-      param.like.right,
-      ctx,
-    )}`;
+  handle(param: LikeDescription<any>, ctx: FormatContext, formatter: Formatter): string {
+    return `${formatter.format(param.like.left, ctx)} LIKE ${formatter.format(param.like.right, ctx)}`;
   }
 }

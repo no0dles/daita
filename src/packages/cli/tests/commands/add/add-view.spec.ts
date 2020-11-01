@@ -1,7 +1,9 @@
 import { getMigrationSteps } from '../../utils.test';
 import { User } from './add-view.test';
-import { equal, field, table } from '../../../../relational/sql/function';
-import { MigrationStep } from '../../../../orm/migration';
+import { field } from '../../../../relational/sql/function/field';
+import { MigrationStep } from '../../../../orm/migration/migration-step';
+import { table } from '../../../../relational/sql/function/table';
+import { equal } from '../../../../relational/sql/function/equal';
 
 describe('add-view', () => {
   let steps: MigrationStep[] = [];
@@ -20,9 +22,7 @@ describe('add-view', () => {
   });
 
   it('should add view', () => {
-    const addViewStep = steps.find(
-      (s) => s.kind === 'add_view' && s.view === 'AdminUser',
-    );
+    const addViewStep = steps.find((s) => s.kind === 'add_view' && s.view === 'AdminUser');
     expect(addViewStep).toEqual({
       kind: 'add_view',
       view: 'AdminUser',

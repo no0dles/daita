@@ -3,6 +3,7 @@
 **/keys
 **/node_modules
 coverage
+dist
 keys
 .github
 src/docs
@@ -11,3 +12,6 @@ src/experimental
 src/tests
 **/Dockerfile
 *.tgz
+.git
+.idea
+.DS_Store

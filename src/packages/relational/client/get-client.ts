@@ -1,6 +1,6 @@
 import { RelationalTransactionClient } from './relational-transaction-client';
-import { RelationalAdapterImplementation } from '../adapter';
 import { TransactionClient } from './transaction-client';
+import { RelationalAdapterImplementation } from '../adapter/relational-adapter-implementation';
 
 export function getClient<TQuery, TOptions>(
   adapterImplementation: RelationalAdapterImplementation<TQuery, TOptions>,

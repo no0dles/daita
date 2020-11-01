@@ -1,11 +1,8 @@
-import {
-  RelationalDataAdapter,
-  RelationalRawResult,
-  RelationalTransactionAdapter,
-} from '../adapter';
+import { RelationalTransactionAdapter } from '../adapter/relational-transaction-adapter';
+import { RelationalRawResult } from '../adapter/relational-raw-result';
+import { RelationalDataAdapter } from '../adapter/relational-data-adapter';
 
-export class RelationalAdapterMock<T = any>
-  implements RelationalTransactionAdapter<T> {
+export class RelationalAdapterMock<T = any> implements RelationalTransactionAdapter<T> {
   constructor(private handle: (sql: T) => RelationalRawResult | null) {}
 
   execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
@@ -20,9 +17,7 @@ export class RelationalAdapterMock<T = any>
     throw new Error('unexpected sql: ' + JSON.stringify(sql));
   }
 
-  transaction<R>(
-    action: (adapter: RelationalDataAdapter<T>) => Promise<R>,
-  ): Promise<R> {
+  transaction<R>(action: (adapter: RelationalDataAdapter<T>) => Promise<R>): Promise<R> {
     return action(new RelationalAdapterMock<T>(this.handle));
   }
 

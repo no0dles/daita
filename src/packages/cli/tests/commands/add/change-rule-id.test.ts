@@ -1,6 +1,8 @@
-import { allow, authorized } from '../../../../relational/permission/function';
-import { field, table } from '../../../../relational/sql/function';
-import { RelationalSchema } from '../../../../orm/schema';
+import { allow } from '../../../../relational/permission/function/allow';
+import { field } from '../../../../relational/sql/function/field';
+import { authorized } from '../../../../relational/permission/function/authorized';
+import { RelationalSchema } from '../../../../orm/schema/relational-schema';
+import { table } from '../../../../relational/sql/function/table';
 
 export class User {
   id!: string;

@@ -1,7 +1,7 @@
 import { RuleConfig, run } from '../server';
 import { sqliteAdapter } from '../../../packages/sqlite-adapter/sqlite-adapter-implementation';
-import { getClient } from '../../../packages/relational/client';
-import { OrmRuleContext } from '../../../packages/orm/context';
+import { getClient } from '../../../packages/relational/client/get-client';
+import { OrmRuleContext } from '../../../packages/orm/context/orm-migration-context';
 
 const client = getClient(sqliteAdapter);
 const ruleContext = new RuleConfig(new OrmRuleContext(client));

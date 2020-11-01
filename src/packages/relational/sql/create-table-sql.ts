@@ -1,5 +1,5 @@
 import { TableDescription } from './description/table';
-import { isKind } from '../../common/utils';
+import { isKind } from '../../common/utils/is-kind';
 
 export interface CreateTableColumn {
   name: string;

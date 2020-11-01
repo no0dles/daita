@@ -1,8 +1,10 @@
 import { Pool, PoolClient, types } from 'pg';
 import { PostgresDataAdapter } from './postgres-data-adapter';
 import { postgresFormatter } from './postgres-formatter';
-import { RelationalDataAdapter, RelationalRawResult, RelationalTransactionAdapter } from '../../relational/adapter';
 import { PostgresSql } from '../sql/postgres-sql';
+import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
+import { RelationalRawResult } from '../../relational/adapter/relational-raw-result';
+import { RelationalDataAdapter } from '../../relational/adapter/relational-data-adapter';
 
 export interface PostgresNotificationSubscriber {
   (msg: string | undefined): void;

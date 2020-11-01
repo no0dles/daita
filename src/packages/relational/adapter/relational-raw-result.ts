@@ -1,4 +1,4 @@
-import { isKind } from '../../common/utils';
+import { isKind } from '../../common/utils/is-kind';
 
 export interface RelationalRawResult {
   rowCount: number;

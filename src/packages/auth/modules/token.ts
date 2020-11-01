@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import { getKeyForId } from './key';
-import { Defer } from '../../common/utils';
+import { Defer } from '../../common/utils/defer';
 
 export async function verifyToken(token: string): Promise<any> {
   const payload = jwt.decode(token, { complete: true, json: true });
@@ -12,6 +12,7 @@ export async function verifyToken(token: string): Promise<any> {
 
   const defer = new Defer<any>();
   jwt.verify(token, key.toPEM(), (err) => {
+    console.log(err, payload);
     if (err) {
       defer.reject(err);
     } else {

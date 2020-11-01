@@ -3,17 +3,13 @@ import { field } from '../../sql/function/field';
 import { table } from '../../sql/function/table';
 import { expectedSql } from '../formatter.test';
 import { User } from '../schema/user';
-import {
-  all,
-  and,
-  asc,
-  count,
-  desc,
-  equal,
-  isIn,
-  notEqual,
-} from '../../sql/function';
-
+import { asc } from '../../sql/function/asc';
+import { and } from '../../sql/function/and';
+import { isIn } from '../../sql/function/in';
+import { desc } from '../../sql/function/desc';
+import { equal } from '../../sql/function/equal';
+import { notEqual } from '../../sql/function/not-equal';
+import { count } from '../../sql/function/count';
 describe('select', () => {
   it('should select 1', () => {
     expectedSql(
@@ -131,10 +127,7 @@ describe('select', () => {
       {
         select: field(User, 'id'),
         from: table(User),
-        where: and(
-          equal(field(User, 'id'), 'a'),
-          equal(field(User, 'name'), 'a'),
-        ),
+        where: and(equal(field(User, 'id'), 'a'), equal(field(User, 'name'), 'a')),
       },
       'SELECT "auth"."user"."id" FROM "auth"."user" WHERE ("auth"."user"."id" = $1 AND "auth"."user"."name" = $1)',
       ['a'],
@@ -169,11 +162,7 @@ describe('select', () => {
       {
         select: field(User, 'id'),
         from: table(User),
-        orderBy: [
-          desc(field(User, 'id')),
-          asc(field(User, 'id')),
-          field(User, 'id'),
-        ],
+        orderBy: [desc(field(User, 'id')), asc(field(User, 'id')), field(User, 'id')],
       },
       'SELECT "auth"."user"."id" FROM "auth"."user" ORDER BY "auth"."user"."id" DESC, "auth"."user"."id" ASC, "auth"."user"."id"',
     );

@@ -1,7 +1,7 @@
-import * as express from 'express';
-import * as jwksRoute from './jwks';
+import { Router } from 'express';
+import jwksRoute from './jwks';
 
-const router = express.Router();
+const router = Router();
 
 router.use(jwksRoute);
 

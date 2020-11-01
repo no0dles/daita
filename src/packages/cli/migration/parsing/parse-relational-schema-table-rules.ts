@@ -2,8 +2,8 @@ import { AstArrayValue } from '../../ast/ast-array-value';
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { AstError } from '../../ast/utils';
 import { convertValue } from './convert-value';
-import { RelationalSchemaDescription } from '../../../orm/schema';
-import { getRuleId } from '../../../orm/migration/generation';
+import { RelationalSchemaDescription } from '../../../orm/schema/description/relational-schema-description';
+import { getRuleId } from '../../../orm/migration/generation/rule-id';
 
 export function parseRelationalSchemaTableRules(
   schema: RelationalSchemaDescription,
