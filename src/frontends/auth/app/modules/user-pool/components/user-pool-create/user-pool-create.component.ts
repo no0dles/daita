@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { uuid } from '../../../../utils/uuid';
 import { UserPool } from '../../../../../../../packages/auth/models/user-pool';
 import { table } from '../../../../../../../packages/relational/sql/function/table';
+import { Store } from '@ngxs/store';
+import { UserPoolCreate } from '../../actions/user-pool-create';
 
 @Component({
   selector: 'app-user-pool-create',
@@ -20,7 +22,7 @@ export class UserPoolCreateComponent {
     { name: 'RS384', value: 'RS384' },
   ];
 
-  constructor(private api: ApiService, private route: ActivatedRoute, private router: Router) {
+  constructor(private api: ApiService, private store: Store, private route: ActivatedRoute, private router: Router) {
     this.form = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(3)]),
       algorithm: new FormControl('ES512', [Validators.required]),
@@ -47,7 +49,7 @@ export class UserPoolCreateComponent {
       return;
     }
     const data = this.form.getRawValue();
-    let passwordRegex = undefined;
+    let passwordRegex = '';
     if (data.passwordStrength === 'simple') {
       passwordRegex = '^.{8,}$';
     } else if (data.passwordStrength === 'challenging') {
@@ -57,6 +59,18 @@ export class UserPoolCreateComponent {
     } else if (data.passwordStrength === 'custom') {
       passwordRegex = '';
     }
+    this.store.dispatch(
+      new UserPoolCreate(
+        data.name,
+        data.refreshTokenExpire,
+        data.accessTokenExpire,
+        data.checkPassword,
+        data.allowRegistration,
+        data.algorithm,
+        passwordRegex,
+        3600,
+      ),
+    );
     await this.api.insert({
       into: table(UserPool),
       insert: {

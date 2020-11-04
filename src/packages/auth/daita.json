@@ -1,13 +1,10 @@
 {
   "context": {
     "default": {
-      "module": "@daita/pg-adapter",
-      "moduleOptions": {
-        "connectionString": "postgres://daita:daita@localhost/daita"
-      },
+      "module": "../pg-adapter",
+      "connectionString": "postgres://postgres:postgres@localhost/auth",
       "schemaLocation": "schema.ts",
-      "migrationLocation": "migrations",
-      "authorization": false
+      "migrationLocation": "migrations"
     }
   }
 }

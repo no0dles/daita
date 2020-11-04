@@ -1,7 +1,7 @@
 import { createAuthApp } from '../../packages/auth/app';
 import { createAuthAdminApp } from '../../packages/auth/admin-app';
 import { seedAuthDefaults } from './client';
-import { adapter } from '../../packages/pg-adapter/adapter-implementation';
+import { adapter } from '../../packages/pg-adapter/adapter';
 import { migrate } from '../../packages/orm/migration/migrate';
 import { authSchema } from '../../packages/auth/schema';
 import { getClient } from '../../packages/relational/client/get-client';

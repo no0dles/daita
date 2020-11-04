@@ -1,9 +1,8 @@
 import { AstContext } from '../ast/ast-context';
 import { getSchemaInformation, getSchemaLocation } from '../utils/path';
-import { getClientFromConfig } from '../utils/data-adapter';
-import { getMigrationContext } from '../../orm/context/get-migration-context';
+import { getMigrationContextFromConfig } from '../utils/data-adapter';
 
-export async function applyMigration(options: { cwd?: string; schema?: string; context?: string }) {
+export async function applyMigration(options: { cwd?: string; schema?: string; context?: string; migration?: string }) {
   const astContext = new AstContext();
   const schemaLocation = await getSchemaLocation(options);
   const schemaInfo = await getSchemaInformation(astContext, schemaLocation);
@@ -14,12 +13,12 @@ export async function applyMigration(options: { cwd?: string; schema?: string; c
 
   const migrationTree = schemaInfo.getMigrationTree();
 
-  const client = await getClientFromConfig(options);
-  if (!client) {
+  const context = await getMigrationContextFromConfig(options);
+  if (!context) {
+    console.error('could not create migration context');
     return;
   }
 
-  const context = getMigrationContext(client, migrationTree);
-  await context.update();
-  await client.close();
+  await context.update({ targetMigration: options?.migration });
+  await context.close();
 }

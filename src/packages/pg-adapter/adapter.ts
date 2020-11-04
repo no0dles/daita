@@ -6,6 +6,10 @@ import { PostgresSql } from './sql/postgres-sql';
 import { isKind } from '../common/utils/is-kind';
 import { RelationalTransactionAdapter } from '../relational/adapter/relational-transaction-adapter';
 import { failNever } from '../common/utils/fail-never';
+import { MigrationAdapterImplementation } from '../orm/migration/migration-adapter-implementation';
+import { MigrationAdapter } from '../orm/migration/migration-adapter';
+import { PostgresMigrationAdapter } from './adapter/postgres-migration-adapter';
+import { getClient } from '../relational/client/get-client';
 
 export interface PostgresAdapterBaseOptions {
   listenForNotifications?: boolean;
@@ -74,8 +78,11 @@ export type PostgresAdapterOptions = (
 ) &
   PostgresAdapterBaseOptions;
 
-export const adapter: RelationalAdapterImplementation<PostgresSql, PostgresAdapterOptions> = {
-  getAdapter(options?: PostgresAdapterOptions): RelationalTransactionAdapter<any> {
+class PostgresAdapterImplementation
+  implements
+    RelationalAdapterImplementation<PostgresSql, PostgresAdapterOptions>,
+    MigrationAdapterImplementation<PostgresSql, PostgresAdapterOptions> {
+  getAdapter(options?: PostgresAdapterOptions): RelationalTransactionAdapter<PostgresSql> {
     return new PostgresAdapter(
       new Promise((resolve, reject) => {
         prepareDatabase(options)
@@ -96,8 +103,14 @@ export const adapter: RelationalAdapterImplementation<PostgresSql, PostgresAdapt
       }),
       { listenForNotifications: options?.listenForNotifications ?? false },
     );
-  },
-};
+  }
+
+  getMigrationAdapter(options?: PostgresAdapterOptions): MigrationAdapter<PostgresSql> {
+    return new PostgresMigrationAdapter(getClient(this, options));
+  }
+}
+
+export const adapter = new PostgresAdapterImplementation();
 
 async function prepareDatabase(options?: PostgresAdapterOptions) {
   if (!options) {

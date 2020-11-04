@@ -6,11 +6,14 @@ import { UserCreateComponent } from './components/user-create/user-create.compon
 const routes: Routes = [
   { path: '', component: UserListComponent },
   { path: 'create', component: UserCreateComponent },
+  {
+    path: 'detail/:userPoolId/:username',
+    loadChildren: () => import('../user-detail/user-detail.module').then((m) => m.UserDetailModule),
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class UserRoutingModule {
-}
+export class UserRoutingModule {}

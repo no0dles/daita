@@ -2,13 +2,10 @@ export function capitalize(word: string) {
   if (!word) {
     return word;
   }
-  return word[0].toUpperCase() + word.substr(1).toLowerCase();
+  return word[0].toUpperCase() + word.substr(1);
 }
 
-export function splitByIrregularCharacters(
-  text: string,
-  regularCharacters: string,
-): string[] {
+export function splitByIrregularCharacters(text: string, regularCharacters: string): string[] {
   const result: string[] = [];
   let current = '';
   for (const char of text) {

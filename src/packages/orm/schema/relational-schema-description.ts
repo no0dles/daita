@@ -45,6 +45,9 @@ export function getSchemaDescription(
         for (const fieldName of step.fieldNames) {
           table.addPrimaryKey(table.field(fieldName));
         }
+      } else if (step.kind === 'drop_table_primary_key') {
+        const table = schema.table({ table: step.table, schema: step.schema });
+        table.dropPrimaryKey();
       } else if (step.kind === 'add_table_foreign_key') {
         const table = schema.table({ schema: step.schema, table: step.table });
         const foreignTable = schema.table({

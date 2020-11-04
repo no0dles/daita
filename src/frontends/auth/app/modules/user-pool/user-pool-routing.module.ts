@@ -5,6 +5,10 @@ import { UserPoolCreateComponent } from './components/user-pool-create/user-pool
 
 const routes: Routes = [
   { path: '', component: UserPoolListComponent },
+  {
+    path: 'detail',
+    loadChildren: () => import('../user-pool-detail/user-pool-detail.module').then((m) => m.UserPoolDetailModule),
+  },
   { path: 'create', component: UserPoolCreateComponent },
 ];
 
@@ -12,5 +16,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class UserPoolRoutingModule {
-}
+export class UserPoolRoutingModule {}

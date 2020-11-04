@@ -14,21 +14,30 @@ import { FifthMigration } from './migrations/20206684348-fifth';
 import { UserToken } from './models/user-token';
 import { UserTokenMigration } from './migrations/2020-09-02-210718-user-token';
 import { RelationalSchema } from '../orm/schema/relational-schema';
+import { UserPoolUser } from './models/user-pool-user';
+import { UserPoolRoleMigration } from './migrations/2020-10-01-144026-user-pool-role';
+import {ChangeRoleMigration} from './migrations/2020-10-01-162037-change-role';
+import {FixUppercaseMigration} from './migrations/2020-10-01-162140-fix-uppercase';
 
 export const authSchema = new RelationalSchema('auth');
 
 authSchema.table(User, { key: 'username' });
 authSchema.table(UserPool);
-authSchema.table(Role, { key: 'name' });
+authSchema.table(Role, { key: ['name', 'userPoolId'] });
 authSchema.table(UserRole, { key: ['userUsername', 'roleName'] });
 authSchema.table(UserReset, { key: 'code' });
 authSchema.table(UserEmailVerify, { key: 'code' });
 authSchema.table(UserPoolCors);
 authSchema.table(UserRefreshToken, { key: ['token'] });
 authSchema.table(UserToken, { key: ['token'] });
+authSchema.table(UserPoolUser, { key: ['userPoolId', 'userUsername'] });
+
 authSchema.migration(InitMigration);
 authSchema.migration(SecondMigration);
 authSchema.migration(ThirdMigration);
 authSchema.migration(FourthMigration);
 authSchema.migration(FifthMigration);
 authSchema.migration(UserTokenMigration);
+authSchema.migration(UserPoolRoleMigration);
+authSchema.migration(ChangeRoleMigration);
+authSchema.migration(FixUppercaseMigration);

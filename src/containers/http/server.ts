@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import { AppAuthorization } from '../../packages/http-server-common/app-authorization';
 import { createHttpServerApp } from '../../packages/http-server/app';
 import { TransactionClient } from '../../packages/relational/client/transaction-client';
-import { OrmRuleContext } from '../../packages/orm/context/orm-migration-context';
 import { Rule } from '../../packages/relational/permission/description/rule';
+import { MigrationAdapter } from '../../packages/orm/migration/migration-adapter';
 
 const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT ? parseInt(process.env.TRANSACTION_TIMEOUT) : 4000;
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
@@ -34,7 +34,7 @@ export class RuleConfig {
 
   rules: Rule[] = [];
 
-  constructor(private ruleContext: OrmRuleContext) {
+  constructor(private migrationAdapter?: MigrationAdapter<any>) {
     if (fs.existsSync(RULES_FILE)) {
       const content = fs.readFileSync(RULES_FILE, { encoding: 'utf8' });
       try {
@@ -51,7 +51,11 @@ export class RuleConfig {
   }
 
   async reload() {
-    const dbRules = await this.ruleContext.getRules();
+    if (!this.migrationAdapter) {
+      return;
+    }
+
+    const dbRules = await this.migrationAdapter.getRules();
     if (this.rules.length > this.baseRulesCount) {
       this.rules.splice(this.baseRulesCount, this.rules.length - this.baseRulesCount);
     }

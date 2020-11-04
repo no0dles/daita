@@ -10,10 +10,10 @@ import { authSchema } from '../../auth/schema';
 import { anonymous } from '../../relational/permission/function/anonymous';
 import { seedUserPool, seedUserPoolCors } from '../../auth/seed';
 import { Debouncer } from '../../common/utils/debouncer';
-import { OrmRuleContext } from '../../orm/context/orm-migration-context';
 import { migrate } from '../../orm/migration/migrate';
 import { Rule } from '../../relational/permission/description/rule';
 import { anything } from '../../relational/permission/function/anything';
+import { getMigrationContext } from '../../orm/context/get-migration-context';
 
 export async function serve(opts: {
   cwd?: string;
@@ -47,7 +47,6 @@ export async function serve(opts: {
   }, 500);
 
   async function updateRules() {
-    const ruleContext = new OrmRuleContext(client);
     const newRules = await ruleContext.getRules();
     rules.splice(0, rules.length);
     rules.push(...newRules);

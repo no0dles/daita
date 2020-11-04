@@ -39,11 +39,17 @@ export function generateRelationalTableMigrationSteps(
   );
 
   if (mergedPrimaryKeys.added.length > 0 || mergedPrimaryKeys.removed.length > 0) {
-    throw new Error(
-      `cant change primary key for table ${currentTable.name} (${mergedPrimaryKeys.added.map(
-        (a) => a.name,
-      )}/${mergedPrimaryKeys.removed.map((a) => a.name)})`,
-    );
+    steps.push({
+      kind: 'drop_table_primary_key',
+      schema: newTable.schema,
+      table: newTable.name,
+    });
+    steps.push({
+      kind: 'add_table_primary_key',
+      fieldNames: newTable.primaryKeys.map((k) => k.name),
+      schema: newTable.schema,
+      table: newTable.name,
+    });
   }
 
   const mergedReferences = merge(

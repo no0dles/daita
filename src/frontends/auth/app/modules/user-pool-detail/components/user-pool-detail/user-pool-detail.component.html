@@ -1,0 +1,11 @@
+<main class="bg-gray-200 flex-grow">
+    <app-navbar-header [name]="'User Pool'">
+        {{(item$ | async).name}}
+    </app-navbar-header>
+    <app-navbar-tabs>
+        <app-navbar-tab [name]="'Users'" [link]="['./users']" [route]="route"></app-navbar-tab>
+        <app-navbar-tab [name]="'Settings'" [link]="['./settings']" [route]="route"></app-navbar-tab>
+    </app-navbar-tabs>
+
+    <router-outlet></router-outlet>
+</main>

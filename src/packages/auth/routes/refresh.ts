@@ -4,13 +4,12 @@ import { getRandomCode } from '../modules/random';
 import { User } from '../models/user';
 import { UserPool, UserPoolAlgorithm } from '../models/user-pool';
 import { getAccessToken } from '../modules/key';
-import { Role } from '../models/role';
-import { UserRole } from '../models/user-role';
 import { field } from '../../relational/sql/function/field';
 import { and } from '../../relational/sql/function/and';
 import { table } from '../../relational/sql/function/table';
 import { join } from '../../relational/sql/function/join';
 import { equal } from '../../relational/sql/function/equal';
+import { getRoles } from '../modules/roles';
 
 const router = express.Router({ mergeParams: true });
 
@@ -29,7 +28,7 @@ router.post('/', async (req, res, next) => {
       from: table(UserRefreshToken),
       join: [
         join(User, equal(field(User, 'username'), field(UserRefreshToken, 'userUsername'))),
-        join(UserPool, equal(field(User, 'userPoolId'), field(UserPool, 'id'))),
+        join(UserPool, equal(field(UserRefreshToken, 'userPoolId'), field(UserPool, 'id'))),
       ],
       where: and(
         equal(field(UserRefreshToken, 'token'), req.body.refreshToken),
@@ -53,12 +52,7 @@ router.post('/', async (req, res, next) => {
       });
     }
 
-    const roles = await req.app.client.select({
-      select: field(Role, 'name'),
-      from: table(Role),
-      join: [join(UserRole, equal(field(UserRole, 'roleName'), field(Role, 'name')))],
-      where: equal(field(UserRole, 'userUsername'), token.userUsername),
-    });
+    const roles = await getRoles(req.app.client, token.userPoolId, token.userUsername);
 
     const refreshToken = await getRandomCode();
     const accessToken = await getAccessToken(
@@ -83,6 +77,7 @@ router.post('/', async (req, res, next) => {
         into: table(UserRefreshToken),
         insert: {
           userUsername: token.userUsername,
+          userPoolId: token.userPoolId,
           token: refreshToken,
           issuedAt: new Date(),
           authorizedAt: token.authorizedAt,

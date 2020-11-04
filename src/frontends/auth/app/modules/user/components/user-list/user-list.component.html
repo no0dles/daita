@@ -3,7 +3,7 @@
   <app-card-list class="p-3">
     <app-card [name]="user.username" *ngFor="let user of users"
               [description]="user.userPool"
-              [link]="'/app/users/view/' + user.username">
+              [link]="'/app/users/detail/' + user.userPoolId + '/' + user.username">
 
     </app-card>
   </app-card-list>

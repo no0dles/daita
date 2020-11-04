@@ -7,6 +7,7 @@ import { SidebarModule } from '../sidebar/sidebar.module';
 import { UserPoolCreateComponent } from './components/user-pool-create/user-pool-create.component';
 import { CardModule } from '../card/card.module';
 import { FormLayoutModule } from '../form-layout/form-layout.module';
+import { UserPoolStateModule } from './user-pool-state.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
@@ -18,8 +19,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     SidebarModule,
     CardModule,
     FormLayoutModule,
+    UserPoolStateModule,
     ReactiveFormsModule,
   ],
 })
-export class UserPoolModule {
-}
+export class UserPoolModule {}

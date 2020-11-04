@@ -63,14 +63,16 @@ export function generateRelationalMigrationSteps(
     steps.push({ kind: 'drop_view', schema: view.schema, view: view.name });
   }
 
-  for (const table of mergedTables.removed) {
+  for (const table of currentSchema.tables) {
     for (const reference of table.references) {
-      steps.push({
-        kind: 'drop_table_foreign_key',
-        table: table.name,
-        schema: table.schema,
-        name: reference.name,
-      });
+      if (mergedTables.removed.some((t) => t.key === reference.table.key)) {
+        steps.push({
+          kind: 'drop_table_foreign_key',
+          table: table.name,
+          schema: table.schema,
+          name: reference.name,
+        });
+      }
     }
   }
 

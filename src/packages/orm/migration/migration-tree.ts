@@ -103,20 +103,14 @@ export class MigrationTree {
         this.defaultPath(),
       );
     } else {
-      return getSchemaDescription(
-        this.name,
-        new SchemaMapper(() => new NormalMapper()),
-        this.defaultPath(),
-      );
+      return getSchemaDescription(this.name, new SchemaMapper(() => new NormalMapper()), this.defaultPath());
     }
   }
 
   path(id: string) {
     const targetMigration = this.migrationMap[id];
     const migrations: MigrationDescription[] = [targetMigration];
-    let current = targetMigration.after
-      ? this.migrationMap[targetMigration.after]
-      : null;
+    let current = targetMigration.after ? this.migrationMap[targetMigration.after] : null;
     while (current !== null) {
       migrations.unshift(current);
       current = current.after ? this.migrationMap[current.after] : null;
@@ -125,5 +119,4 @@ export class MigrationTree {
   }
 }
 
-export const isMigrationTree = (val: any): val is MigrationTree =>
-  typeof val.path === 'function';
+export const isMigrationTree = (val: any): val is MigrationTree => typeof val.path === 'function';

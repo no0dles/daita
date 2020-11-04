@@ -1,5 +1,5 @@
 import { schema, userRule, userRuleId } from './add-rule.test';
-import { adapter } from '../../../../pg-adapter/adapter-implementation';
+import { adapter, PostgresAdapterOptions } from '../../../../pg-adapter/adapter';
 import { getMigrationContext } from '../../../../orm/context/get-migration-context';
 import { parseRule } from '../../../../relational/permission/parsing';
 import { TransactionClient } from '../../../../relational/client/transaction-client';
@@ -11,12 +11,13 @@ describe('apply/add-rule', () => {
   let client: TransactionClient<any>;
 
   beforeAll(async () => {
-    client = getClient(adapter, {
+    const options: PostgresAdapterOptions = {
       connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost/test-cli',
       createIfNotExists: true,
       dropIfExists: true,
-    });
-    const context = getMigrationContext(client, schema);
+    };
+    client = getClient(adapter, options);
+    const context = getMigrationContext(schema, adapter, options);
     await context.update();
   });
 

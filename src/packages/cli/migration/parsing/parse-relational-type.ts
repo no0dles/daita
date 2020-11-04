@@ -13,6 +13,7 @@ import { AstKeywordValue } from '../../ast/ast-keyword-value';
 import { AstPropertyAccessExpression } from '../../ast/ast-property-access-expression';
 import { AstError } from '../../ast/utils';
 import { RelationalTableSchemaTableFieldType } from '../../../orm/schema/relational-table-schema-table-field-type';
+import { AstTypeDeclaration } from '../../ast/ast-type-declaration';
 
 export function parseRelationalType(type: AstType): RelationalTableSchemaTableFieldType {
   if (type instanceof AstArrayType) {
@@ -34,10 +35,18 @@ export function parseRelationalType(type: AstType): RelationalTableSchemaTableFi
   } else if (type instanceof AstReferenceType) {
     if (type.name === 'Date') {
       return 'date';
-    } else if (type.referenceType instanceof AstEnumDeclaration) {
-      return parseRelationalType(type.referenceType.type);
     } else if (type.name === 'UUID') {
       return 'uuid';
+    }
+    const refType = type.referenceType;
+
+    if (refType instanceof AstEnumDeclaration) {
+      return parseRelationalType(refType.type);
+    } else if (refType instanceof AstTypeDeclaration) {
+      if (!refType.type) {
+        throw new AstError(refType.node, 'missing type');
+      }
+      return parseRelationalType(refType.type);
     }
   } else if (type instanceof AstUnionType) {
     const relationalTypes: RelationalTableSchemaTableFieldType[] = [];

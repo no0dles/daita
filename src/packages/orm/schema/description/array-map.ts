@@ -15,6 +15,11 @@ export class ArrayMap<T> {
     return key in this.map;
   }
 
+  clear() {
+    this.array = [];
+    this.map = {};
+  }
+
   update(key: string, value: T) {
     const oldValue = this.map[key];
     if (!oldValue) {

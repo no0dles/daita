@@ -10,7 +10,7 @@ export class NavbarHeaderComponent implements OnInit {
   name: string = '';
 
   @Input()
-  link: string[] = [];
+  link?: string[];
 
   @Output()
   createClicked = new EventEmitter();

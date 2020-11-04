@@ -36,6 +36,7 @@ program
   .option('--cwd <string>', 'working directory')
   .option('-s, --schema <string>', 'schema filePath')
   .option('-c, --context <string>', 'config context')
+  .option('-m, --migration <string>', 'target migration')
   .action(async (opts) => {
     await applyMigration(opts);
   });

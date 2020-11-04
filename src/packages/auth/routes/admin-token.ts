@@ -1,14 +1,14 @@
 import * as express from 'express';
 import { UserToken } from '../models/user-token';
 import { User } from '../models/user';
-import { Role } from '../models/role';
-import { UserRole } from '../models/user-role';
 import { getSha1 } from '../modules/hash';
 import { field } from '../../relational/sql/function/field';
 import { and } from '../../relational/sql/function/and';
 import { table } from '../../relational/sql/function/table';
 import { join } from '../../relational/sql/function/join';
 import { equal } from '../../relational/sql/function/equal';
+import { UserPoolUser } from '../models/user-pool-user';
+import { getRoles } from '../modules/roles';
 
 const router = express.Router({ mergeParams: true });
 
@@ -23,10 +23,13 @@ router.post('/:token', async (req, res, next) => {
         userPoolId: field(User, 'userPoolId'),
       },
       from: table(UserToken),
-      join: [join(table(User), equal(field(User, 'username'), field(UserToken, 'userUsername')))],
+      join: [
+        join(User, equal(field(User, 'username'), field(UserToken, 'userUsername'))),
+        join(UserPoolUser, equal(field(UserPoolUser, 'userUsername'), field(User, 'username'))),
+      ],
       where: and(
         equal(field(UserToken, 'token'), hashedToken),
-        equal(field(User, 'userPoolId'), req.params.userPoolId),
+        equal(field(UserPoolUser, 'userPoolId'), req.params.userPoolId),
       ),
     });
 
@@ -34,12 +37,7 @@ router.post('/:token', async (req, res, next) => {
       return res.status(401).end();
     }
 
-    const roles = await req.app.client.select({
-      select: field(Role, 'name'),
-      from: table(Role),
-      join: [join(UserRole, equal(field(UserRole, 'roleName'), field(Role, 'name')))],
-      where: equal(field(UserRole, 'userUsername'), token.username),
-    });
+    const roles = await getRoles(req.app.client, req.params.userPoolId, token.username);
     res.status(200).json({
       roles,
       sub: token.username,

@@ -1,0 +1,22 @@
+
+<main class="bg-gray-200 flex-grow">
+  <app-navbar-header [name]="'User'">
+    {{(item$ | async).username}}
+  </app-navbar-header>
+
+  <form class="p-6 overflow-y-scroll flex-grow" [formGroup]="form" (ngSubmit)="save()">
+    <app-form-layout-input [id]="'username'" [name]="'Username'" [form]="form"></app-form-layout-input>
+    <app-form-layout-input [id]="'userPool'" [name]="'User Pool'" [form]="form"></app-form-layout-input>
+
+    <app-form-layout-section class="mt-8" [name]="'Contact details'">
+      <app-form-layout-input [id]="'email'" [name]="'Email'" [form]="form" [type]="'email'" class="mt-4"></app-form-layout-input>
+      <app-form-layout-checkbox [id]="'emailVerified'" [name]="'Email verified'" [form]="form" class="mt-2"></app-form-layout-checkbox>
+      <app-form-layout-input [id]="'phone'" [name]="'Phone'" [form]="form" [type]="'phone'" class="mt-4"></app-form-layout-input>
+      <app-form-layout-checkbox [id]="'phoneVerified'" [name]="'Phone verified'" [form]="form" class="mt-2"></app-form-layout-checkbox>
+    </app-form-layout-section>
+
+    <app-form-layout-section class="mt-8" [name]="'Roles'">
+
+    </app-form-layout-section>
+  </form>
+</main>

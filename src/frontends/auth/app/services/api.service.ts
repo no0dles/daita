@@ -30,6 +30,10 @@ export class ApiService {
     return this.client.select(sql);
   }
 
+  selectFirst<T>(sql: SelectSql<T>) {
+    return this.client.selectFirst(sql);
+  }
+
   insert<T>(sql: InsertSql<T>) {
     return this.client.insert(sql);
   }

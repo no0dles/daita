@@ -65,6 +65,10 @@ export class RelationalTableDescription {
     this.primaryKeysArray.add(field.key, field);
   }
 
+  dropPrimaryKey() {
+    this.primaryKeysArray.clear();
+  }
+
   addField(name: string, field: RelationalTableFieldDescription) {
     this.fieldArrayMap.add(name, field);
   }

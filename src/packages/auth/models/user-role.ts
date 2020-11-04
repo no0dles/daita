@@ -6,4 +6,5 @@ export class UserRole {
   userUsername!: string;
   role!: Role;
   roleName!: string;
+  roleUserPoolId!: string;
 }

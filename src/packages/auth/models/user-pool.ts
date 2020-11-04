@@ -3,7 +3,7 @@ export class UserPool {
   name!: string;
   allowRegistration?: boolean;
 
-  algorithm!: string; //TODO UserPoolAlgorithm;
+  algorithm!: UserPoolAlgorithm;
 
   accessTokenExpiresIn!: number;
   refreshRefreshExpiresIn!: number;

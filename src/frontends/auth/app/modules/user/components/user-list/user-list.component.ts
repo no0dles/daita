@@ -13,7 +13,7 @@ import { equal } from '../../../../../../../packages/relational/sql/function/equ
   styleUrls: ['./user-list.component.scss'],
 })
 export class UserListComponent implements OnInit {
-  users: { username: string; userPool: string; disabled: boolean; email?: string }[] = [];
+  users: { username: string; userPool: string; disabled: boolean; email?: string; userPoolId: string }[] = [];
   loading = false;
 
   constructor(private api: ApiService) {}
@@ -26,6 +26,7 @@ export class UserListComponent implements OnInit {
           userPool: field(UserPool, 'name'),
           disabled: field(User, 'disabled'),
           email: field(User, 'email'),
+          userPoolId: field(User, 'userPoolId'),
         },
         from: table(User),
         join: [join(UserPool, equal(field(User, 'userPoolId'), field(UserPool, 'id')))],

@@ -17,6 +17,7 @@ import {
   RelationalInsertSeedMigrationStep,
   RelationalUpdateSeedMigrationStep,
 } from './steps';
+import { RelationalDropTablePrimaryKeyMigrationStep } from './steps/relational-drop-table-primary-key.migration-step';
 
 export type MigrationStep =
   | RelationalAddTableMigrationStep
@@ -35,4 +36,5 @@ export type MigrationStep =
   | RelationalAlterViewMigrationStep
   | RelationalInsertSeedMigrationStep
   | RelationalUpdateSeedMigrationStep
-  | RelationalDeleteSeedMigrationStep;
+  | RelationalDeleteSeedMigrationStep
+  | RelationalDropTablePrimaryKeyMigrationStep;

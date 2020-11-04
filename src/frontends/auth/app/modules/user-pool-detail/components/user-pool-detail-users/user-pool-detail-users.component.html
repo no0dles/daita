@@ -1,0 +1,6 @@
+<app-card-list class="p-3">
+  <app-card [name]="user.username"
+            *ngFor="let user of users$ | async"
+            [description]="user.email"
+            [link]="'/app/users/detail/' + user.userPoolId + '/' + user.username"></app-card>
+</app-card-list>

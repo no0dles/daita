@@ -33,6 +33,7 @@ export class RoleCreateComponent implements OnInit {
       into: table(Role),
       insert: {
         name: data.name,
+        userPoolId: 'asd', //TODO
         description: data.description,
       },
     });

@@ -1,8 +1,6 @@
 import * as express from 'express';
 import { User } from '../models/user';
 import { UserPool, UserPoolAlgorithm } from '../models/user-pool';
-import { Role } from '../models/role';
-import { UserRole } from '../models/user-role';
 import { UserRefreshToken } from '../models/user-refresh-token';
 import { compareHash } from '../modules/hash';
 import { getAccessToken } from '../modules/key';
@@ -13,6 +11,8 @@ import { and } from '../../relational/sql/function/and';
 import { table } from '../../relational/sql/function/table';
 import { equal } from '../../relational/sql/function/equal';
 import { join } from '../../relational/sql/function/join';
+import { UserPoolUser } from '../models/user-pool-user';
+import { getRoles } from '../modules/roles';
 
 const router = express.Router({ mergeParams: true });
 
@@ -31,10 +31,13 @@ router.post('/', async (req, res, next) => {
         },
       },
       from: table(User),
-      join: [join(table(UserPool), equal(field(UserPool, 'id'), field(User, 'userPoolId')))],
+      join: [
+        join(table(UserPoolUser), equal(field(UserPoolUser, 'userUsername'), field(User, 'username'))),
+        join(table(UserPool), equal(field(UserPoolUser, 'userPoolId'), field(UserPool, 'id'))),
+      ],
       where: and(
         or(equal(field(User, 'username'), req.body.username), equal(field(User, 'email'), req.body.username)),
-        equal(field(User, 'userPoolId'), req.params.userPoolId),
+        equal(field(UserPoolUser, 'userPoolId'), req.params.userPoolId),
       ),
     });
 
@@ -47,13 +50,7 @@ router.post('/', async (req, res, next) => {
       return res.status(400).json({ message: 'invalid credentials' });
     }
 
-    const roles = await req.app.client.select({
-      select: field(Role, 'name'),
-      from: table(Role),
-      join: [join(UserRole, equal(field(UserRole, 'roleName'), field(Role, 'name')))],
-      where: equal(field(UserRole, 'userUsername'), user.username),
-    });
-
+    const roles = await getRoles(req.app.client, req.params.userPoolId, user.username);
     const refreshToken = await getRandomCode();
     const accessToken = await getAccessToken(
       req.params.userPoolId,
@@ -86,6 +83,7 @@ router.post('/', async (req, res, next) => {
       insert: {
         userUsername: user.username,
         token: refreshToken,
+        userPoolId: req.params.userPoolId,
         authorizedAt: new Date(),
         issuedAt: new Date(),
       },

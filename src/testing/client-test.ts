@@ -1,4 +1,4 @@
-import { adapter } from '../packages/pg-adapter/adapter-implementation';
+import { adapter } from '../packages/pg-adapter/adapter';
 import { TransactionClient } from '../packages/relational/client/transaction-client';
 import { getClient } from '../packages/relational/client/get-client';
 
