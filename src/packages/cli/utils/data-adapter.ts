@@ -3,11 +3,13 @@ import { HttpAdapterOptions } from '../../http-adapter/adapter-implementation';
 import { SqliteAdapterOptions } from '../../sqlite-adapter/sqlite-adapter-implementation';
 import { PostgresAdapterOptions } from '../../pg-adapter/adapter';
 import { AppAuthorization } from '../../http-server-common/app-authorization';
-import { TransactionClient } from '../../relational/client/transaction-client';
+import { MigrationClient, TransactionClient } from '../../relational/client/transaction-client';
 import { RelationalAdapterImplementation } from '../../relational/adapter/relational-adapter-implementation';
 import { getClient } from '../../relational/client/get-client';
 import path from 'path';
-import { MigrationContext } from '../../orm/context/get-migration-context';
+import { getMigrationContext, MigrationContext } from '../../orm/context/get-migration-context';
+import { MigrationTree } from '../../orm/migration/migration-tree';
+import { MigrationAdapterImplementation } from '../../orm/migration/migration-adapter-implementation';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;
 
@@ -36,35 +38,49 @@ export interface DaitaPostgresContextConfig extends BaseContextConfig {
   authorization: AppAuthorization;
 }
 
-export async function getMigrationContextFromConfig(): MigrationContext {}
-
-export async function getClientFromConfig(options: any): Promise<TransactionClient<any>> {
+export function getMigrationContextFromConfig(migrationTree: MigrationTree, options: any): MigrationContext {
   const contextConfig = getProjectConfig(options);
   if (!contextConfig.connectionString) {
     throw new Error('missing connection string');
   }
 
-  function getAdapterImpl<T>(defaultModule: string): RelationalAdapterImplementation<any, T> {
-    const cwd = path.join(options?.cwd || process.cwd());
-    if (contextConfig.module) {
-      return require(path.join(cwd, contextConfig.module)).adapter;
-    } else {
-      return require(defaultModule).adapter;
-    }
-  }
+  const adapter = getAdapter(options, contextConfig);
+  return getMigrationContext(migrationTree, adapter.adapter, adapter.options);
+}
 
+function getAdapterImpl<T>(
+  options: any,
+  contextConfig: DaitaContextConfig,
+  defaultModule: string,
+): RelationalAdapterImplementation<any, any> & MigrationAdapterImplementation<any, any> {
+  const cwd = path.join(options?.cwd || process.cwd());
+  if (contextConfig.module) {
+    return require(path.join(cwd, contextConfig.module)).adapter;
+  } else {
+    return require(defaultModule).adapter;
+  }
+}
+
+function getAdapter(options: any, contextConfig: DaitaContextConfig) {
   if (contextConfig.connectionString.startsWith('postgres://')) {
-    const adapter = getAdapterImpl<PostgresAdapterOptions>('@daita/pg-adapter');
-    return getClient(adapter, { ...(contextConfig.options || {}), connectionString: contextConfig.connectionString });
+    return {
+      adapter: getAdapterImpl<PostgresAdapterOptions>(options, contextConfig, '@daita/pg-adapter'),
+      options: { ...(contextConfig.options || {}), connectionString: contextConfig.connectionString },
+    };
   } else if (contextConfig.connectionString.startsWith('sqlite://')) {
-    const adapter = getAdapterImpl<SqliteAdapterOptions>('@daita/sqlite-adapter');
     if (contextConfig.connectionString === 'sqlite://:memory:') {
-      return getClient(adapter, { ...(contextConfig.options || {}), memory: true });
+      return {
+        adapter: getAdapterImpl<SqliteAdapterOptions>(options, contextConfig, '@daita/sqlite-adapter'),
+        options: { ...(contextConfig.options || {}), memory: true },
+      };
     } else {
-      return getClient(adapter, {
-        ...(contextConfig.options || {}),
-        file: contextConfig.connectionString.substr('sqlite://'.length),
-      });
+      return {
+        adapter: getAdapterImpl<SqliteAdapterOptions>(options, contextConfig, '@daita/sqlite-adapter'),
+        options: {
+          ...(contextConfig.options || {}),
+          file: contextConfig.connectionString.substr('sqlite://'.length),
+        },
+      };
     }
   } else if (
     contextConfig.connectionString.startsWith('http:') ||
@@ -76,14 +92,26 @@ export async function getClientFromConfig(options: any): Promise<TransactionClie
       throw new Error('http-adapter requires login');
     }
 
-    const adapter = getAdapterImpl<HttpAdapterOptions>('@daita/http-adapter');
-    return getClient(adapter, {
-      baseUrl: contextConfig.connectionString,
-      authProvider: {
-        token,
+    return {
+      adapter: getAdapterImpl<HttpAdapterOptions>(options, contextConfig, '@daita/http-adapter'),
+      options: {
+        baseUrl: contextConfig.connectionString,
+        authProvider: {
+          token,
+        },
       },
-    });
+    };
   } else {
     throw new Error('unsupported connection string ' + contextConfig.connectionString);
   }
+}
+
+export async function getClientFromConfig(options: any): Promise<TransactionClient<any> | MigrationClient<any>> {
+  const contextConfig = getProjectConfig(options);
+  if (!contextConfig.connectionString) {
+    throw new Error('missing connection string');
+  }
+
+  const adapter = getAdapter(options, contextConfig);
+  return getClient(adapter.adapter, adapter.options);
 }

@@ -6,7 +6,7 @@ import { Rule } from '../../relational/permission/description/rule';
 export interface OrmRelationalSchema {
   schema: string | null;
 
-  getSchemaDescription(): RelationalSchemaDescription;
+  //getSchemaDescription(): RelationalSchemaDescription;
 
   getRules(): Rule[];
 

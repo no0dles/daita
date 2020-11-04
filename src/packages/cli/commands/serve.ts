@@ -1,5 +1,5 @@
 import { getClientFromConfig } from '../utils/data-adapter';
-import { getSchemaLocation } from '../utils/path';
+import { getSchemaInformation, getSchemaLocation } from '../utils/path';
 import { getAuthorization } from '../utils/authorization';
 import { watch, FSWatcher } from 'chokidar';
 import { applyMigration } from './apply-migration';
@@ -11,9 +11,10 @@ import { anonymous } from '../../relational/permission/function/anonymous';
 import { seedUserPool, seedUserPoolCors } from '../../auth/seed';
 import { Debouncer } from '../../common/utils/debouncer';
 import { migrate } from '../../orm/migration/migrate';
-import { Rule } from '../../relational/permission/description/rule';
 import { anything } from '../../relational/permission/function/anything';
-import { getMigrationContext } from '../../orm/context/get-migration-context';
+import { RelationalMigrationClient } from '../../relational/client/relational-transaction-client';
+import { AstContext } from '../ast/ast-context';
+import { Rule } from '../../relational/permission/description/rule';
 
 export async function serve(opts: {
   cwd?: string;
@@ -32,30 +33,27 @@ export async function serve(opts: {
 
   await applyMigration(opts);
 
-  const rules: Rule[] = [];
   const authorization = getAuthorization(opts);
   const disableAuth = !authorization || opts.disableAuth;
 
   const schemaLocation = await getSchemaLocation(opts);
+
   const reloadDebouncer = new Debouncer(async () => {
     console.log('reload');
     await applyMigration(opts);
-
-    if (!disableAuth) {
-      await updateRules();
-    }
+    //TODO reload rules
   }, 500);
 
-  async function updateRules() {
-    const newRules = await ruleContext.getRules();
-    rules.splice(0, rules.length);
-    rules.push(...newRules);
-  }
-
+  const rules: Rule[] = [];
   if (disableAuth) {
     rules.push({ auth: anonymous(), type: 'allow', sql: anything() });
   } else {
-    await updateRules();
+    const astContext = new AstContext();
+    const schemaInfo = await getSchemaInformation(astContext, schemaLocation);
+    if (schemaInfo) {
+      const migrationTree = schemaInfo.getMigrationTree();
+      rules.push(...migrationTree.getSchemaDescription({ backwardCompatible: false }).rules.map((r) => r.rule));
+    }
   }
 
   let watcher: FSWatcher | undefined = undefined;
@@ -73,7 +71,9 @@ export async function serve(opts: {
 
   let authServer: any;
   if (!disableAuth) {
-    await migrate(client, authSchema);
+    if (client instanceof RelationalMigrationClient) {
+      await migrate(client, authSchema);
+    }
     await seedUserPool(client, {
       id: 'cli',
       name: 'cli',

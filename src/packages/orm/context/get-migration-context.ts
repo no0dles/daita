@@ -10,9 +10,7 @@ export interface MigrationContextUpdateOptions {
 
 export interface MigrationContext {
   needsUpdate(options?: MigrationContextUpdateOptions): Promise<boolean>;
-
   update(options?: MigrationContextUpdateOptions): Promise<void>;
-  close(): Promise<void>;
 }
 
 export function getMigrationContext<TQuery extends InsertSql<any>, TOptions>(

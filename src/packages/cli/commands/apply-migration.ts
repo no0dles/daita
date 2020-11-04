@@ -13,12 +13,11 @@ export async function applyMigration(options: { cwd?: string; schema?: string; c
 
   const migrationTree = schemaInfo.getMigrationTree();
 
-  const context = await getMigrationContextFromConfig(options);
+  const context = await getMigrationContextFromConfig(migrationTree, options);
   if (!context) {
     console.error('could not create migration context');
     return;
   }
 
   await context.update({ targetMigration: options?.migration });
-  await context.close();
 }

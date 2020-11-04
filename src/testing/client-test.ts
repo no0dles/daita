@@ -1,8 +1,8 @@
 import { adapter } from '../packages/pg-adapter/adapter';
-import { TransactionClient } from '../packages/relational/client/transaction-client';
+import { MigrationClient, TransactionClient } from '../packages/relational/client/transaction-client';
 import { getClient } from '../packages/relational/client/get-client';
 
-export type TestCaseCallback = (client: TransactionClient<any>) => void;
+export type TestCaseCallback = (client: MigrationClient<any>) => void;
 
 // class SimpleLock {
 //   private readonly callbacks: {
