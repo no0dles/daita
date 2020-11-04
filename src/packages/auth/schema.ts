@@ -5,19 +5,11 @@ import { User } from './models/user';
 import { UserReset } from './models/user-reset';
 import { UserEmailVerify } from './models/user-email-verify';
 import { Role } from './models/role';
-import { InitMigration } from './migrations/202066161739-init';
 import { UserRole } from './models/user-role';
-import { SecondMigration } from './migrations/202066222440-second';
-import { ThirdMigration } from './migrations/202060134311-third';
-import { FourthMigration } from './migrations/202060173136-fourth';
-import { FifthMigration } from './migrations/20206684348-fifth';
 import { UserToken } from './models/user-token';
-import { UserTokenMigration } from './migrations/2020-09-02-210718-user-token';
 import { RelationalSchema } from '../orm/schema/relational-schema';
 import { UserPoolUser } from './models/user-pool-user';
-import { UserPoolRoleMigration } from './migrations/2020-10-01-144026-user-pool-role';
-import {ChangeRoleMigration} from './migrations/2020-10-01-162037-change-role';
-import {FixUppercaseMigration} from './migrations/2020-10-01-162140-fix-uppercase';
+import { InitMigration } from './migrations/2020-10-03-213053-init';
 
 export const authSchema = new RelationalSchema('auth');
 
@@ -31,13 +23,4 @@ authSchema.table(UserPoolCors);
 authSchema.table(UserRefreshToken, { key: ['token'] });
 authSchema.table(UserToken, { key: ['token'] });
 authSchema.table(UserPoolUser, { key: ['userPoolId', 'userUsername'] });
-
 authSchema.migration(InitMigration);
-authSchema.migration(SecondMigration);
-authSchema.migration(ThirdMigration);
-authSchema.migration(FourthMigration);
-authSchema.migration(FifthMigration);
-authSchema.migration(UserTokenMigration);
-authSchema.migration(UserPoolRoleMigration);
-authSchema.migration(ChangeRoleMigration);
-authSchema.migration(FixUppercaseMigration);

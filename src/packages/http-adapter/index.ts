@@ -8,7 +8,7 @@ export { HttpTransactionAdapter } from './http-transaction-adapter';
 export { HttpDataAdapter } from './http-data-adapter';
 
 export const adapter: RelationalAdapterImplementation<any, HttpAdapterOptions> = {
-  getAdapter(options?: HttpAdapterOptions): RelationalTransactionAdapter<any> {
+  getRelationalAdapter(options?: HttpAdapterOptions): RelationalTransactionAdapter<any> {
     const http = new NodeHttp(options?.baseUrl || 'http://localhost:8765', options?.authProvider || null);
     return new HttpTransactionAdapter(http);
   },

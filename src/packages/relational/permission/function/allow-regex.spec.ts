@@ -53,7 +53,9 @@ describe('allow-regex', () => {
     );
     expect(result).toEqual({
       type: 'next',
-      error: 'set.username does not match regexp',
+      error: 'should match regexp /[a-z]+/',
+      path: ['set', 'username'],
+      score: 3,
     });
   });
 });

@@ -1,6 +1,6 @@
 import { adapter } from '../packages/pg-adapter/adapter';
-import { MigrationClient, TransactionClient } from '../packages/relational/client/transaction-client';
 import { getClient } from '../packages/relational/client/get-client';
+import { MigrationClient } from '../packages/relational/client/migration-client';
 
 export type TestCaseCallback = (client: MigrationClient<any>) => void;
 

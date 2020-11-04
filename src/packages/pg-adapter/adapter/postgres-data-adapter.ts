@@ -33,6 +33,7 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
       const result = await run;
       return { rows: result.rows, rowCount: result.rowCount };
     } catch (e) {
+      console.log(sql, values, e);
       if (e.code === '23505') {
         const regex = /Key \((?<keys>.*?)\)=\((?<values>.*?)\) already exists./g;
         const groups = regex.exec(e.message)?.groups || {};

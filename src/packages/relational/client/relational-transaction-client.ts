@@ -1,8 +1,8 @@
 import { RelationalClient } from './relational-client';
-import { MigrationClient, TransactionClient } from './transaction-client';
+import { TransactionClient } from './transaction-client';
 import { RelationalTransactionAdapter } from '../adapter/relational-transaction-adapter';
-import exp from 'constants';
 import { MigrationAdapter } from '../../orm/migration/migration-adapter';
+import { MigrationClient } from './migration-client';
 
 export class RelationalTransactionClient extends RelationalClient implements TransactionClient<RelationalClient> {
   constructor(private transactionAdapter: RelationalTransactionAdapter<any>) {

@@ -17,6 +17,8 @@ import { TableDescription } from '../../relational/sql/description/table';
 import { Condition } from '../../relational/sql/description/condition';
 import { TransactionClient } from '../../relational/client/transaction-client';
 import { Defer } from '../../common/utils/defer';
+import { RelationalAddTableFieldMigrationStep } from '../../orm/migration/steps/relational-add-table-field.migration-step';
+import { MigrationStep } from '../../orm/migration/migration-step';
 
 class Migrations {
   static schema = 'daita';
@@ -52,6 +54,7 @@ export class PostgresMigrationAdapter implements MigrationAdapter<PostgresSql> {
   getClient(handle: Promise<void>): Promise<Client<PostgresSql>> {
     const defer = new Defer<Client<PostgresSql>>();
     this.client.transaction(async (trx) => {
+      await this.updateInternalSchema(trx);
       await trx.exec({ lockTable: table(Migrations) });
       defer.resolve(trx);
       await handle;
@@ -173,6 +176,7 @@ export class PostgresMigrationAdapter implements MigrationAdapter<PostgresSql> {
     migration: MigrationDescription,
     direction: MigrationDirection,
   ): Promise<void> {
+    await this.updateInternalSchema(client);
     const createTables: { [key: string]: CreateTableSql } = {};
 
     await client.exec({
@@ -185,22 +189,32 @@ export class PostgresMigrationAdapter implements MigrationAdapter<PostgresSql> {
       if (step.kind === 'add_table') {
         const tbl = table(step.table, step.schema);
         const key = getTableDescriptionIdentifier(tbl);
+        const isAddTableFieldStep = (val: MigrationStep): val is RelationalAddTableFieldMigrationStep =>
+          val.kind === 'add_table_field';
+
         createTables[key] = {
           createTable: tbl,
-          columns: [],
+          columns: migration.steps
+            .filter(isAddTableFieldStep)
+            .filter((s) => s.table === step.table && s.schema === step.schema)
+            .map((columnStep) => ({
+              name: columnStep.fieldName,
+              type: columnStep.type,
+              primaryKey: migration.steps.some(
+                (s) =>
+                  s.kind === 'add_table_primary_key' &&
+                  s.schema === step.schema &&
+                  s.table === step.table &&
+                  s.fieldNames.indexOf(columnStep.fieldName) >= 0,
+              ),
+              notNull: false,
+            })),
         };
         await client.exec(createTables[key]);
       } else if (step.kind === 'add_table_field') {
         const tbl = table(step.table, step.schema);
         const key = getTableDescriptionIdentifier(tbl);
-        if (createTables[key]) {
-          createTables[key].columns.push({
-            name: step.fieldName,
-            type: step.type,
-            primaryKey: false,
-            notNull: false,
-          });
-        } else {
+        if (!createTables[key]) {
           await client.exec({
             alterTable: tbl,
             add: {
@@ -213,9 +227,14 @@ export class PostgresMigrationAdapter implements MigrationAdapter<PostgresSql> {
       } else if (step.kind === 'add_table_primary_key') {
         const tbl = table(step.table, step.schema);
         const key = getTableDescriptionIdentifier(tbl);
-        for (const fieldName of step.fieldNames) {
-          const field = createTables[key].columns.filter((c) => c.name === fieldName)[0];
-          field.primaryKey = true;
+        if (!createTables[key]) {
+          // await client.exec({
+          //   alterTable: tbl,
+          //   add: {
+          //     primaryKey: []
+          //   },
+          // });
+          throw new Error('adding primary keys afterwards is not supported yet');
         }
         //TODO optimize
       } else if (step.kind === 'add_table_foreign_key') {

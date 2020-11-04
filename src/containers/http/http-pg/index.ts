@@ -4,9 +4,8 @@ import { getClient } from '../../../packages/relational/client/get-client';
 import { PostgresAdapter } from '../../../packages/pg-adapter/adapter/postgres.adapter';
 
 const client = getClient(adapter);
-const migrationAdapter = adapter.getMigrationAdapter();
 const postgresAdapter = client.dataAdapter as PostgresAdapter;
-const ruleContext = new RuleConfig(migrationAdapter);
+const ruleContext = new RuleConfig(client.migrationAdapter);
 
 postgresAdapter.addNotificationListener('daita_migrations', () => {
   console.log('reload rules');

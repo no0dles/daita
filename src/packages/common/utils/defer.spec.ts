@@ -41,21 +41,36 @@ describe('utils/defer', () => {
     expect(defer.resolvedResult).toBe(null);
   });
 
-  it('should throw on resolve after reject', async () => {
+  it('should throw on resolve after reject', (done) => {
     const defer = new Defer<string>();
     defer.reject(new Error('test'));
-    expect(() => defer.resolve('bar')).toThrow();
+    try {
+      defer.resolve('bar');
+      done.fail('should haven thrown an error');
+    } catch (e) {
+      done();
+    }
   });
 
-  it('should throw on second reject', async () => {
+  it('should throw on second reject', (done) => {
     const defer = new Defer<string>();
     defer.reject(new Error('test'));
-    expect(() => defer.reject(new Error('test2'))).toThrow();
+    try {
+      defer.reject(new Error('test2'));
+      done.fail('should haven thrown an error');
+    } catch (e) {
+      done();
+    }
   });
 
-  it('should throw on reject after resolve', async () => {
+  it('should throw on reject after resolve', (done) => {
     const defer = new Defer<string>();
     defer.resolve('foo');
-    expect(() => defer.reject(new Error('test'))).toThrow();
+    try {
+      defer.reject(new Error('test2'));
+      done.fail('should haven thrown an error');
+    } catch (e) {
+      done();
+    }
   });
 });

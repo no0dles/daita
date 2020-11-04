@@ -149,7 +149,7 @@ export function matchesObject(
 
   for (const key of authKeys) {
     const result = matchesObject(ruleContext, authSql[key], ctxSql[key], [...path, key], score + 1);
-    if (result) {
+    if (!result.matches) {
       return result;
     }
   }

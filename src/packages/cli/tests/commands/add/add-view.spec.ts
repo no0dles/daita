@@ -5,7 +5,7 @@ import { MigrationStep } from '../../../../orm/migration/migration-step';
 import { table } from '../../../../relational/sql/function/table';
 import { equal } from '../../../../relational/sql/function/equal';
 
-describe('add-view', () => {
+describe('cli/cmds/add/add-view', () => {
   let steps: MigrationStep[] = [];
 
   beforeAll(async () => {

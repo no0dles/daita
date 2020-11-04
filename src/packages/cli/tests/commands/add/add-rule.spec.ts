@@ -7,7 +7,7 @@ import { MigrationStep } from '../../../../orm/migration/migration-step';
 import { getRuleId } from '../../../../orm/migration/generation/rule-id';
 import { table } from '../../../../relational/sql/function/table';
 
-describe('add-rule', () => {
+describe('cli/cmds/add/add-rule', () => {
   let steps: MigrationStep[] = [];
 
   beforeAll(async () => {

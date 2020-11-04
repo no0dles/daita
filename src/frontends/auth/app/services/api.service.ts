@@ -15,7 +15,7 @@ export class ApiService {
   private readonly client: RelationalClient;
 
   constructor(private auth: AuthService) {
-    this.adapter = adapter.getAdapter({
+    this.adapter = adapter.getRelationalAdapter({
       baseUrl: environment.authUrl,
       authProvider: {
         async getToken(): Promise<string | null> {

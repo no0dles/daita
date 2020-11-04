@@ -1,7 +1,7 @@
 import { getMigrationSteps } from '../../utils.test';
 import { MigrationStep } from '../../../../orm/migration/migration-step';
 
-describe('delete-seed', () => {
+describe('cli/cmds/add/delete-seed', () => {
   let steps: MigrationStep[] = [];
 
   beforeAll(async () => {

@@ -20,7 +20,7 @@ const isMemoryOptions = (val: any): val is SqliteAdapterMemoryOptions =>
   isKind<SqliteAdapterMemoryOptions>(val, ['memory']);
 
 export const sqliteAdapter: RelationalAdapterImplementation<any, SqliteAdapterOptions> = {
-  getAdapter(options?: SqliteAdapterOptions): RelationalTransactionAdapter<any> {
+  getRelationalAdapter(options?: SqliteAdapterOptions): RelationalTransactionAdapter<any> {
     if (isFileOptions(options)) {
       if (options.dropIfExists) {
         if (fs.existsSync(options.file)) {

@@ -3,7 +3,7 @@ import { userRule } from './change-rule-id.test';
 import { MigrationStep } from '../../../../orm/migration/migration-step';
 import { getRuleId } from '../../../../orm/migration/generation/rule-id';
 
-describe('change-rule-id', () => {
+describe('cli/cmds/add/change-rule-id', () => {
   let steps: MigrationStep[] = [];
 
   beforeAll(async () => {

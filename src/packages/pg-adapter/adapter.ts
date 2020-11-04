@@ -10,6 +10,8 @@ import { MigrationAdapterImplementation } from '../orm/migration/migration-adapt
 import { MigrationAdapter } from '../orm/migration/migration-adapter';
 import { PostgresMigrationAdapter } from './adapter/postgres-migration-adapter';
 import { getClient } from '../relational/client/get-client';
+import { RelationalTransactionClient } from '../relational/client/relational-transaction-client';
+import { RelationalDataAdapter } from '../relational/adapter/relational-data-adapter';
 
 export interface PostgresAdapterBaseOptions {
   listenForNotifications?: boolean;
@@ -82,7 +84,7 @@ class PostgresAdapterImplementation
   implements
     RelationalAdapterImplementation<PostgresSql, PostgresAdapterOptions>,
     MigrationAdapterImplementation<PostgresSql, PostgresAdapterOptions> {
-  getAdapter(options?: PostgresAdapterOptions): RelationalTransactionAdapter<PostgresSql> {
+  getRelationalAdapter(options?: PostgresAdapterOptions): RelationalTransactionAdapter<PostgresSql> {
     return new PostgresAdapter(
       new Promise((resolve, reject) => {
         prepareDatabase(options)
@@ -105,8 +107,11 @@ class PostgresAdapterImplementation
     );
   }
 
-  getMigrationAdapter(options?: PostgresAdapterOptions): MigrationAdapter<PostgresSql> {
-    return new PostgresMigrationAdapter(getClient(this, options));
+  getMigrationAdapter(
+    dataAdapter: RelationalTransactionAdapter<PostgresSql>,
+    options?: PostgresAdapterOptions,
+  ): MigrationAdapter<PostgresSql> {
+    return new PostgresMigrationAdapter(new RelationalTransactionClient(dataAdapter));
   }
 }
 
