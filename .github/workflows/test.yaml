@@ -1,4 +1,4 @@
-name: build
+name: test
 on:
   push:
     branches:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Build daita
+    name: test daita
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -27,4 +27,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm install
-      - run: npm run build
+      - run: npm test
