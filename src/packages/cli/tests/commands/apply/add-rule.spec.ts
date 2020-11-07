@@ -13,7 +13,7 @@ describe('apply/add-rule', () => {
   let db: PostgresDb;
 
   beforeAll(async () => {
-    db = await getPostgresDb();
+    db = await getPostgresDb().start();
     client = getClient(adapter, {
       connectionString: db.connectionString,
       createIfNotExists: true,

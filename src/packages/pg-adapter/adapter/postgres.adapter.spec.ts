@@ -6,7 +6,7 @@ describe('postgres-adapter', () => {
   let db: PostgresDb;
 
   beforeAll(async () => {
-    db = await getPostgresDb();
+    db = await getPostgresDb().start();
     adapter = new PostgresAdapter(db.connectionString, { listenForNotifications: false });
   });
 

@@ -21,7 +21,7 @@ describe('app', () => {
   let postgresDb: PostgresDb;
 
   beforeAll(async () => {
-    postgresDb = await getPostgresDb();
+    postgresDb = await getPostgresDb().start();
     client = getClient(adapter, {
       connectionString: postgresDb.connectionString,
       createIfNotExists: true,

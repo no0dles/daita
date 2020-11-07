@@ -22,7 +22,7 @@ describe('http-server/app', () => {
   let httpApp: HttpServerApp;
 
   beforeAll(async () => {
-    postgresDb = await getPostgresDb();
+    postgresDb = await getPostgresDb().start();
     client = getClient(adapter, {
       connectionString: postgresDb.connectionString,
       createIfNotExists: true,

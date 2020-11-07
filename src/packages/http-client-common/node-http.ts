@@ -69,7 +69,10 @@ export class NodeHttp implements Http {
           data += chunk;
         });
         res.on('end', () => {
-          const responseData = JSON.parse(data);
+          let responseData = null;
+          if (data) {
+            responseData = JSON.parse(data);
+          }
           const timeout = res.headers['x-transaction-timeout'] as string;
           resolve({
             data: responseData,

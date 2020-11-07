@@ -8,7 +8,7 @@ describe('cli serve', () => {
   let postgresDb: PostgresDb;
 
   beforeAll(async () => {
-    postgresDb = await getPostgresDb();
+    postgresDb = await getPostgresDb().start();
   });
 
   it(
