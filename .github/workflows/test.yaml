@@ -28,3 +28,4 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm install
       - run: npm test
+      - run: bash <(curl -s https://codecov.io/bash)
