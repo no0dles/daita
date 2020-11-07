@@ -1,7 +1,7 @@
 import { getGlobalConfig, getProjectConfig } from './config';
 import { HttpAdapterOptions } from '../../http-adapter/adapter-implementation';
-import { SqliteAdapterOptions } from '../../sqlite-adapter/sqlite-adapter-implementation';
-import { PostgresAdapterOptions } from '../../pg-adapter/adapter';
+import { SqliteAdapterOptions } from '../../sqlite-adapter/adapter/sqlite-adapter-implementation';
+import { PostgresAdapterOptions } from '../../pg-adapter/adapter/adapter';
 import { AppAuthorization } from '../../http-server-common/app-authorization';
 import { TransactionClient } from '../../relational/client/transaction-client';
 import { RelationalAdapterImplementation } from '../../relational/adapter/relational-adapter-implementation';

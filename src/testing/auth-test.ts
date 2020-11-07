@@ -1,11 +1,11 @@
-import { UserPool } from '../packages/auth/models/user-pool';
-import { User } from '../packages/auth/models/user';
+import { UserPool } from '../packages/auth-server/models/user-pool';
+import { User } from '../packages/auth-server/models/user';
 import { ExcludeNonPrimitive } from '../packages/common/types';
-import { hashPassword } from '../packages/auth/modules/hash';
+import { hashPassword } from '../packages/auth-server/modules/hash';
 import { httpPost, HttpServerApp } from './http-server';
 import { TransactionClient } from '../packages/relational/client/transaction-client';
-import { table } from '../packages/relational/sql/function/table';
-import { UserPoolUser } from '../packages/auth/models/user-pool-user';
+import { table } from '../packages/relational/sql/keyword/table/table';
+import { UserPoolUser } from '../packages/auth-server/models/user-pool-user';
 
 export async function createUserPool(client: TransactionClient<any>, userPool: UserPool) {
   await client.insert({

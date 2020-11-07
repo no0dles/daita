@@ -6,7 +6,7 @@ import { RelationalTableFieldDescription } from '../../schema/description/relati
 import { RelationalTableReferenceKeyDescription } from '../../schema/description/relational-table-reference-key-description';
 import { RelationalTableReferenceDescription } from '../../schema/description/relational-table-reference-description';
 import { RelationalTableIndexDescription } from '../../schema/description/relational-table-index-description';
-import { table } from '../../../relational/sql/function/table';
+import { table } from '../../../relational/sql/keyword/table/table';
 
 describe('get-migration-steps', () => {
   it('should add table', () => {

@@ -3,8 +3,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from '../../../../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { uuid } from '../../../../utils/uuid';
-import { UserPool } from '../../../../../../../packages/auth/models/user-pool';
-import { table } from '../../../../../../../packages/relational/sql/function/table';
+import { UserPool } from '../../../../../../../packages/auth-server/models/user-pool';
+import { table } from '../../../../../../../packages/relational/sql/keyword/table/table';
 import { Store } from '@ngxs/store';
 import { UserPoolCreate } from '../../actions/user-pool-create';
 

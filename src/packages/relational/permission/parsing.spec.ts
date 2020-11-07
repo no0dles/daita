@@ -1,14 +1,14 @@
 import { parseRule, parseRules, serializeRule, serializeRules } from './parsing';
-import { field } from '../sql/function/field';
-import { table } from '../sql/function/table';
+import { field } from '../sql/keyword/field/field';
+import { table } from '../sql/keyword/table/table';
 import { matchesRules } from './validate';
 import { allow } from './function/allow';
 import { requestContext } from './function/request-context';
-import { and } from '../sql/function/and';
+import { and } from '../sql/keyword/and/and';
 import { authorized } from './function/authorized';
 import { allowRegex } from './function/allow-regex';
-import { TableDescription } from '../sql/description/table';
-import { equal } from '../sql/function/equal';
+import { TableDescription } from '../sql/keyword/table/table-description';
+import { equal } from '../sql/operands/comparison/equal/equal';
 
 describe('parsing', () => {
   it('should serialize request context and regexp', () => {

@@ -1,13 +1,13 @@
 import { createHttpServerApp } from './app';
 import { createDefaultUser, createDefaultUserPool, loginWithDefaultUser } from '../../testing/auth-test';
 import { getServer, httpGet, httpPost, HttpServerApp } from '../../testing/http-server';
-import { createAuthApp } from '../auth/app';
+import { createAuthApp } from '../auth-server/app';
 import { allow } from '../relational/permission/function/allow';
-import { select } from '../relational/sql/function/select';
+import { select } from '../relational/sql/dml/select/select';
 import { authorized } from '../relational/permission/function/authorized';
-import { now } from '../relational/sql/function/now';
-import { authSchema } from '../auth/schema';
-import { createAuthAdminApp } from '../auth/admin-app';
+import { now } from '../relational/sql/function/date/now';
+import { authSchema } from '../auth-server/schema';
+import { createAuthAdminApp } from '../auth-server/admin-app';
 import { migrate } from '../orm/migration/migrate';
 import { getClient } from '../relational/client/get-client';
 import { MigrationClient } from '../relational/client/migration-client';

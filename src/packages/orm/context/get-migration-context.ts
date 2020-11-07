@@ -1,7 +1,7 @@
 import { OrmMigrationContext } from './orm-migration-context';
 import { isMigrationTree, MigrationTree } from '../migration/migration-tree';
 import { OrmRelationalSchema } from '../schema/orm-relational-schema';
-import { InsertSql } from '../../relational/sql/insert-sql';
+import { InsertSql } from '../../relational/sql/dml/insert/insert-sql';
 import { MigrationClient } from '../../relational/client/migration-client';
 
 export interface MigrationContextUpdateOptions {

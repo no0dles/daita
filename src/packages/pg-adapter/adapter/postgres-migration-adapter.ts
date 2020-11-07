@@ -1,20 +1,20 @@
 import { MigrationAdapter, MigrationDirection } from '../../orm/migration/migration-adapter';
 import { PostgresSql } from '../sql/postgres-sql';
 import { MigrationDescription } from '../../orm/migration/migration-description';
-import { field } from '../../relational/sql/function/field';
-import { table } from '../../relational/sql/function/table';
-import { join } from '../../relational/sql/function/join';
-import { and } from '../../relational/sql/function/and';
-import { equal } from '../../relational/sql/function/equal';
-import { asc } from '../../relational/sql/function/asc';
+import { field } from '../../relational/sql/keyword/field/field';
+import { table } from '../../relational/sql/keyword/table/table';
+import { join } from '../../relational/sql/dml/select/join/join';
+import { and } from '../../relational/sql/keyword/and/and';
+import { equal } from '../../relational/sql/operands/comparison/equal/equal';
+import { asc } from '../../relational/sql/keyword/asc/asc';
 import { Client } from '../../relational/client/client';
 import { parseRule, serializeRule } from '../../relational/permission/parsing';
 import { Rule } from '../../relational/permission/description/rule';
-import { CreateTableSql } from '../../relational/sql/create-table-sql';
+import { CreateTableSql } from '../../relational/sql/ddl/create-table/create-table-sql';
 import { getTableDescriptionIdentifier } from '../../orm/schema/description/relational-schema-description';
 import { failNever } from '../../common/utils/fail-never';
-import { TableDescription } from '../../relational/sql/description/table';
-import { Condition } from '../../relational/sql/description/condition';
+import { TableDescription } from '../../relational/sql/keyword/table/table-description';
+import { ConditionDescription } from '../../relational/sql/operands/condition-description';
 import { TransactionClient } from '../../relational/client/transaction-client';
 import { Defer } from '../../common/utils/defer';
 import { RelationalAddTableFieldMigrationStep } from '../../orm/migration/steps/relational-add-table-field.migration-step';
@@ -345,7 +345,7 @@ export class PostgresMigrationAdapter implements MigrationAdapter<PostgresSql> {
     }
   }
 
-  private getWhere(tableDescription: TableDescription<any>, keys: any): Condition {
+  private getWhere(tableDescription: TableDescription<any>, keys: any): ConditionDescription {
     const conditions = Object.keys(keys).map((key) => equal(field(tableDescription, key), keys[key]));
     if (conditions.length === 0) {
       throw new Error('seed requires at least 1 key');

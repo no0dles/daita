@@ -1,6 +1,6 @@
-import { CreateIndexSql, isCreateIndexSql } from '../../relational/sql/create-index-sql';
-import { FormatContext } from '../../relational/sql/formatter/format-context';
-import { FormatHandle, Formatter, FormatType } from '../../relational/sql/formatter/formatter';
+import { CreateIndexSql, isCreateIndexSql } from '../../relational/sql/ddl/create-index/create-index-sql';
+import { FormatContext } from '../../relational/formatter/format-context';
+import { FormatHandle, Formatter, FormatType } from '../../relational/formatter/formatter';
 
 export class CreateIndexFormatter implements FormatHandle<CreateIndexSql<any>> {
   type = [FormatType.Sql];

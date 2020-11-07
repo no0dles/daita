@@ -8,7 +8,7 @@ import { RelationalTableIndexDescription } from './description/relational-table-
 import { RelationalViewDescription } from './description/relational-view-description';
 import { failNever } from '../../common/utils/fail-never';
 import { MigrationDescription } from '../migration/migration-description';
-import { table } from '../../relational/sql/function/table';
+import { table } from '../../relational/sql/keyword/table/table';
 
 export function getSchemaDescription(
   name: string,

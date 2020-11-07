@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core';
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store';
 import { ApiService } from '../../../services/api.service';
-import { field } from '../../../../../../packages/relational/sql/function/field';
-import { table } from '../../../../../../packages/relational/sql/function/table';
-import { equal } from '../../../../../../packages/relational/sql/function/equal';
+import { field } from '../../../../../../packages/relational/sql/keyword/field/field';
+import { table } from '../../../../../../packages/relational/sql/keyword/table/table';
+import { equal } from '../../../../../../packages/relational/sql/operands/comparison/equal/equal';
 import { UserDetailLoad } from '../actions/user-detail-load';
-import { User } from '../../../../../../packages/auth/models/user';
-import { and } from '../../../../../../packages/relational/sql/function/and';
-import { UserPool } from '../../../../../../packages/auth/models/user-pool';
-import { join } from '../../../../../../packages/relational/sql/function/join';
-import { UserRole } from '../../../../../../packages/auth/models/user-role';
-import { Role } from '../../../../../../packages/auth/models/role';
-import { leftJoin } from '../../../../../../packages/relational/sql/function/left-join';
+import { User } from '../../../../../../packages/auth-server/models/user';
+import { and } from '../../../../../../packages/relational/sql/keyword/and/and';
+import { UserPool } from '../../../../../../packages/auth-server/models/user-pool';
+import { join } from '../../../../../../packages/relational/sql/dml/select/join/join';
+import { UserRole } from '../../../../../../packages/auth-server/models/user-role';
+import { Role } from '../../../../../../packages/auth-server/models/role';
+import { leftJoin } from '../../../../../../packages/relational/sql/dml/select/join/left-join';
 
 export interface UserDetailStateModel {
   id: string | null;

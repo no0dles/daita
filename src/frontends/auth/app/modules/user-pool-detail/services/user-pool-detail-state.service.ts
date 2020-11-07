@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store';
 import { UserPoolDetailLoad } from '../actions/user-pool-detail-load';
 import { ApiService } from '../../../services/api.service';
-import { UserPool } from '../../../../../../packages/auth/models/user-pool';
-import { table } from '../../../../../../packages/relational/sql/function/table';
-import { equal } from '../../../../../../packages/relational/sql/function/equal';
-import { field } from '../../../../../../packages/relational/sql/function/field';
+import { UserPool } from '../../../../../../packages/auth-server/models/user-pool';
+import { table } from '../../../../../../packages/relational/sql/keyword/table/table';
+import { equal } from '../../../../../../packages/relational/sql/operands/comparison/equal/equal';
+import { field } from '../../../../../../packages/relational/sql/keyword/field/field';
 
 export interface UserPoolDetailStateModel {
   id: string | null;

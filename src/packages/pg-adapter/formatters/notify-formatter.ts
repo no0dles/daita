@@ -1,6 +1,6 @@
 import { isNotifySql, PostgresNotifySql } from '../sql/notify-sql';
-import { FormatContext } from '../../relational/sql/formatter/format-context';
-import { FormatHandle, Formatter, FormatType } from '../../relational/sql/formatter/formatter';
+import { FormatContext } from '../../relational/formatter/format-context';
+import { FormatHandle, Formatter, FormatType } from '../../relational/formatter/formatter';
 
 export class NotifyFormatter implements FormatHandle<PostgresNotifySql> {
   type = FormatType.Sql;

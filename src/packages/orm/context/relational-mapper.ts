@@ -1,4 +1,4 @@
-import { TableDescription } from '../../relational/sql/description/table';
+import { TableDescription } from '../../relational/sql/keyword/table/table-description';
 
 export interface RelationalMapper {
   normalizeData<T>(table: TableDescription<T>, data: T[]): T[];

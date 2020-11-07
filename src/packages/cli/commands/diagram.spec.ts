@@ -1,4 +1,4 @@
-import { setupEnv } from '../tests/utils.test';
+import { setupEnv } from '../../../testing/cli/utils.test';
 
 describe('cli diagram', () => {
   it(

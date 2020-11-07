@@ -1,4 +1,4 @@
-import { setupEnv } from '../tests/utils.test';
+import { setupEnv } from '../../../testing/cli/utils.test';
 import { HttpTransactionAdapter } from '../../http-adapter';
 import { NodeHttp } from '../../http-client-common/node-http';
 import { Defer } from '../../common/utils/defer';

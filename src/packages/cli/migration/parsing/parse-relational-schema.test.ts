@@ -1,12 +1,12 @@
 import { allow } from '../../../relational/permission/function/allow';
-import { field } from '../../../relational/sql/function/field';
+import { field } from '../../../relational/sql/keyword/field/field';
 import { authorized } from '../../../relational/permission/function/authorized';
 import { UUID } from '../../../relational/types/uuid';
 import { RelationalSchema } from '../../../orm/schema/relational-schema';
-import { table } from '../../../relational/sql/function/table';
-import { join } from '../../../relational/sql/function/join';
-import { equal } from '../../../relational/sql/function/equal';
-import { all } from '../../../relational/sql/function/all';
+import { table } from '../../../relational/sql/keyword/table/table';
+import { join } from '../../../relational/sql/dml/select/join/join';
+import { equal } from '../../../relational/sql/operands/comparison/equal/equal';
+import { all } from '../../../relational/sql/keyword/all/all';
 
 export class BaseTable {
   createdDate!: Date;

@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { adapter } from '../../../../packages/http-adapter/browser';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
-import { InsertSql } from '../../../../packages/relational/sql/insert-sql';
+import { InsertSql } from '../../../../packages/relational/sql/dml/insert/insert-sql';
 import { RelationalClient } from '../../../../packages/relational/client/relational-client';
 import { RelationalTransactionAdapter } from '../../../../packages/relational/adapter/relational-transaction-adapter';
-import { SelectSql } from '../../../../packages/relational/sql/select-sql';
+import { SelectSql } from '../../../../packages/relational/sql/dml/select/select-sql';
 
 @Injectable({
   providedIn: 'root',

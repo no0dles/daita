@@ -5,7 +5,7 @@ import { RelationalMapper } from '../context/relational-mapper';
 import { RelationalBackwardCompatibleMapper, RelationalNormalMapper } from '../context/orm-mapper';
 import { OrmRelationalSchema } from './orm-relational-schema';
 import { Constructable, DefaultConstructable } from '../../common/types';
-import { SelectSql } from '../../relational/sql/select-sql';
+import { SelectSql } from '../../relational/sql/dml/select/select-sql';
 import { MigrationDescription } from '../migration/migration-description';
 import { MigrationTree } from '../migration/migration-tree';
 import { Rule } from '../../relational/permission/description/rule';

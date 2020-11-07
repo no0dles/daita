@@ -1,5 +1,5 @@
 import { RuleConfig, run } from '../server';
-import { sqliteAdapter } from '../../../packages/sqlite-adapter/sqlite-adapter-implementation';
+import { sqliteAdapter } from '../../../packages/sqlite-adapter/adapter/sqlite-adapter-implementation';
 import { getClient } from '../../../packages/relational/client/get-client';
 
 const client = getClient(sqliteAdapter);

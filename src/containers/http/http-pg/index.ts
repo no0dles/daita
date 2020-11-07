@@ -1,5 +1,5 @@
 import { RuleConfig, run } from '../server';
-import { adapter } from '../../../packages/pg-adapter/adapter';
+import { adapter } from '../../../packages/pg-adapter/adapter/adapter';
 import { getClient } from '../../../packages/relational/client/get-client';
 import { PostgresAdapter } from '../../../packages/pg-adapter/adapter/postgres.adapter';
 

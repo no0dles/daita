@@ -12,8 +12,8 @@ module.exports = {
   collectCoverageFrom: [
     'src/**',
     '!dist/**',
-    '!tests/**',
-    '!src/**/tests/**',
+    '!coverage/**',
+    '!tmp/**',
     '!src/docs/**',
     '!src/testing/**',
     '!src/frontends/**',

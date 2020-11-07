@@ -1,7 +1,7 @@
-import { field } from '../sql/function/field';
-import { all } from '../sql/function/all';
+import { field } from '../sql/keyword/field/field';
+import { all } from '../sql/keyword/all/all';
 import { getClient } from './get-client';
-import { mockAdapter } from '../testing';
+import { mockAdapter } from '../testing/mock-adapter';
 
 describe('client', () => {
   it('should map select 1', async () => {

@@ -1,13 +1,13 @@
 import { AstContext } from '../../ast/ast-context';
 import * as path from 'path';
 import { parseRelationalSchema } from './parse-relational-schema';
-import { isNotNull } from '../../tests/utils.test';
+import { isNotNull } from '../../../../testing/cli/utils.test';
 import 'jest-extended';
 import { allow } from '../../../relational/permission/function/allow';
 import { authorized } from '../../../relational/permission/function/authorized';
 import { RelationalSchemaDescription } from '../../../orm/schema/description/relational-schema-description';
-import { all } from '../../../relational/sql/function/all';
-import { table } from '../../../relational/sql/function/table';
+import { all } from '../../../relational/sql/keyword/all/all';
+import { table } from '../../../relational/sql/keyword/table/table';
 
 describe('parse-relational-schema', () => {
   const context = new AstContext();

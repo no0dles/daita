@@ -2,7 +2,7 @@ import { getRuleId } from './rule-id';
 import { authorized } from '../../../relational/permission/function/authorized';
 import { allowRegex } from '../../../relational/permission/function/allow-regex';
 import { Rule } from '../../../relational/permission/description/rule';
-import { table } from '../../../relational/sql/function/table';
+import { table } from '../../../relational/sql/keyword/table/table';
 
 describe('orm/rule-id', () => {
   it('should have different id', () => {

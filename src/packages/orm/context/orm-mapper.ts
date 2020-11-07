@@ -1,11 +1,14 @@
 import { RelationalMapper } from './relational-mapper';
 import { failNever } from '../../common/utils/fail-never';
-import { isTableAliasDescription, TableAliasDescription } from '../../relational/sql/description/table-alias';
-import { isSelectSql, SelectSql } from '../../relational/sql/select-sql';
+import {
+  isTableAliasDescription,
+  TableAliasDescription,
+} from '../../relational/sql/dml/select/table-alias-description';
+import { isSelectSql, SelectSql } from '../../relational/sql/dml/select/select-sql';
 import { RelationalSchemaDescription } from '../schema/description/relational-schema-description';
-import { FieldDescription, isFieldDescription } from '../../relational/sql/description/field';
-import { isTableDescription, TableDescription } from '../../relational/sql/description/table';
-import { SourceTableDescription } from '../../relational/sql/description/source-table';
+import { FieldDescription, isFieldDescription } from '../../relational/sql/keyword/field/field-description';
+import { isTableDescription, TableDescription } from '../../relational/sql/keyword/table/table-description';
+import { SourceTableDescription } from '../../relational/sql/dml/select/source-table';
 
 export class RelationalNormalMapper implements RelationalMapper {
   normalizeData<T>(table: TableDescription<T>, data: T[]): T[] {

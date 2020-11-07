@@ -2,8 +2,8 @@ import { allow } from './allow';
 import { authorized } from './authorized';
 import { allowRegex } from './allow-regex';
 import { evaluateRule } from '../validate';
-import { update } from '../../sql/function/update';
-import { table } from '../../sql/function/table';
+import { update } from '../../sql/dml/update/update';
+import { table } from '../../sql/keyword/table/table';
 import { RuleContext } from '../description/rule-context';
 
 describe('allow-regex', () => {

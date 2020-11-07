@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../../services/api.service';
-import { Role } from '../../../../../../../packages/auth/models/role';
-import { table } from '../../../../../../../packages/relational/sql/function/table';
+import { Role } from '../../../../../../../packages/auth-server/models/role';
+import { table } from '../../../../../../../packages/relational/sql/keyword/table/table';
 
 @Component({
   selector: 'app-role-create',

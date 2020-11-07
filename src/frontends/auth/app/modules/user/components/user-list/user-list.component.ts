@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../../services/api.service';
-import { UserPool } from '../../../../../../../packages/auth/models/user-pool';
-import { User } from '../../../../../../../packages/auth/models/user';
-import { field } from '../../../../../../../packages/relational/sql/function/field';
-import { table } from '../../../../../../../packages/relational/sql/function/table';
-import { join } from '../../../../../../../packages/relational/sql/function/join';
-import { equal } from '../../../../../../../packages/relational/sql/function/equal';
+import { UserPool } from '../../../../../../../packages/auth-server/models/user-pool';
+import { User } from '../../../../../../../packages/auth-server/models/user';
+import { field } from '../../../../../../../packages/relational/sql/keyword/field/field';
+import { table } from '../../../../../../../packages/relational/sql/keyword/table/table';
+import { join } from '../../../../../../../packages/relational/sql/dml/select/join/join';
+import { equal } from '../../../../../../../packages/relational/sql/operands/comparison/equal/equal';
 
 @Component({
   selector: 'app-user-list',

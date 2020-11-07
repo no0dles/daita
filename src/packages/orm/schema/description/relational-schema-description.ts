@@ -2,7 +2,7 @@ import { ArrayMap } from './array-map';
 import { RelationalTableDescription } from './relational-table-description';
 import { RelationalViewDescription } from './relational-view-description';
 import { arrayClone } from '../../../common/utils/array-clone';
-import { TableDescription } from '../../../relational/sql/description/table';
+import { TableDescription } from '../../../relational/sql/keyword/table/table-description';
 import { Rule } from '../../../relational/permission/description/rule';
 
 export function getTableDescriptionIdentifier(table: TableDescription<any>): string {
