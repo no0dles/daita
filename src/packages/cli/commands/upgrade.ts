@@ -4,7 +4,7 @@ import * as https from 'https';
 import { spawn } from 'child_process';
 import { Defer } from '../../common/utils/defer';
 
-export async function upgrade(opts: { cwd?: string; npmClient?: string }) {
+export async function upgrade(opts: { cwd?: string; npmClient?: string; skipInstall?: boolean }) {
   const cwd = opts.cwd ? path.resolve(opts.cwd) : process.cwd();
   const packagePath = path.join(cwd, 'package.json');
   if (!fs.existsSync(packagePath)) {
@@ -25,7 +25,9 @@ export async function upgrade(opts: { cwd?: string; npmClient?: string }) {
 
     fs.writeFileSync(packagePath, JSON.stringify(pkg, null, 2));
     console.info('updated daita packages successfully');
-    await runCommand(opts.npmClient || 'npm', ['install'], cwd);
+    if (!opts.skipInstall) {
+      await runCommand(opts.npmClient || 'npm', ['install'], cwd);
+    }
   } catch (e) {
     console.error('unable to parse package.json');
     return;

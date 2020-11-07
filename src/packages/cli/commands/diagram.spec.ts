@@ -6,8 +6,11 @@ describe('cli diagram', () => {
     setupEnv(
       'create-diagram',
       async (ctx) => {
-        await ctx.run('diagram').finished;
-        await ctx.exists('docs/schema.svg');
+        const diagram = await ctx.run('diagram');
+        diagram.onStdErr((err) => console.log(err));
+        diagram.onStdOut((err) => console.log(err));
+        await diagram.finished;
+        await ctx.exists('docs', /^schema\.svg$/);
       },
       { schema: 'auth-schema' },
     ),

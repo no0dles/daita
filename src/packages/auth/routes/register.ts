@@ -8,6 +8,7 @@ import { getLeakedCount } from '../modules/password';
 import { field } from '../../relational/sql/function/field';
 import { table } from '../../relational/sql/function/table';
 import { equal } from '../../relational/sql/function/equal';
+import { UserPoolUser } from '../models/user-pool-user';
 
 const router = express.Router({ mergeParams: true });
 
@@ -60,6 +61,13 @@ router.post('/', async (req, res, next) => {
           phoneVerified: false,
         },
         into: table(User),
+      });
+      await trx.insert({
+        into: table(UserPoolUser),
+        insert: {
+          userUsername: req.body.username,
+          userPoolId: req.params.userPoolId,
+        },
       });
 
       await trx.insert({

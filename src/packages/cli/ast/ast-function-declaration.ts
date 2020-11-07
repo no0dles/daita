@@ -5,7 +5,7 @@ import { FunctionDeclaration, SyntaxKind } from 'typescript';
 import { AstNode } from './ast-node';
 
 export class AstFunctionDeclaration implements AstNode {
-  constructor(private block: AstBlock, public node: FunctionDeclaration) {}
+  constructor(public block: AstBlock, public node: FunctionDeclaration) {}
 
   get name(): string {
     if (!this.node.name) {

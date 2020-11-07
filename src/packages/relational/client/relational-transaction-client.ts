@@ -3,6 +3,7 @@ import { TransactionClient } from './transaction-client';
 import { RelationalTransactionAdapter } from '../adapter/relational-transaction-adapter';
 import { MigrationAdapter } from '../../orm/migration/migration-adapter';
 import { MigrationClient } from './migration-client';
+import { isKind } from '../../common/utils/is-kind';
 
 export class RelationalTransactionClient extends RelationalClient implements TransactionClient<RelationalClient> {
   constructor(private transactionAdapter: RelationalTransactionAdapter<any>) {
@@ -27,3 +28,5 @@ export class RelationalMigrationClient
     super(adapter);
   }
 }
+
+export const isMigrationClient = (val: any): val is RelationalMigrationClient => isKind(val, ['migrationAdapter']);

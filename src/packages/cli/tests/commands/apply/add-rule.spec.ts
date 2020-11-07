@@ -1,28 +1,31 @@
 import { schema, userRule, userRuleId } from './add-rule.test';
-import { adapter, PostgresAdapterOptions } from '../../../../pg-adapter/adapter';
+import { adapter } from '../../../../pg-adapter/adapter';
 import { getMigrationContext } from '../../../../orm/context/get-migration-context';
 import { parseRule } from '../../../../relational/permission/parsing';
 import { getClient } from '../../../../relational/client/get-client';
 import { all } from '../../../../relational/sql/function/all';
 import { table } from '../../../../relational/sql/function/table';
 import { MigrationClient } from '../../../../relational/client/migration-client';
+import { getPostgresDb, PostgresDb } from '../../../../../testing/postgres-test';
 
 describe('apply/add-rule', () => {
   let client: MigrationClient<any>;
+  let db: PostgresDb;
 
   beforeAll(async () => {
-    const options: PostgresAdapterOptions = {
-      connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost/test-cli',
+    db = await getPostgresDb();
+    client = getClient(adapter, {
+      connectionString: db.connectionString,
       createIfNotExists: true,
       dropIfExists: true,
-    };
-    client = getClient(adapter, options);
+    });
     const context = getMigrationContext(schema, client);
     await context.update();
   });
 
   afterAll(async () => {
     await client.close();
+    await db.close();
   });
 
   it('should add rules table', async () => {

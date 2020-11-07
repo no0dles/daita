@@ -1,9 +1,13 @@
 import { PostgresAdapter } from './postgres.adapter';
+import { getPostgresDb, PostgresDb } from '../../../testing/postgres-test';
 
 describe('postgres-adapter', () => {
   let adapter: PostgresAdapter;
-  beforeAll(() => {
-    adapter = new PostgresAdapter('postgres://postgres:postgres@localhost/postgres', { listenForNotifications: false });
+  let db: PostgresDb;
+
+  beforeAll(async () => {
+    db = await getPostgresDb();
+    adapter = new PostgresAdapter(db.connectionString, { listenForNotifications: false });
   });
 
   it('should select 1', async () => {
@@ -11,9 +15,12 @@ describe('postgres-adapter', () => {
     expect(result.rows).toEqual([{ '?column?': '1' }]);
   });
 
-  afterAll(() => {
+  afterAll(async () => {
     if (adapter) {
-      adapter.close();
+      await adapter.close();
+    }
+    if (db) {
+      await db.close();
     }
   });
 

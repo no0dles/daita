@@ -85,6 +85,7 @@ program
   .command('upgrade')
   .option('--cwd <string>', 'working directory')
   .option('--npm-client <string>', 'npm client', 'npm')
+  .option('--skip-install', 'skip npm install', false)
   .description('upgrade all daita packages')
   .action(async (opts) => {
     await upgrade(opts);

@@ -69,6 +69,7 @@ export interface CliEnvironment {
   notExists(dir: string, file?: RegExp): Promise<void>;
 
   contains(dir: string, files: string[]): Promise<void>;
+  replaceContent(file: string, replace: RegExp, value: string): Promise<void>;
 }
 
 export interface RunResult {
@@ -142,13 +143,6 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
           env: { ...process.env, ...envs },
         });
         const finishedDefer = new Defer<number>();
-        proc.on('exit', (code) => {
-          if (code !== 0) {
-            finishedDefer.reject(code);
-          } else {
-            finishedDefer.resolve(code);
-          }
-        });
         proc.stdout.on('data', (data) => {
           if (typeof data === 'string') {
             for (const callback of stdOutCallback) {
@@ -170,6 +164,13 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
             for (const callback of stdErrCallback) {
               callback(data.toString());
             }
+          }
+        });
+        proc.on('exit', (code) => {
+          if (code !== 0) {
+            finishedDefer.reject(code);
+          } else {
+            finishedDefer.resolve(code);
           }
         });
 
@@ -217,6 +218,18 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
             expect('').toBe(`could not find matching file for ${file}`);
           }
         });
+      },
+      replaceContent: async (file: string, regex: RegExp, value: string) => {
+        const filePath = path.join(resultPath, file);
+        const exists = fs.existsSync(filePath);
+        if (!exists) {
+          expect('').toBe('could not find file ' + file);
+          return;
+        }
+
+        const content = fs.readFileSync(filePath).toString();
+        const newContent = content.replace(regex, value);
+        fs.writeFileSync(filePath, newContent);
       },
     };
     return await callback(context);

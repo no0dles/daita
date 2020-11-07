@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../schema.json",
+  "context": {
+    "default": {
+      "schemaLocation": "src/schema.ts",
+      "migrationLocation": "src/migrations",
+      "module": "../../../../packages/pg-adapter",
+      "connectionString": "postgres://localhost/postgres"
+    }
+  }
+}

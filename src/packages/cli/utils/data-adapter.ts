@@ -11,7 +11,7 @@ import { getMigrationContext, MigrationContext } from '../../orm/context/get-mig
 import { MigrationTree } from '../../orm/migration/migration-tree';
 import { MigrationAdapterImplementation } from '../../orm/migration/migration-adapter-implementation';
 import { MigrationClient } from '../../relational/client/migration-client';
-import { RelationalMigrationClient } from '../../relational/client/relational-transaction-client';
+import { isMigrationClient, RelationalMigrationClient } from '../../relational/client/relational-transaction-client';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;
 
@@ -42,7 +42,7 @@ export interface DaitaPostgresContextConfig extends BaseContextConfig {
 
 export function getMigrationContextFromConfig(migrationTree: MigrationTree, options: any): MigrationContext {
   const client = getClientFromConfig(options);
-  if (client instanceof RelationalMigrationClient) {
+  if (isMigrationClient(client)) {
     return getMigrationContext(migrationTree, client);
   }
   throw new Error('adapter does not support migrations');
@@ -106,7 +106,7 @@ function getAdapter(options: any, contextConfig: DaitaContextConfig) {
   }
 }
 
-export async function getClientFromConfig(options: any): Promise<TransactionClient<any> | MigrationClient<any>> {
+export function getClientFromConfig(options: any): TransactionClient<any> | MigrationClient<any> {
   const contextConfig = getProjectConfig(options);
   if (!contextConfig.connectionString) {
     throw new Error('missing connection string');

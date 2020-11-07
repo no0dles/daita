@@ -6,7 +6,10 @@ describe('cli upgrade', () => {
     setupEnv(
       'upgrade',
       async (ctx) => {
-        await ctx.run('upgrade').finished;
+        const upgrade = await ctx.run('upgrade --skip-install');
+        upgrade.onStdErr((err) => console.log(err));
+        upgrade.onStdOut((err) => console.log(err));
+        await upgrade.finished;
       },
       { schema: 'package-json' },
     ),

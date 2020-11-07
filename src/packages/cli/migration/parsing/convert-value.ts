@@ -9,9 +9,16 @@ import { AstError } from '../../ast/utils';
 import { AstKeywordValue } from '../../ast/ast-keyword-value';
 import { AstRegularExpressionLiteral } from '../../ast/ast-regular-expression-literal';
 import { AstPropertyAccessExpression } from '../../ast/ast-property-access-expression';
+import path from 'path';
+import { AstFunctionDeclaration } from '../../ast/ast-function-declaration';
 
 function convertFn(value: AstCallExpression) {
-  const fn = require('../../../relational')[value.methodName];
+  const type = value.block.getType(value.methodName);
+  if (!(type instanceof AstFunctionDeclaration)) {
+    throw new AstError(value.node, 'expected function type');
+  }
+  const requirePath = path.relative(__dirname, type.block.sourceFile.fileName);
+  const fn = require(requirePath)[value.methodName];
   const args: any[] = [];
   for (const arg of value.arguments) {
     args.push(convertValue(arg));

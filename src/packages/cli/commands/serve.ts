@@ -26,7 +26,7 @@ export async function serve(opts: {
   disableWatch?: boolean;
 }) {
   const contextConfig = getProjectConfig(opts);
-  const client = await getClientFromConfig(opts);
+  const client = getClientFromConfig(opts);
   if (!client) {
     throw new Error('no relational adapter');
   }

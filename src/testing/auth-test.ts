@@ -5,6 +5,7 @@ import { hashPassword } from '../packages/auth/modules/hash';
 import { httpPost, HttpServerApp } from './http-server';
 import { TransactionClient } from '../packages/relational/client/transaction-client';
 import { table } from '../packages/relational/sql/function/table';
+import { UserPoolUser } from '../packages/auth/models/user-pool-user';
 
 export async function createUserPool(client: TransactionClient<any>, userPool: UserPool) {
   await client.insert({
@@ -17,6 +18,13 @@ export async function createUser(client: TransactionClient<any>, user: ExcludeNo
   await client.insert({
     into: table(User),
     insert: user,
+  });
+  await client.insert({
+    into: table(UserPoolUser),
+    insert: {
+      userPoolId: user.userPoolId,
+      userUsername: user.username,
+    },
   });
 }
 export async function createDefaultUserPool(client: TransactionClient<any>) {
