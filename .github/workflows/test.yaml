@@ -28,6 +28,6 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm install
       - run: npm test
-      - run: bash <(curl -s https://codecov.io/bash)
+      - run: bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
