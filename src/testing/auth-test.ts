@@ -1,6 +1,6 @@
 import { UserPool } from '../packages/auth-server/models/user-pool';
 import { User } from '../packages/auth-server/models/user';
-import { ExcludeNonPrimitive } from '../packages/common/types';
+import { ExcludeNonPrimitive } from '../packages/common/types/exclude-non-primitive';
 import { hashPassword } from '../packages/auth-server/modules/hash';
 import { httpPost, HttpServerApp } from './http-server';
 import { TransactionClient } from '../packages/relational/client/transaction-client';

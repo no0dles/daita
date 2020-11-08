@@ -1,7 +1,8 @@
 import { table } from '../table/table';
-import { Constructable, ExcludeNonPrimitive } from '../../../../common/types';
 import { TableAliasDescription } from '../../dml/select/table-alias-description';
 import { TableDescription } from '../table/table-description';
+import { ExcludeNonPrimitive } from '../../../../common/types/exclude-non-primitive';
+import { Constructable } from '../../../../common/types/constructable';
 
 export function all<T>(
   tbl?: TableDescription<T> | TableAliasDescription<T> | Constructable<T>,

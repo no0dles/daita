@@ -8,7 +8,7 @@ import { Canton } from './canton';
 import { Mountain } from './mountain';
 import { Ascent } from './ascent';
 import { AscentPerson } from './ascent-person';
-import { Constructable } from '../../packages/common/types';
+import { Constructable } from '../../packages/common/types/constructable';
 
 type CreateTestSchemaSql = CreateTableSql;
 

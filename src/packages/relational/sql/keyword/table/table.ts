@@ -1,5 +1,5 @@
 import { TableDescription } from './table-description';
-import { Constructable } from '../../../../common/types';
+import { Constructable } from '../../../../common/types/constructable';
 
 export function table(table: string, schema?: string): TableDescription<unknown>;
 export function table<T>(type: Constructable<T>): TableDescription<T>;

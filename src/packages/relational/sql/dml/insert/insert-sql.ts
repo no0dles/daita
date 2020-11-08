@@ -1,6 +1,6 @@
 import { TableDescription } from '../../keyword/table/table-description';
 import { SelectSql } from '../select/select-sql';
-import { ExcludeNonPrimitive } from '../../../../common/types';
+import { ExcludeNonPrimitive } from '../../../../common/types/exclude-non-primitive';
 import { isKind } from '../../../../common/utils/is-kind';
 
 export interface InsertSql<T> {

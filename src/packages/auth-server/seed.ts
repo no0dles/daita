@@ -1,5 +1,5 @@
 import { UserPool } from './models/user-pool';
-import { ExcludeNonPrimitive } from '../common/types';
+import { ExcludeNonPrimitive } from '../common/types/exclude-non-primitive';
 import { UserPoolCors } from './models/user-pool-cors';
 import { randomString } from '../common/utils/random-string';
 import { field } from '../relational/sql/keyword/field/field';

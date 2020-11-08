@@ -1,7 +1,7 @@
 import { ConditionDescription } from '../../../operands/condition-description';
 import { JoinDescription } from './join-description';
 import { table } from '../../../keyword/table/table';
-import { Constructable } from '../../../../../common/types';
+import { Constructable } from '../../../../../common/types/constructable';
 import { isTableAliasDescription, TableAliasDescription } from '../table-alias-description';
 import { isTableDescription, TableDescription } from '../../../keyword/table/table-description';
 
