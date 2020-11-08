@@ -1,22 +1,18 @@
 import express from 'express';
 import * as bodyParser from 'body-parser';
-import verifyRoute from './routes/verify';
-import registerRoute from './routes/register';
-import refreshRoute from './routes/refresh';
-import loginRoute from './routes/login';
-import resendRoute from './routes/resend';
-import tokenRoute from './routes/token';
 import wellKnownRoute from './routes/well-known';
 import helmet from 'helmet';
-import { cors } from './middlewares/cors';
+import { userPoolCors } from './middlewares/user-pool-cors';
 import { TransactionClient } from '../relational/client/transaction-client';
+import { resendRoute } from './routes/resend';
+import { tokenRoute } from './routes/token';
+import { verifyRoute } from './routes/verify';
+import { registerRoute } from './routes/register';
+import { refreshRoute } from './routes/refresh';
+import { loginRoute } from './routes/login';
 
 declare global {
   namespace Express {
-    export interface Application {
-      client: TransactionClient<any>;
-    }
-
     export interface Request {
       user?: {
         sub: string;
@@ -31,36 +27,35 @@ declare global {
 
 export function createAuthApp(client: TransactionClient<any>) {
   const app = express();
-  app.client = client;
 
   app.use(helmet());
   app.use(bodyParser.json());
 
-  app.use('/:userPoolId/verify', verifyRoute);
+  app.use('/:userPoolId/verify', verifyRoute(client));
   app.use(
     '/:userPoolId/register',
-    cors((req) => req.params.userPoolId),
-    registerRoute,
+    userPoolCors(client, (req) => req.params.userPoolId),
+    registerRoute(client),
   );
   app.use(
     '/:userPoolId/refresh',
-    cors((req) => req.params.userPoolId),
-    refreshRoute,
+    userPoolCors(client, (req) => req.params.userPoolId),
+    refreshRoute(client),
   );
   app.use(
     '/:userPoolId/resend',
-    cors((req) => req.params.userPoolId),
-    resendRoute,
+    userPoolCors(client, (req) => req.params.userPoolId),
+    resendRoute(client),
   );
   app.use(
     '/:userPoolId/token',
-    cors((req) => req.params.userPoolId),
-    tokenRoute,
+    userPoolCors(client, (req) => req.params.userPoolId),
+    tokenRoute(client),
   );
   app.use(
     '/:userPoolId/login',
-    cors((req) => req.params.userPoolId),
-    loginRoute,
+    userPoolCors(client, (req) => req.params.userPoolId),
+    loginRoute(client),
   );
   app.use('/:userPoolId/.well-known', wellKnownRoute);
 

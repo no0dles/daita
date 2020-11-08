@@ -1,5 +1,5 @@
 import { field } from '../../keyword/field/field';
-import { count } from '../../function/aggregation/count';
+import { count } from '../../function/aggregation/count/count';
 import { table } from '../../keyword/table/table';
 import { expectedSql } from '../../../../../testing/relational/formatter.test';
 import { User } from '../../../../../testing/schema/user';

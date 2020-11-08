@@ -31,6 +31,7 @@ export class PostgresAdapter implements RelationalTransactionAdapter<PostgresSql
           keepAlive: true,
           max: 20,
           idleTimeoutMillis: 10000,
+          log: (messages) => console.log(messages),
         }),
       );
     } else if (poolOrUrl instanceof Promise) {
@@ -38,6 +39,12 @@ export class PostgresAdapter implements RelationalTransactionAdapter<PostgresSql
     } else {
       this.pool = Promise.resolve(poolOrUrl);
     }
+
+    this.pool.then((pool) => {
+      pool.on('error', (err) => {
+        console.log('err', err);
+      });
+    });
 
     if (this.options.listenForNotifications) {
       this.listenForNotification();

@@ -28,7 +28,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
   async close(): Promise<void> {
     const defer = new Defer<void>();
     this.db.close((err) => {
-      if (err) {
+      if (err && (<any>err).errno !== 21) {
         defer.reject(err);
       } else {
         defer.resolve();

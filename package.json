@@ -10,7 +10,9 @@
     "build:docker": "node -r ts-node/register src/scripts/build-docker-image.ts",
     "push:docker": "node -r ts-node/register src/scripts/push-docker-image.ts",
     "clean": "git clean -fX -d dist",
-    "rebuild": "npm run clean && npm run build"
+    "rebuild": "npm run clean && npm run build",
+    "build:docs": "cd docs && docusaurus build --out-dir ../dist/docs",
+    "docs": "cd docs && docusaurus start"
   },
   "license": "MIT",
   "repository": {
@@ -60,6 +62,11 @@
     "zone.js": "~0.10.3"
   },
   "devDependencies": {
+    "@docusaurus/core": "^2.0.0-alpha.62",
+    "@docusaurus/preset-classic": "^2.0.0-alpha.62",
+    "classnames": "^2.2.6",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "compression-webpack-plugin": "^6.0.4",
     "@fullhuman/postcss-purgecss": "^3.0.0",
     "@angular-builders/custom-webpack": "^10.0.1",

@@ -1,4 +1,4 @@
-import { isNowDescription, NowDescription } from '../../../../relational/sql/function/date/now-description';
+import { isNowDescription, NowDescription } from '../../../../relational/sql/function/date/now/now-description';
 import { FormatContext } from '../../../../relational/formatter/format-context';
 import { FormatHandle, Formatter, FormatType } from '../../../../relational/formatter/formatter';
 

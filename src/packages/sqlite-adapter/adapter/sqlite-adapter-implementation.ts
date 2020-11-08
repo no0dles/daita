@@ -15,6 +15,14 @@ export interface SqliteAdapterMemoryOptions {
   memory: true;
 }
 
+function getSqliteFilename(fileName: string) {
+  if (fileName.startsWith('sqlite://')) {
+    return fileName.substr('sqlite://'.length);
+  } else {
+    return fileName;
+  }
+}
+
 const isFileOptions = (val: any): val is SqliteAdapterFileOptions => isKind<SqliteAdapterFileOptions>(val, ['file']);
 const isMemoryOptions = (val: any): val is SqliteAdapterMemoryOptions =>
   isKind<SqliteAdapterMemoryOptions>(val, ['memory']);
@@ -27,13 +35,13 @@ export const sqliteAdapter: RelationalAdapterImplementation<any, SqliteAdapterOp
           fs.unlinkSync(options.file);
         }
       }
-      return new SqliteRelationalAdapter(options.file);
+      return new SqliteRelationalAdapter(getSqliteFilename(options.file));
     }
     if (isMemoryOptions(options) && options.memory) {
       return new SqliteRelationalAdapter(':memory:');
     }
     if (process.env.DATABASE_URL) {
-      return new SqliteRelationalAdapter(process.env.DATABASE_URL);
+      return new SqliteRelationalAdapter(getSqliteFilename(process.env.DATABASE_URL));
     }
 
     return new SqliteRelationalAdapter(':memory:');

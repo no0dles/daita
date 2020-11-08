@@ -5,7 +5,7 @@ import { createAuthApp } from '../auth-server/app';
 import { allow } from '../relational/permission/function/allow';
 import { select } from '../relational/sql/dml/select/select';
 import { authorized } from '../relational/permission/function/authorized';
-import { now } from '../relational/sql/function/date/now';
+import { now } from '../relational/sql/function/date/now/now';
 import { authSchema } from '../auth-server/schema';
 import { createAuthAdminApp } from '../auth-server/admin-app';
 import { migrate } from '../orm/migration/migrate';
@@ -22,7 +22,7 @@ describe('http-server/app', () => {
   let httpApp: HttpServerApp;
 
   beforeAll(async () => {
-    postgresDb = await getPostgresDb().start();
+    postgresDb = await getPostgresDb();
     client = getClient(adapter, {
       connectionString: postgresDb.connectionString,
       createIfNotExists: true,

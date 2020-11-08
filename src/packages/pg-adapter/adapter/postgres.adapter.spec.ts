@@ -6,7 +6,7 @@ describe('postgres-adapter', () => {
   let db: PostgresDb;
 
   beforeAll(async () => {
-    db = await getPostgresDb().start();
+    db = await getPostgresDb();
     adapter = new PostgresAdapter(db.connectionString, { listenForNotifications: false });
   });
 
@@ -23,6 +23,4 @@ describe('postgres-adapter', () => {
       await db.close();
     }
   });
-
-  //relationalTest({ factory: pg, connectionString: 'postgres://postgres:postgres@localhost/postgres' });
 });

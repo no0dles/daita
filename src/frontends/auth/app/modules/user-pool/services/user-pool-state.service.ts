@@ -5,7 +5,7 @@ import { ApiService } from '../../../services/api.service';
 import { field } from '../../../../../../packages/relational/sql/keyword/field/field';
 import { UserPool } from '../../../../../../packages/auth-server/models/user-pool';
 import { subSelect } from '../../../../../../packages/relational/sql/dml/select/subquery/sub-select';
-import { count } from '../../../../../../packages/relational/sql/function/aggregation/count';
+import { count } from '../../../../../../packages/relational/sql/function/aggregation/count/count';
 import { table } from '../../../../../../packages/relational/sql/keyword/table/table';
 import { User } from '../../../../../../packages/auth-server/models/user';
 import { equal } from '../../../../../../packages/relational/sql/operands/comparison/equal/equal';

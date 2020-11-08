@@ -1,4 +1,4 @@
-import { min } from '../../function/aggregation/min';
+import { min } from '../../function/aggregation/min/min';
 import { field } from '../../keyword/field/field';
 import { table } from '../../keyword/table/table';
 import { expectedSql } from '../../../../../testing/relational/formatter.test';
@@ -9,7 +9,7 @@ import { isIn } from '../../operands/comparison/in/in';
 import { desc } from '../../keyword/desc/desc';
 import { equal } from '../../operands/comparison/equal/equal';
 import { notEqual } from '../../operands/comparison/not-equal/not-equal';
-import { count } from '../../function/aggregation/count';
+import { count } from '../../function/aggregation/count/count';
 describe('select', () => {
   it('should select 1', () => {
     expectedSql(

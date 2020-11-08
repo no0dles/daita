@@ -4,6 +4,7 @@ import { request as httpRequest } from 'http';
 import { parse } from 'url';
 import { AuthProvider, TokenIssuer } from './auth-provider';
 import { getTokenIssuer } from './shared-http';
+import { parseJson } from './json';
 
 export class NodeHttp implements Http {
   private readonly tokenProvider: TokenIssuer;
@@ -71,11 +72,12 @@ export class NodeHttp implements Http {
         res.on('end', () => {
           let responseData = null;
           if (data) {
-            responseData = JSON.parse(data);
+            responseData = parseJson(data);
           }
           const timeout = res.headers['x-transaction-timeout'] as string;
           resolve({
             data: responseData,
+            statusCode: res.statusCode || 0,
             headers: {
               'x-transaction-timeout': timeout ? parseInt(timeout, 0) : undefined,
             },

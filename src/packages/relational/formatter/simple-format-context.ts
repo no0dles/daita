@@ -2,9 +2,9 @@ import { FormatContext } from './format-context';
 import { ValueType } from '../sql/operands/value-type';
 
 export abstract class SimpleFormatContext implements FormatContext {
-  private values: ValueType[] = [];
+  protected values: ValueType[] = [];
 
-  constructor(private paramKey: string) {}
+  constructor(protected paramKey: string) {}
 
   appendValue(value: ValueType): string {
     this.values.push(value);

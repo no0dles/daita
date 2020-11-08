@@ -11,11 +11,11 @@ import { CreateTableFormatter } from '../../packages/relational/sql/ddl/create-t
 import { EqualFormatter } from '../../packages/relational/sql/operands/comparison/equal/equal-formatter';
 import { GreaterThanFormatter } from '../../packages/relational/sql/operands/comparison/greater-than/greater-than-formatter';
 import { JoinFormatter } from '../../packages/relational/sql/dml/select/join/join-formatter';
-import { MinFormatter } from '../../packages/relational/sql/function/aggregation/min-formatter';
+import { MinFormatter } from '../../packages/relational/sql/function/aggregation/min/min-formatter';
 import { DeleteFormatter } from '../../packages/relational/sql/dml/delete/delete-formatter';
 import { CounterFormatContext } from '../../packages/relational/formatter/counter-format-context';
 import { CreateSchemaFormatter } from '../../packages/relational/sql/ddl/create-schema/create-schema';
-import { CountFormatter } from '../../packages/relational/sql/function/aggregation/count-formatter';
+import { CountFormatter } from '../../packages/relational/sql/function/aggregation/count/count-formatter';
 import { LockTableFormatter } from '../../packages/relational/sql/ddl/lock-table/lock-table';
 import { OrderByFormatter } from '../../packages/relational/sql/dml/select/order-by/order-by-formatter';
 import { SelectFormatter } from '../../packages/relational/sql/dml/select/select-formatter';

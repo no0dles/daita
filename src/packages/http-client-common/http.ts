@@ -13,6 +13,7 @@ export interface HttpRequestOptions {
 
 export interface HttpSendResult {
   data: any;
+  statusCode: number;
   headers: { 'x-transaction-timeout'?: number };
 }
 

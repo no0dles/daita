@@ -7,13 +7,10 @@ import { errorMiddleware } from './middleswares/error.middleware';
 import { tokenAuth } from './middleswares/token-auth.middleware';
 import { TransactionClient } from '../relational/client/transaction-client';
 import { AppOptions } from '../http-server-common/app-options';
+import { Client } from '../relational/client/client';
 
 declare global {
   namespace Express {
-    export interface Application {
-      client: TransactionClient<any>;
-    }
-
     export interface Request {
       user?: {
         sub: string;
@@ -26,9 +23,8 @@ declare global {
   }
 }
 
-export function createHttpServerApp(client: TransactionClient<any>, options: AppOptions) {
+export function createHttpServerApp(client: TransactionClient<any> | Client<any>, options: AppOptions) {
   const app = express();
-  app.client = client;
 
   if (options.cors === true) {
     app.use(cors());
@@ -52,7 +48,7 @@ export function createHttpServerApp(client: TransactionClient<any>, options: App
     app.use(jwtAuth(options.authorization.providers));
   }
 
-  app.use('/api/relational', relationalRoute(options));
+  app.use('/api/relational', relationalRoute(client, options));
   app.use(errorMiddleware());
   return app;
 }

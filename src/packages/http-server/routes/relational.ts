@@ -4,9 +4,18 @@ import { validateExecBody } from '../middleswares/validate-body.middleware';
 import { ContextManager, TransactionContextManager } from '../../http-server-common/context-manager';
 import { AppOptions } from '../../http-server-common/app-options';
 import { TransactionManager } from '../../http-server-common/transaction-manager';
+import { Client } from '../../relational/client/client';
+import { isTransactionClient, TransactionClient } from '../../relational/client/transaction-client';
 
-export function relationalRoute(options: AppOptions) {
-  const router = relationalDataRoute(options);
+export function relationalRoute(client: TransactionClient<any> | Client<any>, options: AppOptions) {
+  const router = relationalDataRoute(client, options);
+  if (isTransactionClient(client)) {
+    extendTransactionRoutes(client, options, router);
+  }
+  return router;
+}
+
+function extendTransactionRoutes(client: TransactionClient<any>, options: AppOptions, router: Router) {
   const manager = new TransactionContextManager(options);
 
   function getTransactionId(req: Request, res: Response): string | null {
@@ -51,7 +60,7 @@ export function relationalRoute(options: AppOptions) {
         return;
       }
 
-      const transaction = manager.create(req.app.client, tid);
+      const transaction = manager.create(client, tid);
       await transaction.started;
       res.setHeader('X-Transaction', tid);
       res.status(200).send();
@@ -81,16 +90,14 @@ export function relationalRoute(options: AppOptions) {
       next(e);
     }
   });
-
-  return router;
 }
 
-export function relationalDataRoute(options: AppOptions) {
+export function relationalDataRoute(client: Client<any>, options: AppOptions) {
   const router = Router();
 
   router.post('/exec', validateExecBody, validateSqlRules(options), async (req, res, next) => {
     try {
-      const context = new ContextManager(req.app.client);
+      const context = new ContextManager(client);
       const result = await context.exec(req.body.sql);
       res.status(200).json(result);
     } catch (e) {

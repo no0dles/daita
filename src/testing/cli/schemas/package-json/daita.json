@@ -3,7 +3,7 @@
   "context": {
     "default": {
       "schemaLocation": "src/schema.ts",
-      "module": "../../../src/packages/pg-adapter",
+      "module": "../../../../src/packages/pg-adapter",
       "connectionString": "postgres://localhost/postgres"
     }
   }

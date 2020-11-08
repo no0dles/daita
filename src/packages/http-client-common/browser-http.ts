@@ -1,6 +1,7 @@
 import { encodeFormData, getQueryString, Http, HttpRequestOptions, HttpSendResult } from './http';
 import { AuthProvider, TokenIssuer } from './auth-provider';
 import { getTokenIssuer } from './shared-http';
+import { parseJson } from './json';
 
 export class BrowserHttp implements Http {
   private readonly tokenProvider: TokenIssuer;
@@ -52,12 +53,13 @@ export class BrowserHttp implements Http {
 
       const contentType = result.headers.get('content-type');
       if (contentType && contentType.indexOf('application/json') !== -1) {
-        data = await result.json();
+        data = parseJson(await result.text());
       } else {
         data = await result.text();
       }
       return {
         data,
+        statusCode: result.status,
         headers: {
           'x-transaction-timeout': timeout ? parseInt(timeout, 0) : undefined,
         },

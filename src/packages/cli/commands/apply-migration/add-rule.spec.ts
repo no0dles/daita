@@ -8,12 +8,12 @@ import { table } from '../../../relational/sql/keyword/table/table';
 import { MigrationClient } from '../../../relational/client/migration-client';
 import { getPostgresDb, PostgresDb } from '../../../../testing/postgres-test';
 
-describe('apply/add-rule', () => {
+describe('cli/commands/apply/add-rule', () => {
   let client: MigrationClient<any>;
   let db: PostgresDb;
 
   beforeAll(async () => {
-    db = await getPostgresDb().start();
+    db = await getPostgresDb();
     client = getClient(adapter, {
       connectionString: db.connectionString,
       createIfNotExists: true,

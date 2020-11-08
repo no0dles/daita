@@ -5,9 +5,9 @@ import { join } from '../../relational/sql/dml/select/join/join';
 import { UserRole } from '../models/user-role';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { and } from '../../relational/sql/keyword/and/and';
-import { TransactionClient } from '../../relational/client/transaction-client';
+import { Client } from '../../relational/client/client';
 
-export function getRoles(client: TransactionClient<any>, userPoolId: string, username: string) {
+export function getRoles(client: Client<any>, userPoolId: string, username: string) {
   return client.select({
     select: field(Role, 'name'),
     from: table(Role),

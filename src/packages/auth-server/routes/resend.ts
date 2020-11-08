@@ -7,51 +7,54 @@ import { field } from '../../relational/sql/keyword/field/field';
 import { and } from '../../relational/sql/keyword/and/and';
 import { table } from '../../relational/sql/keyword/table/table';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
+import { TransactionClient } from '../../relational/client/transaction-client';
 
-const router = express.Router({ mergeParams: true });
+export function resendRoute(client: TransactionClient<any>) {
+  const router = express.Router({ mergeParams: true });
 
-router.use(authMiddleware);
-router.post('/', async (req, res, next) => {
-  try {
-    const user = await req.app.client.selectFirst({
-      select: {
-        username: field(User, 'username'),
-        email: field(User, 'email'),
-        emailVerified: field(User, 'emailVerified'),
-      },
-      from: table(User),
-      where: and(
-        equal(field(User, 'username'), req?.user?.sub || ''),
-        equal(field(User, 'userPoolId'), req.params.userPoolId),
-      ),
-    });
+  router.use(authMiddleware);
+  router.post('/', async (req, res, next) => {
+    try {
+      const user = await client.selectFirst({
+        select: {
+          username: field(User, 'username'),
+          email: field(User, 'email'),
+          emailVerified: field(User, 'emailVerified'),
+        },
+        from: table(User),
+        where: and(
+          equal(field(User, 'username'), req?.user?.sub || ''),
+          equal(field(User, 'userPoolId'), req.params.userPoolId),
+        ),
+      });
 
-    if (!user) {
-      return res.status(400).json({ message: 'invalid user' });
+      if (!user) {
+        return res.status(400).json({ message: 'invalid user' });
+      }
+
+      if (!user.email) {
+        return res.status(400).json({ message: 'email not specified' });
+      }
+
+      if (user.emailVerified) {
+        return res.status(400).json({ message: 'email already verified' });
+      }
+
+      await client.insert({
+        into: table(UserEmailVerify),
+        insert: {
+          issuedAt: new Date(),
+          userUsername: user.username,
+          code: await getRandomCode(),
+          email: user.email,
+        },
+      });
+
+      res.status(200).end();
+    } catch (e) {
+      next(e);
     }
+  });
 
-    if (!user.email) {
-      return res.status(400).json({ message: 'email not specified' });
-    }
-
-    if (user.emailVerified) {
-      return res.status(400).json({ message: 'email already verified' });
-    }
-
-    await req.app.client.insert({
-      into: table(UserEmailVerify),
-      insert: {
-        issuedAt: new Date(),
-        userUsername: user.username,
-        code: await getRandomCode(),
-        email: user.email,
-      },
-    });
-
-    res.status(200).end();
-  } catch (e) {
-    next(e);
-  }
-});
-
-export = router;
+  return router;
+}

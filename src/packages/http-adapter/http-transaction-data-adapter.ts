@@ -1,5 +1,5 @@
 import { Countdown } from './countdown';
-import { Http } from '../http-client-common/http';
+import { Http, HttpSendResult } from '../http-client-common/http';
 import { RelationalRawResult } from '../relational/adapter/relational-raw-result';
 import { RelationalDataAdapter } from '../relational/adapter/relational-data-adapter';
 import { Defer } from '../common/utils/defer';
@@ -9,6 +9,21 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   private countDown = new Countdown(() => this.timeout());
 
   constructor(private transactionId: string, private http: Http) {}
+
+  private handleErrorResponse(response: HttpSendResult) {
+    if (
+      response.statusCode >= 400 &&
+      response.data.message.startsWith('could not find transaction for ' + this.transactionId)
+    ) {
+      this.resultDefer.reject(new Error('timeout'));
+      throw new Error('transaction already closed');
+    }
+
+    const timeout = response.headers['x-transaction-timeout'];
+    if (timeout && timeout > 0) {
+      this.countDown.setExpire(timeout);
+    }
+  }
 
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
     if (this.resultDefer.isRejected || this.resultDefer.isResolved) {
@@ -23,10 +38,7 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
       },
       authorized: true,
     });
-    const timeout = response.headers['x-transaction-timeout'];
-    if (timeout && timeout > 0) {
-      this.countDown.setExpire(timeout);
-    }
+    this.handleErrorResponse(response);
     return response.data;
   }
 
@@ -42,10 +54,7 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
       },
       authorized: true,
     });
-    const timeout = response.headers['x-transaction-timeout'];
-    if (timeout && timeout > 0) {
-      this.countDown.setExpire(timeout);
-    }
+    this.handleErrorResponse(response);
     return response.data;
   }
 
@@ -59,8 +68,9 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
     await this.http.json({ path: `api/relational/trx/${this.transactionId}`, authorized: true });
     action()
       .then(async (result) => {
-        this.resultDefer.resolve(result);
-        await this.commit();
+        await this.commit().then(() => {
+          this.resultDefer.resolve(result);
+        });
       })
       .catch((e) => {
         if (e.message === 'transaction already closed') {
@@ -81,10 +91,18 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   }
 
   private async commit() {
-    await this.http.json({ path: `api/relational/trx/${this.transactionId}/commit`, authorized: true });
+    const response = await this.http.json({
+      path: `api/relational/trx/${this.transactionId}/commit`,
+      authorized: true,
+    });
+    this.handleErrorResponse(response);
   }
 
   private async rollback() {
-    await this.http.json({ path: `api/relational/trx/${this.transactionId}/rollback`, authorized: true });
+    const response = await this.http.json({
+      path: `api/relational/trx/${this.transactionId}/rollback`,
+      authorized: true,
+    });
+    this.handleErrorResponse(response);
   }
 }

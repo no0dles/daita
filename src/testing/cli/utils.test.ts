@@ -61,7 +61,6 @@ function deepClone(sourceDir: string, targetDir: string) {
 
 export interface CliEnvironment {
   env: (name: string, value: string) => void;
-  run: (args: string) => RunResult;
   cwd: string;
 
   exists(dir: string, file?: RegExp): Promise<void>;
@@ -85,7 +84,7 @@ export interface RunResult {
 export type CliEnvironmentCallback = (ctx: CliEnvironment) => Promise<any>;
 
 export function setupEnv(testName: string, callback: CliEnvironmentCallback, options?: { schema?: string }) {
-  const scenarioResultRoot = path.join(process.cwd(), 'tmp/scenario');
+  const scenarioResultRoot = path.join(process.cwd(), 'dist/tmp/scenario');
   const resultPath = path.join(scenarioResultRoot, testName);
 
   function exists(dir: string, file?: RegExp): Promise<boolean> {
@@ -136,60 +135,6 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
       cwd: resultPath,
       env: (name: string, value: string) => {
         envs[name] = value;
-      },
-      run: (args) => {
-        const proc = childProcess.spawn(`node`, ['-r', 'ts-node/register', cliPath, ...args.split(' ')], {
-          cwd: resultPath,
-          env: { ...process.env, ...envs },
-        });
-        const finishedDefer = new Defer<number>();
-        proc.stdout.on('data', (data) => {
-          if (typeof data === 'string') {
-            for (const callback of stdOutCallback) {
-              callback(data);
-            }
-          } else if (data instanceof Buffer) {
-            for (const callback of stdOutCallback) {
-              callback(data.toString());
-            }
-          }
-        });
-
-        proc.stderr.on('data', (data) => {
-          if (typeof data === 'string') {
-            for (const callback of stdErrCallback) {
-              callback(data);
-            }
-          } else if (data instanceof Buffer) {
-            for (const callback of stdErrCallback) {
-              callback(data.toString());
-            }
-          }
-        });
-        proc.on('exit', (code) => {
-          if (code !== 0) {
-            finishedDefer.reject(code);
-          } else {
-            finishedDefer.resolve(code);
-          }
-        });
-
-        const stdOutCallback: ((text: string) => void)[] = [];
-        const stdErrCallback: ((text: string) => void)[] = [];
-
-        return {
-          onStdOut: (callback: (text: string) => void) => {
-            stdOutCallback.push(callback);
-          },
-          onStdErr: (callback: (text: string) => void) => {
-            stdErrCallback.push(callback);
-          },
-          cancel: () => {
-            proc.kill('SIGINT');
-          },
-          finished: finishedDefer.promise,
-        };
-        // return cli.run([...args.split(' '), '--cwd', resultPath]);
       },
       contains(dir: string, expectedFiles: string[]): Promise<void> {
         return new Promise<void>((resolve) => {

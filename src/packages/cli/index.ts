@@ -3,15 +3,15 @@
 import { program } from 'commander';
 import { cli } from 'cli-ux';
 import { addMigration } from './commands/add-migration/add-migration';
-import { undoMigration } from './commands/undo-migration';
+import { undoMigration } from './commands/undo-migration/undo-migration';
 import { applyMigration } from './commands/apply-migration/apply-migration';
-import { diagram } from './commands/diagram';
-import { serve } from './commands/serve';
-import { generateRule } from './commands/generate-rule';
-import { upgrade } from './commands/upgrade';
-import { init } from './commands/init';
-import { login } from './commands/login';
-import { listDatabases } from './commands/list-databases';
+import { diagram } from './commands/diagram/diagram';
+import { serve } from './commands/serve/serve';
+import { generateRule } from './commands/generate-rule/generate-rule';
+import { upgrade } from './commands/upgrade/upgrade';
+import { init } from './commands/init/init';
+import { login } from './commands/login/login';
+import { listDatabases } from './commands/list-databases/list-databases';
 
 program
   .command('init')

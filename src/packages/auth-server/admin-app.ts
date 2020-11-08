@@ -1,9 +1,6 @@
 import express from 'express';
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
-import refreshRoute from './routes/refresh';
-import adminTokenRoute from './routes/admin-token';
-import loginRoute from './routes/login';
 import { authMiddleware } from './middlewares/auth-middleware';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -12,11 +9,12 @@ import { TransactionClient } from '../relational/client/transaction-client';
 import { authorized } from '../relational/permission/function/authorized';
 import { relationalRoute } from '../http-server/routes/relational';
 import { anything } from '../relational/permission/function/anything';
+import { refreshRoute } from './routes/refresh';
+import { loginRoute } from './routes/login';
+import { adminTokenRoute } from './routes/admin-token';
 
 export function createAuthAdminApp(client: TransactionClient<any>) {
   const adminApp = express();
-
-  adminApp.client = client;
 
   adminApp.use(helmet());
   adminApp.use(bodyParser.json());
@@ -25,14 +23,14 @@ export function createAuthAdminApp(client: TransactionClient<any>) {
     adminApp.use(cors());
   }
 
-  adminApp.use('/:userPoolId/refresh', refreshRoute);
-  adminApp.use('/:userPoolId/login', loginRoute);
-  adminApp.use('/:userPoolId/token', adminTokenRoute);
+  adminApp.use('/:userPoolId/refresh', refreshRoute(client));
+  adminApp.use('/:userPoolId/login', loginRoute(client));
+  adminApp.use('/:userPoolId/token', adminTokenRoute(client));
 
   adminApp.use(
     '/api/relational',
     authMiddleware,
-    relationalRoute({
+    relationalRoute(client, {
       authorization: false,
       cors: false,
       rules: [allow(authorized(), anything())],
