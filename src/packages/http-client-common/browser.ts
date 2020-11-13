@@ -1,3 +1,3 @@
-export * from './auth-provider';
-export { IdGenerator } from './id-generator';
+export { AccessTokenProvider, AuthProvider, IssuerProvider, TokenIssuer, TokenProvider } from './auth-provider';
 export { BrowserHttp } from './browser-http';
+export { Http, HttpSendResult, HttpRequestOptions } from './http';

@@ -1,15 +1,16 @@
 import { all } from './all';
 import { table } from '../table/table';
 import { createPerson, createPersonTable } from '../../../../../testing/schema/test-schema';
-import { ClientTestContext, dataClients } from '../../../../../testing/relational/adapter-test';
+import { dataClients } from '../../../../../testing/relational/adapters';
 import { Person } from '../../../../../testing/schema/person';
+import { ClientTestContext } from '../../../../../testing/relational/adapter/client-test-context';
 
 describe('relational/sql/keyword/all', () => {
   describe.each(dataClients)('%s', (ctxFactory) => {
     let ctx: ClientTestContext;
 
     beforeAll(async () => {
-      ctx = await ctxFactory.clientContext();
+      ctx = await ctxFactory.getClient();
       await createPersonTable(ctx.client);
       await createPerson(ctx.client, { firstName: 'Foo', lastName: 'Bar', id: 'a' });
     });

@@ -5,7 +5,7 @@ docker.listContainers(async (err, infos) => {
   const now = new Date().getTime() / 1000;
   for (const info of infos) {
     // do not kill new containers
-    if (info.Created < now - 20) {
+    if (info.Created - now - 60 > 0) {
       continue;
     }
 

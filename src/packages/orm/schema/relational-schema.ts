@@ -48,9 +48,7 @@ export class RelationalSchema implements OrmRelationalSchema {
   }
 
   private getSchemaDescription(): RelationalSchemaDescription {
-    return this.migrationTree.getSchemaDescription({
-      backwardCompatible: this.options?.backwardCompatible ?? false,
-    });
+    return this.migrationTree.getSchemaDescription();
   }
 
   getRules(): Rule[] {

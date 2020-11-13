@@ -7,15 +7,15 @@ import { field } from '../../relational/sql/keyword/field/field';
 import { and } from '../../relational/sql/keyword/and/and';
 import { table } from '../../relational/sql/keyword/table/table';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
-import { TransactionClient } from '../../relational/client/transaction-client';
+import { TransactionContext } from '../../orm';
 
-export function resendRoute(client: TransactionClient<any>) {
+export function resendRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
 
   router.use(authMiddleware);
   router.post('/', async (req, res, next) => {
     try {
-      const user = await client.selectFirst({
+      const user = await ctx.selectFirst({
         select: {
           username: field(User, 'username'),
           email: field(User, 'email'),
@@ -40,7 +40,7 @@ export function resendRoute(client: TransactionClient<any>) {
         return res.status(400).json({ message: 'email already verified' });
       }
 
-      await client.insert({
+      await ctx.insert({
         into: table(UserEmailVerify),
         insert: {
           issuedAt: new Date(),

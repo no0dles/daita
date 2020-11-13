@@ -3,13 +3,13 @@ import * as bodyParser from 'body-parser';
 import wellKnownRoute from './routes/well-known';
 import helmet from 'helmet';
 import { userPoolCors } from './middlewares/user-pool-cors';
-import { TransactionClient } from '../relational/client/transaction-client';
 import { resendRoute } from './routes/resend';
 import { tokenRoute } from './routes/token';
 import { verifyRoute } from './routes/verify';
 import { registerRoute } from './routes/register';
 import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
+import { TransactionContext } from '../orm';
 
 declare global {
   namespace Express {
@@ -25,37 +25,37 @@ declare global {
   }
 }
 
-export function createAuthApp(client: TransactionClient<any>) {
+export function createAuthApp(ctx: TransactionContext<any>) {
   const app = express();
 
   app.use(helmet());
   app.use(bodyParser.json());
 
-  app.use('/:userPoolId/verify', verifyRoute(client));
+  app.use('/:userPoolId/verify', verifyRoute(ctx));
   app.use(
     '/:userPoolId/register',
-    userPoolCors(client, (req) => req.params.userPoolId),
-    registerRoute(client),
+    userPoolCors(ctx, (req) => req.params.userPoolId),
+    registerRoute(ctx),
   );
   app.use(
     '/:userPoolId/refresh',
-    userPoolCors(client, (req) => req.params.userPoolId),
-    refreshRoute(client),
+    userPoolCors(ctx, (req) => req.params.userPoolId),
+    refreshRoute(ctx),
   );
   app.use(
     '/:userPoolId/resend',
-    userPoolCors(client, (req) => req.params.userPoolId),
-    resendRoute(client),
+    userPoolCors(ctx, (req) => req.params.userPoolId),
+    resendRoute(ctx),
   );
   app.use(
     '/:userPoolId/token',
-    userPoolCors(client, (req) => req.params.userPoolId),
-    tokenRoute(client),
+    userPoolCors(ctx, (req) => req.params.userPoolId),
+    tokenRoute(ctx),
   );
   app.use(
     '/:userPoolId/login',
-    userPoolCors(client, (req) => req.params.userPoolId),
-    loginRoute(client),
+    userPoolCors(ctx, (req) => req.params.userPoolId),
+    loginRoute(ctx),
   );
   app.use('/:userPoolId/.well-known', wellKnownRoute);
 

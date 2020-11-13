@@ -1,4 +1,4 @@
-import { getClientFromConfig } from '../../utils/data-adapter';
+import { getContextFromConfig } from '../../utils/data-adapter';
 import { getSchemaInformation, getSchemaLocation } from '../../utils/path';
 import { getAuthorization } from '../../utils/authorization';
 import { watch, FSWatcher } from 'chokidar';
@@ -6,16 +6,16 @@ import { applyMigration } from '../apply-migration/apply-migration';
 import { getProjectConfig } from '../../utils/config';
 import { createAuthApp } from '../../../auth-server/app';
 import { createHttpServerApp } from '../../../http-server/app';
-import { authSchema } from '../../../auth-server/schema';
 import { anonymous } from '../../../relational/permission/function/anonymous';
 import { seedUserPool, seedUserPoolCors } from '../../../auth-server/seed';
 import { Debouncer } from '../../../common/utils/debouncer';
-import { migrate } from '../../../orm/migration/migrate';
 import { anything } from '../../../relational/permission/function/anything';
-import { RelationalMigrationClient } from '../../../relational/client/relational-transaction-client';
 import { AstContext } from '../../ast/ast-context';
 import { Rule } from '../../../relational/permission/description/rule';
 import { Defer } from '../../../common/utils/defer';
+import { isMigrationContext } from '../../../orm/context/get-migration-context';
+import { isTransactionContext } from '../../../orm/context/transaction-context';
+import { authSchema } from '../../../auth-server';
 
 export async function serve(opts: {
   cwd?: string;
@@ -27,17 +27,24 @@ export async function serve(opts: {
   disableWatch?: boolean;
 }) {
   const contextConfig = getProjectConfig(opts);
-  const client = getClientFromConfig(opts);
-  if (!client) {
+  const schemaLocation = await getSchemaLocation(opts);
+  const astContext = new AstContext();
+  const schemaInfo = await getSchemaInformation(astContext, schemaLocation);
+  if (!schemaInfo) {
+    throw new Error('could not parse schema');
+  }
+
+  const ctx = getContextFromConfig(opts, schemaInfo.getMigrationTree());
+  if (!ctx) {
     throw new Error('no relational adapter');
   }
 
-  await applyMigration(opts);
+  if (isMigrationContext(ctx)) {
+    await ctx.migrate();
+  }
 
   const authorization = getAuthorization(opts);
   const disableAuth = !authorization || opts.disableAuth;
-
-  const schemaLocation = await getSchemaLocation(opts);
 
   const reloadDebouncer = new Debouncer(async () => {
     console.log('reload');
@@ -49,11 +56,9 @@ export async function serve(opts: {
   if (disableAuth) {
     rules.push({ auth: anonymous(), type: 'allow', sql: anything() });
   } else {
-    const astContext = new AstContext();
-    const schemaInfo = await getSchemaInformation(astContext, schemaLocation);
     if (schemaInfo) {
       const migrationTree = schemaInfo.getMigrationTree();
-      rules.push(...migrationTree.getSchemaDescription({ backwardCompatible: false }).rules.map((r) => r.rule));
+      rules.push(...migrationTree.getSchemaDescription().rulesList);
     }
   }
 
@@ -64,18 +69,21 @@ export async function serve(opts: {
     });
   }
 
-  const httpApp = createHttpServerApp(client, {
+  const httpApp = createHttpServerApp(ctx, {
     authorization,
-    rules,
     cors: true,
   });
 
   let authServer: any;
   if (!disableAuth) {
-    if (client instanceof RelationalMigrationClient) {
-      await migrate(client, authSchema);
+    const ctx = getContextFromConfig(opts, authSchema.getMigrations());
+    if (!isTransactionContext(ctx)) {
+      throw new Error('authorization api requires a transaction capable adapter');
     }
-    await seedUserPool(client, {
+    if (isMigrationContext(ctx)) {
+      await ctx.migrate();
+    }
+    await seedUserPool(ctx, {
       id: 'cli',
       name: 'cli',
       accessTokenExpiresIn: 600,
@@ -87,8 +95,8 @@ export async function serve(opts: {
     });
 
     const corsUrls = (contextConfig.authorization && contextConfig.authorization.cors) || [];
-    await seedUserPoolCors(client, 'cli', corsUrls);
-    const authApp = createAuthApp(client);
+    await seedUserPoolCors(ctx, 'cli', corsUrls);
+    const authApp = createAuthApp(ctx);
     const authPort = opts.authPort || 8766;
 
     authServer = authApp.listen(authPort, () => {
@@ -111,7 +119,7 @@ export async function serve(opts: {
     server?.close();
     authServer?.close();
     await watcher?.close();
-    await client?.close();
+    await ctx?.close();
     resultDefer.resolve();
   });
 

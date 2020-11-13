@@ -7,15 +7,15 @@ import { field } from '../../relational/sql/keyword/field/field';
 import { and } from '../../relational/sql/keyword/and/and';
 import { table } from '../../relational/sql/keyword/table/table';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
-import { TransactionClient } from '../../relational/client/transaction-client';
+import { TransactionContext } from '../../orm';
 
-export function tokenRoute(client: TransactionClient<any>) {
+export function tokenRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
 
   router.use(authMiddleware);
   router.get('/', async (req, res, next) => {
     try {
-      const tokens = await client.select({
+      const tokens = await ctx.select({
         select: {
           id: field(UserToken, 'id'),
           name: field(UserToken, 'name'),
@@ -37,7 +37,7 @@ export function tokenRoute(client: TransactionClient<any>) {
     try {
       const token = await getRandomCode();
       const hashedToken = await getSha1(token);
-      await client.insert({
+      await ctx.insert({
         insert: {
           id: await getRandomCode(),
           userUsername: req.user?.sub!,
@@ -59,7 +59,7 @@ export function tokenRoute(client: TransactionClient<any>) {
 
   router.delete('/:id', async (req, res, next) => {
     try {
-      const result = await client.delete({
+      const result = await ctx.delete({
         delete: table(UserToken),
         where: and(
           equal(field(UserToken, 'id'), req.params.id),

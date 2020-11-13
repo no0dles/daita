@@ -1,17 +1,20 @@
 import { RelationalAdapterMock } from './relational-adapter-mock';
-import { RelationalTransactionAdapter } from '../adapter/relational-transaction-adapter';
-import { RelationalAdapterImplementation } from '../adapter/relational-adapter-implementation';
 import { RelationalRawResult } from '../adapter/relational-raw-result';
+import {
+  RelationalDataAdapterImplementation,
+  RelationalTransactionAdapterImplementation,
+} from '../adapter/relational-adapter-implementation';
+import { RelationalDataAdapter, RelationalTransactionAdapter } from '..';
 
 export type MockAdapterOptions<T> = (sql: T) => RelationalRawResult | null;
 
-export type MockAdapterImplementation<T> = RelationalAdapterImplementation<T, MockAdapterOptions<T>>;
+export type MockAdapterImplementation<T> = RelationalDataAdapterImplementation<T, MockAdapterOptions<T>> &
+  RelationalTransactionAdapterImplementation<T, MockAdapterOptions<T>>;
 
 export const mockAdapter: MockAdapterImplementation<any> = {
-  getRelationalAdapter(options?: MockAdapterOptions<any>): RelationalTransactionAdapter<any> {
-    if (!options) {
-      throw new Error('Mock adapter requires options'); //TODO create requriedoptions interface for adapter implementation
-    }
+  getRelationalAdapter(
+    options: MockAdapterOptions<any>,
+  ): RelationalDataAdapter<any> & RelationalTransactionAdapter<any> {
     return new RelationalAdapterMock(options);
   },
 };

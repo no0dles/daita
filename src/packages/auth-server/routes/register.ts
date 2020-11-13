@@ -9,14 +9,14 @@ import { field } from '../../relational/sql/keyword/field/field';
 import { table } from '../../relational/sql/keyword/table/table';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { UserPoolUser } from '../models/user-pool-user';
-import { TransactionClient } from '../../relational/client/transaction-client';
+import { TransactionContext } from '../../orm';
 
-export function registerRoute(client: TransactionClient<any>) {
+export function registerRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
 
   router.post('/', async (req, res, next) => {
     try {
-      const userPool = await client.selectFirst({
+      const userPool = await ctx.selectFirst({
         select: {
           passwordRegex: field(UserPool, 'passwordRegex'),
           checkPasswordForBreach: field(UserPool, 'checkPasswordForBreach'),
@@ -50,7 +50,7 @@ export function registerRoute(client: TransactionClient<any>) {
 
       const hash = await hashPassword(req.body.password);
       const emailVerifyCode = await getRandomCode();
-      await client.transaction(async (trx) => {
+      await ctx.transaction(async (trx) => {
         await trx.insert({
           insert: {
             userPoolId: req.params.userPoolId,

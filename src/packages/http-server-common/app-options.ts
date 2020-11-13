@@ -5,5 +5,4 @@ export interface AppOptions {
   transactionTimeout?: number;
   cors?: boolean | string | string[];
   authorization: AppAuthorization | false;
-  rules: Rule[];
 }

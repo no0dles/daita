@@ -41,6 +41,10 @@ export class RelationalSchemaDescription {
     return this.rulesArrayMap.array;
   }
 
+  get rulesList() {
+    return this.rulesArrayMap.array.map((r) => r.rule);
+  }
+
   addRule(id: string, rule: Rule) {
     this.rulesArrayMap.add(id, { id, rule });
   }

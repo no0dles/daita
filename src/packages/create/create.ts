@@ -5,7 +5,12 @@ import * as yaml from 'yaml';
 import { spawn } from 'child_process';
 import { randomString } from '../common/utils/random-string';
 
-export async function create() {
+export async function create(options: {
+  npmClient?: string;
+  skipInstall?: boolean;
+  adapter?: string;
+  projectName?: string;
+}) {
   const dir = process.cwd();
   const prompts = inquirer.prompt([
     {
@@ -21,35 +26,40 @@ export async function create() {
         }
         return true;
       },
-    },
-    {
-      type: 'list',
-      default: 'npm',
-      name: 'npmClient',
-      message: "What's your npm client?",
-      choices: ['npm', 'yarn', 'none'],
+      when: !options.projectName,
     },
     {
       type: 'list',
       message: 'Which adapters do you need?',
       name: 'adapter',
       choices: ['pg', 'sqlite'],
+      when: !options.adapter,
     },
   ]);
 
   const answers = await prompts;
-  const createPackageJson = getOwnPackageJson();
-  const projectDir = path.join(dir, answers.projectName);
+  const npmClient = options.npmClient || answers.npmClient;
+  const skipInstall = options.skipInstall || answers.npmClient === 'none';
+  const adapter = options.adapter || answers.adapter;
+  const projectName = options.projectName || answers.projectName;
+
+  if (fs.existsSync(path.join(dir, projectName))) {
+    console.log(`directory ${projectName} already exists`);
+    process.exit(1);
+    return;
+  }
+
+  const daitaVersion = `^${getOwnPackageJson((pkg) => pkg.version)}`;
+  const projectDir = path.join(dir, projectName);
   const password = randomString(20);
-  const daitaVersion = `^${createPackageJson.version}`;
 
   const packageJson: any = {
-    name: answers.projectName,
+    name: projectName,
     version: '0.0.0',
     description: 'an awesome daita project',
     license: 'MIT',
     dependencies: {
-      typescript: '^3.9.3',
+      typescript: getOwnPackageJson((pkg) => pkg.dependencies.typescript),
       '@daita/relational': daitaVersion,
       '@daita/orm': daitaVersion,
     },
@@ -74,7 +84,7 @@ export async function create() {
       rootDir: 'src',
       outDir: 'dist',
       target: 'es6',
-      lib: ['es2019'],
+      lib: ['es2020'],
       moduleResolution: 'node',
       declaration: true,
       declarationMap: true,
@@ -88,28 +98,28 @@ export async function create() {
   };
 
   const defaultConfig: any = {
-    daita: {
-      context: {
-        default: {},
+    context: {
+      default: {
+        module: `@daita/${adapter}-adapter`,
+        schemaLocation: 'src/schema.ts',
+        migrationLocation: 'src/migrations',
       },
     },
   };
 
-  packageJson.dependencies[`@daita/${answers.adapter}-adapter`] = daitaVersion;
+  packageJson.dependencies[`@daita/${adapter}-adapter`] = daitaVersion;
 
-  if (answers.adapter === 'pg') {
+  if (adapter === 'pg') {
     dockerCompose.services['postgres'] = {
       image: 'postgres',
-      environment: ['POSTGRES_USER=daita', `POSTGRES_PASSWORD=${password}`, `POSTGRES_DB=${answers.projectName}`],
+      environment: ['POSTGRES_USER=daita', `POSTGRES_PASSWORD=${password}`, `POSTGRES_DB=${projectName}`],
       ports: ['5432:5432'],
       volumes: ['postgres-data:/var/lib/postgresql/data'],
     };
     dockerCompose.volumes['postgres-data'] = {};
-    defaultConfig.daita.context.default.module = '@daita/pg-adapter';
-    defaultConfig.daita.context.default.connectionString = `postgres://daita:${password}@localhost/${answers.projectName}`;
-  } else if (answers.adapter === 'sqlite') {
-    defaultConfig.daita.context.default.module = '@daita/sqlite-adapter';
-    defaultConfig.daita.context.default.connectionString = `sqlite://./${answers.projectName}.db`;
+    defaultConfig.context.default.connectionString = `postgres://daita:${password}@localhost/${projectName}`;
+  } else if (adapter === 'sqlite') {
+    defaultConfig.context.default.connectionString = `sqlite://./${projectName}.db`;
   }
 
   fs.mkdirSync(projectDir);
@@ -118,31 +128,39 @@ export async function create() {
   fs.mkdirSync(path.join(projectDir, 'src/migrations'));
 
   fs.writeFileSync(path.join(projectDir, 'src/index.ts'), '');
-  fs.writeFileSync(
-    path.join(projectDir, 'config/default.json'),
-    JSON.stringify(defaultConfig, null, 2), //TODO remove, use new config
-  );
+  fs.writeFileSync(path.join(projectDir, 'daita.json'), JSON.stringify(defaultConfig, null, 2));
   fs.writeFileSync(path.join(projectDir, 'tsconfig.json'), JSON.stringify(tsConfig, null, 2));
   fs.writeFileSync(path.join(projectDir, 'package.json'), JSON.stringify(packageJson, null, 2));
   fs.writeFileSync(path.join(projectDir, 'README.md'), '');
   if (Object.keys(dockerCompose.services).length > 0) {
     fs.writeFileSync(path.join(projectDir, 'docker-compose.yaml'), yaml.stringify(dockerCompose, { indent: 2 }));
   }
-  if (answers.npmClient === 'yarn') {
-    await runCommand('yarn', ['install'], projectDir);
-  } else if (answers.npmClient === 'npm') {
-    await runCommand('npm', ['install'], projectDir);
+
+  if (!skipInstall) {
+    if (npmClient === 'yarn') {
+      await runCommand('yarn', ['install'], projectDir);
+    } else if (npmClient === 'npm') {
+      await runCommand('npm', ['install'], projectDir);
+    }
   }
 }
 
-function getOwnPackageJson() {
-  if (fs.existsSync(path.join(__dirname, 'package.json'))) {
-    return require(path.join(__dirname, 'package.json'));
-  } else if (fs.existsSync(path.join(__dirname, '../package.json'))) {
-    return require(path.join(__dirname, '../package.json'));
-  } else {
-    throw new Error('unable to get package version');
+export function getOwnPackageJson<T>(selector: (pkg: any) => T, dir?: string): T | null {
+  const currentDir = path.join(dir || __dirname);
+  const packagePath = path.join(currentDir, 'package.json');
+
+  if (fs.existsSync(packagePath)) {
+    const packageContent = require(packagePath);
+    const value = selector(packageContent);
+    if (value !== null && value !== undefined) {
+      return value;
+    }
   }
+  const parentDir = path.resolve(currentDir, '..');
+  if (parentDir === currentDir) {
+    return null;
+  }
+  return getOwnPackageJson(selector, parentDir);
 }
 
 function runCommand(cmd: string, args: string[], cwd: string) {

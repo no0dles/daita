@@ -6,29 +6,29 @@ import { createAuthApp } from './app';
 import { authSchema } from './schema';
 import { createDefaultUserPool } from '../../testing/auth-test';
 import { field } from '../relational/sql/keyword/field/field';
-import { migrate } from '../orm/migration/migrate';
 import { all } from '../relational/sql/keyword/all/all';
 import { table } from '../relational/sql/keyword/table/table';
 import { notEqual } from '../relational/sql/operands/comparison/not-equal/not-equal';
-import { MigrationClient } from '../relational/client/migration-client';
 import { getPostgresDb, PostgresDb } from '../../testing/postgres-test';
-import { getClient } from '../relational/client/get-client';
 import { adapter } from '../pg-adapter';
+import { getContext } from '../orm';
+import { MigrationContext } from '../orm/context/get-migration-context';
 
 describe('app', () => {
   let app: Express;
-  let client: MigrationClient<any>;
+  let ctx: MigrationContext<any>;
   let postgresDb: PostgresDb;
 
   beforeAll(async () => {
     postgresDb = await getPostgresDb();
-    client = getClient(adapter, {
+    ctx = getContext(adapter, {
+      schema: authSchema,
       connectionString: postgresDb.connectionString,
       createIfNotExists: true,
     });
-    app = createAuthApp(client);
-    await migrate(client, authSchema);
-    await createDefaultUserPool(client);
+    app = createAuthApp(ctx);
+    await ctx.migrate();
+    await createDefaultUserPool(ctx);
   });
 
   it('should register', (done) => {
@@ -64,7 +64,7 @@ describe('app', () => {
   });
 
   it('should refresh', async (done) => {
-    const token = await client.selectFirst({
+    const token = await ctx.selectFirst({
       select: all(UserRefreshToken),
       from: table(UserRefreshToken),
     });
@@ -100,7 +100,7 @@ describe('app', () => {
     });
 
     it('should resend', async (done) => {
-      const firstVerify = await client.selectFirst({
+      const firstVerify = await ctx.selectFirst({
         select: all(UserEmailVerify),
         from: table(UserEmailVerify),
       });
@@ -114,7 +114,7 @@ describe('app', () => {
             return done(err);
           }
 
-          const secondVerify = await client.selectFirst({
+          const secondVerify = await ctx.selectFirst({
             select: all(UserEmailVerify),
             from: table(UserEmailVerify),
             where: notEqual(field(UserEmailVerify, 'code'), firstVerify.code),
@@ -147,7 +147,7 @@ describe('app', () => {
   });
 
   it('should verify', async (done) => {
-    const verify = await client.selectFirst({
+    const verify = await ctx.selectFirst({
       select: all(UserEmailVerify),
       from: table(UserEmailVerify),
     });

@@ -26,6 +26,10 @@ import { RelationalDataAdapter } from '../adapter/relational-data-adapter';
 export class RelationalClient implements SelectClient, UpdateClient, DeleteClient, InsertClient, Client<any> {
   constructor(public dataAdapter: RelationalDataAdapter<any>) {}
 
+  close() {
+    return this.dataAdapter.close();
+  }
+
   async selectFirst<T>(sql: SelectSql<T>): Promise<T> {
     const clonedSql = deepClone(sql);
     clonedSql.limit = 1;

@@ -5,9 +5,8 @@ import * as bodyParser from 'body-parser';
 import { jwtAuth } from './middleswares/jwt-auth.middleware';
 import { errorMiddleware } from './middleswares/error.middleware';
 import { tokenAuth } from './middleswares/token-auth.middleware';
-import { TransactionClient } from '../relational/client/transaction-client';
 import { AppOptions } from '../http-server-common/app-options';
-import { Client } from '../relational/client/client';
+import { Context, TransactionContext } from '../orm';
 
 declare global {
   namespace Express {
@@ -23,7 +22,7 @@ declare global {
   }
 }
 
-export function createHttpServerApp(client: TransactionClient<any> | Client<any>, options: AppOptions) {
+export function createHttpServerApp(client: TransactionContext<any> | Context<any>, options: AppOptions) {
   const app = express();
 
   if (options.cors === true) {

@@ -1,7 +1,6 @@
 import { MigrationDescription } from './migration-description';
 import { getSchemaDescription } from '../schema/relational-schema-description';
 import { SchemaMapper } from '../schema/description/schema-mapper';
-import { BackwardCompatibleMapper } from '../schema/description/backward-compatible-mapper';
 import { NormalMapper } from '../schema/description/normal-mapper';
 
 export class MigrationTree {
@@ -95,16 +94,16 @@ export class MigrationTree {
     }
   }
 
-  getSchemaDescription(options: { backwardCompatible: boolean }) {
-    if (options.backwardCompatible) {
-      return getSchemaDescription(
-        this.name,
-        new SchemaMapper(() => new BackwardCompatibleMapper()),
-        this.defaultPath(),
-      );
-    } else {
-      return getSchemaDescription(this.name, new SchemaMapper(() => new NormalMapper()), this.defaultPath());
-    }
+  getSchemaDescription() {
+    // if (options.backwardCompatible) {
+    //   return getSchemaDescription(
+    //     this.name,
+    //     new SchemaMapper(() => new BackwardCompatibleMapper()),
+    //     this.defaultPath(),
+    //   );
+    // } else {
+    // }
+    return getSchemaDescription(this.name, new SchemaMapper(() => new NormalMapper()), this.defaultPath());
   }
 
   path(id: string) {

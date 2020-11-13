@@ -1,6 +1,7 @@
 import { table } from '../../../keyword/table/table';
 import { field } from '../../../keyword/field/field';
-import { ClientTestContext, dataClients } from '../../../../../../testing/relational/adapter-test';
+import { dataClients } from '../../../../../../testing/relational/adapters';
+import { ClientTestContext } from '../../../../../../testing/relational/adapter/client-test-context';
 
 describe('relational/sql/ddl/alter-table/add-column', () => {
   describe.each(dataClients)('%s', (ctxFactory) => {
@@ -13,7 +14,7 @@ describe('relational/sql/ddl/alter-table/add-column', () => {
     }
 
     beforeAll(async () => {
-      ctx = await ctxFactory.clientContext();
+      ctx = await ctxFactory.getClient();
     });
 
     afterAll(() => ctx.close());

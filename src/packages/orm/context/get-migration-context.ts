@@ -1,33 +1,16 @@
-import { OrmMigrationContext } from './orm-migration-context';
-import { isMigrationTree, MigrationTree } from '../migration/migration-tree';
-import { OrmRelationalSchema } from '../schema/orm-relational-schema';
-import { InsertSql } from '../../relational/sql/dml/insert/insert-sql';
-import { MigrationClient } from '../../relational/client/migration-client';
+import { TransactionContext } from './transaction-context';
+import { Context } from './context';
 
 export interface MigrationContextUpdateOptions {
   targetMigration?: string;
 }
 
-export interface MigrationContext {
-  needsUpdate(options?: MigrationContextUpdateOptions): Promise<boolean>;
-  update(options?: MigrationContextUpdateOptions): Promise<void>;
+export interface MigrationContext<T> extends TransactionContext<T> {
+  needsMigration(options?: MigrationContextUpdateOptions): Promise<boolean>;
+  migrate(options?: MigrationContextUpdateOptions): Promise<void>;
 }
 
-export function getMigrationContext<TQuery extends InsertSql<any>, TOptions>(
-  schema: OrmRelationalSchema,
-  migrationClient: MigrationClient<TQuery>,
-): MigrationContext;
-export function getMigrationContext<TQuery extends InsertSql<any>, TOptions>(
-  migrations: MigrationTree,
-  migrationClient: MigrationClient<TQuery>,
-): MigrationContext;
-export function getMigrationContext<TQuery extends InsertSql<any>, TOptions>(
-  migrations: MigrationTree | OrmRelationalSchema,
-  migrationClient: MigrationClient<TQuery>,
-): MigrationContext {
-  if (isMigrationTree(migrations)) {
-    return new OrmMigrationContext(migrationClient.migrationAdapter, migrations);
-  } else {
-    return new OrmMigrationContext(migrationClient.migrationAdapter, migrations.getMigrations());
-  }
-}
+export const isMigrationContext = (
+  val: Context<any> | TransactionContext<any> | MigrationContext<any>,
+): val is MigrationContext<any> =>
+  typeof (<any>val).migrate === 'function' && typeof (<any>val).needsMigration === 'function';

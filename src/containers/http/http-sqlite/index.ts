@@ -1,11 +1,12 @@
-import { RuleConfig, run } from '../server';
+import { run } from '../server';
 import { sqliteAdapter } from '../../../packages/sqlite-adapter/adapter/sqlite-adapter-implementation';
-import { getClient } from '../../../packages/relational/client/get-client';
+import { getContext } from '../../../packages/orm';
 
-const client = getClient(sqliteAdapter);
-const ruleContext = new RuleConfig();
+const client = getContext(sqliteAdapter, {
+  file: process.env.DATABASE_URL!,
+});
 
-run(client, ruleContext).catch((err) => {
+run(client).catch((err) => {
   console.error(err);
   process.exit(1);
 });

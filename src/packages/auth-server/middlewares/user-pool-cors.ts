@@ -4,9 +4,9 @@ import cors from 'cors';
 import { field } from '../../relational/sql/keyword/field/field';
 import { table } from '../../relational/sql/keyword/table/table';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
-import { Client } from '../../relational/client/client';
+import { Context } from '../../orm';
 
-export function userPoolCors(client: Client<any>, fn: (req: express.Request) => string): express.RequestHandler<any> {
+export function userPoolCors(client: Context<any>, fn: (req: express.Request) => string): express.RequestHandler<any> {
   return cors(async (req, callback) => {
     try {
       const userPoolId = fn(req);

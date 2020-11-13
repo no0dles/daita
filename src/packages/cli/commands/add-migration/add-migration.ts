@@ -16,9 +16,7 @@ export async function addMigration(name: string, options: { cwd?: string; schema
   }
 
   const migrationTree = schemaInfo.getMigrationTree();
-  const currentSchema = migrationTree.getSchemaDescription({
-    backwardCompatible: false,
-  });
+  const currentSchema = migrationTree.getSchemaDescription();
   const lastMigration = migrationTree.last()[0];
 
   const steps = generateRelationalMigrationSteps(currentSchema, schemaInfo.getRelationalSchema());

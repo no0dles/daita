@@ -1,90 +1,98 @@
-import { expectedSql } from '../../../../../testing/relational/formatter.test';
 import { table } from '../../keyword/table/table';
+import { dataClients } from '../../../../../testing/relational/adapters';
+import { ClientTestContext } from '../../../../../testing/relational/adapter/client-test-context';
+import {
+  createAscentPersonTable,
+  createAscentTable,
+  createPerson,
+  createPersonTable,
+} from '../../../../../testing/schema/test-schema';
+import { Person } from '../../../../../testing/schema/person';
+import { AscentPerson } from '../../../../../testing/schema/ascent-person';
+import { Ascent } from '../../../../../testing/schema/ascent';
 
-describe('alter-table', () => {
-  it('should drop column', () => {
-    expectedSql(
-      {
-        alterTable: table('user'),
+describe('relational/sql/ddl/alter-table', () => {
+  describe.each(dataClients)('%s', (ctxFactory) => {
+    let ctx: ClientTestContext;
+
+    beforeAll(async () => {
+      ctx = await ctxFactory.getClient();
+      await createPersonTable(ctx.client);
+      await createAscentTable(ctx.client);
+      await createAscentPersonTable(ctx.client);
+    });
+
+    afterAll(() => ctx.close());
+
+    it('should drop column', async () => {
+      await ctx.client.exec({
+        alterTable: table(Person),
         drop: {
-          column: 'id',
+          column: 'firstName',
         },
-      },
-      'ALTER TABLE "user" DROP COLUMN "id"',
-    );
-  });
+      });
+    });
 
-  it('should add column', () => {
-    expectedSql(
-      {
-        alterTable: table('user'),
+    it('should add column', async () => {
+      await ctx.client.exec({
+        alterTable: table(Person),
         add: {
-          column: 'id',
-          type: 'VARCHAR',
+          column: 'firstName2',
+          type: 'string',
         },
-      },
-      'ALTER TABLE "user" ADD COLUMN "id" VARCHAR',
-    );
-  });
+      });
+    });
 
-  it('should add foreign key', () => {
-    expectedSql(
-      {
-        alterTable: table('user'),
+    it('should add foreign key', async () => {
+      await ctx.client.exec({
+        alterTable: table(AscentPerson),
         add: {
-          foreignKey: 'createdFromId',
+          foreignKey: 'personId',
           references: {
-            table: table('user'),
+            table: table(Person),
             primaryKeys: 'id',
           },
         },
-      },
-      'ALTER TABLE "user" ADD FOREIGN KEY ("createdFromId") REFERENCES "user" ("id")',
-    );
-  });
+      });
+    });
 
-  it('should add foreign key with multiple keys', () => {
-    expectedSql(
-      {
-        alterTable: table('user'),
+    it('should add foreign key with constraint name', async () => {
+      await ctx.client.exec({
+        alterTable: table(AscentPerson),
         add: {
-          foreignKey: ['createdFromId', 'secondId'],
+          foreignKey: 'ascentId',
+          constraint: 'ascent',
           references: {
-            table: table('user'),
-            primaryKeys: ['id', 'secondId'],
-          },
-        },
-      },
-      'ALTER TABLE "user" ADD FOREIGN KEY ("createdFromId", "secondId") REFERENCES "user" ("id", "secondId")',
-    );
-  });
-
-  it('should add foreign key with constraint name', () => {
-    expectedSql(
-      {
-        alterTable: table('user'),
-        add: {
-          foreignKey: 'createdFromId',
-          constraint: 'createdFrom',
-          references: {
-            table: table('user'),
+            table: table(Ascent),
             primaryKeys: 'id',
           },
         },
-      },
-      'ALTER TABLE "user" ADD CONSTRAINT "createdFrom" FOREIGN KEY ("createdFromId") REFERENCES "user" ("id")',
-    );
-  });
+      });
+    });
 
-  it('should drop constraint', () => {
-    expectedSql(
-      {
-        alterTable: table('user'),
+    it('should drop foreign key with constraint name', async () => {
+      await ctx.client.exec({
+        alterTable: table(AscentPerson),
         drop: {
-          constraint: 'foo',
+          constraint: 'ascent',
         },
-      },
-      'ALTER TABLE "user" DROP CONSTRAINT "foo"',
-    );
+      });
+    });
+
+    // it('should add foreign key with multiple keys', () => {
+    //   expectedSql(
+    //     {
+    //       alterTable: table('user'),
+    //       add: {
+    //         foreignKey: ['createdFromId', 'secondId'],
+    //         references: {
+    //           table: table('user'),
+    //           primaryKeys: ['id', 'secondId'],
+    //         },
+    //       },
+    //     },
+    //     'ALTER TABLE "user" ADD FOREIGN KEY ("createdFromId", "secondId") REFERENCES "user" ("id", "secondId")',
+    //   );
+    // });
   });
 });

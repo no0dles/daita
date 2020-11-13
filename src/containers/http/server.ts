@@ -1,14 +1,11 @@
 import * as fs from 'fs';
 import { AppAuthorization } from '../../packages/http-server-common/app-authorization';
 import { createHttpServerApp } from '../../packages/http-server/app';
-import { TransactionClient } from '../../packages/relational/client/transaction-client';
-import { Rule } from '../../packages/relational/permission/description/rule';
-import { MigrationAdapter } from '../../packages/orm/migration/migration-adapter';
+import { Context } from '../../packages/orm';
 
 const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT ? parseInt(process.env.TRANSACTION_TIMEOUT) : 4000;
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const AUTH_FILE = process.env.AUTH_FILE || 'auth.json';
-const RULES_FILE = process.env.RULES_FILE || 'rules.json';
 
 console.log(`TRANSACTION_TIMEOUT=${TRANSACTION_TIMEOUT}`);
 console.log(`PORT=${PORT}`);
@@ -29,40 +26,6 @@ if (fs.existsSync(AUTH_FILE)) {
   }
 }
 
-export class RuleConfig {
-  private readonly baseRulesCount: number = 0;
-
-  rules: Rule[] = [];
-
-  constructor(private migrationAdapter?: MigrationAdapter<any>) {
-    if (fs.existsSync(RULES_FILE)) {
-      const content = fs.readFileSync(RULES_FILE, { encoding: 'utf8' });
-      try {
-        const parsedRules = JSON.parse(content);
-        this.rules.push(...parsedRules);
-        this.baseRulesCount = parsedRules.length;
-      } catch (e) {
-        console.error('error parsing rules');
-        console.error(e);
-        process.exit(1);
-      }
-    }
-    this.reload();
-  }
-
-  async reload() {
-    if (!this.migrationAdapter) {
-      return;
-    }
-
-    const dbRules = await this.migrationAdapter.getRules();
-    if (this.rules.length > this.baseRulesCount) {
-      this.rules.splice(this.baseRulesCount, this.rules.length - this.baseRulesCount);
-    }
-    this.rules.push(...dbRules);
-  }
-}
-
 process
   .on('unhandledRejection', (reason, p) => {
     console.error(reason, 'Unhandled Rejection at Promise', p);
@@ -72,13 +35,12 @@ process
     process.exit(1);
   });
 
-export async function run(client: TransactionClient<any>, ruleConfig: RuleConfig) {
+export async function run(client: Context<any>) {
   console.log(authentication);
 
   const app = createHttpServerApp(client, {
     transactionTimeout: TRANSACTION_TIMEOUT,
     authorization: authentication,
-    rules: ruleConfig.rules,
     cors: true, //TODO make it configurable
   });
 

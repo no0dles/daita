@@ -1,19 +1,31 @@
-import { MigrationContext, MigrationContextUpdateOptions } from './get-migration-context';
+import { RelationalTransactionContext } from './relational-transaction-context';
+import { MigrationDirection, RelationalMigrationAdapter } from '../adapter/relational-migration-adapter';
+import { Client, RelationalTransactionAdapter } from '../../relational';
 import { MigrationTree } from '../migration/migration-tree';
-import { Client } from '../../relational/client/client';
-import { MigrationAdapter, MigrationDirection } from '../migration/migration-adapter';
-import { Defer } from '../../common/utils/defer';
+import { MigrationContext, MigrationContextUpdateOptions } from './get-migration-context';
 import { MigrationDescription } from '../migration/migration-description';
+import { Defer } from '../../common';
+import { RuleContext } from '../../relational/permission/description/rule-context';
 
-export class OrmMigrationContext implements MigrationContext {
-  constructor(private adpater: MigrationAdapter<any>, private migrationTree: MigrationTree) {}
+export class RelationalMigrationContext extends RelationalTransactionContext implements MigrationContext<any> {
+  constructor(
+    private migrationAdapter: RelationalMigrationAdapter<any> & RelationalTransactionAdapter<any>,
+    migrationTree: MigrationTree,
+    auth: RuleContext,
+  ) {
+    super(migrationAdapter, migrationTree, auth);
+  }
 
-  async needsUpdate(options?: MigrationContextUpdateOptions): Promise<boolean> {
+  authorize(auth: RuleContext): RelationalTransactionContext {
+    return new RelationalMigrationContext(this.migrationAdapter, this.migrationTree, auth);
+  }
+
+  async needsMigration(options?: MigrationContextUpdateOptions): Promise<boolean> {
     const updates = await this.pendingMigrations(options);
     return updates.length > 0;
   }
 
-  async pendingMigrations(
+  private async pendingMigrations(
     options?: MigrationContextUpdateOptions,
   ): Promise<{ migration: MigrationDescription; direction: MigrationDirection }[]> {
     return this.run((client) => {
@@ -21,11 +33,16 @@ export class OrmMigrationContext implements MigrationContext {
     });
   }
 
-  async update(options?: MigrationContextUpdateOptions): Promise<void> {
+  async migrate(options?: MigrationContextUpdateOptions): Promise<void> {
     await this.run(async (client) => {
       const pendingMigrations = await this.getPendingMigrations(client, options);
       for (const migration of pendingMigrations) {
-        await this.adpater.applyMigration(client, this.migrationTree.name, migration.migration, migration.direction);
+        await this.migrationAdapter.applyMigration(
+          client,
+          this.migrationTree.name,
+          migration.migration,
+          migration.direction,
+        );
       }
     });
   }
@@ -34,7 +51,7 @@ export class OrmMigrationContext implements MigrationContext {
     client: Client<any>,
     options?: MigrationContextUpdateOptions,
   ): Promise<{ migration: MigrationDescription; direction: MigrationDirection }[]> {
-    const appliedMigrations = await this.adpater.getAppliedMigrations(client, this.migrationTree.name);
+    const appliedMigrations = await this.migrationAdapter.getAppliedMigrations(client, this.migrationTree.name);
 
     let currentMigrations = this.migrationTree.roots();
 
@@ -82,7 +99,7 @@ export class OrmMigrationContext implements MigrationContext {
   private async run<T>(fn: (client: Client<any>) => Promise<T>): Promise<T> {
     const defer = new Defer<void>();
     try {
-      const client = await this.adpater.getClient(defer.promise);
+      const client = await this.migrationAdapter.getClient(defer.promise);
       const result = await fn(client);
       defer.resolve();
       return result;
@@ -90,9 +107,5 @@ export class OrmMigrationContext implements MigrationContext {
       defer.reject(e);
       throw e;
     }
-  }
-
-  async close(): Promise<void> {
-    await this.adpater.close();
   }
 }

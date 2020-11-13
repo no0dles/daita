@@ -37,7 +37,7 @@ export function isPortInUse(port: number) {
   return defer.promise;
 }
 
-async function pullImage(docker: Docker, imageName: string) {
+export async function pullImage(docker: Docker, imageName: string) {
   const image = await docker.pull(imageName);
   const pullDefer = new Defer<any>();
   docker.modem.followProgress(image, (err: any, res: any) => (err ? pullDefer.reject(err) : pullDefer.resolve(res)));
@@ -49,13 +49,10 @@ export interface PostgresDb {
   close(): Promise<void>;
 }
 
-function waitForPort(port: number) {
+export function waitForPort(port: number) {
   const defer = new Defer<void>();
   const client = net.createConnection({ port }, () => {
     console.log('port is open');
-  });
-  client.on('data', (data) => {
-    console.log(data.toString());
     defer.resolve();
     client.end();
   });

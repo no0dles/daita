@@ -1,3 +1,3 @@
 import { buildNpmPackages } from './npm';
 
-buildNpmPackages();
+buildNpmPackages({});

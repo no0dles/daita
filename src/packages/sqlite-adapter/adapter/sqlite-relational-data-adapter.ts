@@ -5,8 +5,9 @@ import { RelationalRawResult } from '../../relational/adapter/relational-raw-res
 import { SqliteFormatContext } from '../formatter/sqlite-format-context';
 import { sqliteFormatter } from '../formatter/sqlite-formatter';
 import { Serializable } from './serializable';
+import { SqliteSql } from '../sql/sqlite-sql';
 
-export class SqliteRelationalDataAdapter implements RelationalDataAdapter {
+export class SqliteRelationalDataAdapter implements RelationalDataAdapter<SqliteSql> {
   protected transactionSerializable = new Serializable();
   protected runSerializable = new Serializable();
 

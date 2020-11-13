@@ -9,8 +9,16 @@ import { Mountain } from './mountain';
 import { Ascent } from './ascent';
 import { AscentPerson } from './ascent-person';
 import { Constructable } from '../../packages/common/types/constructable';
+import { RelationalSchema } from '../../packages/orm';
 
 type CreateTestSchemaSql = CreateTableSql;
+
+export const testSchema = new RelationalSchema('test-schema');
+testSchema.table(Ascent);
+testSchema.table(AscentPerson, { key: ['ascentId', 'personId'] });
+testSchema.table(Canton, { key: ['shortname'] });
+testSchema.table(Mountain);
+testSchema.table(Person);
 
 export async function createTestSchema(client: Client<CreateTestSchemaSql>) {
   await createPersonTable(client);

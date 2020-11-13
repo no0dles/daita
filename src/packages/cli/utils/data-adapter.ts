@@ -3,15 +3,16 @@ import { HttpAdapterOptions } from '../../http-adapter/adapter-implementation';
 import { SqliteAdapterOptions } from '../../sqlite-adapter/adapter/sqlite-adapter-implementation';
 import { PostgresAdapterOptions } from '../../pg-adapter/adapter/adapter';
 import { AppAuthorization } from '../../http-server-common/app-authorization';
-import { TransactionClient } from '../../relational/client/transaction-client';
-import { RelationalAdapterImplementation } from '../../relational/adapter/relational-adapter-implementation';
-import { getClient } from '../../relational/client/get-client';
 import path from 'path';
-import { getMigrationContext, MigrationContext } from '../../orm/context/get-migration-context';
+import { Context, getContext, TransactionContext } from '../../orm';
+import { MigrationContext } from '../../orm/context/get-migration-context';
+import {
+  RelationalDataAdapterImplementation,
+  RelationalTransactionAdapterImplementation,
+} from '../../relational/adapter/relational-adapter-implementation';
+import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
+import { SchemaInformation } from './path';
 import { MigrationTree } from '../../orm/migration/migration-tree';
-import { MigrationAdapterImplementation } from '../../orm/migration/migration-adapter-implementation';
-import { MigrationClient } from '../../relational/client/migration-client';
-import { isMigrationClient, RelationalMigrationClient } from '../../relational/client/relational-transaction-client';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;
 
@@ -40,19 +41,13 @@ export interface DaitaPostgresContextConfig extends BaseContextConfig {
   authorization: AppAuthorization;
 }
 
-export function getMigrationContextFromConfig(migrationTree: MigrationTree, options: any): MigrationContext {
-  const client = getClientFromConfig(options);
-  if (isMigrationClient(client)) {
-    return getMigrationContext(migrationTree, client);
-  }
-  throw new Error('adapter does not support migrations');
-}
-
 function getAdapterImpl<T>(
   options: any,
   contextConfig: DaitaContextConfig,
   defaultModule: string,
-): RelationalAdapterImplementation<any, any> & MigrationAdapterImplementation<any, any> {
+): RelationalTransactionAdapterImplementation<any, any> &
+  RelationalMigrationAdapterImplementation<any, any> &
+  RelationalDataAdapterImplementation<any, any> {
   const cwd = path.join(options?.cwd || process.cwd());
   if (contextConfig.module) {
     return require(path.join(cwd, contextConfig.module)).adapter;
@@ -106,12 +101,16 @@ function getAdapter(options: any, contextConfig: DaitaContextConfig) {
   }
 }
 
-export function getClientFromConfig(options: any): TransactionClient<any> | MigrationClient<any> {
+export function getContextFromConfig(
+  options: any,
+  migrationTree: MigrationTree,
+): TransactionContext<any> | MigrationContext<any> | Context<any> {
   const contextConfig = getProjectConfig(options);
   if (!contextConfig.connectionString) {
     throw new Error('missing connection string');
   }
 
   const adapter = getAdapter(options, contextConfig);
-  return getClient(adapter.adapter, adapter.options);
+
+  return getContext(adapter.adapter, { ...adapter.options, migrationTree });
 }

@@ -2,7 +2,6 @@ import { allow } from './allow';
 import { authorized } from './authorized';
 import { allowRegex } from './allow-regex';
 import { evaluateRule } from '../validate';
-import { update } from '../../sql/dml/update/update';
 import { table } from '../../sql/keyword/table/table';
 import { RuleContext } from '../description/rule-context';
 
@@ -13,25 +12,22 @@ describe('allow-regex', () => {
     password!: string;
   }
 
-  const rule = allow(
-    authorized(),
-    update({
-      update: table(User),
-      set: {
-        username: allowRegex(/[a-z]+/),
-      },
-    }),
-  );
+  const rule = allow(authorized(), {
+    update: table(User),
+    set: {
+      username: allowRegex(/[a-z]+/),
+    },
+  });
   const ctx: RuleContext = { isAuthorized: true };
 
   it('should allow when regex matches', () => {
     const result = evaluateRule(
-      update({
+      {
         update: table(User),
         set: {
           username: 'abc',
         },
-      }),
+      },
       rule,
       ctx,
     );
@@ -42,12 +38,12 @@ describe('allow-regex', () => {
 
   it('should forbid when regex does not matches', () => {
     const result = evaluateRule(
-      update({
+      {
         update: table(User),
         set: {
           username: '0123',
         },
-      }),
+      },
       rule,
       ctx,
     );

@@ -1,12 +1,13 @@
-import { ClientTestContext, dataClients } from '../../../../../../testing/relational/adapter-test';
+import { dataClients } from '../../../../../../testing/relational/adapters';
 import { now } from './now';
+import { ClientTestContext } from '../../../../../../testing/relational/adapter/client-test-context';
 
 describe('relational/sql/function/date/now', () => {
   describe.each(dataClients)('%s', (ctxFactory) => {
     let ctx: ClientTestContext;
 
     beforeAll(async () => {
-      ctx = await ctxFactory.clientContext();
+      ctx = await ctxFactory.getClient();
     });
 
     afterAll(() => ctx.close());

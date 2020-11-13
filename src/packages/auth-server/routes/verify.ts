@@ -8,14 +8,14 @@ import { table } from '../../relational/sql/keyword/table/table';
 import { join } from '../../relational/sql/dml/select/join/join';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { isNull } from '../../relational/sql/operands/comparison/is-null/is-null';
-import { TransactionClient } from '../../relational/client/transaction-client';
+import { TransactionContext } from '../../orm';
 
-export function verifyRoute(client: TransactionClient<any>) {
+export function verifyRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
 
   router.get('/', async (req, res, next) => {
     try {
-      const verify = await client.selectFirst({
+      const verify = await ctx.selectFirst({
         select: {
           username: field(UserEmailVerify, 'userUsername'),
           issuedAt: field(UserEmailVerify, 'issuedAt'),
@@ -34,7 +34,7 @@ export function verifyRoute(client: TransactionClient<any>) {
         return res.status(400).json({ message: 'invalid code' });
       }
 
-      await client.transaction(async (trx) => {
+      await ctx.transaction(async (trx) => {
         await trx.update({
           update: table(UserEmailVerify),
           set: {

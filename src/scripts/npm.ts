@@ -1,48 +1,97 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import { shell } from './shell';
+import { copyDir } from './file';
+import { checkExportedUsage, getDaitaUsage, MissingExport, updatePaths, UsageInfo } from './javascript';
 
-const packageJson = require(path.join(__dirname, '../../package.json'));
-const rootPackageJson = require(path.join(__dirname, '../../package.json'));
+function parseJsonFile(fileName: string) {
+  return JSON.parse(fs.readFileSync(fileName).toString());
+}
 
-export function copyReadme(packageDir: string, packageName: string) {
-  const source = path.join(__dirname, '../packages', packageName, 'README.md');
-  const target = path.join(packageDir, 'README.md');
+const packageJson = parseJsonFile(path.join(__dirname, '../../package.json'));
+const rootPackageJson = parseJsonFile(path.join(__dirname, '../../package.json'));
+
+export function copyReadme(pkg: PackageInfo) {
+  const source = path.join(pkg.srcPath, 'README.md');
+  const target = path.join(pkg.path, 'README.md');
   if (fs.existsSync(source)) {
     fs.copyFileSync(source, target);
   } else {
-    fs.writeFileSync(target, `# @daita/${packageName}`);
+    fs.writeFileSync(target, `# @daita/${pkg.name}`);
   }
 }
 
-export function createNpmIgnore(packageDir: string) {
-  const target = path.join(packageDir, '.npmignore');
+export function createNpmIgnore(pkg: PackageInfo) {
+  const target = path.join(pkg.path, '.npmignore');
   fs.writeFileSync(
     target,
     ['*.tar', '**/*.spec.js', '**/*.spec.d.ts', '**/*.test.js', '**/*.test.d.ts'].join('\n') + '\n',
   );
 }
 
-export function* getNpmPackages() {
+export function getOrderedNpmPackages(): PackageInfo[] {
+  const packages = Array.from(getNpmPackages());
+  const usages: { [key: string]: UsageInfo } = {};
+  const values: { [key: string]: number } = {};
+  for (const pkg of packages) {
+    usages[pkg.name] = getDaitaUsage(pkg.path);
+  }
+  function getChildCount(pkgName: string, pkgs: Set<string>) {
+    let value = 0;
+    for (const dep of Object.keys(usages[pkgName])) {
+      if (pkgs.has(dep)) {
+        throw new Error('loop detected');
+      }
+      pkgs.add(dep);
+      value++;
+      value += getChildCount(dep, new Set(pkgs));
+    }
+    return value;
+  }
+  for (const pkg of packages) {
+    values[pkg.name] = getChildCount(pkg.name, new Set<string>());
+  }
+  console.log(values);
+  return packages.sort((first, second) => {
+    return values[first.name] - values[second.name];
+  });
+}
+
+export function* getNpmPackages(): Iterable<PackageInfo> {
   const packagesDir = path.join(__dirname, '../../dist/packages');
 
   for (const packageName of fs.readdirSync(packagesDir)) {
-    if (!fs.existsSync(path.join(packagesDir, packageName, 'index.js'))) {
-      continue;
-    }
-    yield { path: path.join(packagesDir, packageName), name: packageName };
+    yield {
+      path: path.join(packagesDir, packageName),
+      name: packageName,
+      srcPath: path.join(process.cwd(), 'src/packages', packageName),
+      esmPath: path.join(packagesDir, '../esm/packages', packageName),
+    };
   }
 }
 
-export function createPackageJson(packageDir: string, packageName: string, packages: Set<string>) {
-  const fileName = path.join(packageDir, 'package.json');
+export interface PackageInfo {
+  path: string;
+  name: string;
+  srcPath: string;
+  esmPath: string;
+}
+
+interface PublishConfig {
+  registry?: string;
+  version?: string;
+}
+
+export function createPackageJson(pkg: PackageInfo, packages: Set<string>, options: PublishConfig) {
+  const fileName = path.join(pkg.path, 'package.json');
   const content: any = {
-    name: `@daita/${packageName}`,
-    version: rootPackageJson.version,
+    name: `@daita/${pkg.name}`,
+    version: options.version || rootPackageJson.version,
     license: 'MIT',
     homepage: 'https://daita.ch',
     publishConfig: {
       access: 'public',
+      registry: options.registry,
     },
     repository: {
       type: 'git',
@@ -57,23 +106,28 @@ export function createPackageJson(packageDir: string, packageName: string, packa
     dependencies: {},
   };
 
-  if (packageName === 'cli') {
-    content.bin = {
-      daita: 'index.js',
-    };
-  } else if (fs.existsSync(path.join(packageDir, 'esm/browser.js'))) {
+  if (fs.existsSync(path.join(pkg.path, 'esm/browser.js'))) {
     content.browser = 'esm/browser.js';
   }
+
+  const sourcePackageJson = path.join(pkg.srcPath, 'package.json');
+  if (fs.existsSync(sourcePackageJson)) {
+    const sourcePackageJsonContent = JSON.parse(fs.readFileSync(sourcePackageJson).toString());
+    for (const key of Object.keys(sourcePackageJsonContent)) {
+      content[key] = sourcePackageJsonContent[key];
+    }
+  }
+
   const blacklist = require('module').builtinModules;
-  for (const dep of packages) {
+  for (const dep of Array.from(packages).sort()) {
     if (dep.startsWith('@daita/')) {
-      if (!fs.existsSync(path.join(packageDir, '..', dep.substr('@daita/'.length)))) {
+      if (!fs.existsSync(path.join(pkg.path, '..', dep.substr('@daita/'.length)))) {
         throw new Error(`invalid daita dependency ${dep}`);
       }
-      content.dependencies[dep] = `^${rootPackageJson.version}`;
+      content.dependencies[dep] = `^${options.version || rootPackageJson.version}`;
     } else if (blacklist.indexOf(dep) === -1) {
       if (!rootPackageJson.dependencies[dep]) {
-        throw new Error(`could not find ${dep} in ${packageName}`);
+        throw new Error(`could not find ${dep} in ${pkg.name}`);
       }
       content.dependencies[dep] = rootPackageJson.dependencies[dep];
     }
@@ -108,103 +162,46 @@ export function scanDependencies(file: string, dependencies: Set<string>, files:
   });
 }
 
-export function updatePaths(packages: Set<string>, root: string, directory: string) {
-  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
-    if (entry.isFile()) {
-      updatePath(packages, root, path.join(directory, entry.name));
-    } else {
-      updatePaths(packages, root, path.join(directory, entry.name));
-    }
-  }
-}
-
-export function updatePath(packages: Set<string>, root: string, file: string) {
-  if (!file.endsWith('.js') || file.endsWith('.spec.js') || file.endsWith('.test.js')) {
-    return;
-  }
-
-  const content = fs.readFileSync(file).toString();
-  const regex = /require\([\"'](?<import>[\.\/\-@\w]+)[\"']\)/g;
-  let result = content.replace(regex, (substring: string, importPath: string) => {
-    if (importPath.startsWith('.')) {
-      const fullImportPath = path.join(path.dirname(file), importPath); //TODO verify if export exists
-      const relativeImportPath = path.relative(root, fullImportPath);
-      if (relativeImportPath.startsWith('..')) {
-        const packageName = relativeImportPath.split(path.sep)[1];
-        packages.add(`@daita/${packageName}`);
-        return `require("@daita/${packageName}")`;
-      }
-      return substring;
-    } else {
-      packages.add(importPath);
-      return substring;
-    }
-  });
-
-  const esRegex = / from '(?<import>[\.\/\-@\w]+)'/g;
-  result = result.replace(esRegex, (substring: string, importPath: string) => {
-    if (importPath.startsWith('.')) {
-      const fullImportPath = path.join(path.dirname(file), importPath); //TODO verify if export exists
-      const relativeImportPath = path.relative(root, fullImportPath);
-      if (relativeImportPath.startsWith('..')) {
-        const packageName = relativeImportPath.split(path.sep)[1];
-        packages.add(`@daita/${packageName}`);
-        return ` from '@daita/${packageName}'`;
-      }
-      return substring;
-    } else {
-      packages.add(importPath);
-      return substring;
-    }
-  });
-
-  fs.writeFileSync(file, result);
-}
-
-export async function buildNpmPackages() {
-  await shell('node_modules/.bin/tsc', [], path.join(__dirname, '../..'));
-  await shell('node_modules/.bin/tsc', ['-p', 'tsconfig-esm.json'], path.join(__dirname, '../..'));
+export async function buildNpmPackages(options: PublishConfig) {
+  await shell('node_modules/.bin/tsc', [], process.cwd());
+  await shell('node_modules/.bin/tsc', ['-p', 'tsconfig-esm.json'], process.cwd());
 
   for (const pkg of getNpmPackages()) {
     const packages = new Set<string>();
-    const esmPath = path.join(pkg.path, '../../esm/packages', pkg.name);
-    updatePaths(packages, esmPath, esmPath);
-    createIndex();
-    copyDir(esmPath, path.join(pkg.path, 'esm'));
+    updatePaths(packages, pkg.esmPath, pkg.esmPath);
+    copyDir(pkg.esmPath, path.join(pkg.path, 'esm'));
     updatePaths(packages, pkg.path, pkg.path);
-    createPackageJson(pkg.path, pkg.name, packages);
-    copyReadme(pkg.path, pkg.name);
-    copyJson(pkg.path, pkg.name);
-    createNpmIgnore(pkg.path);
+    copyJson(pkg);
+    createPackageJson(pkg, packages, options);
+    copyReadme(pkg);
+    createNpmIgnore(pkg);
   }
-}
 
-function createIndex() {}
-
-function copyJson(packageDir: string, packageName: string) {
-  const sourceDir = path.join(process.cwd(), 'src/packages', packageName);
-  copyDir(sourceDir, packageDir, (file) => file.name.endsWith('.json'));
-}
-
-function copyDir(from: string, to: string, filter?: (file: fs.Dirent) => boolean) {
-  if (!fs.existsSync(to)) {
-    fs.mkdirSync(to);
+  const missingExports: MissingExport[] = [];
+  for (const pkg of getNpmPackages()) {
+    missingExports.push(...checkExportedUsage(pkg));
   }
-  for (const file of fs.readdirSync(from, { withFileTypes: true })) {
-    if (file.isFile()) {
-      if (!filter || filter(file)) {
-        fs.copyFileSync(path.join(from, file.name), path.join(to, file.name));
-      }
-    } else {
-      copyDir(path.join(from, file.name), path.join(to, file.name), filter);
+  for (const missingExport of missingExports) {
+    for (const exportName of missingExport.exports) {
+      console.error(
+        `package ${missingExport.sourcePackage} requires ${missingExport.targetPackage} to export ${exportName}`,
+      );
     }
   }
+  if (missingExports.length > 0) {
+    process.exit(1);
+    return;
+  }
 }
 
-export async function publishNpmPackages() {
-  await buildNpmPackages();
+function copyJson(pkg: PackageInfo) {
+  copyDir(pkg.srcPath, pkg.path, { selector: (file) => file.isFile && file.fileName.endsWith('.json') });
+}
 
-  for (const pkg of getNpmPackages()) {
+export async function publishNpmPackages(options: PublishConfig) {
+  await buildNpmPackages(options);
+
+  for (const pkg of getOrderedNpmPackages()) {
     await shell('npm', ['publish'], pkg.path);
   }
 }

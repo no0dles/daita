@@ -1,5 +1,5 @@
 import { PoolClient, QueryResult } from 'pg';
-import { postgresFormatter } from './postgres-formatter';
+import { postgresFormatter } from '../formatters/postgres-formatter';
 import { PostgresFormatContext } from './postgres-format-context';
 import { DuplicateKeyError, RelationDoesNotExistsError, UnknownError } from '../../relational/error/relational-error';
 import { RelationalRawResult } from '../../relational/adapter/relational-raw-result';

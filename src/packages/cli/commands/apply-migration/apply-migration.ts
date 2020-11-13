@@ -1,6 +1,7 @@
 import { AstContext } from '../../ast/ast-context';
 import { getSchemaInformation, getSchemaLocation } from '../../utils/path';
-import { getMigrationContextFromConfig } from '../../utils/data-adapter';
+import { getContextFromConfig } from '../../utils/data-adapter';
+import { isMigrationContext } from '../../../orm/context/get-migration-context';
 
 export async function applyMigration(options: { cwd?: string; schema?: string; context?: string; migration?: string }) {
   const astContext = new AstContext();
@@ -11,13 +12,15 @@ export async function applyMigration(options: { cwd?: string; schema?: string; c
     return;
   }
 
-  const migrationTree = schemaInfo.getMigrationTree();
-
-  const context = await getMigrationContextFromConfig(migrationTree, options);
+  const context = await getContextFromConfig(options, schemaInfo.getMigrationTree());
   if (!context) {
     console.error('could not create migration context');
     return;
   }
 
-  await context.update({ targetMigration: options?.migration });
+  if (!isMigrationContext(context)) {
+    throw new Error('adpater does not support migrations');
+  }
+
+  await context.migrate({ targetMigration: options?.migration });
 }

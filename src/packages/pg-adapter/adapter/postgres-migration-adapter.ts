@@ -1,4 +1,4 @@
-import { MigrationAdapter, MigrationDirection } from '../../orm/migration/migration-adapter';
+import { RelationalMigrationAdapter, MigrationDirection } from '../../orm/adapter/relational-migration-adapter';
 import { PostgresSql } from '../sql/postgres-sql';
 import { MigrationDescription } from '../../orm/migration/migration-description';
 import { field } from '../../relational/sql/keyword/field/field';
@@ -9,7 +9,6 @@ import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { asc } from '../../relational/sql/keyword/asc/asc';
 import { Client } from '../../relational/client/client';
 import { parseRule, serializeRule } from '../../relational/permission/parsing';
-import { Rule } from '../../relational/permission/description/rule';
 import { CreateTableSql } from '../../relational/sql/ddl/create-table/create-table-sql';
 import { getTableDescriptionIdentifier } from '../../orm/schema/description/relational-schema-description';
 import { failNever } from '../../common/utils/fail-never';
@@ -19,6 +18,9 @@ import { TransactionClient } from '../../relational/client/transaction-client';
 import { Defer } from '../../common/utils/defer';
 import { RelationalAddTableFieldMigrationStep } from '../../orm/migration/steps/relational-add-table-field.migration-step';
 import { MigrationStep } from '../../orm/migration/migration-step';
+import { PostgresAdapter } from './postgres.adapter';
+import { Pool } from 'pg';
+import { RelationalTransactionClient } from '../../relational/client/relational-transaction-client';
 
 class Migrations {
   static schema = 'daita';
@@ -46,10 +48,14 @@ class Rules {
   rule!: string;
 }
 
-export class PostgresMigrationAdapter implements MigrationAdapter<PostgresSql> {
+export class PostgresMigrationAdapter extends PostgresAdapter implements RelationalMigrationAdapter<PostgresSql> {
   private initalizedSchema = false;
+  private client: TransactionClient<PostgresSql>;
 
-  constructor(private client: TransactionClient<PostgresSql>) {}
+  constructor(poolOrUrl: string | Promise<Pool> | Pool, options: { listenForNotifications: boolean }) {
+    super(poolOrUrl, options);
+    this.client = new RelationalTransactionClient(this);
+  }
 
   getClient(handle: Promise<void>): Promise<Client<PostgresSql>> {
     const defer = new Defer<Client<PostgresSql>>();
@@ -63,20 +69,20 @@ export class PostgresMigrationAdapter implements MigrationAdapter<PostgresSql> {
     return defer.promise;
   }
 
-  async getRules(): Promise<Rule[]> {
-    await this.client.transaction(async (trx) => {
-      await this.updateInternalSchema(trx);
-    });
-
-    const rules = await this.client.select({
-      select: {
-        id: field(Rules, 'id'),
-        rule: field(Rules, 'rule'),
-      },
-      from: table(Rules),
-    });
-    return rules.map((rule) => parseRule(rule.rule));
-  }
+  // async getRules(): Promise<Rule[]> {
+  //   await this.client.transaction(async (trx) => {
+  //     await this.updateInternalSchema(trx);
+  //   });
+  //
+  //   const rules = await this.client.select({
+  //     select: {
+  //       id: field(Rules, 'id'),
+  //       rule: field(Rules, 'rule'),
+  //     },
+  //     from: table(Rules),
+  //   });
+  //   return rules.map((rule) => parseRule(rule.rule));
+  // }
 
   private async updateInternalSchema(client: Client<PostgresSql>) {
     if (this.initalizedSchema) {
@@ -126,14 +132,14 @@ export class PostgresMigrationAdapter implements MigrationAdapter<PostgresSql> {
         },
       },
     });
-    await client.exec({
-      createTable: table(Rules),
-      ifNotExists: true,
-      columns: [
-        { name: 'id', type: 'string', notNull: true, primaryKey: true },
-        { name: 'rule', type: 'string', notNull: true, primaryKey: false },
-      ],
-    });
+    // await client.exec({
+    //   createTable: table(Rules),
+    //   ifNotExists: true,
+    //   columns: [
+    //     { name: 'id', type: 'string', notNull: true, primaryKey: true },
+    //     { name: 'rule', type: 'string', notNull: true, primaryKey: false },
+    //   ],
+    // });
     this.initalizedSchema = true;
   }
 
@@ -351,9 +357,5 @@ export class PostgresMigrationAdapter implements MigrationAdapter<PostgresSql> {
       throw new Error('seed requires at least 1 key');
     }
     return and(...(conditions as any));
-  }
-
-  close(): Promise<void> {
-    return this.client.close();
   }
 }

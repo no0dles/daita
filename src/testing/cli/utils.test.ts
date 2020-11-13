@@ -195,9 +195,7 @@ export async function getMigrationSteps(fileName: string) {
   }
 
   const migrationTree = schemaInfo.getMigrationTree();
-  const currentSchema = migrationTree.getSchemaDescription({
-    backwardCompatible: false,
-  });
+  const currentSchema = migrationTree.getSchemaDescription();
 
   return generateRelationalMigrationSteps(currentSchema, schemaInfo.getRelationalSchema());
 }

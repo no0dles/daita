@@ -10,14 +10,14 @@ import { table } from '../../relational/sql/keyword/table/table';
 import { join } from '../../relational/sql/dml/select/join/join';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { getRoles } from '../modules/roles';
-import { TransactionClient } from '../../relational/client/transaction-client';
+import { TransactionContext } from '../../orm';
 
-export function refreshRoute(client: TransactionClient<any>) {
+export function refreshRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
 
   router.post('/', async (req, res, next) => {
     try {
-      const token = await client.selectFirst({
+      const token = await ctx.selectFirst({
         select: {
           authorizedAt: field(UserRefreshToken, 'authorizedAt'),
           issuedAt: field(UserRefreshToken, 'issuedAt'),
@@ -45,7 +45,7 @@ export function refreshRoute(client: TransactionClient<any>) {
       const expiresAt = Math.floor(token.issuedAt.getTime() / 1000) + token.refreshRefreshExpiresIn;
       const now = Math.floor(new Date().getTime() / 1000);
       if (now > expiresAt) {
-        await client.delete({
+        await ctx.delete({
           delete: table(UserRefreshToken),
           where: equal(field(UserRefreshToken, 'token'), req.body.refreshToken),
         });
@@ -54,7 +54,7 @@ export function refreshRoute(client: TransactionClient<any>) {
         });
       }
 
-      const roles = await getRoles(client, token.userPoolId, token.userUsername);
+      const roles = await getRoles(ctx, token.userPoolId, token.userUsername);
 
       const refreshToken = await getRandomCode();
       const accessToken = await getAccessToken(
@@ -70,7 +70,7 @@ export function refreshRoute(client: TransactionClient<any>) {
         },
       );
 
-      await client.transaction(async (trx) => {
+      await ctx.transaction(async (trx) => {
         await trx.delete({
           delete: table(UserRefreshToken),
           where: equal(field(UserRefreshToken, 'token'), req.body.refreshToken),

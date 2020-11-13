@@ -13,14 +13,14 @@ import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { join } from '../../relational/sql/dml/select/join/join';
 import { UserPoolUser } from '../models/user-pool-user';
 import { getRoles } from '../modules/roles';
-import { TransactionClient } from '../../relational/client/transaction-client';
+import { TransactionContext } from '../../orm';
 
-export function loginRoute(client: TransactionClient<any>) {
+export function loginRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
 
   router.post('/', async (req, res, next) => {
     try {
-      const user = await client!.selectFirst({
+      const user = await ctx!.selectFirst({
         select: {
           password: field(User, 'password'),
           username: field(User, 'username'),
@@ -52,7 +52,7 @@ export function loginRoute(client: TransactionClient<any>) {
         return res.status(400).json({ message: 'invalid credentials' });
       }
 
-      const roles = await getRoles(client, req.params.userPoolId, user.username);
+      const roles = await getRoles(ctx, req.params.userPoolId, user.username);
       const refreshToken = await getRandomCode();
       const accessToken = await getAccessToken(
         req.params.userPoolId,
@@ -81,7 +81,7 @@ export function loginRoute(client: TransactionClient<any>) {
         },
       );
 
-      await client.insert({
+      await ctx.insert({
         insert: {
           userUsername: user.username,
           token: refreshToken,

@@ -1,29 +1,31 @@
-import { RelationalMigrationClient, RelationalTransactionClient } from './relational-transaction-client';
+import { RelationalTransactionClient } from './relational-transaction-client';
 import { TransactionClient } from './transaction-client';
-import { RelationalAdapterImplementation } from '../adapter/relational-adapter-implementation';
 import {
-  isMigrationAdapter,
-  MigrationAdapterImplementation,
-} from '../../orm/migration/migration-adapter-implementation';
-import { MigrationClient } from './migration-client';
+  RelationalDataAdapterImplementation,
+  RelationalTransactionAdapterImplementation,
+} from '../adapter/relational-adapter-implementation';
+import { isRelationalTransactionAdapter } from '../adapter/relational-transaction-adapter';
+import { RelationalClient } from './relational-client';
+import { Client } from './client';
 
 export function getClient<TQuery, TOptions>(
-  adapterImplementation: RelationalAdapterImplementation<TQuery, TOptions> &
-    MigrationAdapterImplementation<TQuery, TOptions>,
-  options?: TOptions,
-): MigrationClient<TQuery>;
-export function getClient<TQuery, TOptions>(
-  adapterImplementation: RelationalAdapterImplementation<TQuery, TOptions>,
-  options?: TOptions,
+  adapterImplementation: RelationalTransactionAdapterImplementation<TQuery, TOptions>,
+  options: TOptions,
 ): TransactionClient<TQuery>;
 export function getClient<TQuery, TOptions>(
-  adapterImplementation: RelationalAdapterImplementation<TQuery, TOptions>,
-  options?: TOptions,
-): TransactionClient<TQuery> | MigrationClient<TQuery> {
+  adapterImplementation: RelationalDataAdapterImplementation<TQuery, TOptions>,
+  options: TOptions,
+): Client<TQuery>;
+export function getClient<TQuery, TOptions>(
+  adapterImplementation:
+    | RelationalDataAdapterImplementation<TQuery, TOptions>
+    | RelationalTransactionAdapterImplementation<TQuery, TOptions>,
+  options: TOptions,
+): TransactionClient<TQuery> | Client<TQuery> {
   const dataAdapter = adapterImplementation.getRelationalAdapter(options);
-  if (isMigrationAdapter(adapterImplementation)) {
-    const migrationAdapter = adapterImplementation.getMigrationAdapter(dataAdapter, options);
-    return new RelationalMigrationClient(dataAdapter, migrationAdapter);
+  if (isRelationalTransactionAdapter(dataAdapter)) {
+    return new RelationalTransactionClient(dataAdapter);
+  } else {
+    return new RelationalClient(dataAdapter);
   }
-  return new RelationalTransactionClient(dataAdapter);
 }

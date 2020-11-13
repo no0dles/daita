@@ -9,9 +9,9 @@ import { join } from '../../relational/sql/dml/select/join/join';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { UserPoolUser } from '../models/user-pool-user';
 import { getRoles } from '../modules/roles';
-import { Client } from '../../relational/client/client';
+import { Context } from '../../orm';
 
-export function adminTokenRoute(client: Client<any>) {
+export function adminTokenRoute(client: Context<any>) {
   const router = express.Router({ mergeParams: true });
 
   router.post('/:token', async (req, res, next) => {

@@ -1,21 +1,21 @@
 import { Request, Response, Router } from 'express';
-import { validateSqlRules } from '../middleswares/validate-sql.middleware';
 import { validateExecBody } from '../middleswares/validate-body.middleware';
 import { ContextManager, TransactionContextManager } from '../../http-server-common/context-manager';
 import { AppOptions } from '../../http-server-common/app-options';
 import { TransactionManager } from '../../http-server-common/transaction-manager';
-import { Client } from '../../relational/client/client';
-import { isTransactionClient, TransactionClient } from '../../relational/client/transaction-client';
+import { Context, TransactionContext } from '../../orm';
+import { isTransactionContext } from '../../orm/context/transaction-context';
+import { getRequestContext } from '../get-request-context';
 
-export function relationalRoute(client: TransactionClient<any> | Client<any>, options: AppOptions) {
-  const router = relationalDataRoute(client, options);
-  if (isTransactionClient(client)) {
-    extendTransactionRoutes(client, options, router);
+export function relationalRoute(ctx: TransactionContext<any> | Context<any>, options: AppOptions) {
+  const router = relationalDataRoute(ctx, options);
+  if (isTransactionContext(ctx)) {
+    extendTransactionRoutes(ctx, options, router);
   }
   return router;
 }
 
-function extendTransactionRoutes(client: TransactionClient<any>, options: AppOptions, router: Router) {
+function extendTransactionRoutes(ctx: TransactionContext<any>, options: AppOptions, router: Router) {
   const manager = new TransactionContextManager(options);
 
   function getTransactionId(req: Request, res: Response): string | null {
@@ -42,7 +42,7 @@ function extendTransactionRoutes(client: TransactionClient<any>, options: AppOpt
     }
   }
 
-  router.post('/trx/:tid/exec', validateExecBody, validateSqlRules(options), async (req, res, next) => {
+  router.post('/trx/:tid/exec', validateExecBody, async (req, res, next) => {
     try {
       await getTransaction(req, res, async (transaction) => {
         const result = await transaction.exec(req.body.sql);
@@ -60,7 +60,7 @@ function extendTransactionRoutes(client: TransactionClient<any>, options: AppOpt
         return;
       }
 
-      const transaction = manager.create(client, tid);
+      const transaction = manager.create(getRequestContext(ctx, req), tid);
       await transaction.started;
       res.setHeader('X-Transaction', tid);
       res.status(200).send();
@@ -92,12 +92,12 @@ function extendTransactionRoutes(client: TransactionClient<any>, options: AppOpt
   });
 }
 
-export function relationalDataRoute(client: Client<any>, options: AppOptions) {
+export function relationalDataRoute(ctx: Context<any>, options: AppOptions) {
   const router = Router();
 
-  router.post('/exec', validateExecBody, validateSqlRules(options), async (req, res, next) => {
+  router.post('/exec', validateExecBody, async (req, res, next) => {
     try {
-      const context = new ContextManager(client);
+      const context = new ContextManager(getRequestContext(ctx, req));
       const result = await context.exec(req.body.sql);
       res.status(200).json(result);
     } catch (e) {

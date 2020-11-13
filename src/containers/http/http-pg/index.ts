@@ -1,18 +1,19 @@
-import { RuleConfig, run } from '../server';
+import { run } from '../server';
 import { adapter } from '../../../packages/pg-adapter/adapter/adapter';
-import { getClient } from '../../../packages/relational/client/get-client';
-import { PostgresAdapter } from '../../../packages/pg-adapter/adapter/postgres.adapter';
+import { getContext } from '../../../packages/orm';
 
-const client = getClient(adapter);
-const postgresAdapter = client.dataAdapter as PostgresAdapter;
-const ruleContext = new RuleConfig(client.migrationAdapter);
-
-postgresAdapter.addNotificationListener('daita_migrations', () => {
-  console.log('reload rules');
-  ruleContext.reload();
+const ctx = getContext(adapter, {
+  connectionString: process.env.DATABASE_URL!,
 });
+// const postgresAdapter = client.dataAdapter as PostgresMigrationAdapter;
+// const ruleContext = new RuleConfig(postgresAdapter);
+//
+// postgresAdapter.addNotificationListener('daita_migrations', () => {
+//   console.log('reload rules');
+//   ruleContext.reload();
+// });
 
-run(client, ruleContext).catch((err) => {
+run(ctx).catch((err) => {
   console.error(err);
   process.exit(1);
 });

@@ -1,6 +1,6 @@
 import { Pool, PoolClient, types } from 'pg';
 import { PostgresDataAdapter } from './postgres-data-adapter';
-import { postgresFormatter } from './postgres-formatter';
+import { postgresFormatter } from '../formatters/postgres-formatter';
 import { PostgresSql } from '../sql/postgres-sql';
 import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
 import { RelationalRawResult } from '../../relational/adapter/relational-raw-result';

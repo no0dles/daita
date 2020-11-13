@@ -1,17 +1,18 @@
 import { table } from '../../../keyword/table/table';
-import { dataClients, ClientTestContext } from '../../../../../../testing/relational/adapter-test';
+import { dataClients } from '../../../../../../testing/relational/adapters';
 import { createMountain, createMountainTable } from '../../../../../../testing/schema/test-schema';
 import { Mountain } from '../../../../../../testing/schema/mountain';
 import { count } from './count';
 import { greaterThan } from '../../../operands/comparison/greater-than/greater-than';
 import { field } from '../../../keyword/field/field';
+import { ClientTestContext } from '../../../../../../testing/relational/adapter/client-test-context';
 
 describe('relational/sql/function/aggregation/count', () => {
   describe.each(dataClients)('%s', (ctxFactory) => {
     let ctx: ClientTestContext;
 
     beforeAll(async () => {
-      ctx = await ctxFactory.clientContext();
+      ctx = await ctxFactory.getClient();
       await createMountainTable(ctx.client);
       await createMountain(ctx.client, { prominence: 10 });
       await createMountain(ctx.client, { prominence: 20 });

@@ -2,26 +2,26 @@ import { createAuthApp } from '../../../packages/auth-server/app';
 import { createAuthAdminApp } from '../../../packages/auth-server/admin-app';
 import { seedAuthDefaults } from './client';
 import { adapter } from '../../../packages/pg-adapter/adapter/adapter';
-import { migrate } from '../../../packages/orm/migration/migrate';
 import { authSchema } from '../../../packages/auth-server/schema';
-import { getClient } from '../../../packages/relational/client/get-client';
+import { getContext } from '../../../packages/orm';
 
-const client = getClient(adapter, {
+const ctx = getContext(adapter, {
+  schema: authSchema,
   connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/auth',
 });
-
-migrate(client, authSchema)
+ctx
+  .migrate()
   .then(async () => {
     console.log('migrated');
 
-    await seedAuthDefaults(client);
+    await seedAuthDefaults(ctx);
   })
   .catch((err) => {
     console.log(err, 'failed');
   });
 
-const app = createAuthApp(client);
-const adminApp = createAuthAdminApp(client);
+const app = createAuthApp(ctx);
+const adminApp = createAuthAdminApp(ctx);
 
 const appServer = app.listen(4000, () => console.log(`running web at :4000`));
 const adminServer = adminApp.listen(5000, () => console.log('running admin web at :5000'));
@@ -37,8 +37,8 @@ process
 
 process.on('SIGTERM', () => {
   setTimeout(() => {
-    if (client) {
-      client.close();
+    if (ctx) {
+      ctx.close();
     }
     if (appServer) {
       appServer.close();

@@ -2,20 +2,16 @@ import { createHttpServerApp } from './app';
 import { createDefaultUser, createDefaultUserPool, loginWithDefaultUser } from '../../testing/auth-test';
 import { getServer, httpGet, httpPost, HttpServerApp } from '../../testing/http-server';
 import { createAuthApp } from '../auth-server/app';
-import { allow } from '../relational/permission/function/allow';
-import { select } from '../relational/sql/dml/select/select';
-import { authorized } from '../relational/permission/function/authorized';
 import { now } from '../relational/sql/function/date/now/now';
 import { authSchema } from '../auth-server/schema';
 import { createAuthAdminApp } from '../auth-server/admin-app';
-import { migrate } from '../orm/migration/migrate';
-import { getClient } from '../relational/client/get-client';
-import { MigrationClient } from '../relational/client/migration-client';
 import { getPostgresDb, PostgresDb } from '../../testing/postgres-test';
 import { adapter } from '../pg-adapter';
+import { MigrationContext } from '../orm/context/get-migration-context';
+import { getContext } from '../orm';
 
 describe('http-server/app', () => {
-  let client: MigrationClient<any>;
+  let ctx: MigrationContext<any>;
   let postgresDb: PostgresDb;
   let authApp: HttpServerApp;
   let authAdminApp: HttpServerApp;
@@ -23,14 +19,15 @@ describe('http-server/app', () => {
 
   beforeAll(async () => {
     postgresDb = await getPostgresDb();
-    client = getClient(adapter, {
+    ctx = getContext(adapter, {
+      schema: authSchema,
       connectionString: postgresDb.connectionString,
       createIfNotExists: true,
     });
-    authApp = getServer(createAuthApp(client));
-    authAdminApp = getServer(createAuthAdminApp(client));
+    authApp = getServer(createAuthApp(ctx));
+    authAdminApp = getServer(createAuthAdminApp(ctx));
     httpApp = getServer(
-      createHttpServerApp(client, {
+      createHttpServerApp(ctx, {
         authorization: {
           providers: [
             {
@@ -46,20 +43,12 @@ describe('http-server/app', () => {
           ],
         },
         cors: false,
-        rules: [
-          allow(
-            authorized(),
-            select({
-              select: now(),
-            }),
-          ),
-        ],
       }),
     );
 
-    await migrate(client, authSchema);
-    await createDefaultUserPool(client);
-    await createDefaultUser(client);
+    await ctx.migrate();
+    await createDefaultUserPool(ctx);
+    await createDefaultUser(ctx);
 
     await authApp.start();
     await authAdminApp.start();
@@ -70,7 +59,7 @@ describe('http-server/app', () => {
     await authApp.close();
     await authAdminApp.close();
     await httpApp.close();
-    await client.close();
+    await ctx.close();
     await postgresDb.close();
   });
 

@@ -4,16 +4,13 @@ import * as bodyParser from 'body-parser';
 import { authMiddleware } from './middlewares/auth-middleware';
 import helmet from 'helmet';
 import cors from 'cors';
-import { allow } from '../relational/permission/function/allow';
-import { TransactionClient } from '../relational/client/transaction-client';
-import { authorized } from '../relational/permission/function/authorized';
 import { relationalRoute } from '../http-server/routes/relational';
-import { anything } from '../relational/permission/function/anything';
 import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
 import { adminTokenRoute } from './routes/admin-token';
+import { TransactionContext } from '../orm';
 
-export function createAuthAdminApp(client: TransactionClient<any>) {
+export function createAuthAdminApp(client: TransactionContext<any>) {
   const adminApp = express();
 
   adminApp.use(helmet());
@@ -33,7 +30,6 @@ export function createAuthAdminApp(client: TransactionClient<any>) {
     relationalRoute(client, {
       authorization: false,
       cors: false,
-      rules: [allow(authorized(), anything())],
       transactionTimeout: 4000,
     }),
   );
