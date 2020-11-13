@@ -1,4 +1,5 @@
 import express from 'express';
+import * as http from 'http';
 import * as bodyParser from 'body-parser';
 import wellKnownRoute from './routes/well-known';
 import helmet from 'helmet';
@@ -10,6 +11,7 @@ import { verifyRoute } from './routes/verify';
 import { registerRoute } from './routes/register';
 import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
+import { Server } from 'http';
 
 declare global {
   namespace Express {
@@ -25,7 +27,7 @@ declare global {
   }
 }
 
-export function createAuthApp(client: TransactionClient<any>) {
+export function createAuthApp(client: TransactionClient<any>, port: number): Promise<Server> {
   const app = express();
 
   app.use(helmet());
@@ -68,5 +70,9 @@ export function createAuthApp(client: TransactionClient<any>) {
     }
   });
 
-  return app;
+  return new Promise<http.Server>((resolve) => {
+    const server = app.listen(port, () => {
+      resolve(server);
+    });
+  });
 }

@@ -12,8 +12,10 @@ import { anything } from '../relational/permission/function/anything';
 import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
 import { adminTokenRoute } from './routes/admin-token';
+import { Server } from 'http';
+import http from 'http';
 
-export function createAuthAdminApp(client: TransactionClient<any>) {
+export function createAuthAdminApp(client: TransactionClient<any>, port: number): Promise<Server> {
   const adminApp = express();
 
   adminApp.use(helmet());
@@ -60,5 +62,9 @@ export function createAuthAdminApp(client: TransactionClient<any>) {
     }
   });
 
-  return adminApp;
+  return new Promise<http.Server>((resolve) => {
+    const server = adminApp.listen(port, () => {
+      resolve(server);
+    });
+  });
 }
