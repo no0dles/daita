@@ -10,6 +10,7 @@ import { registerRoute } from './routes/register';
 import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
 import { TransactionContext } from '../orm';
+import { Server } from 'http';
 
 declare global {
   namespace Express {
@@ -25,7 +26,7 @@ declare global {
   }
 }
 
-export function createAuthApp(ctx: TransactionContext<any>) {
+export function createAuthApp(ctx: TransactionContext<any>, port: number) {
   const app = express();
 
   app.use(helmet());
@@ -68,5 +69,9 @@ export function createAuthApp(ctx: TransactionContext<any>) {
     }
   });
 
-  return app;
+  return new Promise<Server>((resolve) => {
+    const server = app.listen(port, () => {
+      resolve(server);
+    });
+  });
 }

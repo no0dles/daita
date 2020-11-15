@@ -9,8 +9,9 @@ import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
 import { adminTokenRoute } from './routes/admin-token';
 import { TransactionContext } from '../orm';
+import { Server } from 'http';
 
-export function createAuthAdminApp(client: TransactionContext<any>) {
+export function createAuthAdminApp(client: TransactionContext<any>, port: number) {
   const adminApp = express();
 
   adminApp.use(helmet());
@@ -56,5 +57,9 @@ export function createAuthAdminApp(client: TransactionContext<any>) {
     }
   });
 
-  return adminApp;
+  return new Promise<Server>((resolve) => {
+    const server = adminApp.listen(port, () => {
+      resolve(server);
+    });
+  });
 }
