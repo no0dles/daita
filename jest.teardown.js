@@ -2,7 +2,7 @@ const Docker = require('dockerode');
 
 module.exports = async function tearDown() {
   const docker = new Docker();
-  const infos = await docker.listContainers();
+  const infos = await docker.listContainers({ all: true });
   for (const info of infos) {
     if (info.Labels['ch.daita.source'] !== 'test') {
       continue;

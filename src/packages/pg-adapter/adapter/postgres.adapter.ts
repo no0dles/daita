@@ -5,6 +5,7 @@ import { PostgresSql } from '../sql/postgres-sql';
 import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
 import { RelationalRawResult } from '../../relational/adapter/relational-raw-result';
 import { RelationalDataAdapter } from '../../relational/adapter/relational-data-adapter';
+import { ConnectionError } from '../../relational/error/connection-error';
 
 export interface PostgresNotificationSubscriber {
   (msg: string | undefined): void;
@@ -12,9 +13,11 @@ export interface PostgresNotificationSubscriber {
 
 export class PostgresAdapter implements RelationalTransactionAdapter<PostgresSql> {
   private readonly pool: Promise<Pool>;
+  private closed = false;
   private readonly connectionString: string | undefined;
 
   private notificationPoolClient: PoolClient | undefined = undefined;
+  private notificationPoolClientAdapter: RelationalDataAdapter<PostgresSql> | undefined = undefined;
   private notificationSubscribers: { [key: string]: PostgresNotificationSubscriber[] } = {};
 
   constructor(private poolOrUrl: string | Promise<Pool> | Pool, private options: { listenForNotifications: boolean }) {
@@ -52,24 +55,57 @@ export class PostgresAdapter implements RelationalTransactionAdapter<PostgresSql
   }
 
   private async listenForNotification() {
-    const pool = await this.pool;
-    this.notificationPoolClient = await pool.connect();
-    this.notificationPoolClient.on('notification', (msg) => {
-      const subscribers = this.notificationSubscribers[msg.channel] ?? [];
-      for (const subscriber of subscribers) {
-        subscriber(msg.payload);
-      }
-    });
+    await this.reconnectListener();
   }
 
-  addNotificationListener(channel: string, callback: PostgresNotificationSubscriber) {
+  private async reconnectListener() {
+    try {
+      if (this.notificationPoolClient) {
+        this.notificationPoolClient.release();
+        this.notificationPoolClient = undefined;
+        this.notificationPoolClientAdapter = undefined;
+      }
+
+      const pool = await this.pool;
+      this.notificationPoolClient = await pool.connect();
+      this.notificationPoolClientAdapter = new PostgresDataAdapter(this.notificationPoolClient);
+      this.notificationPoolClient.on('notification', (msg) => {
+        const subscribers = this.notificationSubscribers[msg.channel] ?? [];
+        for (const subscriber of subscribers) {
+          subscriber(msg.payload);
+        }
+      });
+      this.notificationPoolClient.on('error', () => {
+        if (this.closed) {
+          return;
+        }
+        this.reconnectListener();
+      });
+      for (const channel of Object.keys(this.notificationSubscribers)) {
+        await this.notificationPoolClientAdapter.exec({ listen: channel });
+      }
+    } catch (e) {
+      if (this.closed) {
+        return;
+      }
+
+      setTimeout(() => {
+        this.reconnectListener();
+      }, 2000);
+    }
+  }
+
+  async addNotificationListener(channel: string, callback: PostgresNotificationSubscriber) {
     if (!this.notificationSubscribers[channel]) {
       this.notificationSubscribers[channel] = [];
     }
     this.notificationSubscribers[channel].push(callback);
+    if (this.notificationPoolClientAdapter) {
+      await this.notificationPoolClientAdapter.exec({ listen: channel });
+    }
   }
 
-  removeNotificationListener(channel: string, callback: PostgresNotificationSubscriber) {
+  async removeNotificationListener(channel: string, callback: PostgresNotificationSubscriber) {
     if (!this.notificationSubscribers[channel]) {
       return;
     }
@@ -77,9 +113,14 @@ export class PostgresAdapter implements RelationalTransactionAdapter<PostgresSql
     if (index >= 0) {
       this.notificationSubscribers[channel].splice(index, 1);
     }
+    if (this.notificationSubscribers[channel].length === 0) {
+      delete this.notificationSubscribers[channel];
+      await this.notificationPoolClientAdapter?.exec({ unlisten: channel });
+    }
   }
 
   async close() {
+    this.closed = true;
     if (this.notificationPoolClient) {
       await this.notificationPoolClient.release();
     }
@@ -102,6 +143,9 @@ export class PostgresAdapter implements RelationalTransactionAdapter<PostgresSql
       if (client) {
         client.release(e);
         client = null;
+      }
+      if (e.errno === -111) {
+        throw new ConnectionError(e);
       }
       throw e;
     }

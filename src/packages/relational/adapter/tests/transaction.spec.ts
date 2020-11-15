@@ -1,11 +1,11 @@
-import { createPerson, createPersonTable, testSchema } from '../../../testing/schema/test-schema';
-import { table } from '../sql/keyword/table/table';
-import { Person } from '../../../testing/schema/person';
-import { field } from '../sql/keyword/field/field';
-import { equal } from '../sql/operands/comparison/equal/equal';
-import { testClient } from '../../../testing/relational/adapters';
+import { createPerson, createPersonTable, testSchema } from '../../../../testing/schema/test-schema';
+import { table } from '../../sql/keyword/table/table';
+import { Person } from '../../../../testing/schema/person';
+import { field } from '../../sql/keyword/field/field';
+import { equal } from '../../sql/operands/comparison/equal/equal';
+import { testClient } from '../../../../testing/relational/adapters';
 
-describe('relational/adapter/relational-transaction-adapter', () => {
+describe('relational/adapter/relational-transaction-adapter/transaction', () => {
   const clients = testClient('pg', 'sqlite');
 
   describe.each(clients)('%s', (client) => {

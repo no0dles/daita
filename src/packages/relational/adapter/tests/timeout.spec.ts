@@ -1,13 +1,13 @@
-import { testContext } from '../../../testing/relational/adapters';
-import { createPerson, createPersonTable, testSchema } from '../../../testing/schema/test-schema';
-import { allow, anonymous, anything, equal, field, table } from '..';
-import { Person } from '../../../testing/schema/person';
-import { sleep } from '../../common';
-import { MigrationTree } from '../../orm/migration/migration-tree';
-import { getRuleId } from '../../orm/migration/generation/rule-id';
-import { TimeoutError } from '../error/timeout-error';
+import { testContext } from '../../../../testing/relational/adapters';
+import { createPerson, createPersonTable, testSchema } from '../../../../testing/schema/test-schema';
+import { allow, anonymous, anything, equal, field, table } from '../../index';
+import { Person } from '../../../../testing/schema/person';
+import { sleep } from '../../../common';
+import { MigrationTree } from '../../../orm/migration/migration-tree';
+import { getRuleId } from '../../../orm/migration/generation/rule-id';
+import { TimeoutError } from '../../error/timeout-error';
 
-describe('relational/adapter/relational-transaction-adapter/remote', () => {
+describe('relational/adapter/relational-transaction-adapter/timeout', () => {
   const remoteClients = testContext(
     new MigrationTree('test', [
       {

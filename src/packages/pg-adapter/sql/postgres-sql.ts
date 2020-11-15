@@ -12,10 +12,12 @@ import {
   DropViewSql,
   LockTableSql,
 } from '../../relational';
+import { PostgresUnlistenSql } from './unlisten-sql';
 
 export type PostgresSql =
   | PostgresListenSql
   | PostgresNotifySql
+  | PostgresUnlistenSql
   | Sql<any>
   | LockTableSql
   | DropTableSql

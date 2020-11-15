@@ -12,6 +12,8 @@ import { execCommand, runContainer } from '../../node/docker';
 export interface PostgresDb {
   connectionString: string;
   close(): Promise<void>;
+  stop(): Promise<void>;
+  start(): Promise<void>;
 }
 
 export interface PostgresTestAdapterOptions {
@@ -57,19 +59,30 @@ export async function getPostgresDb(): Promise<PostgresDb> {
     portBinding: { 5432: newPort },
   });
 
-  let isReady = await execCommand(container, ['pg_isready']);
-  while (isReady.indexOf('accepting connections') === -1) {
-    await sleep(500);
-    isReady = await execCommand(container, ['pg_isready']);
+  async function awaitForReady() {
+    let isReady = await execCommand(container, ['pg_isready']);
+    while (isReady.indexOf('accepting connections') === -1) {
+      await sleep(500);
+      isReady = await execCommand(container, ['pg_isready']);
+    }
+    //TODO figure out why connect does not work after pg_isready
+    await sleep(200);
   }
-  //TODO figure out why connect does not work after pg_isready
-  await sleep(200);
+
+  await awaitForReady();
 
   const db: PostgresDb = {
     connectionString: `postgres://postgres:postgres@localhost:${newPort}/postgres`,
     close: async () => {
       await container.stop();
       await container.remove();
+    },
+    stop: async () => {
+      await container.stop();
+    },
+    start: async () => {
+      await container.start();
+      await awaitForReady();
     },
   };
   return db;
