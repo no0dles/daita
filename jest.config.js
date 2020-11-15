@@ -23,5 +23,5 @@ module.exports = {
     '!src/**/*.spec.ts',
   ],
   globalTeardown: '<rootDir>/jest.teardown.js',
-  coverageReporters: ['json', 'html'],
+  coverageReporters: ['json', 'html', 'lcov'],
 };

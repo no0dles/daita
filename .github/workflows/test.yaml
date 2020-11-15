@@ -28,8 +28,8 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm install
       - run: npm test
-      - name: Run codacy-coverage-reporter
+      - run: coverage upload
         uses: codacy/codacy-coverage-reporter-action@master
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: coverage/coverage-final.json
+          coverage-reports: coverage/lcov.info
