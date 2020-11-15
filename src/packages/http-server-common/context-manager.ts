@@ -2,6 +2,7 @@ import { TransactionManager } from './transaction-manager';
 import { AppOptions } from './app-options';
 import { TransactionClient } from '../relational/client/transaction-client';
 import { Client } from '../relational/client/client';
+import { TimeoutError } from '../relational/error/timeout-error';
 
 export class ContextManager {
   constructor(private client: Client<any>) {}
@@ -45,6 +46,6 @@ export class TransactionContextManager {
     if (this.transactions[transactionId]) {
       return this.transactions[transactionId];
     }
-    throw new Error('could not find transaction for ' + transactionId);
+    throw new TimeoutError('could not find transaction for ' + transactionId);
   }
 }

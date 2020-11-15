@@ -3,6 +3,8 @@ import { Http, HttpSendResult } from '../http-client-common/http';
 import { RelationalRawResult } from '../relational/adapter/relational-raw-result';
 import { RelationalDataAdapter } from '../relational/adapter/relational-data-adapter';
 import { Defer } from '../common/utils/defer';
+import { handleErrorResponse } from './error-handling';
+import { TimeoutError } from '../relational/error/timeout-error';
 
 export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   private resultDefer = new Defer<any>();
@@ -11,13 +13,12 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   constructor(private transactionId: string, private http: Http) {}
 
   private handleErrorResponse(response: HttpSendResult) {
-    if (
-      response.statusCode >= 400 &&
-      response.data.message.startsWith('could not find transaction for ' + this.transactionId)
-    ) {
-      this.resultDefer.reject(new Error('timeout'));
+    if (response.statusCode === 400 && response.data?.error === 'TimeoutError') {
+      this.resultDefer.reject(new TimeoutError('timeout'));
       throw new Error('transaction already closed');
     }
+
+    handleErrorResponse(response);
 
     const timeout = response.headers['x-transaction-timeout'];
     if (timeout && timeout > 0) {

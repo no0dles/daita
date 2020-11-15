@@ -10,7 +10,7 @@ import { Ascent } from '../../../../../testing/schema/ascent';
 import { testClient } from '../../../../../testing/relational/adapters';
 
 describe('relational/sql/ddl/alter-table', () => {
-  const clients = testClient('pg', 'sqlite');
+  const clients = testClient('pg');
 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {
@@ -44,16 +44,6 @@ describe('relational/sql/ddl/alter-table', () => {
             table: table(Person),
             primaryKeys: 'id',
           },
-        },
-      });
-    });
-
-    it('should add column', async () => {
-      await client.exec({
-        alterTable: table(Person),
-        add: {
-          column: 'firstName2',
-          type: 'string',
         },
       });
     });

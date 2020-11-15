@@ -3,6 +3,7 @@ import { TransactionClient } from '../relational/client/transaction-client';
 import { Debouncer } from '../common/utils/debouncer';
 import { Defer } from '../common/utils/defer';
 import { Client } from '../relational/client/client';
+import { TimeoutError } from '../relational/error/timeout-error';
 
 export type TransactionResult = 'committed' | 'timeout' | 'rollback' | 'canceled';
 
@@ -42,7 +43,7 @@ export class TransactionManager {
 
   private timeout() {
     if (!this.commitDefer.isRejected && !this.commitDefer.isResolved) {
-      this.commitDefer.reject(new Error('timeout'));
+      this.commitDefer.reject(new TimeoutError('timeout'));
     }
   }
 

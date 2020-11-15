@@ -1,5 +1,5 @@
 module.exports = {
-  setupFilesAfterEnv: ['jest-extended', './jest.setup.js'],
+  setupFilesAfterEnv: ['jest-extended'],
   moduleFileExtensions: ['ts', 'js'],
   transform: {
     '^.+\\.ts$': 'ts-jest',
@@ -22,5 +22,6 @@ module.exports = {
     '!src/**/*.test.ts',
     '!src/**/*.spec.ts',
   ],
+  globalTeardown: '<rootDir>/jest.teardown.js',
   coverageReporters: ['json', 'html'],
 };

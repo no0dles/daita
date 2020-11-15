@@ -1,8 +1,8 @@
 import { setupEnv } from '../../../../testing/cli/utils.test';
 import { HttpTransactionAdapter } from '../../../http-adapter';
 import { NodeHttp } from '../../../http-client-common/node-http';
-import { getPostgresDb, PostgresDb } from '../../../../testing/postgres-test';
 import { serve } from './serve';
+import { getPostgresDb, PostgresDb } from '../../../pg-adapter/testing/postgres-test-adapter';
 
 describe('cli/commands/serve', () => {
   let postgresDb: PostgresDb;
@@ -22,15 +22,17 @@ describe('cli/commands/serve', () => {
           cwd: ctx.cwd,
           disableAuth: true,
         });
-        task.ready.then(async () => {
-          const client = new HttpTransactionAdapter(new NodeHttp('http://localhost:8765', null));
-          const result = await client.exec({ select: { date: 'test' } });
-          expect(result.rowCount).toEqual(1);
-          expect(result.rows[0].date).not.toBeNull();
-          expect(result.rows[0].date).not.toBeUndefined();
-          task.cancel();
-        });
-        await task.result;
+
+        const client = new HttpTransactionAdapter(
+          new NodeHttp('http://localhost:8765', null),
+          Promise.resolve(),
+          () => {},
+        );
+        const result = await client.exec({ select: { date: 'test' } });
+        expect(result.rowCount).toEqual(1);
+        expect(result.rows[0].date).not.toBeNull();
+        expect(result.rows[0].date).not.toBeUndefined();
+        task.cancel();
       },
       { schema: 'auth-schema-migrated' },
     ),

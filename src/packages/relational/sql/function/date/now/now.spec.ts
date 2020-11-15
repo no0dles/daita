@@ -1,19 +1,14 @@
-import { dataClients } from '../../../../../../testing/relational/adapters';
 import { now } from './now';
-import { ClientTestContext } from '../../../../../../testing/relational/adapter/client-test-context';
+import { testClient } from '../../../../../../testing/relational/adapters';
 
 describe('relational/sql/function/date/now', () => {
-  describe.each(dataClients)('%s', (ctxFactory) => {
-    let ctx: ClientTestContext;
+  const clients = testClient('pg', 'sqlite');
 
-    beforeAll(async () => {
-      ctx = await ctxFactory.getClient();
-    });
-
-    afterAll(() => ctx.close());
+  describe.each(clients)('%s', (client) => {
+    afterAll(() => client.close());
 
     it('should get now', async () => {
-      const result = await ctx.client.selectFirst({
+      const result = await client.selectFirst({
         select: {
           date: now(),
         },

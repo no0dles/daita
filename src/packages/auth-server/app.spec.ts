@@ -1,7 +1,5 @@
-import supertest from 'supertest';
 import { UserEmailVerify } from './models/user-email-verify';
 import { UserRefreshToken } from './models/user-refresh-token';
-import { Express } from 'express';
 import { createAuthApp } from './app';
 import { authSchema } from './schema';
 import { createDefaultUserPool } from '../../testing/auth-test';
@@ -9,15 +7,20 @@ import { field } from '../relational/sql/keyword/field/field';
 import { all } from '../relational/sql/keyword/all/all';
 import { table } from '../relational/sql/keyword/table/table';
 import { notEqual } from '../relational/sql/operands/comparison/not-equal/not-equal';
-import { getPostgresDb, PostgresDb } from '../../testing/postgres-test';
 import { adapter } from '../pg-adapter';
 import { getContext } from '../orm';
 import { MigrationContext } from '../orm/context/get-migration-context';
+import { NodeHttp } from '../http-client-common';
+import { getServer, HttpServerApp } from '../../testing/http-server';
+import { equal } from '../relational';
+import { User } from './models/user';
+import { getPostgresDb, PostgresDb } from '../pg-adapter/testing/postgres-test-adapter';
 
 describe('app', () => {
-  let app: Express;
+  let app: HttpServerApp;
   let ctx: MigrationContext<any>;
   let postgresDb: PostgresDb;
+  let http: NodeHttp;
 
   beforeAll(async () => {
     postgresDb = await getPostgresDb();
@@ -26,131 +29,151 @@ describe('app', () => {
       connectionString: postgresDb.connectionString,
       createIfNotExists: true,
     });
-    app = createAuthApp(ctx);
+    app = getServer((port) => createAuthApp(ctx, port));
+    http = new NodeHttp(`http://localhost:${app.port}`, null);
+    await app.start();
     await ctx.migrate();
     await createDefaultUserPool(ctx);
   });
 
-  it('should register', (done) => {
-    supertest(app)
-      .post('/default/register')
-      .send({
+  afterAll(async () => {
+    await app?.close();
+    await ctx.close();
+    await postgresDb.close();
+  });
+
+  it('should register', async () => {
+    const res = await http.json({
+      path: '/default/register',
+      data: {
         password: '123456',
         username: 'foo',
         email: 'foo@example.com',
-      })
-      .expect(200, done);
+      },
+    });
+    expect(res.statusCode).toEqual(200);
   });
 
-  it('should login', (done) => {
-    supertest(app)
-      .post('/default/login')
-      .send({
+  it('should login', async () => {
+    const res = await http.json({
+      path: '/default/login',
+      data: {
         password: '123456',
         username: 'foo',
-      })
-      .expect(200, (err, res) => {
-        expect(err).toBeNull();
-        expect(res.body.token_type).toBe('bearer');
-        expect(res.body.id_token).toBeDefined();
-        expect(res.body.refresh_token).toBeDefined();
-        expect(res.body.access_token).toBeDefined();
-        expect(res.body.expires_in).toBe(3600);
-        console.log(res.body.access_token);
-        console.log(res.body.id_token);
-        console.log(res.body.refresh_token);
-        done();
-      });
+      },
+    });
+    expect(res.statusCode).toEqual(200);
+    expect(res.data.token_type).toBe('bearer');
+    expect(res.data.id_token).toBeDefined();
+    expect(res.data.refresh_token).toBeDefined();
+    expect(res.data.access_token).toBeDefined();
+    expect(res.data.expires_in).toBe(3600);
   });
 
-  it('should refresh', async (done) => {
+  it('should refresh', async () => {
     const token = await ctx.selectFirst({
       select: all(UserRefreshToken),
       from: table(UserRefreshToken),
     });
-    supertest(app)
-      .post('/default/refresh')
-      .send({
+    const res = await http.json({
+      path: '/default/refresh',
+      data: {
         refreshToken: token.token,
-      })
-      .expect(200, (err, res) => {
-        expect(err).toBeNull();
-        expect(res.body.access_token).toBeDefined();
-        expect(res.body.refresh_token).toBeDefined();
-        done();
-      });
+      },
+    });
+    expect(res.statusCode).toEqual(200);
+    expect(res.data.access_token).toBeDefined();
+    expect(res.data.refresh_token).toBeDefined();
   });
 
   describe('resend', () => {
     let accessToken: string | undefined;
 
     beforeAll(async () => {
-      accessToken = await new Promise((resolve) => {
-        supertest(app)
-          .post('/default/login')
-          .send({
-            password: '123456',
-            username: 'foo',
-          })
-          .expect(200, (err, res) => {
-            expect(err).toBeNull();
-            resolve(res.body.access_token);
-          });
+      const res = await http.json({
+        path: '/default/login',
+        data: {
+          password: '123456',
+          username: 'foo',
+        },
       });
+      expect(res.statusCode).toEqual(200);
+      accessToken = res.data.access_token;
     });
 
-    it('should resend', async (done) => {
+    it('should resend', async () => {
       const firstVerify = await ctx.selectFirst({
         select: all(UserEmailVerify),
         from: table(UserEmailVerify),
       });
 
-      supertest(app)
-        .post('/default/resend')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send()
-        .expect(200, async (err) => {
-          if (err) {
-            return done(err);
-          }
+      const res = await http.json({
+        path: '/default/resend',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        data: {
+          password: '123456',
+          username: 'foo',
+        },
+      });
+      expect(res.statusCode).toEqual(200);
 
-          const secondVerify = await ctx.selectFirst({
-            select: all(UserEmailVerify),
-            from: table(UserEmailVerify),
-            where: notEqual(field(UserEmailVerify, 'code'), firstVerify.code),
-          });
+      const secondVerify = await ctx.selectFirst({
+        select: all(UserEmailVerify),
+        from: table(UserEmailVerify),
+        where: notEqual(field(UserEmailVerify, 'code'), firstVerify.code),
+      });
 
-          expect(firstVerify.code).not.toBe(secondVerify.code);
-          expect(firstVerify.email).toBe(secondVerify.email);
-          expect(firstVerify.userUsername).toBe(secondVerify.userUsername);
-
-          done();
-        });
+      expect(firstVerify.code).not.toBe(secondVerify.code);
+      expect(firstVerify.email).toBe(secondVerify.email);
+      expect(firstVerify.userUsername).toBe(secondVerify.userUsername);
     });
 
-    it('should create token', async (done) => {
-      supertest(app)
-        .post('/default/token')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send()
-        .expect(200, async (err, res) => {
-          if (err) {
-            return done(err);
-          }
-
-          expect(res.body.token).not.toBeNull();
-          expect(res.body.token).not.toBeUndefined();
-          expect(res.body.token).toStartWith('default:');
-          done();
-        });
+    it('should create token', async () => {
+      const res = await http.json({
+        path: '/default/token',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        data: {
+          password: '123456',
+          username: 'foo',
+        },
+      });
+      expect(res.statusCode).toEqual(200);
+      expect(res.data.token).not.toBeNull();
+      expect(res.data.token).not.toBeUndefined();
+      expect(res.data.token).toStartWith('default:');
     });
   });
 
-  it('should verify', async (done) => {
+  it('should verify', async () => {
     const verify = await ctx.selectFirst({
       select: all(UserEmailVerify),
       from: table(UserEmailVerify),
     });
-    supertest(app).get('/default/verify').query({ code: verify.code }).expect(200, done);
+    const res = await http.json({
+      method: 'GET',
+      path: '/default/verify',
+      query: {
+        code: verify.code,
+      },
+    });
+    expect(res.statusCode).toEqual(200);
+
+    const verifyEmail = await ctx.selectFirst({
+      select: all(UserEmailVerify),
+      from: table(UserEmailVerify),
+      where: equal(field(UserEmailVerify, 'code'), verify.code),
+    });
+    expect(verifyEmail.verifiedAt).not.toBeNull();
+    expect(verifyEmail.verifiedAt).not.toBeUndefined();
+
+    const user = await ctx.selectFirst({
+      select: all(User),
+      from: table(User),
+    });
+    expect(user.emailVerified).toBeTrue();
   });
 });

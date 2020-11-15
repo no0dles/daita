@@ -5,9 +5,14 @@ import { RelationalDataAdapter } from '../relational/adapter/relational-data-ada
 import { randomString } from '../common';
 
 export class HttpTransactionAdapter extends HttpDataAdapter implements RelationalTransactionAdapter {
-  transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
+  async transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
+    await this.init;
     const tid = randomString(12);
     const transaction = new HttpTransactionDataAdapter(tid, this.http);
     return transaction.run(() => action(transaction));
+  }
+
+  toString() {
+    return `http`;
   }
 }

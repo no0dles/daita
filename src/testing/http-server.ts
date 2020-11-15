@@ -1,7 +1,6 @@
-import { Express } from 'express';
 import { Server } from 'http';
-import axios from 'axios';
 import { Defer } from '../packages/common/utils/defer';
+import { NodeHttp } from '../packages/http-client-common';
 
 export interface HttpServerApp {
   start(): Promise<void>;
@@ -16,8 +15,8 @@ export class HttpExpressServerApp implements HttpServerApp {
   public readonly port: number;
   public readonly uri: string;
 
-  constructor(private app: Express, port?: number) {
-    this.port = port ?? 9000 + Math.floor(Math.random() * 1000);
+  constructor(private fn: (port: number) => Promise<Server>) {
+    this.port = 9000 + Math.floor(Math.random() * 1000);
     this.uri = `http://localhost:${this.port}`;
   }
 
@@ -41,16 +40,12 @@ export class HttpExpressServerApp implements HttpServerApp {
     if (this.server) {
       return;
     }
-    const defer = new Defer<void>();
-    this.server = this.app.listen(this.port, () => {
-      defer.resolve();
-    });
-    await defer.promise;
+    this.server = await this.fn(this.port);
   }
 }
 
-export function getServer(app: Express, port?: number): HttpServerApp {
-  return new HttpExpressServerApp(app, port);
+export function getServer(fn: (port: number) => Promise<Server>): HttpServerApp {
+  return new HttpExpressServerApp(fn);
 }
 
 export interface GetResult<T> {
@@ -64,20 +59,16 @@ export async function httpPost<T = any>(
   json: any,
   options?: { headers: any },
 ): Promise<GetResult<T>> {
-  try {
-    const res = await axios.post(app.uri + (path.startsWith('/') ? path : `/${path}`), json, {
-      headers: options?.headers,
-    });
-    return {
-      statusCode: res.status,
-      body: res.data,
-    };
-  } catch (e) {
-    return {
-      statusCode: e.response.status,
-      body: e.response.data,
-    };
-  }
+  const http = new NodeHttp(app.uri, null);
+  const res = await http.json({
+    path,
+    data: json,
+    headers: options?.headers,
+  });
+  return {
+    statusCode: res.statusCode,
+    body: res.data,
+  };
 }
 
 export async function httpGet<T = any>(
@@ -85,16 +76,14 @@ export async function httpGet<T = any>(
   path: string,
   options?: { headers: any },
 ): Promise<GetResult<T>> {
-  try {
-    const res = await axios.get(app.uri + (path.startsWith('/') ? path : `/${path}`), { headers: options?.headers });
-    return {
-      statusCode: res.status,
-      body: res.data,
-    };
-  } catch (e) {
-    return {
-      statusCode: e.response.status,
-      body: e.response.data,
-    };
-  }
+  const http = new NodeHttp(app.uri, null);
+  const res = await http.json({
+    path,
+    method: 'GET',
+    headers: options?.headers,
+  });
+  return {
+    statusCode: res.statusCode,
+    body: res.data,
+  };
 }

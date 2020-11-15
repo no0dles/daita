@@ -1,11 +1,11 @@
 import * as fs from 'fs';
-import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
 import { RelationalTransactionAdapterImplementation } from '../../relational/adapter/relational-adapter-implementation';
 import { isKind } from '../../common/utils/is-kind';
-import { SqliteAdapter, SqliteRelationalAdapter } from './sqlite-relational-adapter';
-import { RelationalDataAdapter } from '../../relational';
-import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
+import { SqliteAdapter } from './sqlite-relational-adapter';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
+import { sqliteFormatter } from '../formatter/sqlite-formatter';
+import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
+import { SqliteSql } from '../sql/sqlite-sql';
 
 export type SqliteAdapterOptions = SqliteAdapterFileOptions | SqliteAdapterMemoryOptions;
 
@@ -31,11 +31,11 @@ const isFileOptions = (val?: SqliteAdapterOptions): val is SqliteAdapterFileOpti
 const isMemoryOptions = (val?: SqliteAdapterOptions): val is SqliteAdapterMemoryOptions =>
   isKind<SqliteAdapterMemoryOptions>(val, ['memory']);
 
-export const sqliteAdapter: RelationalTransactionAdapterImplementation<any, SqliteAdapterOptions> &
-  RelationalMigrationAdapterImplementation<any, SqliteAdapterOptions> = {
-  getRelationalAdapter(
-    options: SqliteAdapterOptions,
-  ): RelationalTransactionAdapter<any> & RelationalDataAdapter<any> & RelationalMigrationAdapter<any> {
+export class SqliteAdapterImplementation
+  implements
+    RelationalTransactionAdapterImplementation<SqliteSql, SqliteAdapterOptions>,
+    RelationalMigrationAdapterImplementation<SqliteSql, SqliteAdapterOptions> {
+  getRelationalAdapter(options: SqliteAdapterOptions): RelationalMigrationAdapter<SqliteSql> {
     if (isFileOptions(options)) {
       const fileName = getSqliteFilename(options.file);
       if (options.dropIfExists && fileName !== ':memory:') {
@@ -43,12 +43,16 @@ export const sqliteAdapter: RelationalTransactionAdapterImplementation<any, Sqli
           fs.unlinkSync(fileName);
         }
       }
-      return new SqliteAdapter(fileName);
+      return new SqliteAdapter(fileName, () => {});
     }
     if (isMemoryOptions(options) && options.memory) {
-      return new SqliteAdapter(':memory:');
+      return new SqliteAdapter(':memory:', () => {});
     }
 
-    return new SqliteAdapter(':memory:');
-  },
-};
+    return new SqliteAdapter(':memory:', () => {});
+  }
+
+  supportsQuery<S>(sql: S): this is RelationalMigrationAdapterImplementation<SqliteSql | S, SqliteAdapterOptions> {
+    return sqliteFormatter.canHandle(sql);
+  }
+}

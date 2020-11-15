@@ -1,3 +1,3 @@
-import { sqliteAdapter } from './adapter/sqlite-adapter-implementation';
+import { SqliteAdapterImplementation } from './adapter/sqlite-adapter-implementation';
 
-export const adapter = sqliteAdapter;
+export const adapter = new SqliteAdapterImplementation();

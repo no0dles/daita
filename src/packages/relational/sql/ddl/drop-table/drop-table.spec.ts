@@ -1,28 +1,26 @@
 import { table } from '../../keyword/table/table';
-import { dataClients } from '../../../../../testing/relational/adapters';
-import { ClientTestContext } from '../../../../../testing/relational/adapter/client-test-context';
+import { testClient } from '../../../../../testing/relational/adapters';
 import { createPersonTable } from '../../../../../testing/schema/test-schema';
 import { Person } from '../../../../../testing/schema/person';
 
 describe('relational/sql/ddl/drop-table', () => {
-  describe.each(dataClients)('%s', (ctxFactory) => {
-    let ctx: ClientTestContext;
+  const clients = testClient('pg', 'sqlite');
 
+  describe.each(clients)('%s', (client) => {
     beforeAll(async () => {
-      ctx = await ctxFactory.getClient();
-      await createPersonTable(ctx.client);
+      await createPersonTable(client);
     });
 
-    afterAll(() => ctx.close());
+    afterAll(() => client.close());
 
     it('should create person table', async () => {
-      await ctx.client.exec({
+      await client.exec({
         dropTable: table(Person),
       });
     });
 
     it('should create person table if exists', async () => {
-      await ctx.client.exec({
+      await client.exec({
         dropTable: table(Person),
         ifExists: true,
       });

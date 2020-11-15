@@ -1,7 +1,8 @@
-import { getRandomTestPort, pullImage, waitForPort } from './postgres-test';
-import Docker from 'dockerode';
 import { shell } from '../scripts/shell';
 import { sleep } from '../packages/common/utils/sleep';
+import { getRandomTestPort } from '../packages/node/random-port';
+import { runContainer } from '../packages/node/docker';
+import { waitForPort } from '../packages/node/network';
 
 export interface NpmRegistry {
   uri: string;
@@ -9,26 +10,15 @@ export interface NpmRegistry {
 }
 
 export async function getNpmRegistry(): Promise<NpmRegistry> {
-  const docker = new Docker();
   const newPort = getRandomTestPort();
 
   const image = 'verdaccio/verdaccio:4';
-  await pullImage(docker, image);
-
-  const container = await docker.createContainer({
-    Image: image,
-    Env: [],
-    Labels: {
+  const container = await runContainer({
+    image,
+    labels: {
       'ch.daita.source': 'test',
     },
-    HostConfig: {
-      PortBindings: {
-        '4873/tcp': [{ HostPort: `${newPort}` }],
-      },
-    },
-    ExposedPorts: {
-      '4873/tcp:': {},
-    },
+    portBinding: { 4873: newPort },
   });
   await container.start();
   await waitForPort(newPort);

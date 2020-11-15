@@ -11,6 +11,7 @@ import { failNever } from '../../common/utils/fail-never';
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import { PostgresMigrationAdapter } from './postgres-migration-adapter';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
+import { postgresFormatter } from '../formatters/postgres-formatter';
 
 export interface PostgresAdapterBaseOptions {
   listenForNotifications?: boolean;
@@ -107,6 +108,10 @@ class PostgresAdapterImplementation
       }),
       { listenForNotifications: options?.listenForNotifications ?? false },
     );
+  }
+
+  supportsQuery<S>(sql: S): this is RelationalMigrationAdapterImplementation<PostgresSql | S, PostgresAdapterOptions> {
+    return postgresFormatter.canHandle(sql);
   }
 }
 

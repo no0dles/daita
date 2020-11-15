@@ -1,23 +1,23 @@
 import { table } from '../../keyword/table/table';
-import { dataClients } from '../../../../../testing/relational/adapters';
-import { ClientTestContext } from '../../../../../testing/relational/adapter/client-test-context';
 import { createPersonTable } from '../../../../../testing/schema/test-schema';
 import { Person } from '../../../../../testing/schema/person';
+import { testClient } from '../../../../../testing/relational/adapters';
 
 describe('relational/sql/ddl/lock-table', () => {
-  describe.each(dataClients)('%s', (ctxFactory) => {
-    let ctx: ClientTestContext;
+  const clients = testClient('pg');
 
+  describe.each(clients)('%s', (client) => {
     beforeAll(async () => {
-      ctx = await ctxFactory.getClient();
-      await createPersonTable(ctx.client);
+      await createPersonTable(client);
     });
 
-    afterAll(() => ctx.close());
+    afterAll(() => client.close());
 
     it('should lock person table', async () => {
-      await ctx.client.exec({
-        lockTable: table(Person),
+      await client.transaction(async (trx) => {
+        await trx.exec({
+          lockTable: table(Person),
+        });
       });
     });
   });

@@ -118,4 +118,8 @@ export class RelationalClient implements SelectClient, UpdateClient, DeleteClien
   supportsQuery(sql: any): boolean {
     return this.dataAdapter.supportsQuery(sql);
   }
+
+  toString() {
+    return this.dataAdapter.toString();
+  }
 }

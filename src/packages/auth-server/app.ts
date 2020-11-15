@@ -60,10 +60,14 @@ export function createAuthApp(ctx: TransactionContext<any>, port: number) {
   );
   app.use('/:userPoolId/.well-known', wellKnownRoute);
 
+  app.use((req, res) => {
+    res.status(404).json({ message: 'not found' }).end();
+  });
+
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.log(err);
     if (process.env.NODE_ENV === 'production') {
-      res.status(500).end();
+      res.status(500).end({ message: 'internal error' });
     } else {
       res.status(500).json({ message: err.message });
     }

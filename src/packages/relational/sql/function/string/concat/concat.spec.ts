@@ -2,24 +2,22 @@ import { concat } from './concat';
 import { field } from '../../../keyword/field/field';
 import { table } from '../../../keyword/table/table';
 import { Person } from '../../../../../../testing/schema/person';
-import { dataClients } from '../../../../../../testing/relational/adapters';
 import { createPerson, createPersonTable } from '../../../../../../testing/schema/test-schema';
-import { ClientTestContext } from '../../../../../../testing/relational/adapter/client-test-context';
+import { testClient } from '../../../../../../testing/relational/adapters';
 
 describe('relational/sql/function/string/concat', () => {
-  describe.each(dataClients)('%s', (ctxFactory) => {
-    let ctx: ClientTestContext;
+  const clients = testClient('pg', 'sqlite');
 
+  describe.each(clients)('%s', (client) => {
     beforeAll(async () => {
-      ctx = await ctxFactory.getClient();
-      await createPersonTable(ctx.client);
-      await createPerson(ctx.client, { firstName: 'Foo', lastName: 'Bar' });
+      await createPersonTable(client);
+      await createPerson(client, { firstName: 'Foo', lastName: 'Bar' });
     });
 
-    afterAll(() => ctx.close());
+    afterAll(() => client.close());
 
     it('should concat fields', async () => {
-      const result = await ctx.client.selectFirst({
+      const result = await client.selectFirst({
         select: {
           name: concat(field(Person, 'firstName'), field(Person, 'lastName')),
         },
@@ -29,7 +27,7 @@ describe('relational/sql/function/string/concat', () => {
     });
 
     it('should concat values and fields', async () => {
-      const result = await ctx.client.selectFirst({
+      const result = await client.selectFirst({
         select: {
           name: concat('Foo ', field(Person, 'lastName')),
         },

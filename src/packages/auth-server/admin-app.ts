@@ -11,7 +11,7 @@ import { adminTokenRoute } from './routes/admin-token';
 import { TransactionContext } from '../orm';
 import { Server } from 'http';
 
-export function createAuthAdminApp(client: TransactionContext<any>, port: number) {
+export function createAuthAdminApp(context: TransactionContext<any>, port: number) {
   const adminApp = express();
 
   adminApp.use(helmet());
@@ -21,14 +21,15 @@ export function createAuthAdminApp(client: TransactionContext<any>, port: number
     adminApp.use(cors());
   }
 
-  adminApp.use('/:userPoolId/refresh', refreshRoute(client));
-  adminApp.use('/:userPoolId/login', loginRoute(client));
-  adminApp.use('/:userPoolId/token', adminTokenRoute(client));
+  adminApp.use('/:userPoolId/refresh', refreshRoute(context));
+  adminApp.use('/:userPoolId/login', loginRoute(context));
+  adminApp.use('/:userPoolId/token', adminTokenRoute(context));
 
   adminApp.use(
     '/api/relational',
     authMiddleware,
-    relationalRoute(client, {
+    relationalRoute({
+      context,
       authorization: false,
       cors: false,
       transactionTimeout: 4000,

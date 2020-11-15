@@ -31,7 +31,6 @@ import { NotBetweenFormatter } from '../sql/operands/comparison/not-between/not-
 import { DeleteFormatter } from '../sql/dml/delete/delete-formatter';
 import { LikeFormatter } from '../sql/operands/comparison/like/like-formatter';
 import { ConcatFormatter } from '../sql/function/string/concat/concat-formatter';
-import { DropTableFormatter } from '../sql/ddl/drop-table/drop-table';
 import { InsertFormatter } from '../sql/dml/insert/insert-formatter';
 
 export const ansiFormatter = new Formatter();
@@ -68,5 +67,4 @@ ansiFormatter.add(new NotBetweenFormatter());
 ansiFormatter.add(new DeleteFormatter());
 ansiFormatter.add(new LikeFormatter());
 ansiFormatter.add(new ConcatFormatter());
-ansiFormatter.add(new DropTableFormatter());
 ansiFormatter.add(new InsertFormatter());

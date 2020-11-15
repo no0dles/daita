@@ -11,7 +11,7 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
   constructor(
     private migrationAdapter: RelationalMigrationAdapter<any> & RelationalTransactionAdapter<any>,
     migrationTree: MigrationTree,
-    auth: RuleContext,
+    auth: RuleContext | null,
   ) {
     super(migrationAdapter, migrationTree, auth);
   }

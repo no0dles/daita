@@ -9,6 +9,7 @@ export interface HttpRequestOptions {
   headers?: { [key: string]: string };
   query?: { [key: string]: string };
   authorized?: boolean;
+  method?: 'POST' | 'GET';
 }
 
 export interface HttpSendResult {
@@ -29,4 +30,10 @@ export function getQueryString(query: any): string {
         .map((key) => `${key}=${query[key]}`)
         .join('&')
     : '';
+}
+
+export function getUri(baseUrl: string, path: string, qs?: string) {
+  return `${baseUrl}${baseUrl.endsWith('/') ? '' : '/'}${path.startsWith('/') ? path.substr(1) : path}${
+    qs && qs.length > 0 ? '?' + qs : ''
+  }`;
 }

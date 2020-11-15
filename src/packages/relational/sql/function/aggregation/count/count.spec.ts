@@ -1,27 +1,25 @@
 import { table } from '../../../keyword/table/table';
-import { dataClients } from '../../../../../../testing/relational/adapters';
+import { testClient } from '../../../../../../testing/relational/adapters';
 import { createMountain, createMountainTable } from '../../../../../../testing/schema/test-schema';
 import { Mountain } from '../../../../../../testing/schema/mountain';
 import { count } from './count';
 import { greaterThan } from '../../../operands/comparison/greater-than/greater-than';
 import { field } from '../../../keyword/field/field';
-import { ClientTestContext } from '../../../../../../testing/relational/adapter/client-test-context';
 
 describe('relational/sql/function/aggregation/count', () => {
-  describe.each(dataClients)('%s', (ctxFactory) => {
-    let ctx: ClientTestContext;
+  const clients = testClient('pg', 'sqlite');
 
+  describe.each(clients)('%s', (client) => {
     beforeAll(async () => {
-      ctx = await ctxFactory.getClient();
-      await createMountainTable(ctx.client);
-      await createMountain(ctx.client, { prominence: 10 });
-      await createMountain(ctx.client, { prominence: 20 });
+      await createMountainTable(client);
+      await createMountain(client, { prominence: 10 });
+      await createMountain(client, { prominence: 20 });
     });
 
-    afterAll(() => ctx.close());
+    afterAll(() => client.close());
 
     it('should count', async () => {
-      const result = await ctx.client.selectFirst({
+      const result = await client.selectFirst({
         select: count(),
         from: table(Mountain),
       });
@@ -29,7 +27,7 @@ describe('relational/sql/function/aggregation/count', () => {
     });
 
     it('should count with filter', async () => {
-      const result = await ctx.client.selectFirst({
+      const result = await client.selectFirst({
         select: count(),
         from: table(Mountain),
         where: greaterThan(field(Mountain, 'prominence'), 10),

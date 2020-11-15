@@ -1,24 +1,19 @@
-import { dataClients } from '../../../../../testing/relational/adapters';
-import { ClientTestContext } from '../../../../../testing/relational/adapter/client-test-context';
+import { testClient } from '../../../../../testing/relational/adapters';
 
 describe('relational/sql/ddl/create-schema', () => {
-  describe.each(dataClients)('%s', (ctxFactory) => {
-    let ctx: ClientTestContext;
+  const clients = testClient('pg');
 
-    beforeAll(async () => {
-      ctx = await ctxFactory.getClient();
-    });
-
-    afterAll(() => ctx.close());
+  describe.each(clients)('%s', (client) => {
+    afterAll(() => client.close());
 
     it('should create schema', async () => {
-      await ctx.client.exec({
+      await client.exec({
         createSchema: 'auth',
       });
     });
 
     it('should create schema if not exists', async () => {
-      await ctx.client.exec({
+      await client.exec({
         createSchema: 'auth',
         ifNotExists: true,
       });

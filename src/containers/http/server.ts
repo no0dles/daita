@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import { AppAuthorization } from '../../packages/http-server-common/app-authorization';
 import { createHttpServerApp } from '../../packages/http-server/app';
 import { Context } from '../../packages/orm';
+import { Application } from '../../packages/node/application';
 
 const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT ? parseInt(process.env.TRANSACTION_TIMEOUT) : 4000;
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
@@ -26,36 +27,22 @@ if (fs.existsSync(AUTH_FILE)) {
   }
 }
 
-process
-  .on('unhandledRejection', (reason, p) => {
-    console.error(reason, 'Unhandled Rejection at Promise', p);
-  })
-  .on('uncaughtException', (err) => {
-    console.error(err, 'Uncaught Exception thrown');
-    process.exit(1);
-  });
-
-export async function run(client: Context<any>) {
-  console.log(authentication);
-
-  const app = createHttpServerApp(client, {
-    transactionTimeout: TRANSACTION_TIMEOUT,
-    authorization: authentication,
-    cors: true, //TODO make it configurable
-  });
-
-  const server = app.listen(PORT, async () => {
-    console.log(`listening ${PORT}`);
-  });
-
-  process.on('SIGTERM', () => {
-    setTimeout(() => {
-      if (client) {
-        client.close();
-      }
-      if (server) {
-        server.close();
-      }
-    }, 15000);
-  });
+export function run(context: Context<any>) {
+  const application = new Application();
+  application.attach(context);
+  application
+    .attach(
+      createHttpServerApp(
+        {
+          context,
+          transactionTimeout: TRANSACTION_TIMEOUT,
+          authorization: authentication,
+          cors: true, //TODO make it configurable
+        },
+        PORT,
+      ),
+    )
+    .then(() => {
+      console.log(`listening ${PORT}`);
+    });
 }

@@ -358,4 +358,7 @@ export class PostgresMigrationAdapter extends PostgresAdapter implements Relatio
     }
     return and(...(conditions as any));
   }
+  toString() {
+    return 'postgres';
+  }
 }

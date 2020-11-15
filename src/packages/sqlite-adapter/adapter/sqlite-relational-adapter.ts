@@ -11,7 +11,6 @@ import { RelationalClient } from '../../relational/client/relational-client';
 import { getTableDescriptionIdentifier } from '../../orm/schema/description/relational-schema-description';
 import { MigrationStep } from '../../orm';
 import { RelationalAddTableFieldMigrationStep } from '../../orm/migration/steps/relational-add-table-field.migration-step';
-import { serializeRule } from '../../relational/permission/parsing';
 import { SqliteSql } from '../sql/sqlite-sql';
 import { ConditionDescription } from '../../relational/sql/operands/condition-description';
 
@@ -34,15 +33,15 @@ class MigrationSteps {
 export class SqliteRelationalAdapter
   extends SqliteRelationalDataAdapter
   implements RelationalTransactionAdapter<SqliteSql> {
-  constructor(private fileName: string) {
-    super(new (sqlite.verbose().Database)(fileName));
+  constructor(protected fileName: string, closeFn: () => void) {
+    super(new (sqlite.verbose().Database)(fileName), closeFn);
   }
 
   transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
     return this.transactionSerializable.run(async () => {
       await this.db.run('BEGIN');
       try {
-        const result = await action(new SqliteRelationalDataAdapter(this.db));
+        const result = await action(new SqliteRelationalDataAdapter(this.db, () => {}));
         await this.run('COMMIT');
         return result;
       } catch (e) {
@@ -55,6 +54,10 @@ export class SqliteRelationalAdapter
 
 export class SqliteAdapter extends SqliteRelationalAdapter implements RelationalMigrationAdapter<SqliteSql> {
   private initalizedSchema = false;
+
+  toString() {
+    return this.fileName === ':memory:' ? 'sqlite-memory' : 'sqlite-file';
+  }
 
   async applyMigration(
     client: Client<SqliteSql>,

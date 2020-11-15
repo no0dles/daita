@@ -1,4 +1,4 @@
-import { encodeFormData, getQueryString, Http, HttpRequestOptions, HttpSendResult } from './http';
+import { encodeFormData, getQueryString, getUri, Http, HttpRequestOptions, HttpSendResult } from './http';
 import { AuthProvider, TokenIssuer } from './auth-provider';
 import { getTokenIssuer } from './shared-http';
 import { parseJson } from './json';
@@ -12,6 +12,7 @@ export class BrowserHttp implements Http {
 
   formData(options: HttpRequestOptions): Promise<HttpSendResult> {
     return this.sendRequest({
+      method: options.method,
       authorized: options.authorized,
       data: encodeFormData(options.data),
       headers: {
@@ -25,6 +26,7 @@ export class BrowserHttp implements Http {
 
   json<T>(options: HttpRequestOptions): Promise<HttpSendResult> {
     return this.sendRequest({
+      method: options.method,
       path: options.path,
       headers: {
         ...(options.headers || {}),
@@ -38,7 +40,7 @@ export class BrowserHttp implements Http {
 
   private async sendRequest(options: HttpRequestOptions) {
     const qs = getQueryString(options.query);
-    const url = `${this.baseUrl}/${options.path}${qs.length > 0 ? '?' + qs : ''}`;
+    const url = getUri(this.baseUrl, options.path, qs);
     const httpHeader = new Headers(options.headers);
     if (options.authorized) {
       const token = await this.tokenProvider.getToken();
@@ -47,7 +49,7 @@ export class BrowserHttp implements Http {
       }
     }
     try {
-      const result = await fetch(url, { method: 'POST', body: options.data, headers: httpHeader });
+      const result = await fetch(url, { method: options.method || 'POST', body: options.data, headers: httpHeader });
       const timeout = result.headers.get('x-transaction-timeout');
       let data = '';
 

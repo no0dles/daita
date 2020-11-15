@@ -1,4 +1,4 @@
-import { encodeFormData, getQueryString, Http, HttpRequestOptions, HttpSendResult } from './http';
+import { encodeFormData, getQueryString, getUri, Http, HttpRequestOptions, HttpSendResult } from './http';
 import { request as httpsRequest, RequestOptions } from 'https';
 import { request as httpRequest } from 'http';
 import { parse } from 'url';
@@ -15,6 +15,7 @@ export class NodeHttp implements Http {
 
   formData(options: HttpRequestOptions): Promise<HttpSendResult> {
     return this.sendRequest({
+      method: options.method,
       authorized: options.authorized,
       data: encodeFormData(options.data),
       headers: {
@@ -28,6 +29,7 @@ export class NodeHttp implements Http {
 
   json<T>(options: HttpRequestOptions): Promise<HttpSendResult> {
     return this.sendRequest({
+      method: options.method,
       path: options.path,
       headers: {
         ...(options.headers || {}),
@@ -41,7 +43,7 @@ export class NodeHttp implements Http {
 
   private async sendRequest(options: HttpRequestOptions) {
     const qs = getQueryString(options.query);
-    const url = `${this.baseUrl}/${options.path}${qs.length > 0 ? '?' + qs : ''}`;
+    const url = getUri(this.baseUrl, options.path, qs);
 
     const headers = options.headers || {};
     if (options.authorized) {
@@ -57,7 +59,7 @@ export class NodeHttp implements Http {
       hostname: parsedUrl.hostname,
       port: parsedUrl.port,
       path: parsedUrl.path,
-      method: 'POST',
+      method: options.method || 'POST',
     };
     const requestMethod = this.baseUrl.startsWith('https:') ? httpsRequest : httpRequest;
 
@@ -70,8 +72,8 @@ export class NodeHttp implements Http {
           data += chunk;
         });
         res.on('end', () => {
-          let responseData = null;
-          if (data) {
+          let responseData = data;
+          if (data && res.headers['content-type']?.toString().indexOf('application/json') !== -1) {
             responseData = parseJson(data);
           }
           const timeout = res.headers['x-transaction-timeout'] as string;

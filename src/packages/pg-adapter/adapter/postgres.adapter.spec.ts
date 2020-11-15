@@ -1,5 +1,5 @@
 import { PostgresAdapter } from './postgres.adapter';
-import { getPostgresDb, PostgresDb } from '../../../testing/postgres-test';
+import { getPostgresDb, PostgresDb } from '../testing/postgres-test-adapter';
 
 describe('postgres-adapter', () => {
   let adapter: PostgresAdapter;

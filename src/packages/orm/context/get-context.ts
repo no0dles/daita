@@ -31,7 +31,7 @@ export type ContextOptions = ContextSchemaOptions | ContextMigrationTreeOptions;
 
 export function getContext<TQuery, TOptions>(
   adapterImplementation: RelationalMigrationAdapterImplementation<TQuery, TOptions>,
-  options: Partial<ContextSchemaOptions> & TOptions,
+  options: Partial<ContextOptions> & TOptions,
 ): MigrationContext<TQuery>;
 export function getContext<TQuery, TOptions>(
   adapterImplementation: RelationalTransactionAdapterImplementation<TQuery, TOptions>,
@@ -50,7 +50,7 @@ export function getContext<TQuery, TOptions>(
 ): MigrationContext<TQuery> | TransactionContext<TQuery> | Context<TQuery> {
   const dataAdapter = adapterImplementation.getRelationalAdapter(options);
   const migrationTree = isContextSchemaOptions(options) ? options.schema.getMigrations() : options.migrationTree;
-  const auth: RuleContext = options.auth || { isAuthorized: false };
+  const auth: RuleContext | null = options.auth || null;
   if (isRelationalMigrationAdapter(dataAdapter)) {
     return new RelationalMigrationContext(dataAdapter, migrationTree, auth);
   } else if (isRelationalTransactionAdapter(dataAdapter)) {

@@ -11,18 +11,18 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
   protected transactionSerializable = new Serializable();
   protected runSerializable = new Serializable();
 
-  constructor(protected db: sqlite.Database) {
+  constructor(protected db: sqlite.Database, private closeFn: () => void) {
     this.db.on('error', (err) => {
       console.log('onerr', err);
     });
     this.db.on('close', () => {
-      console.log('close', arguments);
+      //console.log('close', arguments);
     });
     this.db.on('open', () => {
-      console.log('open', arguments);
+      //console.log('open', arguments);
     });
     this.db.on('trace', () => {
-      console.log('trace', arguments);
+      //console.log('trace', arguments);
     });
   }
 
@@ -34,6 +34,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
       } else {
         defer.resolve();
       }
+      this.closeFn();
     });
     await defer.promise;
   }

@@ -10,7 +10,7 @@ export class RelationalTransactionContext extends RelationalContext implements T
   constructor(
     protected transactionAdapter: RelationalTransactionAdapter<any>,
     migrationTree: MigrationTree,
-    auth: RuleContext,
+    auth: RuleContext | null,
   ) {
     super(transactionAdapter, migrationTree, auth);
   }

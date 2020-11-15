@@ -1,24 +1,18 @@
-import { dataClients } from '../../../../../testing/relational/adapters';
 import { createPerson, createPersonTable } from '../../../../../testing/schema/test-schema';
-import { ClientTestContext } from '../../../../../testing/relational/adapter/client-test-context';
+import { testClient } from '../../../../../testing/relational/adapters';
 
 describe('relational/sql/ddl/create-table', () => {
-  describe.each(dataClients)('%s', (ctxFactory) => {
-    let ctx: ClientTestContext;
-
-    beforeAll(async () => {
-      ctx = await ctxFactory.getClient();
-    });
-
-    afterAll(() => ctx.close());
-
+  const clients = testClient('pg', 'sqlite');
+  describe.each(clients)('%s', (client) => {
     it('should create person table', async () => {
-      await createPersonTable(ctx.client);
-      await createPerson(ctx.client, {
+      await createPersonTable(client);
+      await createPerson(client, {
         id: 'a',
         firstName: 'Foo',
         lastName: 'Bar',
       });
     });
+
+    afterAll(() => client.close());
   });
 });

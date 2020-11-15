@@ -1,21 +1,25 @@
 import { Request, Response, Router } from 'express';
 import { validateExecBody } from '../middleswares/validate-body.middleware';
 import { ContextManager, TransactionContextManager } from '../../http-server-common/context-manager';
-import { AppOptions } from '../../http-server-common/app-options';
+import {
+  AppOptions,
+  HttpServerTransactionOptions,
+  isHttpServerTransactionOptions,
+} from '../../http-server-common/app-options';
 import { TransactionManager } from '../../http-server-common/transaction-manager';
 import { Context, TransactionContext } from '../../orm';
 import { isTransactionContext } from '../../orm/context/transaction-context';
 import { getRequestContext } from '../get-request-context';
 
-export function relationalRoute(ctx: TransactionContext<any> | Context<any>, options: AppOptions) {
-  const router = relationalDataRoute(ctx, options);
-  if (isTransactionContext(ctx)) {
-    extendTransactionRoutes(ctx, options, router);
+export function relationalRoute(options: AppOptions) {
+  const router = relationalDataRoute(options);
+  if (isHttpServerTransactionOptions(options)) {
+    extendTransactionRoutes(options, router);
   }
   return router;
 }
 
-function extendTransactionRoutes(ctx: TransactionContext<any>, options: AppOptions, router: Router) {
+function extendTransactionRoutes(options: HttpServerTransactionOptions, router: Router) {
   const manager = new TransactionContextManager(options);
 
   function getTransactionId(req: Request, res: Response): string | null {
@@ -60,7 +64,7 @@ function extendTransactionRoutes(ctx: TransactionContext<any>, options: AppOptio
         return;
       }
 
-      const transaction = manager.create(getRequestContext(ctx, req), tid);
+      const transaction = manager.create(getRequestContext(req, options), tid);
       await transaction.started;
       res.setHeader('X-Transaction', tid);
       res.status(200).send();
@@ -92,12 +96,12 @@ function extendTransactionRoutes(ctx: TransactionContext<any>, options: AppOptio
   });
 }
 
-export function relationalDataRoute(ctx: Context<any>, options: AppOptions) {
+export function relationalDataRoute(options: AppOptions) {
   const router = Router();
 
   router.post('/exec', validateExecBody, async (req, res, next) => {
     try {
-      const context = new ContextManager(getRequestContext(ctx, req));
+      const context = new ContextManager(getRequestContext(req, options));
       const result = await context.exec(req.body.sql);
       res.status(200).json(result);
     } catch (e) {

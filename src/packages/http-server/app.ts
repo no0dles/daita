@@ -6,7 +6,7 @@ import { jwtAuth } from './middleswares/jwt-auth.middleware';
 import { errorMiddleware } from './middleswares/error.middleware';
 import { tokenAuth } from './middleswares/token-auth.middleware';
 import { AppOptions } from '../http-server-common/app-options';
-import { Context, TransactionContext } from '../orm';
+import { Server } from 'http';
 
 declare global {
   namespace Express {
@@ -22,7 +22,7 @@ declare global {
   }
 }
 
-export function createHttpServerApp(client: TransactionContext<any> | Context<any>, options: AppOptions) {
+export function createHttpServerApp(options: AppOptions, port: number) {
   const app = express();
 
   if (options.cors === true) {
@@ -47,7 +47,12 @@ export function createHttpServerApp(client: TransactionContext<any> | Context<an
     app.use(jwtAuth(options.authorization.providers));
   }
 
-  app.use('/api/relational', relationalRoute(client, options));
+  app.use('/api/relational', relationalRoute(options));
   app.use(errorMiddleware());
-  return app;
+
+  return new Promise<Server>((resolve) => {
+    const server = app.listen(port, () => {
+      resolve(server);
+    });
+  });
 }

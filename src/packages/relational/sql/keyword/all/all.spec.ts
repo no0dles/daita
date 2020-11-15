@@ -1,24 +1,22 @@
 import { all } from './all';
 import { table } from '../table/table';
 import { createPerson, createPersonTable } from '../../../../../testing/schema/test-schema';
-import { dataClients } from '../../../../../testing/relational/adapters';
 import { Person } from '../../../../../testing/schema/person';
-import { ClientTestContext } from '../../../../../testing/relational/adapter/client-test-context';
+import { testClient } from '../../../../../testing/relational/adapters';
 
 describe('relational/sql/keyword/all', () => {
-  describe.each(dataClients)('%s', (ctxFactory) => {
-    let ctx: ClientTestContext;
+  const clients = testClient('pg', 'sqlite');
 
+  describe.each(clients)('%s', (client) => {
     beforeAll(async () => {
-      ctx = await ctxFactory.getClient();
-      await createPersonTable(ctx.client);
-      await createPerson(ctx.client, { firstName: 'Foo', lastName: 'Bar', id: 'a' });
+      await createPersonTable(client);
+      await createPerson(client, { firstName: 'Foo', lastName: 'Bar', id: 'a' });
     });
 
-    afterAll(() => ctx.close());
+    afterAll(() => client.close());
 
     it('should select all fields', async () => {
-      const result = await ctx.client.selectFirst({
+      const result = await client.selectFirst({
         select: all(),
         from: table(Person),
       });
@@ -26,7 +24,7 @@ describe('relational/sql/keyword/all', () => {
     });
 
     it('should select all fields from table', async () => {
-      const result = await ctx.client.selectFirst({
+      const result = await client.selectFirst({
         select: all(Person),
         from: table(Person),
       });
