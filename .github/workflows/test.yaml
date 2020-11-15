@@ -28,7 +28,7 @@ jobs:
             ${{ runner.os }}-node-
       - run: npm install
       - run: npm test
-      - run: coverage upload
+      - name: coverage upload
         uses: codacy/codacy-coverage-reporter-action@master
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}

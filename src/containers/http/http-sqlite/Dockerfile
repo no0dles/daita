@@ -1,4 +1,4 @@
-FROM node:13-alpine
+FROM node:13-alpine as build
 
 WORKDIR /build
 COPY package.json .
@@ -12,12 +12,12 @@ COPY src/packages src/packages
 RUN npx tsc
 
 ###################################
-FROM node:13-alpine
+FROM node:13-alpine as runtime
 
 WORKDIR /app
 COPY src/containers/http/http-sqlite/package.json .
 RUN npm i --production
 
-COPY --from=0 /build/dist/containers/http/http-sqlite containers/http/http-sqlite
-COPY --from=0 /build/dist/packages packages
+COPY --from=build /build/dist/containers/http/http-sqlite containers/http/http-sqlite
+COPY --from=build /build/dist/packages packages
 CMD ["node", "containers/http/http-sqlite/index.js"]
