@@ -4,8 +4,10 @@ import { PostgresFormatContext } from './postgres-format-context';
 import { DuplicateKeyError, RelationDoesNotExistsError, UnknownError } from '../../relational/error/relational-error';
 import { RelationalRawResult } from '../../relational/adapter/relational-raw-result';
 import { RelationalDataAdapter } from '../../relational/adapter/relational-data-adapter';
+import { createLogger } from '../../common/utils/logger';
 
 export class PostgresDataAdapter implements RelationalDataAdapter {
+  private readonly logger = createLogger({ package: 'pg-adapter' });
   constructor(private client: PoolClient) {}
 
   async close(): Promise<void> {
@@ -13,18 +15,19 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
   }
 
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
+    this.logger.debug('execute raw sql', { query: sql, queryValues: values });
     return await this.mapError(this.client.query(sql, values), sql, values);
   }
 
-  async exec(query: any): Promise<RelationalRawResult> {
-    const result = this.formatQuery(query);
-    return await this.execRaw(result.sql, result.values);
+  async exec(sql: any): Promise<RelationalRawResult> {
+    const result = this.formatQuery(sql);
+    this.logger.debug('execute sql', { sql, query: result.sql, queryValues: result.values });
+    return await this.mapError(this.client.query(result.sql, result.values), result.sql, result.values);
   }
 
   private formatQuery(query: any): { sql: string; values: any[] } {
     const formatCtx = new PostgresFormatContext();
     const sql = postgresFormatter.format(query, formatCtx);
-    console.log(sql, formatCtx.getValues());
     return { sql, values: formatCtx.getValues() };
   }
 
@@ -33,7 +36,7 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
       const result = await run;
       return { rows: result.rows, rowCount: result.rowCount };
     } catch (e) {
-      console.log(sql, values, e);
+      this.logger.trace(e, { query: sql, queryValues: values });
       if (e.code === '23505') {
         const regex = /Key \((?<keys>.*?)\)=\((?<values>.*?)\) already exists./g;
         const groups = regex.exec(e.message)?.groups || {};

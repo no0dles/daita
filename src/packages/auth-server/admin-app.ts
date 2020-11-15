@@ -10,9 +10,11 @@ import { loginRoute } from './routes/login';
 import { adminTokenRoute } from './routes/admin-token';
 import { TransactionContext } from '../orm';
 import { Server } from 'http';
+import { createLogger } from '../common/utils/logger';
 
 export function createAuthAdminApp(context: TransactionContext<any>, port: number) {
   const adminApp = express();
+  const logger = createLogger({ package: 'auth-server' });
 
   adminApp.use(helmet());
   adminApp.use(bodyParser.json());
@@ -50,7 +52,7 @@ export function createAuthAdminApp(context: TransactionContext<any>, port: numbe
   });
 
   adminApp.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.log(err);
+    logger.error(err);
     if (process.env.NODE_ENV === 'production') {
       res.status(500).end();
     } else {
@@ -61,6 +63,7 @@ export function createAuthAdminApp(context: TransactionContext<any>, port: numbe
   return new Promise<Server>((resolve) => {
     const server = adminApp.listen(port, () => {
       resolve(server);
+      logger.info(`auth admin server is running on http://localhost:${port}`);
     });
   });
 }

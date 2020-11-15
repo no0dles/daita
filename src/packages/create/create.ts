@@ -2,8 +2,8 @@ import * as inquirer from 'inquirer';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'yaml';
-import { spawn } from 'child_process';
 import { randomString } from '../common/utils/random-string';
+import { runCommand } from '../node/command';
 
 export async function create(options: {
   npmClient?: string;
@@ -44,9 +44,7 @@ export async function create(options: {
   const projectName = options.projectName || answers.projectName;
 
   if (fs.existsSync(path.join(dir, projectName))) {
-    console.log(`directory ${projectName} already exists`);
-    process.exit(1);
-    return;
+    throw new Error(`directory ${projectName} already exists`);
   }
 
   const daitaVersion = `^${getOwnPackageJson((pkg) => pkg.version)}`;
@@ -161,20 +159,4 @@ export function getOwnPackageJson<T>(selector: (pkg: any) => T, dir?: string): T
     return null;
   }
   return getOwnPackageJson(selector, parentDir);
-}
-
-function runCommand(cmd: string, args: string[], cwd: string) {
-  return new Promise((resolve, reject) => {
-    const ps = spawn(cmd, args, {
-      cwd,
-      stdio: [process.stdin, process.stdout, process.stderr],
-    });
-    ps.once('exit', (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(code);
-      }
-    });
-  });
 }

@@ -3,11 +3,14 @@ import * as path from 'path';
 import { DaitaContextConfig } from '../../utils/data-adapter';
 import * as yaml from 'yaml';
 import { randomString } from '../../../common/utils/random-string';
+import { createLogger } from '../../../common/utils/logger';
+
+const logger = createLogger({ package: 'cli', command: 'init' });
 
 export function init(options: { cwd?: string }) {
   const cliFile = path.join(options.cwd || process.cwd(), 'daita.json');
   if (fs.existsSync(cliFile)) {
-    console.log('daita.json already exists');
+    logger.warn('daita.json already exists');
     return;
   }
 

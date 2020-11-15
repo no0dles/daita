@@ -1,6 +1,8 @@
 import * as express from 'express';
 import { verifyToken } from '../modules/token';
+import { createLogger } from '../../common/utils/logger';
 
+const logger = createLogger({ package: 'auth-server', middleware: 'auth' });
 export const authMiddleware = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
     const authHeader = req.header('Authorization');
@@ -21,7 +23,7 @@ export const authMiddleware = async (req: express.Request, res: express.Response
       req.user = user;
       next();
     } catch (e) {
-      console.error(e);
+      logger.error(e);
       res.status(401).end();
     }
   } catch (e) {

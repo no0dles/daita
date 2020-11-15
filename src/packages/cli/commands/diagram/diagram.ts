@@ -2,14 +2,15 @@ import { getSchemaInformation, getSchemaLocation } from '../../utils/path';
 import { AstContext } from '../../ast/ast-context';
 import * as path from 'path';
 import * as fs from 'fs';
+import { createLogger } from '../../../common/utils/logger';
 
 export async function diagram(options: { cwd?: string; schema?: string; filename?: string }) {
+  const logger = createLogger({ command: 'diagram', package: 'cli', options });
   const schemaLocation = await getSchemaLocation(options);
   const astContext = new AstContext();
   const schemaInfo = await getSchemaInformation(astContext, schemaLocation);
   if (!schemaInfo) {
-    console.warn('could not load schema');
-    return;
+    throw new Error('could not load schema');
   }
 
   const nomnoml = require('nomnoml');
@@ -38,6 +39,6 @@ export async function diagram(options: { cwd?: string; schema?: string; filename
   if (!fs.existsSync(svgDirectory)) {
     fs.mkdirSync(svgDirectory, { recursive: true });
   }
-  console.log(`Writing diagram to "${svgFile}"`);
+  logger.info(`Writing diagram to "${svgFile}"`);
   await fs.promises.writeFile(svgFile, svg);
 }

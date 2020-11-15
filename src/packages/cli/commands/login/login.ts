@@ -1,7 +1,9 @@
 import { cli } from 'cli-ux';
 import { sendPost } from '../../utils/https';
 import { saveGlobalConfig } from '../../utils/config';
+import { createLogger } from '../../../common/utils/logger';
 
+const logger = createLogger({ package: 'cli', command: 'login' });
 export async function login() {
   const username = await cli.prompt('Username', { required: true });
   const password = await cli.prompt('Password', { required: true, type: 'hide' });
@@ -12,10 +14,10 @@ export async function login() {
       username,
       password,
     });
-    console.log('login successfull');
+    logger.info('login successfull');
     accessToken = login.access_token;
   } catch (e) {
-    console.log('could not login', e);
+    logger.error(e);
     return;
   }
 
@@ -24,5 +26,5 @@ export async function login() {
   });
 
   saveGlobalConfig({ auth: { token: apiToken.token, issuer: 'daita', username } });
-  console.log('saved auth');
+  logger.info('saved credentials');
 }

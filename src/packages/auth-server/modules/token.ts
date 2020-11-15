@@ -12,7 +12,6 @@ export async function verifyToken(token: string): Promise<any> {
 
   const defer = new Defer<any>();
   jwt.verify(token, key.toPEM(), (err) => {
-    console.log(err, payload);
     if (err) {
       defer.reject(err);
     } else {

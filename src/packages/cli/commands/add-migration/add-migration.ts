@@ -4,15 +4,16 @@ import { addMigrationImport, addMigrationRegistration, writeMigration } from '..
 import * as fs from 'fs';
 import { getMigrationName } from '../../migration/utils';
 import { generateRelationalMigrationSteps } from '../../../orm/migration/generation/generate-relational-migration-steps';
+import { createLogger } from '../../../common/utils/logger';
 
+const logger = createLogger({ package: 'cli', command: 'migration:add' });
 export async function addMigration(name: string, options: { cwd?: string; schema?: string }) {
   const schemaLocation = await getSchemaLocation(options);
 
   const astContext = new AstContext();
   const schemaInfo = await getSchemaInformation(astContext, schemaLocation);
   if (!schemaInfo) {
-    console.warn('could not load schema');
-    return;
+    throw new Error('could not load schema');
   }
 
   const migrationTree = schemaInfo.getMigrationTree();
@@ -21,7 +22,7 @@ export async function addMigration(name: string, options: { cwd?: string; schema
 
   const steps = generateRelationalMigrationSteps(currentSchema, schemaInfo.getRelationalSchema());
   if (steps.length === 0) {
-    console.log('no changes to migrate from');
+    logger.info('there are no pending changes');
     return;
   }
 

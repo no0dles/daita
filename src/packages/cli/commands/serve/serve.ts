@@ -14,7 +14,9 @@ import { isMigrationContext } from '../../../orm/context/get-migration-context';
 import { isTransactionContext } from '../../../orm/context/transaction-context';
 import { authSchema } from '../../../auth-server';
 import { AppOptions } from '../../../http-server-common';
+import { createLogger } from '../../../common/utils/logger';
 
+const logger = createLogger({ package: 'cli', command: 'serve' });
 export async function serve(opts: {
   cwd?: string;
   schema?: string;
@@ -45,7 +47,7 @@ export async function serve(opts: {
   const disableAuth = !authorization || opts.disableAuth;
 
   const reloadDebouncer = new Debouncer(async () => {
-    console.log('reload');
+    logger.info('reloading source code');
     await applyMigration(opts);
     //TODO reload rules
   }, 500);
@@ -64,7 +66,6 @@ export async function serve(opts: {
     cors: true,
   };
   const server = await createHttpServerApp(httpOptions, httpPort);
-  console.log(`api listening on http://localhost:${httpPort}`);
 
   let authServer: any;
   if (!disableAuth) {
@@ -90,12 +91,12 @@ export async function serve(opts: {
     await seedUserPoolCors(ctx, 'cli', corsUrls);
     const authPort = opts.authPort || 8766;
     authServer = await createAuthApp(ctx, authPort);
-    console.log(`auth api listening on http://localhost:${authPort}`);
   }
 
   const closeDefer = new Defer<void>();
 
   closeDefer.promise.then(async () => {
+    logger.info('closing...');
     reloadDebouncer.clear();
     server?.close();
     authServer?.close();

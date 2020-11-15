@@ -5,12 +5,10 @@ import { getRandomTestPort } from './random-port';
 export function waitForPort(port: number) {
   const defer = new Defer<void>();
   const client = net.createConnection({ port }, () => {
-    console.log('port is open');
     defer.resolve();
     client.end();
   });
   client.on('error', (e) => {
-    console.log(e);
     defer.reject(e);
   });
   return defer.promise;

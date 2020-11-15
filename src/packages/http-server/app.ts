@@ -7,6 +7,7 @@ import { errorMiddleware } from './middleswares/error.middleware';
 import { tokenAuth } from './middleswares/token-auth.middleware';
 import { AppOptions } from '../http-server-common/app-options';
 import { Server } from 'http';
+import { createLogger } from '../common/utils/logger';
 
 declare global {
   namespace Express {
@@ -24,6 +25,7 @@ declare global {
 
 export function createHttpServerApp(options: AppOptions, port: number) {
   const app = express();
+  const logger = createLogger({ package: 'http-server' });
 
   if (options.cors === true) {
     app.use(cors());
@@ -52,6 +54,7 @@ export function createHttpServerApp(options: AppOptions, port: number) {
 
   return new Promise<Server>((resolve) => {
     const server = app.listen(port, () => {
+      logger.info(`listening on http://0.0.0.0:${port}`);
       resolve(server);
     });
   });

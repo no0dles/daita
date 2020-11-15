@@ -51,7 +51,6 @@ export function getOrderedNpmPackages(): PackageInfo[] {
   for (const pkg of packages) {
     values[pkg.name] = getChildCount(pkg.name, new Set<string>());
   }
-  console.log(values);
   return packages.sort((first, second) => {
     return values[first.name] - values[second.name];
   });

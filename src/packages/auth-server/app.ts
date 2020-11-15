@@ -11,6 +11,7 @@ import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
 import { TransactionContext } from '../orm';
 import { Server } from 'http';
+import { createLogger } from '../common/utils/logger';
 
 declare global {
   namespace Express {
@@ -28,6 +29,7 @@ declare global {
 
 export function createAuthApp(ctx: TransactionContext<any>, port: number) {
   const app = express();
+  const logger = createLogger({ package: 'auth-server' });
 
   app.use(helmet());
   app.use(bodyParser.json());
@@ -65,7 +67,7 @@ export function createAuthApp(ctx: TransactionContext<any>, port: number) {
   });
 
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.log(err);
+    logger.error(err);
     if (process.env.NODE_ENV === 'production') {
       res.status(500).end({ message: 'internal error' });
     } else {
@@ -76,6 +78,7 @@ export function createAuthApp(ctx: TransactionContext<any>, port: number) {
   return new Promise<Server>((resolve) => {
     const server = app.listen(port, () => {
       resolve(server);
+      logger.info(`auth server is running on http://localhost:${port}`);
     });
   });
 }

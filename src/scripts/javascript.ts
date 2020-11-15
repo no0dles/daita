@@ -19,7 +19,6 @@ function getExportsForDirectory(dir: string): ExportReference[] {
 
     if (file.isFile()) {
       const exports = getExportsForFile(fileName);
-      console.log(exports, file.name);
       refs.push({ fileName, exports });
     } else {
       const newRefs = getExportsForDirectory(fileName);

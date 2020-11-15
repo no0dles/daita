@@ -3,13 +3,16 @@ import { getMigrationRelativePath, getSchemaInformation, getSchemaLocation } fro
 import { removeMigrationImport, removeMigrationRegistration } from '../../migration/writing/write-migration';
 import * as fs from 'fs';
 import { AstObjectValue } from '../../ast/ast-object-value';
+import { createLogger } from '../../../common/utils/logger';
+
+const logger = createLogger({ package: 'cli', command: 'migration:undo' });
 
 export async function undoMigration(options: { cwd?: string; schema?: string }) {
   const astContext = new AstContext();
   const schemaLocation = await getSchemaLocation(options);
   const schemaInfo = await getSchemaInformation(astContext, schemaLocation);
   if (!schemaInfo) {
-    console.warn('could not load shcema');
+    throw new Error('could not load schema');
     return;
   }
 
@@ -34,7 +37,7 @@ export async function undoMigration(options: { cwd?: string; schema?: string }) 
     const successRegistration = removeMigrationRegistration(schemaLocation.fileName, migrationName);
 
     if (successImport && successRegistration) {
-      console.log('delete migration ' + migrationVariable.sourceFile.fileName);
+      logger.info('delete migration ' + migrationVariable.sourceFile.fileName);
       fs.unlinkSync(migrationVariable.sourceFile.fileName);
     }
   }

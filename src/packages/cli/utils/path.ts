@@ -6,6 +6,7 @@ import { parseSchemaMigrations, parseSchemaMigrationVariables } from '../migrati
 import { parseRelationalSchema } from '../migration/parsing/parse-relational-schema';
 import { getProjectConfig } from './config';
 import { RelationalSchemaDescription } from '../../orm/schema/description/relational-schema-description';
+import { createLogger } from '../../common/utils/logger';
 
 export function getMigrationRelativePath(schemaFilePath: string, migrationFilePath: string) {
   const relativePath = path.relative(schemaFilePath, migrationFilePath);
@@ -52,7 +53,7 @@ export async function getSchemaInformation(
   const schemas = parseSchemas(sourceFile);
 
   if (schemas.length === 0) {
-    console.warn(`No schema found in ${location.fileName}`);
+    logger.warn(`No schema found in ${location.fileName}`);
     return null;
   }
 
@@ -70,6 +71,8 @@ export async function getSchemaInformation(
     return new SchemaInformation(schemas[0]);
   }
 }
+
+const logger = createLogger({ package: 'cli' });
 
 export class SchemaInformation {
   constructor(private schemaDeclaration: SchemaDeclaration) {}

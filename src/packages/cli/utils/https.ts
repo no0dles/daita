@@ -26,7 +26,6 @@ export function sendPost<T>(
         });
         res.on('end', () => {
           if (res.statusCode !== 200) {
-            console.log(data, res.statusCode);
             return reject(new Error(data));
           }
           const responseData = JSON.parse(data);

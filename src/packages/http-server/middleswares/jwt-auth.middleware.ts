@@ -3,11 +3,13 @@ import JwksClient from 'jwks-rsa';
 import { AppAuthorizationProvider } from '../../http-server-common/app-authorization';
 import { HttpError } from '../http-error';
 import { NextFunction, Request, Response } from 'express';
+import { createLogger } from '../../common/utils/logger';
 
+const logger = createLogger({ package: 'http-server', middleware: 'jwt-auth' });
 export function jwtAuth(providers: AppAuthorizationProvider[]) {
   const clients: { [key: string]: JwksClient.JwksClient } = {};
   for (const provider of providers) {
-    console.log('registered ' + provider.issuer + ' at ' + provider.uri);
+    logger.info(`registered ${provider.issuer} at ${provider.uri}`);
     clients[provider.issuer] = JwksClient({
       jwksUri: provider.uri + '/' + provider.issuer + '/.well-known/jwks.json',
     });

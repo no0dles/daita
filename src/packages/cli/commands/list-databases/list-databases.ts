@@ -5,8 +5,7 @@ import { cli } from 'cli-ux';
 export async function listDatabases() {
   const config = getGlobalConfig();
   if (!config || !config.auth || !config.auth.token) {
-    console.log('please log in first');
-    return;
+    throw new Error('please log in first');
   }
 
   const sql = {

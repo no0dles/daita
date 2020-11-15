@@ -28,7 +28,6 @@ describe('pg-adapter/adapter/postgres-adapter/notify', () => {
     try {
       const listenerDefer = new Defer<void>();
       await adapter.addNotificationListener('test2', (msg) => {
-        console.log(msg);
         listenerDefer.resolve();
       });
       await db.stop();

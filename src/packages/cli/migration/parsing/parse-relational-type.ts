@@ -115,6 +115,5 @@ export function getRawValue(value: AstValue | null): any {
     return getRawValue(value.value);
   }
 
-  console.log(`unknown value`, value);
   return undefined;
 }

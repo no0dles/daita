@@ -8,14 +8,12 @@ export async function applyMigration(options: { cwd?: string; schema?: string; c
   const schemaLocation = await getSchemaLocation(options);
   const schemaInfo = await getSchemaInformation(astContext, schemaLocation);
   if (!schemaInfo) {
-    console.warn('could not load schema');
-    return;
+    throw new Error('could not load schema');
   }
 
   const context = await getContextFromConfig(options, schemaInfo.getMigrationTree());
   if (!context) {
-    console.error('could not create migration context');
-    return;
+    throw new Error('could not create migration context');
   }
 
   if (!isMigrationContext(context)) {

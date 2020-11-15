@@ -41,8 +41,7 @@ export function convertValue(value: AstValue): any {
       if (prop.value) {
         obj[prop.name] = convertValue(prop.value);
       } else {
-        //TODO
-        console.log(prop);
+        throw new AstError(prop.node, `unable to get value`);
       }
     }
     return obj;

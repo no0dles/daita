@@ -6,23 +6,22 @@ import { SqliteFormatContext } from '../formatter/sqlite-format-context';
 import { sqliteFormatter } from '../formatter/sqlite-formatter';
 import { Serializable } from './serializable';
 import { SqliteSql } from '../sql/sqlite-sql';
+import { createLogger } from '../../common/utils/logger';
 
 export class SqliteRelationalDataAdapter implements RelationalDataAdapter<SqliteSql> {
+  private readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });
   protected transactionSerializable = new Serializable();
   protected runSerializable = new Serializable();
 
   constructor(protected db: sqlite.Database, private closeFn: () => void) {
     this.db.on('error', (err) => {
-      console.log('onerr', err);
+      this.logger.error(err);
     });
     this.db.on('close', () => {
-      //console.log('close', arguments);
+      this.logger.debug('database closed');
     });
     this.db.on('open', () => {
-      //console.log('open', arguments);
-    });
-    this.db.on('trace', () => {
-      //console.log('trace', arguments);
+      this.logger.debug('database opened');
     });
   }
 
@@ -56,7 +55,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
   async exec(sql: any): Promise<RelationalRawResult> {
     const ctx = new SqliteFormatContext();
     const query = sqliteFormatter.format(sql, ctx);
-    console.log(query);
+    this.logger.debug('execute sql', { sql, query, queryValues: ctx.getValues() });
     return await this.execRaw(query, ctx.getValues());
   }
 
@@ -65,10 +64,14 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
       const defer = new Defer<RelationalRawResult>();
       const stmt = this.db.prepare(sql, values, () => {
         stmt.bind((err) => {
-          console.log(err);
+          if (err) {
+            this.logger.error(err, { query: sql, queryValues: values });
+            defer.reject(err);
+          }
         });
         stmt.all(values, (err, rows) => {
           if (err) {
+            this.logger.error(err, { query: sql, queryValues: values });
             defer.reject(err);
           } else {
             defer.resolve({
@@ -89,6 +92,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
         });
         stmt.finalize((err) => {
           if (err) {
+            this.logger.error(err, { query: sql, queryValues: values });
             defer.reject(err);
           }
         });

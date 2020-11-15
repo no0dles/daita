@@ -6,12 +6,14 @@ import { RelationalTransactionAdapter } from '../../relational/adapter/relationa
 import { RelationalRawResult } from '../../relational/adapter/relational-raw-result';
 import { RelationalDataAdapter } from '../../relational/adapter/relational-data-adapter';
 import { ConnectionError } from '../../relational/error/connection-error';
+import { createLogger } from '../../common/utils/logger';
 
 export interface PostgresNotificationSubscriber {
   (msg: string | undefined): void;
 }
 
 export class PostgresAdapter implements RelationalTransactionAdapter<PostgresSql> {
+  private readonly logger = createLogger({ adapter: 'pg', package: 'pg' });
   private readonly pool: Promise<Pool>;
   private closed = false;
   private readonly connectionString: string | undefined;
@@ -34,7 +36,6 @@ export class PostgresAdapter implements RelationalTransactionAdapter<PostgresSql
           keepAlive: true,
           max: 20,
           idleTimeoutMillis: 10000,
-          log: (messages) => console.log(messages),
         }),
       );
     } else if (poolOrUrl instanceof Promise) {
@@ -45,7 +46,7 @@ export class PostgresAdapter implements RelationalTransactionAdapter<PostgresSql
 
     this.pool.then((pool) => {
       pool.on('error', (err) => {
-        console.log('err', err);
+        this.logger.error(err);
       });
     });
 
@@ -75,7 +76,8 @@ export class PostgresAdapter implements RelationalTransactionAdapter<PostgresSql
           subscriber(msg.payload);
         }
       });
-      this.notificationPoolClient.on('error', () => {
+      this.notificationPoolClient.on('error', (err) => {
+        this.logger.trace(err);
         if (this.closed) {
           return;
         }

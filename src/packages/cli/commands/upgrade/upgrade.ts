@@ -1,53 +1,40 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as https from 'https';
-import { spawn } from 'child_process';
 import { Defer } from '../../../common/utils/defer';
+import { createLogger } from '../../../common/utils/logger';
+import { runCommand } from '../../../node/command';
+
+const logger = createLogger({ package: 'cli', command: 'upgrade' });
 
 export async function upgrade(opts: { cwd?: string; npmClient?: string; skipInstall?: boolean }) {
   const cwd = opts.cwd ? path.resolve(opts.cwd) : process.cwd();
   const packagePath = path.join(cwd, 'package.json');
   if (!fs.existsSync(packagePath)) {
-    console.warn('could not locate package.json');
-    return;
+    throw new Error('could not locate package.json');
   }
 
+  let pkg: any;
   try {
     const content = fs.readFileSync(packagePath).toString();
-    const pkg = JSON.parse(content);
-    let hasChanges = false;
-    hasChanges = hasChanges || (await upgradeDependencies(pkg.dependencies));
-    hasChanges = hasChanges || (await upgradeDependencies(pkg.devDependencies));
-    if (!hasChanges) {
-      console.info('all daita packages are up to date');
-      return;
-    }
-
-    fs.writeFileSync(packagePath, JSON.stringify(pkg, null, 2));
-    console.info('updated daita packages successfully');
-    if (!opts.skipInstall) {
-      await runCommand(opts.npmClient || 'npm', ['install'], cwd);
-    }
+    pkg = JSON.parse(content);
   } catch (e) {
-    console.error('unable to parse package.json');
+    throw new Error('unable to parse package.json');
+  }
+
+  let hasChanges = false;
+  hasChanges = hasChanges || (await upgradeDependencies(pkg.dependencies));
+  hasChanges = hasChanges || (await upgradeDependencies(pkg.devDependencies));
+  if (!hasChanges) {
+    logger.info('all daita packages are up to date');
     return;
   }
-}
 
-function runCommand(cmd: string, args: string[], cwd: string) {
-  return new Promise((resolve, reject) => {
-    const ps = spawn(cmd, args, {
-      cwd,
-      stdio: [process.stdin, process.stdout, process.stderr],
-    });
-    ps.once('exit', (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(code);
-      }
-    });
-  });
+  fs.writeFileSync(packagePath, JSON.stringify(pkg, null, 2));
+  logger.info('updated daita packages successfully');
+  if (!opts.skipInstall) {
+    await runCommand(opts.npmClient || 'npm', ['install'], cwd);
+  }
 }
 
 async function upgradeDependencies(dependencies: any) {

@@ -39,7 +39,6 @@ describe('parsing', () => {
 
   it('should serialize regexp', () => {
     const serialized = serializeRule(allow(authorized(), allowRegex(/^[a-z]+$/) as any));
-    const deserialized = parseRule(serialized);
-    console.log(deserialized);
+    parseRule(serialized);
   });
 });

@@ -1,17 +1,20 @@
+import { createLogger } from '../common/utils/logger';
+
 export interface Closable {
   close(callback?: (...args: any[]) => void): Promise<any> | any;
 }
 export class Application {
+  private logger = createLogger({ package: 'node' });
   private closed = false;
   private instances: Closable[] = [];
 
   constructor() {
     process
       .on('unhandledRejection', (reason, p) => {
-        console.error(reason, 'Unhandled Rejection at Promise', p);
+        this.logger.error('unhandled rejection', { reason });
       })
       .on('uncaughtException', (err) => {
-        console.error(err, 'Uncaught Exception thrown');
+        this.logger.error(err);
         process.exit(1);
       });
 
@@ -32,7 +35,7 @@ export class Application {
             res.close();
           })
           .catch((err) => {
-            console.error(err);
+            this.logger.error(err);
           });
       } else {
         instance.close();
@@ -59,7 +62,9 @@ export class Application {
   }
 
   close(err?: Error) {
-    console.error(err);
+    if (err) {
+      this.logger.error(err);
+    }
     if (this.closed) {
       return;
     }
