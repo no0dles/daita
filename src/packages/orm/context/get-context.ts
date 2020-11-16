@@ -13,8 +13,8 @@ import {
 import { Context } from './context';
 import { RelationalContext } from './relational-context';
 import { MigrationTree } from '../migration/migration-tree';
-import { isKind } from '../../common';
 import { RuleContext } from '../../relational/permission/description/rule-context';
+import { isKind } from '../../common/utils/is-kind';
 
 export interface ContextSchemaOptions {
   schema: OrmRelationalSchema;

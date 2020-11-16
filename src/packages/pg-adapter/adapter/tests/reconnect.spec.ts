@@ -1,7 +1,7 @@
 import { PostgresAdapter } from '../postgres.adapter';
 import { getPostgresDb } from '../../testing/postgres-test-adapter';
-import { RelationalDataAdapter } from '../../../relational';
 import { ConnectionError } from '../../../relational/error/connection-error';
+import { RelationalDataAdapter } from '../../../relational/adapter/relational-data-adapter';
 
 describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
   it('should handle disconnect after initial connection', async () => {

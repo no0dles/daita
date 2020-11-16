@@ -1,26 +1,47 @@
 import * as inquirer from 'inquirer';
 import * as fs from 'fs';
 import * as path from 'path';
-import * as yaml from 'yaml';
 import { randomString } from '../common/utils/random-string';
-import { runCommand } from '../node/command';
+import { getOwnPackageJson, PackageJson } from '../node/node';
+import { readJsonFile, readYamlFile, writeFileIfNotExists, writePrettyJsonFile, writeYamlFile } from '../node/file';
+import { DockerCompose } from '../node/docker';
+import { ensurePathExists } from '../node/path';
+import { failNever } from '../common/utils/fail-never';
+import { shell } from '../node/command';
 
-export async function create(options: {
+export interface CreateOptions {
+  cwd?: string;
   npmClient?: string;
   skipInstall?: boolean;
   adapter?: string;
   projectName?: string;
-}) {
-  const dir = process.cwd();
+}
+
+export type SetupOptions = SetupPostgresOptions | SetupSqliteOptions;
+
+export interface SetupPostgresOptions {
+  projectDirectory: string;
+  npmClient: 'npm' | 'yarn' | 'none';
+  adapter: 'pg';
+  password: string;
+  projectName: string;
+  daitaVersion: string;
+}
+export interface SetupSqliteOptions {
+  projectDirectory: string;
+  npmClient: 'npm' | 'yarn' | 'none';
+  adapter: 'sqlite';
+  projectName: string;
+  daitaVersion: string;
+}
+
+export async function create(options: CreateOptions) {
   const prompts = inquirer.prompt([
     {
       type: 'input',
       name: 'projectName',
       message: "What's your project name?",
       validate(input: any, answers?: any) {
-        if (fs.existsSync(path.join(dir, input))) {
-          return `directory ${input} already exists`;
-        }
         if (!/^[a-zA-Z0-9_\-]+$/.test(input)) {
           return 'project name only supports alphanumeric characters including dash und underscore';
         }
@@ -38,43 +59,209 @@ export async function create(options: {
   ]);
 
   const answers = await prompts;
-  const npmClient = options.npmClient || answers.npmClient;
-  const skipInstall = options.skipInstall || answers.npmClient === 'none';
-  const adapter = options.adapter || answers.adapter;
-  const projectName = options.projectName || answers.projectName;
 
-  if (fs.existsSync(path.join(dir, projectName))) {
-    throw new Error(`directory ${projectName} already exists`);
+  await setup({
+    projectName: options.projectName || answers.projectName,
+    password: randomString(20),
+    adapter: options.adapter || answers.adapter,
+    npmClient: options.npmClient || answers.npmClient,
+    projectDirectory: path.join(options.cwd || process.cwd(), options.projectName || answers.projectName),
+    daitaVersion: `^${getOwnPackageJson((pkg) => pkg.version)}`,
+  });
+}
+
+export async function setup(options: SetupOptions) {
+  ensurePathExists(options.projectDirectory);
+
+  setupNpm(options);
+  setupDaitaConfig(options);
+  setupTsConfig(options);
+  setupDockerCompose(options);
+  setupSourceCode(options);
+
+  if (options.npmClient === 'yarn') {
+    await shell('yarn', ['install'], options.projectDirectory);
+  } else if (options.npmClient === 'npm') {
+    await shell('npm', ['install'], options.projectDirectory);
+  }
+}
+
+export function setupReadme(options: SetupOptions) {
+  fs.writeFileSync(path.join(options.projectDirectory, 'README.md'), '');
+}
+
+export function setupDaitaConfig(options: SetupOptions) {
+  const configFile = path.join(options.projectDirectory, 'daita.json');
+  const configContent = readJsonFile<any>(configFile, {});
+
+  if (configContent.context) {
+    configContent.context = {};
   }
 
-  const daitaVersion = `^${getOwnPackageJson((pkg) => pkg.version)}`;
-  const projectDir = path.join(dir, projectName);
-  const password = randomString(20);
+  if (configContent.$schema) {
+    configContent.$schema = './node_modules/@daita/cli/schema.json';
+  }
 
-  const packageJson: any = {
-    name: projectName,
-    version: '0.0.0',
-    description: 'an awesome daita project',
-    license: 'MIT',
-    dependencies: {
-      typescript: getOwnPackageJson((pkg) => pkg.dependencies.typescript),
-      '@daita/relational': daitaVersion,
-      '@daita/orm': daitaVersion,
-    },
-    devDependencies: {
-      '@daita/cli': daitaVersion,
-    },
-    scripts: {
-      start: 'node -r ts-node/register src/index.ts',
-      build: 'tsc -b',
-    },
+  // TODO handle existing default
+  configContent.context.default = {
+    module: `@daita/${options.adapter}-adapter`,
+    schemaLocation: 'src/schema.ts',
+    migrationLocation: 'src/migrations',
+    connectionString: getConnectionString(options),
   };
 
-  const dockerCompose: any = {
+  writePrettyJsonFile(configFile, configContent);
+}
+
+function getConnectionString(options: SetupOptions): string {
+  if (options.adapter === 'pg') {
+    return `postgres://daita:${options.password}@localhost/${options.projectName}`;
+  } else if (options.adapter === 'sqlite') {
+    return `sqlite://./${options.projectName}.db`;
+  } else {
+    failNever(options, 'unknown database adapter');
+  }
+}
+
+export function setupDockerCompose(options: SetupOptions) {
+  if (options.adapter != 'pg') {
+    return;
+  }
+
+  const dockerComposeFile = path.join(options.projectDirectory, 'docker-compose.yaml');
+  const dockerComposeContent = readYamlFile<DockerCompose>(dockerComposeFile, {
     version: '3.5',
     services: {},
     volumes: {},
-  };
+  });
+
+  if (!dockerComposeContent.services) {
+    dockerComposeContent.services = {};
+  }
+  if (!dockerComposeContent.volumes) {
+    dockerComposeContent.volumes = {};
+  }
+
+  if (options.adapter === 'pg') {
+    dockerComposeContent.services['postgres'] = {
+      image: 'postgres',
+      environment: [
+        'POSTGRES_USER=daita',
+        `POSTGRES_PASSWORD=${options.password}`,
+        `POSTGRES_DB=${options.projectName}`,
+      ],
+      ports: ['5432:5432'],
+      volumes: ['postgres-data:/var/lib/postgresql/data'],
+    };
+    dockerComposeContent.volumes['postgres-data'] = {};
+  }
+
+  writeYamlFile(dockerComposeFile, dockerComposeContent);
+}
+
+export function setupNpm(options: SetupOptions) {
+  const packageFile = path.join(options.projectDirectory, 'package.json');
+  const packageContent = readJsonFile<PackageJson>(packageFile, {
+    name: options.projectName,
+    version: '0.0.0',
+    description: 'an awesome daita project',
+    license: 'MIT',
+  });
+
+  if (!packageContent.dependencies) {
+    packageContent.dependencies = {};
+  }
+  packageContent.dependencies[`@daita/${options.adapter}-adapter`] = options.daitaVersion;
+  packageContent.dependencies[`@daita/relational`] = options.daitaVersion;
+  packageContent.dependencies[`@daita/orm`] = options.daitaVersion;
+
+  if (!packageContent.devDependencies) {
+    packageContent.devDependencies = {};
+  }
+  packageContent.dependencies[`@daita/cli`] = options.daitaVersion;
+
+  const typescriptVersion = getOwnPackageJson((pkg) => pkg.dependencies?.typescript || pkg.devDependencies?.typescript);
+  if (typescriptVersion) {
+    packageContent.dependencies['typescript'] = typescriptVersion;
+  }
+
+  if (!packageContent.scripts) {
+    packageContent.scripts = {};
+  }
+  if (!packageContent.scripts['start']) {
+    packageContent.scripts['start'] = 'node -r ts-node/register src/index.ts';
+  }
+  if (!packageContent.scripts['build']) {
+    packageContent.scripts['build'] = 'tsc -b';
+  }
+  writePrettyJsonFile(packageFile, packageContent);
+}
+
+export function setupSourceCode(options: SetupOptions) {
+  ensurePathExists(path.join(options.projectDirectory, 'src'));
+  ensurePathExists(path.join(options.projectDirectory, 'src/models'));
+  ensurePathExists(path.join(options.projectDirectory, 'src/migrations'));
+
+  const schemaCreated = writeFileIfNotExists(
+    path.join(options.projectDirectory, 'src/schema.ts'),
+    getSchemaSourceCode(options),
+  );
+
+  if (schemaCreated) {
+    writeFileIfNotExists(path.join(options.projectDirectory, 'src/models/todo.ts'), getTodoModelSourceCode(options));
+    writeFileIfNotExists(path.join(options.projectDirectory, 'src/index.ts'), getIndexSourceCode(options));
+  }
+}
+
+function getTodoModelSourceCode(options: SetupOptions) {
+  return `
+export class Todo {
+  id!: string;
+  title!: string;
+  done = false;
+}
+`.trim();
+}
+
+function getIndexSourceCode(options: SetupOptions) {
+  return `
+import { getContext } from '@daita/orm';
+import { table, field } from '@daita/relational';
+import { adapter } from '@daita/${options.adapter}-adapter';
+import { Todo } from './models/todo';
+import { schema } from './schema';
+
+const context = getContext(adapter, {
+  schema,
+  connectionString: process.env.DATABASE || '${getConnectionString(options)}'
+});
+
+context.select({
+  select: {
+    title: field(Todo, 'title')
+  },
+  from: table(Todo),
+}).then(todos => {
+  console.log(todos);
+})
+  `.trim();
+}
+
+function getSchemaSourceCode(options: SetupOptions) {
+  return `
+import { RelationalSchema } from '@daita/orm'
+import { Todo } from './models/todo';
+
+export const schema = new RelationalSchema('${options.projectName}');
+schema.table(Todo);
+  `.trim();
+}
+
+export function setupTsConfig(options: SetupOptions) {
+  const tsConfigFile = path.join(options.projectDirectory, 'tsconfig.json');
+  if (fs.existsSync(tsConfigFile)) {
+    return;
+  }
 
   const tsConfig: any = {
     compilerOptions: {
@@ -95,68 +282,5 @@ export async function create(options: {
     exclude: ['node_modules', 'dist'],
   };
 
-  const defaultConfig: any = {
-    context: {
-      default: {
-        module: `@daita/${adapter}-adapter`,
-        schemaLocation: 'src/schema.ts',
-        migrationLocation: 'src/migrations',
-      },
-    },
-  };
-
-  packageJson.dependencies[`@daita/${adapter}-adapter`] = daitaVersion;
-
-  if (adapter === 'pg') {
-    dockerCompose.services['postgres'] = {
-      image: 'postgres',
-      environment: ['POSTGRES_USER=daita', `POSTGRES_PASSWORD=${password}`, `POSTGRES_DB=${projectName}`],
-      ports: ['5432:5432'],
-      volumes: ['postgres-data:/var/lib/postgresql/data'],
-    };
-    dockerCompose.volumes['postgres-data'] = {};
-    defaultConfig.context.default.connectionString = `postgres://daita:${password}@localhost/${projectName}`;
-  } else if (adapter === 'sqlite') {
-    defaultConfig.context.default.connectionString = `sqlite://./${projectName}.db`;
-  }
-
-  fs.mkdirSync(projectDir);
-  fs.mkdirSync(path.join(projectDir, 'src'));
-  fs.mkdirSync(path.join(projectDir, 'src/models'));
-  fs.mkdirSync(path.join(projectDir, 'src/migrations'));
-
-  fs.writeFileSync(path.join(projectDir, 'src/index.ts'), '');
-  fs.writeFileSync(path.join(projectDir, 'daita.json'), JSON.stringify(defaultConfig, null, 2));
-  fs.writeFileSync(path.join(projectDir, 'tsconfig.json'), JSON.stringify(tsConfig, null, 2));
-  fs.writeFileSync(path.join(projectDir, 'package.json'), JSON.stringify(packageJson, null, 2));
-  fs.writeFileSync(path.join(projectDir, 'README.md'), '');
-  if (Object.keys(dockerCompose.services).length > 0) {
-    fs.writeFileSync(path.join(projectDir, 'docker-compose.yaml'), yaml.stringify(dockerCompose, { indent: 2 }));
-  }
-
-  if (!skipInstall) {
-    if (npmClient === 'yarn') {
-      await runCommand('yarn', ['install'], projectDir);
-    } else if (npmClient === 'npm') {
-      await runCommand('npm', ['install'], projectDir);
-    }
-  }
-}
-
-export function getOwnPackageJson<T>(selector: (pkg: any) => T, dir?: string): T | null {
-  const currentDir = path.join(dir || __dirname);
-  const packagePath = path.join(currentDir, 'package.json');
-
-  if (fs.existsSync(packagePath)) {
-    const packageContent = require(packagePath);
-    const value = selector(packageContent);
-    if (value !== null && value !== undefined) {
-      return value;
-    }
-  }
-  const parentDir = path.resolve(currentDir, '..');
-  if (parentDir === currentDir) {
-    return null;
-  }
-  return getOwnPackageJson(selector, parentDir);
+  writePrettyJsonFile(tsConfigFile, tsConfig);
 }

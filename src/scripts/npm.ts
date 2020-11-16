@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { shell } from './shell';
 import { copyDir } from './file';
-import { checkExportedUsage, getDaitaUsage, MissingExport, updatePaths, UsageInfo } from './javascript';
+import { getDaitaUsage, updatePaths, UsageInfo } from './javascript';
+import { shell } from '../packages/node/command';
 
 function parseJsonFile(fileName: string) {
   return JSON.parse(fs.readFileSync(fileName).toString());
@@ -36,20 +36,20 @@ export function getOrderedNpmPackages(): PackageInfo[] {
   for (const pkg of packages) {
     usages[pkg.name] = getDaitaUsage(pkg.path);
   }
-  function getChildCount(pkgName: string, pkgs: Set<string>) {
+  function getChildCount(pkgName: string, pkgs: string[]) {
     let value = 0;
     for (const dep of Object.keys(usages[pkgName])) {
-      if (pkgs.has(dep)) {
-        throw new Error('loop detected');
+      if (pkgs.indexOf(dep) >= 0) {
+        throw new Error(`loop detected ${pkgs.join(' - ')} - ${dep}`);
       }
-      pkgs.add(dep);
+      const newPkg = [...pkgs, dep];
       value++;
-      value += getChildCount(dep, new Set(pkgs));
+      value += getChildCount(dep, newPkg);
     }
     return value;
   }
   for (const pkg of packages) {
-    values[pkg.name] = getChildCount(pkg.name, new Set<string>());
+    values[pkg.name] = getChildCount(pkg.name, []);
   }
   return packages.sort((first, second) => {
     return values[first.name] - values[second.name];
@@ -120,10 +120,11 @@ export function createPackageJson(pkg: PackageInfo, packages: Set<string>, optio
   const blacklist = require('module').builtinModules;
   for (const dep of Array.from(packages).sort()) {
     if (dep.startsWith('@daita/')) {
-      if (!fs.existsSync(path.join(pkg.path, '..', dep.substr('@daita/'.length)))) {
-        throw new Error(`invalid daita dependency ${dep}`);
+      const packageName = dep.substr('@daita/'.length).split('/')[0];
+      if (!fs.existsSync(path.join(pkg.path, '..', packageName))) {
+        throw new Error(`invalid daita dependency ${packageName}`);
       }
-      content.dependencies[dep] = `^${options.version || rootPackageJson.version}`;
+      content.dependencies[`@daita/${packageName}`] = `^${options.version || rootPackageJson.version}`;
     } else if (blacklist.indexOf(dep) === -1) {
       if (!rootPackageJson.dependencies[dep]) {
         throw new Error(`could not find ${dep} in ${pkg.name}`);
@@ -176,21 +177,21 @@ export async function buildNpmPackages(options: PublishConfig) {
     createNpmIgnore(pkg);
   }
 
-  const missingExports: MissingExport[] = [];
-  for (const pkg of getNpmPackages()) {
-    missingExports.push(...checkExportedUsage(pkg));
-  }
-  for (const missingExport of missingExports) {
-    for (const exportName of missingExport.exports) {
-      console.error(
-        `package ${missingExport.sourcePackage} requires ${missingExport.targetPackage} to export ${exportName}`,
-      );
-    }
-  }
-  if (missingExports.length > 0) {
-    process.exit(1);
-    return;
-  }
+  // const missingExports: MissingExport[] = [];
+  // for (const pkg of getNpmPackages()) {
+  //   missingExports.push(...checkExportedUsage(pkg));
+  // }
+  // for (const missingExport of missingExports) {
+  //   for (const exportName of missingExport.exports) {
+  //     console.error(
+  //       `package ${missingExport.sourcePackage} requires ${missingExport.targetPackage} to export ${exportName}`,
+  //     );
+  //   }
+  // }
+  // if (missingExports.length > 0) {
+  //   process.exit(1);
+  //   return;
+  // }
 }
 
 function copyJson(pkg: PackageInfo) {

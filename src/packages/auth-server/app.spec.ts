@@ -8,13 +8,13 @@ import { all } from '../relational/sql/keyword/all/all';
 import { table } from '../relational/sql/keyword/table/table';
 import { notEqual } from '../relational/sql/operands/comparison/not-equal/not-equal';
 import { adapter } from '../pg-adapter';
-import { getContext } from '../orm';
 import { MigrationContext } from '../orm/context/get-migration-context';
-import { NodeHttp } from '../http-client-common';
 import { getServer, HttpServerApp } from '../../testing/http-server';
-import { equal } from '../relational';
 import { User } from './models/user';
 import { getPostgresDb, PostgresDb } from '../pg-adapter/testing/postgres-test-adapter';
+import { getContext } from '../orm/context/get-context';
+import { NodeHttp } from '../http-client-common/node-http';
+import { equal } from '../relational/sql/operands/comparison/equal/equal';
 
 describe('app', () => {
   let app: HttpServerApp;

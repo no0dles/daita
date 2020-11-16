@@ -21,7 +21,16 @@ export function parseRelationalType(type: AstType): RelationalTableSchemaTableFi
       throw new Error('array requires type');
     }
     const elementFieldType = parseRelationalType(type.elementType);
-    const arrayType = parseRelationalType(type);
+    switch (elementFieldType) {
+      case 'string':
+        return 'string[]';
+      case 'boolean':
+        return 'boolean[]';
+      case 'number':
+        return 'number[]';
+      default:
+        throw new AstError(type.node, `does not support array type`);
+    }
   } else if (type instanceof AstLiteralType) {
     if (type.isNumber) {
       return 'number';

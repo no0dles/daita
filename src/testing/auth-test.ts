@@ -5,7 +5,7 @@ import { hashPassword } from '../packages/auth-server/modules/hash';
 import { httpPost, HttpServerApp } from './http-server';
 import { table } from '../packages/relational/sql/keyword/table/table';
 import { UserPoolUser } from '../packages/auth-server/models/user-pool-user';
-import { Client } from '../packages/relational';
+import { Client } from '../packages/relational/client/client';
 
 export async function createUserPool(client: Client<any>, userPool: UserPool) {
   await client.insert({

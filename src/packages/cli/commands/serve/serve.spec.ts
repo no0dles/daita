@@ -1,8 +1,8 @@
 import { setupEnv } from '../../../../testing/cli/utils.test';
-import { HttpTransactionAdapter } from '../../../http-adapter';
 import { NodeHttp } from '../../../http-client-common/node-http';
 import { serve } from './serve';
 import { getPostgresDb, PostgresDb } from '../../../pg-adapter/testing/postgres-test-adapter';
+import { HttpTransactionAdapter } from '../../../http-adapter/http-transaction-adapter';
 
 describe('cli/commands/serve', () => {
   let postgresDb: PostgresDb;

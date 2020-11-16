@@ -4,9 +4,9 @@ import {
   createAscentTable,
   createPersonTable,
 } from '../../../../../testing/schema/test-schema';
-import { Person } from '../../../../../testing/schema/person';
-import { AscentPerson } from '../../../../../testing/schema/ascent-person';
-import { Ascent } from '../../../../../testing/schema/ascent';
+import { Person } from '../../../../../docs/example/models/person';
+import { AscentPerson } from '../../../../../docs/example/models/ascent-person';
+import { Ascent } from '../../../../../docs/example/models/ascent';
 import { testClient } from '../../../../../testing/relational/adapters';
 
 describe('relational/sql/ddl/alter-table', () => {

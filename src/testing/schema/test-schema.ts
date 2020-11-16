@@ -2,23 +2,15 @@ import { table } from '../../packages/relational/sql/keyword/table/table';
 import { CreateTableColumn, CreateTableSql } from '../../packages/relational/sql/ddl/create-table/create-table-sql';
 import { Client } from '../../packages/relational/client/client';
 import { InsertSql } from '../../packages/relational/sql/dml/insert/insert-sql';
-import { Person } from './person';
+import { Person } from '../../docs/example/models/person';
 import { randomNumber, randomString } from '../../packages/common/utils/random-string';
-import { Canton } from './canton';
-import { Mountain } from './mountain';
-import { Ascent } from './ascent';
-import { AscentPerson } from './ascent-person';
+import { Canton } from '../../docs/example/models/canton';
+import { Mountain } from '../../docs/example/models/mountain';
+import { Ascent } from '../../docs/example/models/ascent';
+import { AscentPerson } from '../../docs/example/models/ascent-person';
 import { Constructable } from '../../packages/common/types/constructable';
-import { RelationalSchema } from '../../packages/orm';
 
 type CreateTestSchemaSql = CreateTableSql;
-
-export const testSchema = new RelationalSchema('test-schema');
-testSchema.table(Ascent);
-testSchema.table(AscentPerson, { key: ['ascentId', 'personId'] });
-testSchema.table(Canton, { key: ['shortname'] });
-testSchema.table(Mountain);
-testSchema.table(Person);
 
 export async function createTestSchema(client: Client<CreateTestSchemaSql>) {
   await createPersonTable(client);

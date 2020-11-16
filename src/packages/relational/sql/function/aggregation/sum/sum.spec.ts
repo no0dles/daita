@@ -1,6 +1,6 @@
 import { table } from '../../../keyword/table/table';
 import { createMountain, createMountainTable } from '../../../../../../testing/schema/test-schema';
-import { Mountain } from '../../../../../../testing/schema/mountain';
+import { Mountain } from '../../../../../../docs/example/models/mountain';
 import { sum } from './sum';
 import { testClient } from '../../../../../../testing/relational/adapters';
 

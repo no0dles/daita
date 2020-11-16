@@ -1,8 +1,8 @@
 import { AuthProvider } from '../http-client-common/auth-provider';
 import { RelationalTransactionAdapterImplementation } from '../relational/adapter/relational-adapter-implementation';
-import { RelationalTransactionAdapter } from '../relational';
-import { Http } from '../http-client-common';
 import { HttpTransactionAdapter } from './http-transaction-adapter';
+import { RelationalTransactionAdapter } from '../relational/adapter/relational-transaction-adapter';
+import { Http } from '../http-client-common/http';
 
 export interface HttpAdapterOptions {
   baseUrl: string;

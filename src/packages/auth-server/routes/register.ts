@@ -9,7 +9,7 @@ import { field } from '../../relational/sql/keyword/field/field';
 import { table } from '../../relational/sql/keyword/table/table';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { UserPoolUser } from '../models/user-pool-user';
-import { TransactionContext } from '../../orm';
+import { TransactionContext } from '../../orm/context/transaction-context';
 
 export function registerRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });

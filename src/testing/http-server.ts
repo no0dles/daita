@@ -1,6 +1,6 @@
 import { Server } from 'http';
 import { Defer } from '../packages/common/utils/defer';
-import { NodeHttp } from '../packages/http-client-common';
+import { NodeHttp } from '../packages/http-client-common/node-http';
 
 export interface HttpServerApp {
   start(): Promise<void>;

@@ -1,13 +1,14 @@
 import { RelationalTransactionAdapterImplementation } from '../relational/adapter/relational-adapter-implementation';
-import { Http } from '../http-client-common';
-import { RelationalTransactionAdapter } from '../relational';
 import { HttpTransactionAdapter } from './http-transaction-adapter';
 import { getRandomTestPort } from '../node/random-port';
-import { createHttpServerApp } from '../http-server';
 import { ContextOptions } from '../orm/context/get-context';
 import { HttpAdapterOptions } from './adapter-implementation';
-import { Context, TransactionContext } from '../orm';
 import { Server } from 'http';
+import { createHttpServerApp } from '../http-server/app';
+import { TransactionContext } from '../orm/context/transaction-context';
+import { RelationalTransactionAdapter } from '../relational/adapter/relational-transaction-adapter';
+import { Context } from '../orm/context/context';
+import { Http } from '../http-client-common/http';
 
 export type HttpTestAdapterOptions = ContextOptions & { context: TransactionContext<any> | Context<any> };
 

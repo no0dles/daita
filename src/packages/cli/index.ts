@@ -17,6 +17,9 @@ program
   .command('init')
   .description('init configurations')
   .option('--cwd <string>', 'working directory')
+  .option('--adapter <string>', 'database adapter')
+  .option('--npm-client <string>', 'npm client', 'npm')
+  .option('--skip-install', 'skip npm install', false)
   .action(async (opts) => {
     await init(opts);
   });

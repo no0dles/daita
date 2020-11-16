@@ -58,7 +58,7 @@ export class AstImportDeclaration {
     return null;
   }
 
-  private getImportSourceFile(): AstSourceFile {
+  private getImportSourceFile(): AstSourceFile | null {
     const importPath = this.sourceFile.getModulePath(this.moduleSpecifier);
     if (!importPath) {
       throw new AstError(this.node, `unable to get source file`);

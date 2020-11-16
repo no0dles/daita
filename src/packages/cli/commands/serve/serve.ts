@@ -12,9 +12,9 @@ import { AstContext } from '../../ast/ast-context';
 import { Defer } from '../../../common/utils/defer';
 import { isMigrationContext } from '../../../orm/context/get-migration-context';
 import { isTransactionContext } from '../../../orm/context/transaction-context';
-import { authSchema } from '../../../auth-server';
-import { AppOptions } from '../../../http-server-common';
 import { createLogger } from '../../../common/utils/logger';
+import { AppOptions } from '../../../http-server-common/app-options';
+import { authSchema } from '../../../auth-server/schema';
 
 const logger = createLogger({ package: 'cli', command: 'serve' });
 export async function serve(opts: {

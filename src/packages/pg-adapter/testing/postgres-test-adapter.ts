@@ -1,4 +1,3 @@
-import { sleep } from '../../common';
 import { RelationalTransactionAdapterImplementation } from '../../relational/adapter/relational-adapter-implementation';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
 import { PostgresSql } from '../sql/postgres-sql';
@@ -8,6 +7,7 @@ import { PostgresMigrationAdapter } from '../adapter/postgres-migration-adapter'
 import { Pool } from 'pg';
 import { getRandomTestPort } from '../../node/random-port';
 import { execCommand, runContainer } from '../../node/docker';
+import { sleep } from '../../common/utils/sleep';
 
 export interface PostgresDb {
   connectionString: string;

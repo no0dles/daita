@@ -9,9 +9,9 @@ import { verifyRoute } from './routes/verify';
 import { registerRoute } from './routes/register';
 import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
-import { TransactionContext } from '../orm';
 import { Server } from 'http';
 import { createLogger } from '../common/utils/logger';
+import { TransactionContext } from '../orm/context/transaction-context';
 
 declare global {
   namespace Express {

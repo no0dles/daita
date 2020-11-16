@@ -7,7 +7,7 @@ import { field } from '../../relational/sql/keyword/field/field';
 import { and } from '../../relational/sql/keyword/and/and';
 import { table } from '../../relational/sql/keyword/table/table';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
-import { TransactionContext } from '../../orm';
+import { TransactionContext } from '../../orm/context/transaction-context';
 
 export function tokenRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });

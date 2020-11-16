@@ -1,5 +1,5 @@
 import { expectedSql } from '../../../../../testing/relational/formatter.test';
-import { User } from '../../../../../testing/schema/user';
+import { User } from '../../../../../docs/example/models/user';
 import { table } from '../../keyword/table/table';
 import { field } from '../../keyword/field/field';
 import { alias } from '../../keyword/alias/alias';

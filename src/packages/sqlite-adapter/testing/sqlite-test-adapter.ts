@@ -3,11 +3,11 @@ import { SqliteSql } from '../sql/sqlite-sql';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import { SqliteAdapter } from '../adapter/sqlite-relational-adapter';
-import { randomString } from '../../common';
 import path from 'path';
 import os from 'os';
 import fs from 'fs/promises';
 import { adapter } from '../index';
+import { randomString } from '../../common/utils/random-string';
 
 export interface SqliteTestAdapterFileOptions {
   type: 'file';
@@ -40,5 +40,3 @@ export class SqliteTestAdapterImplementation
     return adapter.supportsQuery(sql);
   }
 }
-
-export const testAdapter = new SqliteTestAdapterImplementation();

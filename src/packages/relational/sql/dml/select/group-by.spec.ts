@@ -2,7 +2,7 @@ import { field } from '../../keyword/field/field';
 import { count } from '../../function/aggregation/count/count';
 import { table } from '../../keyword/table/table';
 import { expectedSql } from '../../../../../testing/relational/formatter.test';
-import { User } from '../../../../../testing/schema/user';
+import { User } from '../../../../../docs/example/models/user';
 import { greaterThan } from '../../operands/comparison/greater-than/greater-than';
 
 describe('select/group-by', () => {

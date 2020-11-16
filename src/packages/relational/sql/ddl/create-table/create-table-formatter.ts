@@ -31,8 +31,29 @@ export class CreateTableFormatter implements FormatHandle<CreateTableSql> {
       sql += `, PRIMARY KEY (${primaryKeys.join(', ')})`;
     }
 
+    if (param.foreignKey) {
+      for (const constraintName of Object.keys(param.foreignKey)) {
+        const constraint = param.foreignKey[constraintName];
+        sql += `, CONSTRAINT ${ctx.escape(constraintName)} FOREIGN KEY (${this.formatKeys(
+          constraint.key,
+          ctx,
+        )}) REFERENCES ${formatter.format(constraint.references.table, ctx)} (${this.formatKeys(
+          constraint.references.primaryKey,
+          ctx,
+        )})`;
+      }
+    }
+
     sql += ')';
 
     return sql;
+  }
+
+  private formatKeys(key: string[] | string, ctx: FormatContext) {
+    if (key instanceof Array) {
+      return key.map((key) => ctx.escape(key)).join(', ');
+    } else {
+      return ctx.escape(key);
+    }
   }
 }

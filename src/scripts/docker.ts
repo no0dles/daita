@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { shell } from './shell';
 import { scanDependencies } from './npm';
+import { shell } from '../packages/node/command';
 
 const rootPackageJson = require(path.join(__dirname, '../../package.json'));
 

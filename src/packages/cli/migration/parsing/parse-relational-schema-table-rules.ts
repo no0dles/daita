@@ -3,7 +3,7 @@ import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { AstError } from '../../ast/utils';
 import { convertValue } from './convert-value';
 import { RelationalSchemaDescription } from '../../../orm/schema/description/relational-schema-description';
-import { getRuleId } from '../../../orm/migration/generation/rule-id';
+import { getRuleId } from '../../../relational/permission/rule-id';
 
 export function parseRelationalSchemaTableRules(
   schema: RelationalSchemaDescription,

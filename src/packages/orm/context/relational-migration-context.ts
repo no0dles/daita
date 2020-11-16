@@ -1,11 +1,12 @@
 import { RelationalTransactionContext } from './relational-transaction-context';
 import { MigrationDirection, RelationalMigrationAdapter } from '../adapter/relational-migration-adapter';
-import { Client, RelationalTransactionAdapter } from '../../relational';
 import { MigrationTree } from '../migration/migration-tree';
 import { MigrationContext, MigrationContextUpdateOptions } from './get-migration-context';
 import { MigrationDescription } from '../migration/migration-description';
-import { Defer } from '../../common';
 import { RuleContext } from '../../relational/permission/description/rule-context';
+import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
+import { Defer } from '../../common/utils/defer';
+import { Client } from '../../relational/client/client';
 
 export class RelationalMigrationContext extends RelationalTransactionContext implements MigrationContext<any> {
   constructor(

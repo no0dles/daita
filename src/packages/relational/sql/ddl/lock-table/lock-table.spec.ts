@@ -1,6 +1,6 @@
 import { table } from '../../keyword/table/table';
 import { createPersonTable } from '../../../../../testing/schema/test-schema';
-import { Person } from '../../../../../testing/schema/person';
+import { Person } from '../../../../../docs/example/models/person';
 import { testClient } from '../../../../../testing/relational/adapters';
 
 describe('relational/sql/ddl/lock-table', () => {

@@ -3,9 +3,9 @@ import { createAuthAdminApp } from '../../../packages/auth-server/admin-app';
 import { seedAuthDefaults } from './client';
 import { adapter } from '../../../packages/pg-adapter/adapter/adapter';
 import { authSchema } from '../../../packages/auth-server/schema';
-import { getContext } from '../../../packages/orm';
 import { Application } from '../../../packages/node/application';
 import { createLogger } from '../../../packages/common/utils/logger';
+import { getContext } from '../../../packages/orm/context/get-context';
 
 const logger = createLogger({ container: 'auth-pg' });
 const application = new Application();

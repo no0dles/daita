@@ -7,8 +7,6 @@ import {
   isHttpServerTransactionOptions,
 } from '../../http-server-common/app-options';
 import { TransactionManager } from '../../http-server-common/transaction-manager';
-import { Context, TransactionContext } from '../../orm';
-import { isTransactionContext } from '../../orm/context/transaction-context';
 import { getRequestContext } from '../get-request-context';
 
 export function relationalRoute(options: AppOptions) {

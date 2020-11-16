@@ -8,8 +8,8 @@ import { failNever } from '../../common/utils/fail-never';
 import { isRequestContext } from './function/request-context';
 import { isAllowRegex } from './function/allow-regex';
 import { Sql } from '../sql/sql';
-import { getRuleId } from '../../orm/migration/generation/rule-id';
 import { RuleContext } from './description/rule-context';
+import { getRuleId } from './rule-id';
 
 export type MatchResult = MatchesResult | MismatchResult;
 

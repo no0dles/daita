@@ -1,8 +1,8 @@
-import { shell } from '../scripts/shell';
 import { sleep } from '../packages/common/utils/sleep';
 import { getRandomTestPort } from '../packages/node/random-port';
 import { runContainer } from '../packages/node/docker';
 import { waitForPort } from '../packages/node/network';
+import { shell } from '../packages/node/command';
 
 export interface NpmRegistry {
   uri: string;
@@ -20,7 +20,6 @@ export async function getNpmRegistry(): Promise<NpmRegistry> {
     },
     portBinding: { 4873: newPort },
   });
-  await container.start();
   await waitForPort(newPort);
   await sleep(500);
 

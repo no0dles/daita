@@ -10,7 +10,7 @@ import { table } from '../../relational/sql/keyword/table/table';
 import { join } from '../../relational/sql/dml/select/join/join';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { getRoles } from '../modules/roles';
-import { TransactionContext } from '../../orm';
+import { TransactionContext } from '../../orm/context/transaction-context';
 
 export function refreshRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });

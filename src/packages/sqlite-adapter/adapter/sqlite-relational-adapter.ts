@@ -4,15 +4,24 @@ import { RelationalDataAdapter } from '../../relational/adapter/relational-data-
 import { SqliteRelationalDataAdapter } from './sqlite-relational-data-adapter';
 import { MigrationDirection, RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import { MigrationDescription } from '../../orm/migration/migration-description';
-import { and, asc, Client, CreateTableSql, equal, field, join, table, TableDescription } from '../../relational';
-import { Defer, failNever } from '../../common';
-import { PostgresSql } from '../../pg-adapter';
 import { RelationalClient } from '../../relational/client/relational-client';
 import { getTableDescriptionIdentifier } from '../../orm/schema/description/relational-schema-description';
-import { MigrationStep } from '../../orm';
 import { RelationalAddTableFieldMigrationStep } from '../../orm/migration/steps/relational-add-table-field.migration-step';
 import { SqliteSql } from '../sql/sqlite-sql';
 import { ConditionDescription } from '../../relational/sql/operands/condition-description';
+import { failNever } from '../../common/utils/fail-never';
+import { TableDescription } from '../../relational/sql/keyword/table/table-description';
+import { asc } from '../../relational/sql/keyword/asc/asc';
+import { PostgresSql } from '../../pg-adapter/sql/postgres-sql';
+import { field } from '../../relational/sql/keyword/field/field';
+import { CreateTableSql } from '../../relational/sql/ddl/create-table/create-table-sql';
+import { MigrationStep } from '../../orm/migration/migration-step';
+import { Defer } from '../../common/utils/defer';
+import { Client } from '../../relational/client/client';
+import { table } from '../../relational/sql/keyword/table/table';
+import { join } from '../../relational/sql/dml/select/join/join';
+import { equal } from '../../relational/sql/operands/comparison/equal/equal';
+import { and } from '../../relational/sql/keyword/and/and';
 
 class Migrations {
   static table = '_datia_migrations';
@@ -128,17 +137,7 @@ export class SqliteAdapter extends SqliteRelationalAdapter implements Relational
         }
         //TODO optimize
       } else if (step.kind === 'add_table_foreign_key') {
-        await client.exec({
-          alterTable: table(step.table, step.schema),
-          add: {
-            constraint: step.name,
-            foreignKey: step.fieldNames,
-            references: {
-              table: table(step.foreignTable, step.foreignTableSchema),
-              primaryKeys: step.foreignFieldNames,
-            },
-          },
-        });
+        //TODO
       } else if (step.kind === 'drop_table_primary_key') {
         // await client.exec({
         //   alterTable: table(step.table, step.schema),
@@ -310,14 +309,13 @@ export class SqliteAdapter extends SqliteRelationalAdapter implements Relational
         { name: 'index', type: 'number', notNull: true, primaryKey: true },
         { name: 'step', type: 'string', notNull: true, primaryKey: false },
       ],
-    });
-    await client.exec({
-      alterTable: table(MigrationSteps),
-      add: {
-        foreignKey: ['migrationId', 'migrationSchema'],
-        references: {
-          table: table(Migrations),
-          primaryKeys: ['id', 'schema'],
+      foreignKey: {
+        migration: {
+          key: ['migrationId', 'migrationSchema'],
+          references: {
+            table: table(Migrations),
+            primaryKey: ['id', 'schema'],
+          },
         },
       },
     });

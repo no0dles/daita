@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 
 import { program } from 'commander';
-import { create, getOwnPackageJson } from './create';
+import { create } from './create';
+import { getOwnPackageJson } from '../node/node';
 
 program
   .name('create-data')
@@ -14,5 +15,5 @@ program
     await create(opts);
   });
 
-program.version(getOwnPackageJson((pkg) => pkg.version));
+program.version(getOwnPackageJson((pkg) => pkg.version) || '0.0.0');
 program.parse(process.argv);

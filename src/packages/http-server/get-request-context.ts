@@ -1,7 +1,7 @@
 import { Request } from 'express';
-import { Context, TransactionContext } from '../orm';
-import { AppOptions } from '../http-server-common';
-import { HttpServerDataOptions, HttpServerTransactionOptions } from '../http-server-common/app-options';
+import { AppOptions, HttpServerDataOptions, HttpServerTransactionOptions } from '../http-server-common/app-options';
+import { TransactionContext } from '../orm/context/transaction-context';
+import { Context } from '../orm/context/context';
 
 export function getRequestContext(req: Request, options: HttpServerTransactionOptions): TransactionContext<any>;
 export function getRequestContext(req: Request, options: HttpServerDataOptions): Context<any>;

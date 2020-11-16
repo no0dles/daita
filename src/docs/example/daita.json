@@ -1,0 +1,11 @@
+{
+  "$schema": "../../packages/cli/schema.json",
+  "context": {
+    "default": {
+      "module": "@daita/pg-adapter",
+      "schemaLocation": "schema.ts",
+      "migrationLocation": "migrations",
+      "connectionString": "sqlite://:memory:"
+    }
+  }
+}

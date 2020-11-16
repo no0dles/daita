@@ -1,11 +1,16 @@
 import { testContext } from '../../../../testing/relational/adapters';
-import { createPerson, createPersonTable, testSchema } from '../../../../testing/schema/test-schema';
-import { allow, anonymous, anything, equal, field, table } from '../../index';
-import { Person } from '../../../../testing/schema/person';
-import { sleep } from '../../../common';
-import { MigrationTree } from '../../../orm/migration/migration-tree';
-import { getRuleId } from '../../../orm/migration/generation/rule-id';
-import { TimeoutError } from '../../error/timeout-error';
+import { createPerson, createPersonTable } from '../../../../testing/schema/test-schema';
+import { Person } from '../../../../docs/example/models/person';
+import { MigrationTree } from '../../migration/migration-tree';
+import { TimeoutError } from '../../../relational/error/timeout-error';
+import { allow } from '../../../relational/permission/function/allow';
+import { sleep } from '../../../common/utils/sleep';
+import { field } from '../../../relational/sql/keyword/field/field';
+import { anonymous } from '../../../relational/permission/function/anonymous';
+import { anything } from '../../../relational/permission/function/anything';
+import { equal } from '../../../relational/sql/operands/comparison/equal/equal';
+import { table } from '../../../relational/sql/keyword/table/table';
+import { getRuleId } from '../../../relational/permission/rule-id';
 
 describe('relational/adapter/relational-transaction-adapter/timeout', () => {
   const remoteClients = testContext(

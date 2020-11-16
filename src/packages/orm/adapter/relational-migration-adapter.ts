@@ -1,6 +1,7 @@
 import { MigrationDescription } from '../migration/migration-description';
 import { Client } from '../../relational/client/client';
-import { RelationalDataAdapter, RelationalTransactionAdapter } from '../../relational';
+import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
+import { RelationalDataAdapter } from '../../relational/adapter/relational-data-adapter';
 
 export interface RelationalMigrationAdapter<TSql> extends RelationalTransactionAdapter<TSql> {
   getClient(handle: Promise<void>): Promise<Client<TSql>>;

@@ -25,6 +25,12 @@ export class SqliteFormatContext extends SimpleFormatContext {
         return 'TEXT';
       case 'boolean':
         return 'INTEGER';
+      case 'string[]':
+        return 'TEXT';
+      case 'boolean[]':
+        return 'TEXT';
+      case 'number[]':
+        return 'TEXT';
     }
 
     throw new Error(`unknown data type ${type}`);

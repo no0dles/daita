@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import { AppAuthorization } from '../../packages/http-server-common/app-authorization';
 import { createHttpServerApp } from '../../packages/http-server/app';
-import { Context } from '../../packages/orm';
 import { Application } from '../../packages/node/application';
 import { createLogger } from '../../packages/common/utils/logger';
+import { Context } from '../../packages/orm/context/context';
 
 const logger = createLogger({ container: 'http' });
 const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT ? parseInt(process.env.TRANSACTION_TIMEOUT) : 4000;

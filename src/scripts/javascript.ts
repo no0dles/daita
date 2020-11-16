@@ -117,7 +117,11 @@ export function getDaitaUsage(directory: string): UsageInfo {
   const daitaUsage: UsageInfo = {};
   for (const usage of Object.keys(usages)) {
     if (usage.startsWith('@daita/')) {
-      daitaUsage[usage.substr('@daita/'.length)] = usages[usage];
+      let packageName = usage.substr('@daita/'.length);
+      if (packageName.indexOf('/') >= 0) {
+        packageName = packageName.substr(0, packageName.indexOf('/'));
+      }
+      daitaUsage[packageName] = usages[usage];
     }
   }
   return daitaUsage;
@@ -131,14 +135,19 @@ export function updatePaths(packages: Set<string>, root: string, directory: stri
   for (const file of files) {
     const content = fs.readFileSync(file.fileName).toString();
 
-    function replaceDaitaImport(substring: string, importPath: string, template: (packageName: string) => string) {
+    function replaceDaitaImport(
+      substring: string,
+      importPath: string,
+      template: (packageName: string, packagePath: string) => string,
+    ) {
       if (importPath.startsWith('.')) {
         const fullImportPath = path.join(path.dirname(file.fileName), importPath); //TODO verify if export exists
         const relativeImportPath = path.relative(root, fullImportPath);
         if (relativeImportPath.startsWith('..')) {
           const packageName = relativeImportPath.split(path.sep)[1];
+          const packagePath = relativeImportPath.split(path.sep).slice(2).join(path.sep);
           packages.add(`@daita/${packageName}`);
-          return template(packageName);
+          return template(packageName, packagePath);
         }
         return substring;
       } else {
@@ -149,12 +158,20 @@ export function updatePaths(packages: Set<string>, root: string, directory: stri
 
     const regex = /require\([\"'](?<import>[\.\/\-@\w]+)[\"']\)/g;
     let result = content.replace(regex, (substring: string, importPath: string) => {
-      return replaceDaitaImport(substring, importPath, (packageName) => `require("@daita/${packageName}")`);
+      return replaceDaitaImport(
+        substring,
+        importPath,
+        (packageName, packagePath) => `require("@daita/${packageName}/${packagePath}")`,
+      );
     });
 
     const esRegex = / from '(?<import>[\.\/\-@\w]+)'/g;
     result = result.replace(esRegex, (substring: string, importPath: string) => {
-      return replaceDaitaImport(substring, importPath, (packageName) => ` from '@daita/${packageName}'`);
+      return replaceDaitaImport(
+        substring,
+        importPath,
+        (packageName, packagePath) => ` from '@daita/${packageName}/${packagePath}'`,
+      );
     });
 
     fs.writeFileSync(file.fileName, result);

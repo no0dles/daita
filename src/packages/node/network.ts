@@ -1,6 +1,6 @@
-import { Defer } from '../common';
 import net from 'net';
 import { getRandomTestPort } from './random-port';
+import { Defer } from '../common/utils/defer';
 
 export function waitForPort(port: number) {
   const defer = new Defer<void>();

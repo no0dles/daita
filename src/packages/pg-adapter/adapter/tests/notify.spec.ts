@@ -1,6 +1,7 @@
 import { PostgresAdapter } from '../postgres.adapter';
 import { getPostgresDb } from '../../testing/postgres-test-adapter';
-import { Defer, sleep } from '../../../common';
+import { sleep } from '../../../common/utils/sleep';
+import { Defer } from '../../../common/utils/defer';
 
 describe('pg-adapter/adapter/postgres-adapter/notify', () => {
   it('should listen on notify connection', async () => {

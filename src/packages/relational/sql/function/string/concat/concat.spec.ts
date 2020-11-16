@@ -1,7 +1,7 @@
 import { concat } from './concat';
 import { field } from '../../../keyword/field/field';
 import { table } from '../../../keyword/table/table';
-import { Person } from '../../../../../../testing/schema/person';
+import { Person } from '../../../../../../docs/example/models/person';
 import { createPerson, createPersonTable } from '../../../../../../testing/schema/test-schema';
 import { testClient } from '../../../../../../testing/relational/adapters';
 

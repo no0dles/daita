@@ -7,11 +7,12 @@ import { authSchema } from '../auth-server/schema';
 import { createAuthAdminApp } from '../auth-server/admin-app';
 import { adapter } from '../pg-adapter';
 import { MigrationContext } from '../orm/context/get-migration-context';
-import { getContext } from '../orm';
 import { MigrationTree } from '../orm/migration/migration-tree';
-import { allow, authorized } from '../relational';
-import { getRuleId } from '../orm/migration/generation/rule-id';
 import { getPostgresDb, PostgresDb } from '../pg-adapter/testing/postgres-test-adapter';
+import { allow } from '../relational/permission/function/allow';
+import { authorized } from '../relational/permission/function/authorized';
+import { getContext } from '../orm/context/get-context';
+import { getRuleId } from '../relational/permission/rule-id';
 
 describe('http-server/app', () => {
   let authCtx: MigrationContext<any>;

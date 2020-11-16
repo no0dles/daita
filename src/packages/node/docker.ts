@@ -1,5 +1,21 @@
 import Docker from 'dockerode';
-import { Defer } from '../common';
+import { Defer } from '../common/utils/defer';
+
+export interface DockerCompose {
+  version: string;
+  services?: { [key: string]: DockerComposeService };
+  volumes?: { [key: string]: DockerComposeVolume };
+}
+
+export interface DockerComposeVolume {}
+
+export interface DockerComposeService {
+  image?: string;
+  volumes?: string[];
+  links?: string[];
+  ports?: string[];
+  environment?: string[];
+}
 
 export async function runContainer(options: {
   image: string;

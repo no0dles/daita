@@ -11,8 +11,8 @@
     "push:docker": "node -r ts-node/register src/scripts/push-docker-image.ts",
     "clean": "git clean -fX -d dist",
     "rebuild": "npm run clean && npm run build",
-    "build:docs": "cd docs && docusaurus build --out-dir ../dist/docs",
-    "docs": "cd docs && docusaurus start"
+    "build:docs": "cd src/docs && docusaurus build --out-dir ../dist/docs",
+    "docs": "cd src/docs && docusaurus start"
   },
   "license": "MIT",
   "repository": {

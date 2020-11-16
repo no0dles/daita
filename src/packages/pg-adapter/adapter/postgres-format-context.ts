@@ -17,6 +17,12 @@ export class PostgresFormatContext extends CounterFormatContext {
         return 'BOOLEAN';
       case 'json':
         return 'JSONB';
+      case 'number[]':
+        return 'NUMERIC(26,10)[]';
+      case 'string[]':
+        return 'VARCHAR[]';
+      case 'boolean':
+        return 'BOOLEAN[]';
     }
 
     throw new Error(`unknown data type ${type}`);

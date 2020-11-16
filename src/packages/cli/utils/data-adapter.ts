@@ -4,15 +4,16 @@ import { SqliteAdapterOptions } from '../../sqlite-adapter/adapter/sqlite-adapte
 import { PostgresAdapterOptions } from '../../pg-adapter/adapter/adapter';
 import { AppAuthorization } from '../../http-server-common/app-authorization';
 import path from 'path';
-import { Context, getContext, TransactionContext } from '../../orm';
 import { MigrationContext } from '../../orm/context/get-migration-context';
 import {
   RelationalDataAdapterImplementation,
   RelationalTransactionAdapterImplementation,
 } from '../../relational/adapter/relational-adapter-implementation';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
-import { SchemaInformation } from './path';
 import { MigrationTree } from '../../orm/migration/migration-tree';
+import { TransactionContext } from '../../orm/context/transaction-context';
+import { getContext } from '../../orm/context/get-context';
+import { Context } from '../../orm/context/context';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;
 

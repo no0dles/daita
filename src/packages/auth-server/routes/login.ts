@@ -13,7 +13,7 @@ import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { join } from '../../relational/sql/dml/select/join/join';
 import { UserPoolUser } from '../models/user-pool-user';
 import { getRoles } from '../modules/roles';
-import { TransactionContext } from '../../orm';
+import { TransactionContext } from '../../orm/context/transaction-context';
 
 export function loginRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });

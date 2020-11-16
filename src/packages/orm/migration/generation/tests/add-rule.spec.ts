@@ -4,8 +4,8 @@ import { allow } from '../../../../relational/permission/function/allow';
 import { field } from '../../../../relational/sql/keyword/field/field';
 import { authorized } from '../../../../relational/permission/function/authorized';
 import { MigrationStep } from '../../migration-step';
-import { getRuleId } from '../rule-id';
 import { table } from '../../../../relational/sql/keyword/table/table';
+import { getRuleId } from '../../../../relational/permission/rule-id';
 
 describe('cli/cmds/add/add-rule', () => {
   let steps: MigrationStep[] = [];

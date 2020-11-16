@@ -9,7 +9,7 @@ import { join } from '../../relational/sql/dml/select/join/join';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { UserPoolUser } from '../models/user-pool-user';
 import { getRoles } from '../modules/roles';
-import { Context } from '../../orm';
+import { Context } from '../../orm/context/context';
 
 export function adminTokenRoute(client: Context<any>) {
   const router = express.Router({ mergeParams: true });

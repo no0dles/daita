@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as https from 'https';
 import { Defer } from '../../../common/utils/defer';
 import { createLogger } from '../../../common/utils/logger';
-import { runCommand } from '../../../node/command';
+import { shell } from '../../../node/command';
 
 const logger = createLogger({ package: 'cli', command: 'upgrade' });
 
@@ -33,7 +33,7 @@ export async function upgrade(opts: { cwd?: string; npmClient?: string; skipInst
   fs.writeFileSync(packagePath, JSON.stringify(pkg, null, 2));
   logger.info('updated daita packages successfully');
   if (!opts.skipInstall) {
-    await runCommand(opts.npmClient || 'npm', ['install'], cwd);
+    await shell(opts.npmClient || 'npm', ['install'], cwd);
   }
 }
 

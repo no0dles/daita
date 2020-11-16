@@ -1,6 +1,6 @@
 import { expectedSql } from '../../../../../testing/relational/formatter.test';
 import { table } from '../../keyword/table/table';
-import { User } from '../../../../../testing/schema/user';
+import { User } from '../../../../../docs/example/models/user';
 import { equal } from '../../operands/comparison/equal/equal';
 import { field } from '../../keyword/field/field';
 import { or } from '../../keyword/or/or';

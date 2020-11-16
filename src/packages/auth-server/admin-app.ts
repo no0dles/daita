@@ -8,9 +8,9 @@ import { relationalRoute } from '../http-server/routes/relational';
 import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
 import { adminTokenRoute } from './routes/admin-token';
-import { TransactionContext } from '../orm';
 import { Server } from 'http';
 import { createLogger } from '../common/utils/logger';
+import { TransactionContext } from '../orm/context/transaction-context';
 
 export function createAuthAdminApp(context: TransactionContext<any>, port: number) {
   const adminApp = express();
