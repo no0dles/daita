@@ -7,6 +7,7 @@ import { sqliteFormatter } from '../formatter/sqlite-formatter';
 import { Serializable } from './serializable';
 import { SqliteSql } from '../sql/sqlite-sql';
 import { createLogger } from '../../common/utils/logger';
+import { RelationDoesNotExistsError } from '../../relational/error/relational-error';
 
 export class SqliteRelationalDataAdapter implements RelationalDataAdapter<SqliteSql> {
   private readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });
@@ -62,7 +63,17 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
   execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
     return this.runSerializable.run<RelationalRawResult>(async () => {
       const defer = new Defer<RelationalRawResult>();
-      const stmt = this.db.prepare(sql, values, () => {
+      this.logger.trace(`execute statement ${sql}`, { sql, values });
+      const stmt = this.db.prepare(sql, values, (err) => {
+        if (err) {
+          const regex = /SQLITE_ERROR\: no such table\: (?<table>.*)/g;
+          const groups = regex.exec(err.message)?.groups || {};
+          if (groups.table) {
+            return defer.reject(new RelationDoesNotExistsError(err, sql, values, undefined, groups.table));
+          }
+          return defer.reject(err);
+        }
+
         stmt.bind((err) => {
           if (err) {
             this.logger.error(err, { query: sql, queryValues: values });
@@ -74,6 +85,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
             this.logger.error(err, { query: sql, queryValues: values });
             defer.reject(err);
           } else {
+            this.logger.trace(`all statement ${sql}`, { sql, values, rows });
             defer.resolve({
               rows: rows.map((row) => {
                 for (const key of Object.keys(row)) {
@@ -94,8 +106,15 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
           if (err) {
             this.logger.error(err, { query: sql, queryValues: values });
             defer.reject(err);
+          } else {
+            this.logger.trace(`finalize statement ${sql}`, { sql, values });
           }
         });
+        setTimeout(() => {
+          if (!defer.isRejected && !defer.isResolved) {
+            this.logger.warn(`sql ${sql} took more than 10s`, { sql, values });
+          }
+        }, 10000);
       });
       return defer.promise;
     });

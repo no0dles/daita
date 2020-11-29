@@ -12,7 +12,16 @@ export function getTableDescriptionIdentifier(table: TableDescription<any>): str
   return table.table;
 }
 
-export class RelationalSchemaDescription {
+export interface SchemaDescription {
+  table(key: TableDescription<any>): RelationalTableDescription;
+  view(key: TableDescription<any>): RelationalViewDescription;
+  tables: RelationalTableDescription[];
+  views: RelationalViewDescription[];
+  rules: { id: string; rule: Rule }[];
+  rulesList: Rule[];
+}
+
+export class RelationalSchemaDescription implements SchemaDescription {
   private readonly tableArrayMap = new ArrayMap<RelationalTableDescription>();
   private readonly viewArrayMap = new ArrayMap<RelationalViewDescription>();
   private readonly rulesArrayMap = new ArrayMap<{ id: string; rule: Rule }>();

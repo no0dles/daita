@@ -4,6 +4,8 @@ import { TableDescription } from '../table/table-description';
 import { ExcludeNonPrimitive } from '../../../../common/types/exclude-non-primitive';
 import { Constructable } from '../../../../common/types/constructable';
 
+export function all(): any;
+export function all<T>(tbl: TableDescription<T> | TableAliasDescription<T> | Constructable<T>): ExcludeNonPrimitive<T>;
 export function all<T>(
   tbl?: TableDescription<T> | TableAliasDescription<T> | Constructable<T>,
 ): ExcludeNonPrimitive<T> {

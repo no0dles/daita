@@ -49,7 +49,7 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
         throw new DuplicateKeyError(e, sql, values, e.schema, e.table, e.constraint, obj);
       }
       if (e.code === '42P01') {
-        const regex = /(Error:\s)?(\w+\s)?(R|r)elation "(?<schema>.*?)\.?(?<relation>.*?)" does not exist/g;
+        const regex = /.+"(?<schema>.*?)\.?(?<relation>.*?)" does not exist/g;
         const groups = regex.exec(e.message)?.groups || {};
         throw new RelationDoesNotExistsError(e, sql, values, groups.schema, groups.relation);
       }

@@ -2,16 +2,12 @@ import { MigrationDescription } from '../migration/migration-description';
 import { Client } from '../../relational/client/client';
 import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
 import { RelationalDataAdapter } from '../../relational/adapter/relational-data-adapter';
+import { MigrationPlan } from '../context/relational-migration-context';
 
 export interface RelationalMigrationAdapter<TSql> extends RelationalTransactionAdapter<TSql> {
   getClient(handle: Promise<void>): Promise<Client<TSql>>;
   getAppliedMigrations(client: Client<TSql>, schema: string): Promise<MigrationDescription[]>;
-  applyMigration(
-    client: Client<TSql>,
-    schema: string,
-    migration: MigrationDescription,
-    direction: MigrationDirection,
-  ): Promise<void>;
+  applyMigration(client: Client<TSql>, schema: string, migrationPlan: MigrationPlan): Promise<void>;
   close(): Promise<void>;
 }
 

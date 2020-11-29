@@ -22,6 +22,9 @@ import { table } from '../../relational/sql/keyword/table/table';
 import { join } from '../../relational/sql/dml/select/join/join';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { and } from '../../relational/sql/keyword/and/and';
+import { MigrationPlan } from '../../orm/context/relational-migration-context';
+import { cli } from 'cli-ux';
+import { all } from '../../relational/sql/keyword/all/all';
 
 class Migrations {
   static table = '_datia_migrations';
@@ -68,23 +71,18 @@ export class SqliteAdapter extends SqliteRelationalAdapter implements Relational
     return this.fileName === ':memory:' ? 'sqlite-memory' : 'sqlite-file';
   }
 
-  async applyMigration(
-    client: Client<SqliteSql>,
-    schema: string,
-    migration: MigrationDescription,
-    direction: MigrationDirection,
-  ): Promise<void> {
+  async applyMigration(client: Client<SqliteSql>, schema: string, migrationPlan: MigrationPlan): Promise<void> {
     await this.updateInternalSchema(client);
 
     const createTables: { [key: string]: CreateTableSql } = {};
 
     await client.exec({
-      insert: { id: migration.id, schema },
+      insert: { id: migrationPlan.migration.id, schema },
       into: table(Migrations),
     });
 
     let index = 0;
-    for (const step of migration.steps) {
+    for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
         const tbl = table(step.table, step.schema);
         const key = getTableDescriptionIdentifier(tbl);
@@ -93,13 +91,13 @@ export class SqliteAdapter extends SqliteRelationalAdapter implements Relational
 
         createTables[key] = {
           createTable: tbl,
-          columns: migration.steps
+          columns: migrationPlan.migration.steps
             .filter(isAddTableFieldStep)
             .filter((s) => s.table === step.table && s.schema === step.schema)
             .map((columnStep) => ({
               name: columnStep.fieldName,
               type: columnStep.type,
-              primaryKey: migration.steps.some(
+              primaryKey: migrationPlan.migration.steps.some(
                 (s) =>
                   s.kind === 'add_table_primary_key' &&
                   s.schema === step.schema &&
@@ -151,13 +149,46 @@ export class SqliteAdapter extends SqliteRelationalAdapter implements Relational
           dropTable: table(step.table, step.schema),
         });
       } else if (step.kind === 'drop_table_field') {
-        // await client.exec({
-        //   alterTable: table(step.table, step.schema),
-        //   drop: {
-        //     column: step.fieldName,
-        //   },
-        // });
-        // TODO
+        const tbl = table(step.table, step.schema);
+        const tmpTbl = table(step.table + '_tmp', step.schema);
+        const tableDescription = migrationPlan.targetSchema.table(tbl);
+        const newFields = tableDescription.fields.filter((f) => f.name !== step.fieldName);
+        const selectFields = newFields.reduce<any>((fields, fld) => {
+          fields[fld.name] = field(tbl, fld.name);
+          return fields;
+        }, {});
+        const copyFields = newFields.reduce<any>((fields, fld) => {
+          fields[fld.name] = field(tmpTbl, fld.name);
+          return fields;
+        }, {});
+        await client.exec({
+          createTable: tmpTbl,
+          columns: newFields,
+        });
+        await client.exec({
+          into: tmpTbl,
+          insert: {
+            select: selectFields,
+            from: tbl,
+          },
+        });
+        await client.exec({
+          dropTable: tbl,
+        });
+        await client.exec({
+          createTable: tbl,
+          columns: newFields,
+        });
+        await client.exec({
+          into: tbl,
+          insert: {
+            select: copyFields,
+            from: tmpTbl,
+          },
+        });
+        await client.exec({
+          dropTable: tmpTbl,
+        });
       } else if (step.kind === 'create_index') {
         await client.exec({
           createIndex: step.name,
@@ -219,7 +250,7 @@ export class SqliteAdapter extends SqliteRelationalAdapter implements Relational
 
       await client.exec({
         insert: {
-          migrationId: migration.id,
+          migrationId: migrationPlan.migration.id,
           migrationSchema: schema,
           step: JSON.stringify(step),
           index: index++,

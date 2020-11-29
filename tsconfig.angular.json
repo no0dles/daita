@@ -6,6 +6,7 @@
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "importHelpers": true,
@@ -18,7 +19,7 @@
   },
   "angularCompilerOptions": {
     "skipTemplateCodegen": true,
-    "strictMetadataEmit": true,
+    "strictMetadataEmit": false,
     "enableResourceInlining": true
   },
   "files": [

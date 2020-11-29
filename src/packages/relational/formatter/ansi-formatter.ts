@@ -43,7 +43,6 @@ ansiFormatter.add(new SelectFormatter());
 ansiFormatter.add(new SubSelectFormatter());
 ansiFormatter.add(new ValueFormatter());
 ansiFormatter.add(new SumFormatter());
-ansiFormatter.add(new TableFormatter());
 ansiFormatter.add(new NotInFormatter());
 ansiFormatter.add(new JoinFormatter());
 ansiFormatter.add(new AvgFormatter());

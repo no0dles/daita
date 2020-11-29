@@ -19,7 +19,7 @@ export function createMigrationTree(...steps: MigrationStep[] | MigrationStep[][
       migrations.push({
         id: `migration${migrationId}`,
         steps: step,
-        after: `migration${migrationId - 1}`,
+        after: migrationId > 0 ? `migration${migrationId - 1}` : undefined,
       });
       migrationId++;
     }

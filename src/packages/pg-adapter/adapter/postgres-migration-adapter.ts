@@ -21,6 +21,7 @@ import { MigrationStep } from '../../orm/migration/migration-step';
 import { PostgresAdapter } from './postgres.adapter';
 import { Pool } from 'pg';
 import { RelationalTransactionClient } from '../../relational/client/relational-transaction-client';
+import { MigrationPlan } from '../../orm/context/relational-migration-context';
 
 class Migrations {
   static schema = 'daita';
@@ -38,14 +39,6 @@ class MigrationSteps {
   migrationSchema!: string;
   index!: number;
   step!: string;
-}
-
-class Rules {
-  static schema = 'daita';
-  static table = 'rules';
-
-  id!: string;
-  rule!: string;
 }
 
 export class PostgresMigrationAdapter extends PostgresAdapter implements RelationalMigrationAdapter<PostgresSql> {
@@ -68,21 +61,6 @@ export class PostgresMigrationAdapter extends PostgresAdapter implements Relatio
     });
     return defer.promise;
   }
-
-  // async getRules(): Promise<Rule[]> {
-  //   await this.client.transaction(async (trx) => {
-  //     await this.updateInternalSchema(trx);
-  //   });
-  //
-  //   const rules = await this.client.select({
-  //     select: {
-  //       id: field(Rules, 'id'),
-  //       rule: field(Rules, 'rule'),
-  //     },
-  //     from: table(Rules),
-  //   });
-  //   return rules.map((rule) => parseRule(rule.rule));
-  // }
 
   private async updateInternalSchema(client: Client<PostgresSql>) {
     if (this.initalizedSchema) {
@@ -176,23 +154,24 @@ export class PostgresMigrationAdapter extends PostgresAdapter implements Relatio
     return Object.keys(migrationMap).map((id) => migrationMap[id]);
   }
 
-  async applyMigration(
-    client: Client<PostgresSql>,
-    schema: string,
-    migration: MigrationDescription,
-    direction: MigrationDirection,
-  ): Promise<void> {
+  async applyMigration(client: Client<PostgresSql>, schema: string, migrationPlan: MigrationPlan): Promise<void> {
     await this.updateInternalSchema(client);
     const createTables: { [key: string]: CreateTableSql } = {};
 
     await client.exec({
-      insert: { id: migration.id, schema },
+      insert: { id: migrationPlan.migration.id, schema },
       into: table(Migrations),
     });
 
     let index = 0;
-    for (const step of migration.steps) {
+    for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
+        if (step.schema) {
+          await client.exec({
+            createSchema: step.schema,
+          });
+        }
+
         const tbl = table(step.table, step.schema);
         const key = getTableDescriptionIdentifier(tbl);
         const isAddTableFieldStep = (val: MigrationStep): val is RelationalAddTableFieldMigrationStep =>
@@ -200,13 +179,13 @@ export class PostgresMigrationAdapter extends PostgresAdapter implements Relatio
 
         createTables[key] = {
           createTable: tbl,
-          columns: migration.steps
+          columns: migrationPlan.migration.steps
             .filter(isAddTableFieldStep)
             .filter((s) => s.table === step.table && s.schema === step.schema)
             .map((columnStep) => ({
               name: columnStep.fieldName,
               type: columnStep.type,
-              primaryKey: migration.steps.some(
+              primaryKey: migrationPlan.migration.steps.some(
                 (s) =>
                   s.kind === 'add_table_primary_key' &&
                   s.schema === step.schema &&
@@ -293,15 +272,7 @@ export class PostgresMigrationAdapter extends PostgresAdapter implements Relatio
           },
         });
       } else if (step.kind === 'add_rule') {
-        await client.exec({
-          into: table(Rules),
-          insert: { id: step.ruleId, rule: serializeRule(step.rule) },
-        });
       } else if (step.kind === 'drop_rule') {
-        await client.exec({
-          delete: table(Rules),
-          where: equal(field(Rules, 'id'), step.ruleId),
-        });
       } else if (step.kind === 'add_view') {
         await client.exec({
           createView: table(step.view, step.schema),
@@ -341,7 +312,7 @@ export class PostgresMigrationAdapter extends PostgresAdapter implements Relatio
 
       await client.exec({
         insert: {
-          migrationId: migration.id,
+          migrationId: migrationPlan.migration.id,
           migrationSchema: schema,
           step: JSON.stringify(step),
           index: index++,

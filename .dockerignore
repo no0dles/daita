@@ -6,7 +6,6 @@ coverage
 dist
 keys
 .github
-src/docs
 src/examples
 src/experimental
 src/tests

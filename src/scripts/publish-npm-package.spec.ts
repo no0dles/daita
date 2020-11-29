@@ -14,7 +14,7 @@ describe('scripts/publish-npm-package', () => {
     //registry = { uri: 'http://localhost:56419', stop: async () => {} };
   }, 60000);
 
-  //afterAll(() => registry.stop());
+  afterAll(() => registry.stop());
 
   it(
     'should create empty daita project',

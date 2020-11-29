@@ -23,6 +23,8 @@ export class PostgresFormatContext extends CounterFormatContext {
         return 'VARCHAR[]';
       case 'boolean':
         return 'BOOLEAN[]';
+      case 'uuid':
+        return 'uuid';
     }
 
     throw new Error(`unknown data type ${type}`);

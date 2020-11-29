@@ -4,4 +4,68 @@ title: Getting started
 sidebar_label: Getting started
 ---
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ac euismod odio, eu consequat dui. Nullam molestie consectetur risus id imperdiet. Proin sodales ornare turpis, non mollis massa ultricies id. Nam at nibh scelerisque, feugiat ante non, dapibus tortor. Vivamus volutpat diam quis tellus elementum bibendum. Praesent semper gravida velit quis aliquam. Etiam in cursus neque. Nam lectus ligula, malesuada et mauris a, bibendum faucibus mi. Phasellus ut interdum felis. Phasellus in odio pulvinar, porttitor urna eget, fringilla lectus. Aliquam sollicitudin est eros. Mauris consectetur quam vitae mauris interdum hendrerit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+```
+npm init @daita
+```
+
+
+## setup schema / model
+
+create your first model
+
+``src/models/mountain.ts``
+```typescript
+export class Mountain {
+  name!: string
+  height!: number
+  firstAscent!: Date
+}
+``` 
+
+
+add your model to the schema
+
+``src/schema.ts``
+```typescript
+import {RelationalSchema} from '@daita/orm'; 
+import { Mountain } from './models/mountain';
+
+export const schema = new RelationalSchema();
+schema.table(Mountain);
+``` 
+
+
+create a migration for your schema changes
+```shell script
+npx daita migration:add initial
+```
+
+
+
+## node with sqlite
+
+apply migrations to the database
+```shell script
+npx daita migration:apply
+```
+
+## node with postgres
+
+start your database
+```shell script
+docker-compuse up -d
+```
+
+apply migrations to the database
+```shell script
+npx daita migration:apply
+```
+
+## web with sqlite over http
+
+apply migrations to the database
+```shell script
+npx daita migration:apply
+```
+

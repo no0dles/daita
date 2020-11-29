@@ -58,7 +58,11 @@ const plainFormatter: LogFormatter = {
 };
 const prettyFormatter: LogFormatter = {
   log(msg: LogMessage) {
-    console.log(`[${msg.time.toLocaleTimeString()}] ${msg.level}: ${msg.message}`);
+    console.log(
+      `[${msg.time.getDay()}.${msg.time.getMonth()}.${msg.time.getFullYear()} ${msg.time.getHours()}:${msg.time.getMinutes()}:${msg.time.getSeconds()}.${msg.time.getMilliseconds()}] ${
+        msg.level
+      }: ${msg.message}`,
+    );
   },
 };
 
@@ -71,7 +75,7 @@ class LoggerImpl implements Logger {
   constructor(private props: { [key: string]: any }) {
     this.enabled = getBoolEnvironmentVariable('LOGGER_ENABLED', true);
     this.format = getOptionEnvironmentVariable('LOGGER_FORMAT', ['plain', 'json', 'pretty'], 'pretty');
-    this.level = getOptionEnvironmentVariable('LOGGER_LEVEL', ['debug', 'info', 'warn', 'error'], 'info');
+    this.level = getOptionEnvironmentVariable('LOGGER_LEVEL', ['trace', 'debug', 'info', 'warn', 'error'], 'info');
     switch (this.format) {
       case 'json':
         this.formatter = jsonFormatter;

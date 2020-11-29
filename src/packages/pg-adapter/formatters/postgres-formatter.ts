@@ -16,6 +16,7 @@ import { DropTableFormatter } from '../../relational/sql/ddl/drop-table/drop-tab
 import { DropViewFormatter } from '../../relational/sql/ddl/drop-view/drop-view';
 import { ansiFormatter } from '../../relational/formatter/ansi-formatter';
 import { NowFormatter } from './now';
+import { TableFormatter } from '../../relational/sql/keyword/table/table-formatter';
 
 export const postgresFormatter = new Formatter();
 postgresFormatter.extend(ansiFormatter);
@@ -33,3 +34,4 @@ postgresFormatter.add(new DropIndexFormatter());
 postgresFormatter.add(new NotifyFormatter());
 postgresFormatter.add(new ListenFormatter());
 postgresFormatter.add(new NowFormatter());
+postgresFormatter.add(new TableFormatter());

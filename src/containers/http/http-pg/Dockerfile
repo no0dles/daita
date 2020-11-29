@@ -7,6 +7,7 @@ RUN npm install
 
 COPY tsconfig.json .
 COPY src/testing src/testing
+COPY src/docs src/docs
 COPY src/containers src/containers
 COPY src/packages src/packages
 RUN npx tsc

@@ -16,15 +16,14 @@
     "declaration": true,
     "declarationMap": false,
     "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "incremental": true,
     "sourceMap": false,
     "composite": true,
     "strict": true,
     "noImplicitAny": true,
-    "noImplicitThis": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "removeComments": true
+    "noImplicitThis": true
   },
   "exclude": [
     "node_modules",

@@ -7,6 +7,16 @@ import { RuleContext } from '../../relational/permission/description/rule-contex
 import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
 import { Defer } from '../../common/utils/defer';
 import { Client } from '../../relational/client/client';
+import { SchemaDescription } from '../schema/description/relational-schema-description';
+import { getSchemaDescription } from '../schema/relational-schema-description';
+import { SchemaMapper } from '../schema/description/schema-mapper';
+import { NormalMapper } from '../schema/description/normal-mapper';
+
+export interface MigrationPlan {
+  migration: MigrationDescription;
+  direction: MigrationDirection;
+  targetSchema: SchemaDescription;
+}
 
 export class RelationalMigrationContext extends RelationalTransactionContext implements MigrationContext<any> {
   constructor(
@@ -26,9 +36,7 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
     return updates.length > 0;
   }
 
-  private async pendingMigrations(
-    options?: MigrationContextUpdateOptions,
-  ): Promise<{ migration: MigrationDescription; direction: MigrationDirection }[]> {
+  private async pendingMigrations(options?: MigrationContextUpdateOptions): Promise<MigrationPlan[]> {
     return this.run((client) => {
       return this.getPendingMigrations(client, options);
     });
@@ -38,12 +46,7 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
     await this.run(async (client) => {
       const pendingMigrations = await this.getPendingMigrations(client, options);
       for (const migration of pendingMigrations) {
-        await this.migrationAdapter.applyMigration(
-          client,
-          this.migrationTree.name,
-          migration.migration,
-          migration.direction,
-        );
+        await this.migrationAdapter.applyMigration(client, this.migrationTree.name, migration);
       }
     });
   }
@@ -51,7 +54,7 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
   private async getPendingMigrations(
     client: Client<any>,
     options?: MigrationContextUpdateOptions,
-  ): Promise<{ migration: MigrationDescription; direction: MigrationDirection }[]> {
+  ): Promise<MigrationPlan[]> {
     const appliedMigrations = await this.migrationAdapter.getAppliedMigrations(client, this.migrationTree.name);
 
     let currentMigrations = this.migrationTree.roots();
@@ -70,21 +73,32 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
           return [];
         } else {
           // TODO ordering of migrations
-          return migrationsToRevert.map((migration) => ({ migration, direction: 'reverse' }));
+          // TODO create target schema
+          return migrationsToRevert.map((migration) => ({
+            migration,
+            direction: 'reverse',
+            targetSchema: null as any,
+          }));
         }
       }
     }
 
-    const pendingMigrations: { migration: MigrationDescription; direction: MigrationDirection }[] = [];
+    const pendingMigrations: MigrationPlan[] = [];
+    const migrations: MigrationDescription[] = [];
     while (currentMigrations.length > 0) {
       if (currentMigrations.length > 1) {
         throw new Error('multiple possible next migrations');
       }
 
       const currentMigration = currentMigrations[0];
-
+      migrations.push(currentMigration);
       if (!appliedMigrations.some((m) => m.id === currentMigration.id)) {
-        pendingMigrations.push({ migration: currentMigration, direction: 'forward' });
+        const schema = getSchemaDescription(
+          this.migrationTree.name,
+          new SchemaMapper(() => new NormalMapper()),
+          migrations,
+        );
+        pendingMigrations.push({ migration: currentMigration, direction: 'forward', targetSchema: schema });
       }
 
       if (targetMigrationId && currentMigration.id === targetMigrationId) {

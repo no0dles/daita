@@ -14,6 +14,27 @@ describe('packages/orm/migration/steps/relational-add-rule', () => {
       await ctx.migrate();
     });
 
-    it('should add', () => {});
+    it('should allow authorized access', async () => {
+      const authorizedContext = ctx.authorize({
+        isAuthorized: true,
+        userId: 'foo',
+        roles: [],
+      });
+      const res = await authorizedContext.selectFirst({ select: now() });
+      expect(res).toBeInstanceOf(Date);
+    });
+
+    it('should not allow unauthorized access', async () => {
+      const unauthorizedContext = ctx.authorize({
+        isAuthorized: false,
+        userId: undefined,
+        roles: undefined,
+      });
+      try {
+        await unauthorizedContext.selectFirst({ select: now() });
+      } catch (e) {
+        console.log(e);
+      }
+    });
   });
 });
