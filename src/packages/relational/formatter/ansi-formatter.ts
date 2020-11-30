@@ -30,7 +30,7 @@ import { AliasFormatter } from '../sql/keyword/alias/alias-formatter';
 import { NotBetweenFormatter } from '../sql/operands/comparison/not-between/not-between-formatter';
 import { DeleteFormatter } from '../sql/dml/delete/delete-formatter';
 import { LikeFormatter } from '../sql/operands/comparison/like/like-formatter';
-import { ConcatFormatter } from '../sql/function/string/concat/concat-formatter';
+import { ConcatPipeFormatter } from '../sql/function/string/concat/concat-pipe-formatter';
 import { InsertFormatter } from '../sql/dml/insert/insert-formatter';
 
 export const ansiFormatter = new Formatter();
@@ -65,5 +65,4 @@ ansiFormatter.add(new AliasFormatter());
 ansiFormatter.add(new NotBetweenFormatter());
 ansiFormatter.add(new DeleteFormatter());
 ansiFormatter.add(new LikeFormatter());
-ansiFormatter.add(new ConcatFormatter());
 ansiFormatter.add(new InsertFormatter());

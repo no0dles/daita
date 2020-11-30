@@ -5,8 +5,6 @@ import { MigrationContext, MigrationContextUpdateOptions } from './get-migration
 import { MigrationDescription } from '../migration/migration-description';
 import { RuleContext } from '../../relational/permission/description/rule-context';
 import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
-import { Defer } from '../../common/utils/defer';
-import { Client } from '../../relational/client/client';
 import { SchemaDescription } from '../schema/description/relational-schema-description';
 import { getSchemaDescription } from '../schema/relational-schema-description';
 import { SchemaMapper } from '../schema/description/schema-mapper';
@@ -32,30 +30,17 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
   }
 
   async needsMigration(options?: MigrationContextUpdateOptions): Promise<boolean> {
-    const updates = await this.pendingMigrations(options);
+    const updates = await this.getPendingMigrations(options);
     return updates.length > 0;
   }
 
-  private async pendingMigrations(options?: MigrationContextUpdateOptions): Promise<MigrationPlan[]> {
-    return this.run((client) => {
-      return this.getPendingMigrations(client, options);
-    });
-  }
-
   async migrate(options?: MigrationContextUpdateOptions): Promise<void> {
-    await this.run(async (client) => {
-      const pendingMigrations = await this.getPendingMigrations(client, options);
-      for (const migration of pendingMigrations) {
-        await this.migrationAdapter.applyMigration(client, this.migrationTree.name, migration);
-      }
-    });
+    const pendingMigrations = await this.getPendingMigrations(options);
+    await this.migrationAdapter.applyMigration(this.migrationTree.name, pendingMigrations);
   }
 
-  private async getPendingMigrations(
-    client: Client<any>,
-    options?: MigrationContextUpdateOptions,
-  ): Promise<MigrationPlan[]> {
-    const appliedMigrations = await this.migrationAdapter.getAppliedMigrations(client, this.migrationTree.name);
+  private async getPendingMigrations(options?: MigrationContextUpdateOptions): Promise<MigrationPlan[]> {
+    const appliedMigrations = await this.migrationAdapter.getAppliedMigrations(this.migrationTree.name);
 
     let currentMigrations = this.migrationTree.roots();
 
@@ -109,18 +94,5 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
     }
 
     return pendingMigrations;
-  }
-
-  private async run<T>(fn: (client: Client<any>) => Promise<T>): Promise<T> {
-    const defer = new Defer<void>();
-    try {
-      const client = await this.migrationAdapter.getClient(defer.promise);
-      const result = await fn(client);
-      defer.resolve();
-      return result;
-    } catch (e) {
-      defer.reject(e);
-      throw e;
-    }
   }
 }

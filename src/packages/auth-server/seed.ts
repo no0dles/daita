@@ -32,7 +32,7 @@ export async function seedUserPoolCors(client: TransactionClient<any>, userPoolI
     const existingCorsUrl = existingCors.find((c) => c.url === corsUrl);
     if (!existingCorsUrl) {
       await client.insert({
-        insert: { url: corsUrl, userPoolId, id: randomString() },
+        insert: { url: corsUrl, userPoolId, id: randomString(22) },
         into: table(UserPoolCors),
       });
     } else {

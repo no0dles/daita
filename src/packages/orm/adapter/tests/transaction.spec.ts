@@ -11,7 +11,7 @@ describe('relational/adapter/relational-transaction-adapter/transaction', () => 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {
       await createPersonTable(client);
-      await createPerson(client, { firstName: 'Foo', lastName: 'Bar', id: 'a' });
+      await createPerson(client, { firstName: 'Foo', lastName: 'Bar', id: 'e047c3d4-e217-498a-bc98-13b6419fc578' });
     });
 
     afterAll(() => client.close());
@@ -21,7 +21,7 @@ describe('relational/adapter/relational-transaction-adapter/transaction', () => 
         await trx.update({
           set: { birthday: new Date() },
           update: table(Person),
-          where: equal(field(Person, 'id'), 'a'),
+          where: equal(field(Person, 'id'), 'e047c3d4-e217-498a-bc98-13b6419fc578'),
         });
       });
       const person = await client.selectFirst({
@@ -39,7 +39,7 @@ describe('relational/adapter/relational-transaction-adapter/transaction', () => 
           await trx.update({
             set: { firstName: 'Foo2' },
             update: table(Person),
-            where: equal(field(Person, 'id'), 'a'),
+            where: equal(field(Person, 'id'), 'e047c3d4-e217-498a-bc98-13b6419fc578'),
           });
           throw new Error('abort');
         });

@@ -8,9 +8,10 @@ describe('relational/sql/keyword/all', () => {
   const clients = testClient('pg', 'sqlite', 'mariadb');
 
   describe.each(clients)('%s', (client) => {
+    const id = 'c9e973ce-82e8-48e8-b2f3-ec8e4d72418b';
     beforeAll(async () => {
       await createPersonTable(client);
-      await createPerson(client, { firstName: 'Foo', lastName: 'Bar', id: 'a' });
+      await createPerson(client, { firstName: 'Foo', lastName: 'Bar', id });
     });
 
     afterAll(() => client.close());
@@ -20,7 +21,7 @@ describe('relational/sql/keyword/all', () => {
         select: all(),
         from: table(Person),
       });
-      expect(result).toEqual({ firstName: 'Foo', lastName: 'Bar', id: 'a', birthday: null });
+      expect(result).toEqual({ firstName: 'Foo', lastName: 'Bar', id, birthday: null });
     });
 
     it('should select all fields from table', async () => {
@@ -28,7 +29,7 @@ describe('relational/sql/keyword/all', () => {
         select: all(Person),
         from: table(Person),
       });
-      expect(result).toEqual({ firstName: 'Foo', lastName: 'Bar', id: 'a', birthday: null });
+      expect(result).toEqual({ firstName: 'Foo', lastName: 'Bar', id, birthday: null });
     });
   });
 });

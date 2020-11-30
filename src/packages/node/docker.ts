@@ -47,6 +47,11 @@ export async function runContainer(options: {
 }
 export async function pullImage(imageName: string) {
   const docker = new Docker();
+  const images = await docker.listImages({});
+  if (images.some((i) => i.RepoTags.some((repoTag) => repoTag === imageName))) {
+    return;
+  }
+
   const image = await docker.pull(imageName);
   const pullDefer = new Defer<any>();
   docker.modem.followProgress(image, (err: any, res: any) => (err ? pullDefer.reject(err) : pullDefer.resolve(res)));

@@ -5,9 +5,9 @@ import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/rela
 import { MariadbSql } from '../sql/mariadb-sql';
 import { adapter } from '..';
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
-import { MariadbRelationalMigrationAdapter } from '../adapter/mariadb-relational-adapter';
 import { createPool } from 'mariadb';
 import { Resolvable } from '../../common/utils/resolvable';
+import { MariadbRelationalMigrationAdapter } from '../adapter/mariadb-relational-migration-adapter';
 
 export interface MariaDb {
   connectionString: string;

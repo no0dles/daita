@@ -1,8 +1,8 @@
-import { testContext } from '../../../../testing/relational/adapters';
-import { createMigrationTree } from '../create-migration-tree';
-import { allow, authorized } from '../../../relational';
-import { now } from '../../../relational/sql/function/date/now/now';
-import { getRuleId } from '../../../relational/permission/rule-id';
+import { testContext } from '../../../../../testing/relational/adapters';
+import { createMigrationTree } from '../../create-migration-tree';
+import { allow, authorized } from '../../../../relational';
+import { now } from '../../../../relational/sql/function/date/now/now';
+import { getRuleId } from '../../../../relational/permission/rule-id';
 
 describe('packages/orm/migration/steps/relational-add-rule', () => {
   const testRule = allow(authorized(), { select: now() });

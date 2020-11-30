@@ -2,12 +2,13 @@ import { RelationalTransactionAdapterImplementation } from '../../relational/ada
 import { SqliteSql } from '../sql/sqlite-sql';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
-import { SqliteAdapter } from '../adapter/sqlite-relational-adapter';
 import path from 'path';
 import os from 'os';
 import fs from 'fs/promises';
 import { adapter } from '../index';
 import { randomString } from '../../common/utils/random-string';
+import { SqliteRelationalMigrationAdapter } from '../adapter/sqlite-relational-migration-adapter';
+import { Resolvable } from '../../common/utils/resolvable';
 
 export interface SqliteTestAdapterFileOptions {
   type: 'file';
@@ -27,10 +28,12 @@ export class SqliteTestAdapterImplementation
     if (options.type === 'memory') {
       return adapter.getRelationalAdapter({ memory: true });
     } else {
-      const fileName = path.join(os.tmpdir(), `${randomString()}.db`);
-      return new SqliteAdapter(fileName, () => {
-        fs.unlink(fileName);
-      });
+      const fileName = path.join(os.tmpdir(), `${randomString(22)}.db`);
+      return new SqliteRelationalMigrationAdapter(
+        new Resolvable<string>(fileName, async () => {
+          await fs.unlink(fileName);
+        }),
+      );
     }
   }
 

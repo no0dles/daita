@@ -142,6 +142,9 @@ export async function getAccessToken<T>(
     if (err) {
       return defer.reject(err);
     }
+    if (!encoded) {
+      return defer.reject(new Error('empty payload'));
+    }
     defer.resolve(encoded);
   });
   return defer.promise;

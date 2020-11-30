@@ -1,28 +1,35 @@
-import { PoolClient, QueryResult } from 'pg';
+import { Pool, PoolClient, QueryResult, types } from 'pg';
 import { postgresFormatter } from '../formatters/postgres-formatter';
 import { PostgresFormatContext } from './postgres-format-context';
 import { DuplicateKeyError, RelationDoesNotExistsError, UnknownError } from '../../relational/error/relational-error';
 import { RelationalRawResult } from '../../relational/adapter/relational-raw-result';
 import { RelationalDataAdapter } from '../../relational/adapter/relational-data-adapter';
 import { createLogger } from '../../common/utils/logger';
+import { Resolvable } from '../../common/utils/resolvable';
 
 export class PostgresDataAdapter implements RelationalDataAdapter {
-  private readonly logger = createLogger({ package: 'pg-adapter' });
-  constructor(private client: PoolClient) {}
+  protected readonly logger = createLogger({ package: 'pg-adapter' });
+  constructor(private client: Resolvable<PoolClient> | Resolvable<Pool>) {
+    types.setTypeParser(1700, (val) => parseFloat(val));
+    types.setTypeParser(701, (val) => parseFloat(val));
+    types.setTypeParser(20, (val) => parseInt(val));
+  }
 
   async close(): Promise<void> {
-    this.client.release();
+    await this.client.close();
   }
 
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
     this.logger.debug('execute raw sql', { query: sql, queryValues: values });
-    return await this.mapError(this.client.query(sql, values), sql, values);
+    const client = await this.client.get();
+    return await this.mapError(client.query(sql, values), sql, values);
   }
 
   async exec(sql: any): Promise<RelationalRawResult> {
     const result = this.formatQuery(sql);
+    const client = await this.client.get();
     this.logger.debug('execute sql', { sql, query: result.sql, queryValues: result.values });
-    return await this.mapError(this.client.query(result.sql, result.values), result.sql, result.values);
+    return await this.mapError(client.query(result.sql, result.values), result.sql, result.values);
   }
 
   private formatQuery(query: any): { sql: string; values: any[] } {

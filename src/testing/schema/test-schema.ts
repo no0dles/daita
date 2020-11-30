@@ -3,7 +3,7 @@ import { CreateTableColumn, CreateTableSql } from '../../packages/relational/sql
 import { Client } from '../../packages/relational/client/client';
 import { InsertSql } from '../../packages/relational/sql/dml/insert/insert-sql';
 import { Person } from '../../docs/example/models/person';
-import { randomNumber, randomString } from '../../packages/common/utils/random-string';
+import { randomNumber, randomString, randomUuid } from '../../packages/common/utils/random-string';
 import { Canton } from '../../docs/example/models/canton';
 import { Mountain } from '../../docs/example/models/mountain';
 import { Ascent } from '../../docs/example/models/ascent';
@@ -63,7 +63,7 @@ export async function createPerson(client: Client<InsertSql<any>>, person: Parti
   await client.insert({
     into: table(Person),
     insert: {
-      id: person.id || randomString(10),
+      id: person.id || randomUuid(),
       firstName: person.firstName || randomString(6),
       lastName: person.lastName || randomString(8),
       birthday: person.birthday,
@@ -74,7 +74,7 @@ export async function createMountain(client: Client<InsertSql<any>>, mountain: P
   await client.insert({
     into: table(Mountain),
     insert: {
-      id: mountain.id || randomString(10),
+      id: mountain.id || randomUuid(),
       name: mountain.name || randomString(7),
       cantonShortname: mountain.cantonShortname || randomString(2),
       elevation: mountain.elevation || randomNumber(0, 5000),

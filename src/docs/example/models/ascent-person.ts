@@ -1,9 +1,10 @@
 import { Person } from './person';
 import { Ascent } from './ascent';
+import { UUID } from '../../../packages/relational/types/uuid';
 
 export class AscentPerson {
   ascent!: Ascent;
-  ascentId!: string;
+  ascentId!: UUID;
   person!: Person;
-  personId!: string;
+  personId!: UUID;
 }

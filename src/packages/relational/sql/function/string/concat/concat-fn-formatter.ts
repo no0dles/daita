@@ -2,7 +2,7 @@ import { FormatHandle, Formatter, FormatType } from '../../../../formatter/forma
 import { FormatContext } from '../../../../formatter/format-context';
 import { ConcatDescription, isConcatDescription } from './concat-description';
 
-export class ConcatFormatter implements FormatHandle<ConcatDescription> {
+export class ConcatFunctionFormatter implements FormatHandle<ConcatDescription> {
   type = FormatType.Condition;
 
   canHandle(param: any): boolean {
@@ -10,6 +10,6 @@ export class ConcatFormatter implements FormatHandle<ConcatDescription> {
   }
 
   handle(param: ConcatDescription, ctx: FormatContext, formatter: Formatter): string {
-    return `${param.concat.map((c) => formatter.format(c, ctx)).join(' || ')}`;
+    return `CONCAT(${param.concat.map((c) => formatter.format(c, ctx)).join(',')})`;
   }
 }

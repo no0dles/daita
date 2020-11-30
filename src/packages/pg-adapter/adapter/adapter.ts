@@ -12,6 +12,7 @@ import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migrati
 import { PostgresMigrationAdapter } from './postgres-migration-adapter';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
 import { postgresFormatter } from '../formatters/postgres-formatter';
+import { Resolvable } from '../../common/utils/resolvable';
 
 export interface PostgresAdapterBaseOptions {
   listenForNotifications?: boolean;
@@ -89,22 +90,15 @@ class PostgresAdapterImplementation
     options: PostgresAdapterOptions,
   ): RelationalTransactionAdapter<PostgresSql> & RelationalMigrationAdapter<PostgresSql> {
     return new PostgresMigrationAdapter(
-      new Promise((resolve, reject) => {
-        prepareDatabase(options)
-          .then((connectionString) => {
-            resolve(
-              new Pool({
-                connectionString: connectionString,
-                connectionTimeoutMillis: 10000,
-                keepAlive: true,
-                max: 20,
-                idleTimeoutMillis: 10000,
-              }),
-            );
-          })
-          .catch((err) => {
-            reject(err);
-          });
+      new Resolvable<Pool>(async () => {
+        const connectionString = await prepareDatabase(options);
+        return new Pool({
+          connectionString: connectionString,
+          connectionTimeoutMillis: 10000,
+          keepAlive: true,
+          max: 20,
+          idleTimeoutMillis: 10000,
+        });
       }),
       { listenForNotifications: options?.listenForNotifications ?? false },
     );

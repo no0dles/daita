@@ -1,11 +1,12 @@
 import * as fs from 'fs';
 import { RelationalTransactionAdapterImplementation } from '../../relational/adapter/relational-adapter-implementation';
 import { isKind } from '../../common/utils/is-kind';
-import { SqliteAdapter } from './sqlite-relational-adapter';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
 import { sqliteFormatter } from '../formatter/sqlite-formatter';
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import { SqliteSql } from '../sql/sqlite-sql';
+import { SqliteRelationalMigrationAdapter } from './sqlite-relational-migration-adapter';
+import { Resolvable } from '../../common/utils/resolvable';
 
 export type SqliteAdapterOptions = SqliteAdapterFileOptions | SqliteAdapterMemoryOptions;
 
@@ -43,13 +44,13 @@ export class SqliteAdapterImplementation
           fs.unlinkSync(fileName);
         }
       }
-      return new SqliteAdapter(fileName, () => {});
+      return new SqliteRelationalMigrationAdapter(new Resolvable<string>(fileName));
     }
     if (isMemoryOptions(options) && options.memory) {
-      return new SqliteAdapter(':memory:', () => {});
+      return new SqliteRelationalMigrationAdapter(new Resolvable<string>(':memory:'));
     }
 
-    return new SqliteAdapter(':memory:', () => {});
+    return new SqliteRelationalMigrationAdapter(new Resolvable<string>(':memory:'));
   }
 
   supportsQuery<S>(sql: S): this is RelationalMigrationAdapterImplementation<SqliteSql | S, SqliteAdapterOptions> {

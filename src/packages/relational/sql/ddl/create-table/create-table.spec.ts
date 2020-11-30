@@ -7,7 +7,7 @@ describe('relational/sql/ddl/create-table', () => {
     it('should create person table', async () => {
       await createPersonTable(client);
       await createPerson(client, {
-        id: 'a',
+        id: '59ce6315-ab96-4fe5-8a2a-70d0a7c8ac5b',
         firstName: 'Foo',
         lastName: 'Bar',
       });

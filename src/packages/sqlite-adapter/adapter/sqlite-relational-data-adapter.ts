@@ -8,41 +8,24 @@ import { Serializable } from './serializable';
 import { SqliteSql } from '../sql/sqlite-sql';
 import { createLogger } from '../../common/utils/logger';
 import { RelationDoesNotExistsError } from '../../relational/error/relational-error';
+import { Resolvable } from '../../common/utils/resolvable';
 
 export class SqliteRelationalDataAdapter implements RelationalDataAdapter<SqliteSql> {
-  private readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });
+  protected readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });
   protected transactionSerializable = new Serializable();
   protected runSerializable = new Serializable();
 
-  constructor(protected db: sqlite.Database, private closeFn: () => void) {
-    this.db.on('error', (err) => {
-      this.logger.error(err);
-    });
-    this.db.on('close', () => {
-      this.logger.debug('database closed');
-    });
-    this.db.on('open', () => {
-      this.logger.debug('database opened');
-    });
-  }
+  constructor(protected db: Resolvable<sqlite.Database>) {}
 
   async close(): Promise<void> {
-    const defer = new Defer<void>();
-    this.db.close((err) => {
-      if (err && (<any>err).errno !== 21) {
-        defer.reject(err);
-      } else {
-        defer.resolve();
-      }
-      this.closeFn();
-    });
-    await defer.promise;
+    await this.db.close();
   }
 
   protected async run(sql: string, values?: any[]) {
-    return this.runSerializable.run(() => {
+    return this.runSerializable.run(async () => {
       const defer = new Defer<void>();
-      this.db.run(sql, values, (err) => {
+      const db = await this.db.get();
+      db.run(sql, values, (err) => {
         if (err) {
           defer.reject(err);
         } else {
@@ -64,7 +47,8 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
     return this.runSerializable.run<RelationalRawResult>(async () => {
       const defer = new Defer<RelationalRawResult>();
       this.logger.trace(`execute statement ${sql}`, { sql, values });
-      const stmt = this.db.prepare(sql, values, (err) => {
+      const db = await this.db.get();
+      const stmt = db.prepare(sql, values, (err) => {
         if (err) {
           const regex = /SQLITE_ERROR\: no such table\: (?<table>.*)/g;
           const groups = regex.exec(err.message)?.groups || {};

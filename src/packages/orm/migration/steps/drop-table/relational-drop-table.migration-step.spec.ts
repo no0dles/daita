@@ -1,8 +1,8 @@
-import { testContext } from '../../../../testing/relational/adapters';
-import { MigrationTree } from '../migration-tree';
-import { all } from '../../../relational/sql/keyword/all/all';
-import { table } from '../../../relational';
-import { RelationDoesNotExistsError } from '../../../relational/error/relational-error';
+import { testContext } from '../../../../../testing/relational/adapters';
+import { MigrationTree } from '../../migration-tree';
+import { all } from '../../../../relational/sql/keyword/all/all';
+import { table } from '../../../../relational';
+import { RelationDoesNotExistsError } from '../../../../relational/error/relational-error';
 
 describe('packages/orm/migration/steps/drop-table', () => {
   const schema = new MigrationTree('', [
@@ -10,9 +10,9 @@ describe('packages/orm/migration/steps/drop-table', () => {
       id: 'init',
       steps: [
         { kind: 'add_table', table: 'foo' },
-        { kind: 'add_table_field', table: 'foo', fieldName: 'id', required: true, type: 'string' },
+        { kind: 'add_table_field', table: 'foo', fieldName: 'id', required: true, type: 'uuid' },
         { kind: 'add_table', table: 'bar' },
-        { kind: 'add_table_field', table: 'bar', fieldName: 'id', required: true, type: 'string' },
+        { kind: 'add_table_field', table: 'bar', fieldName: 'id', required: true, type: 'uuid' },
         { kind: 'drop_table', table: 'foo' },
       ],
     },
