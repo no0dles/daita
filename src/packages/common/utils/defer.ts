@@ -31,7 +31,7 @@ export class Defer<T> {
     return this.promiseError;
   }
 
-  resolve(value?: T) {
+  resolve(value: T) {
     if (this.promiseResolved) {
       throw new Error('defer already resolved');
     }

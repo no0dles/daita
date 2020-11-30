@@ -6,7 +6,7 @@ import { createPerson, createPersonTable } from '../../../../../../testing/schem
 import { testClient } from '../../../../../../testing/relational/adapters';
 
 describe('relational/sql/function/string/concat', () => {
-  const clients = testClient('pg', 'sqlite');
+  const clients = testClient('pg', 'sqlite', 'mariadb');
 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {

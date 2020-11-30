@@ -3,7 +3,7 @@ import { ValueType } from '../../relational/sql/operands/value-type';
 
 export class SqliteFormatContext extends SimpleFormatContext {
   constructor() {
-    super('?');
+    super('?', '`');
   }
 
   appendValue(value: ValueType): string {

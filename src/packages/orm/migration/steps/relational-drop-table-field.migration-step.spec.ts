@@ -20,7 +20,7 @@ describe('packages/orm/migration/steps/add-table-field', () => {
       after: 'init',
     },
   ]);
-  const ctxs = testContext(migrationTree, 'sqlite', 'pg');
+  const ctxs = testContext(migrationTree, 'sqlite', 'pg', 'mariadb');
 
   describe.each(ctxs)('%s', (ctx) => {
     it('should be keep data after table field drop', async () => {

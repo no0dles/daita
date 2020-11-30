@@ -6,7 +6,7 @@ import { equal } from '../../../relational/sql/operands/comparison/equal/equal';
 import { testClient } from '../../../../testing/relational/adapters';
 
 describe('relational/adapter/relational-transaction-adapter/transaction', () => {
-  const clients = testClient('pg', 'sqlite');
+  const clients = testClient('pg', 'sqlite', 'mariadb');
 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {

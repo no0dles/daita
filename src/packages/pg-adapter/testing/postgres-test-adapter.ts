@@ -8,6 +8,7 @@ import { Pool } from 'pg';
 import { getRandomTestPort } from '../../node/random-port';
 import { execCommand, runContainer } from '../../node/docker';
 import { sleep } from '../../common/utils/sleep';
+import { adapter } from '..';
 
 export interface PostgresDb {
   connectionString: string;
@@ -41,7 +42,7 @@ class PostgresTestAdapterImplementation
   supportsQuery<S>(
     sql: S,
   ): this is RelationalMigrationAdapterImplementation<PostgresSql | S, PostgresTestAdapterOptions> {
-    return postgresFormatter.canHandle(sql);
+    return adapter.supportsQuery(sql);
   }
 }
 

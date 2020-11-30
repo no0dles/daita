@@ -3,7 +3,7 @@ import { ValueType } from '../../relational/sql/operands/value-type';
 
 export class MariadbFormatContext extends SimpleFormatContext {
   constructor() {
-    super('?');
+    super('?', '`');
   }
 
   appendValue(value: ValueType): string {
@@ -14,15 +14,15 @@ export class MariadbFormatContext extends SimpleFormatContext {
   getDataType(type: string): string {
     switch (type) {
       case 'string':
-        return 'VARCHAR';
+        return 'TEXT';
       case 'number':
-        return 'DECIMAL';
+        return 'DECIMAL(26,10)';
       case 'date':
         return 'DATETIME';
       case 'boolean':
         return 'BOOLEAN';
       case 'uuid':
-        return 'TEXT';
+        return 'VARCHAR(36)';
     }
 
     throw new Error(`unknown data type ${type}`);

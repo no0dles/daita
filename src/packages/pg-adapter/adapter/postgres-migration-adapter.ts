@@ -1,14 +1,11 @@
-import { RelationalMigrationAdapter, MigrationDirection } from '../../orm/adapter/relational-migration-adapter';
+import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import { PostgresSql } from '../sql/postgres-sql';
 import { MigrationDescription } from '../../orm/migration/migration-description';
 import { field } from '../../relational/sql/keyword/field/field';
 import { table } from '../../relational/sql/keyword/table/table';
-import { join } from '../../relational/sql/dml/select/join/join';
 import { and } from '../../relational/sql/keyword/and/and';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
-import { asc } from '../../relational/sql/keyword/asc/asc';
 import { Client } from '../../relational/client/client';
-import { parseRule, serializeRule } from '../../relational/permission/parsing';
 import { CreateTableSql } from '../../relational/sql/ddl/create-table/create-table-sql';
 import { getTableDescriptionIdentifier } from '../../orm/schema/description/relational-schema-description';
 import { failNever } from '../../common/utils/fail-never';
@@ -22,27 +19,10 @@ import { PostgresAdapter } from './postgres.adapter';
 import { Pool } from 'pg';
 import { RelationalTransactionClient } from '../../relational/client/relational-transaction-client';
 import { MigrationPlan } from '../../orm/context/relational-migration-context';
-
-class Migrations {
-  static schema = 'daita';
-  static table = 'migrations';
-
-  id!: string;
-  schema!: string;
-}
-
-class MigrationSteps {
-  static schema = 'daita';
-  static table = 'migrationSteps';
-
-  migrationId!: string;
-  migrationSchema!: string;
-  index!: number;
-  step!: string;
-}
+import { MigrationStorage } from '../../orm/migration/schema/migration-schema';
 
 export class PostgresMigrationAdapter extends PostgresAdapter implements RelationalMigrationAdapter<PostgresSql> {
-  private initalizedSchema = false;
+  private storage = new MigrationStorage();
   private client: TransactionClient<PostgresSql>;
 
   constructor(poolOrUrl: string | Promise<Pool> | Pool, options: { listenForNotifications: boolean }) {
@@ -53,7 +33,7 @@ export class PostgresMigrationAdapter extends PostgresAdapter implements Relatio
   getClient(handle: Promise<void>): Promise<Client<PostgresSql>> {
     const defer = new Defer<Client<PostgresSql>>();
     this.client.transaction(async (trx) => {
-      await this.updateInternalSchema(trx);
+      await this.storage.initalize(trx);
       await trx.exec({ lockTable: table(Migrations) });
       defer.resolve(trx);
       await handle;
@@ -62,108 +42,16 @@ export class PostgresMigrationAdapter extends PostgresAdapter implements Relatio
     return defer.promise;
   }
 
-  private async updateInternalSchema(client: Client<PostgresSql>) {
-    if (this.initalizedSchema) {
-      return;
-    }
-    await client.exec({ createSchema: 'daita', ifNotExists: true });
-    await client.exec({
-      createTable: table(Migrations),
-      ifNotExists: true,
-      columns: [
-        { name: 'id', type: 'string', notNull: true, primaryKey: true },
-        {
-          name: 'schema',
-          type: 'string',
-          notNull: true,
-          primaryKey: true,
-        },
-      ],
-    });
-    await client.exec({
-      createTable: table(MigrationSteps),
-      ifNotExists: true,
-      columns: [
-        {
-          name: 'migrationId',
-          type: 'string',
-          notNull: true,
-          primaryKey: true,
-        },
-        {
-          name: 'migrationSchema',
-          type: 'string',
-          notNull: true,
-          primaryKey: true,
-        },
-        { name: 'index', type: 'number', notNull: true, primaryKey: true },
-        { name: 'step', type: 'string', notNull: true, primaryKey: false },
-      ],
-    });
-    await client.exec({
-      alterTable: table(MigrationSteps),
-      add: {
-        foreignKey: ['migrationId', 'migrationSchema'],
-        references: {
-          table: table(Migrations),
-          primaryKeys: ['id', 'schema'],
-        },
-      },
-    });
-    // await client.exec({
-    //   createTable: table(Rules),
-    //   ifNotExists: true,
-    //   columns: [
-    //     { name: 'id', type: 'string', notNull: true, primaryKey: true },
-    //     { name: 'rule', type: 'string', notNull: true, primaryKey: false },
-    //   ],
-    // });
-    this.initalizedSchema = true;
-  }
-
   async getAppliedMigrations(client: Client<PostgresSql>, schema: string): Promise<MigrationDescription[]> {
-    await this.updateInternalSchema(client);
-    const steps = await client.select({
-      select: {
-        id: field(Migrations, 'id'),
-        schema: field(Migrations, 'schema'),
-        index: field(MigrationSteps, 'index'),
-        step: field(MigrationSteps, 'step'),
-      },
-      from: table(MigrationSteps),
-      join: [
-        join(
-          Migrations,
-          and(
-            equal(field(Migrations, 'id'), field(MigrationSteps, 'migrationId')),
-            equal(field(Migrations, 'schema'), field(MigrationSteps, 'migrationSchema')),
-          ),
-        ),
-      ],
-      orderBy: asc(field(MigrationSteps, 'index')),
-    });
-
-    const migrationMap = steps.reduce<{ [key: string]: MigrationDescription }>((migrations, step) => {
-      if (!migrations[step.id]) {
-        migrations[step.id] = { id: step.id, steps: [] };
-      }
-      migrations[step.id].steps.push(JSON.parse(step.step));
-      return migrations;
-    }, {});
-
-    return Object.keys(migrationMap).map((id) => migrationMap[id]);
+    await this.storage.initalize(client);
+    return this.storage.get(client, name);
   }
 
   async applyMigration(client: Client<PostgresSql>, schema: string, migrationPlan: MigrationPlan): Promise<void> {
-    await this.updateInternalSchema(client);
+    await this.storage.initalize(client);
     const createTables: { [key: string]: CreateTableSql } = {};
 
-    await client.exec({
-      insert: { id: migrationPlan.migration.id, schema },
-      into: table(Migrations),
-    });
-
-    let index = 0;
+    await this.storage.add(client, schema, migrationPlan.migration);
     for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
         if (step.schema) {
@@ -309,16 +197,6 @@ export class PostgresMigrationAdapter extends PostgresAdapter implements Relatio
       } else {
         failNever(step, 'unknown migration step');
       }
-
-      await client.exec({
-        insert: {
-          migrationId: migrationPlan.migration.id,
-          migrationSchema: schema,
-          step: JSON.stringify(step),
-          index: index++,
-        },
-        into: table(MigrationSteps),
-      });
     }
   }
 

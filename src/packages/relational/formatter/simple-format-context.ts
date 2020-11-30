@@ -4,7 +4,7 @@ import { ValueType } from '../sql/operands/value-type';
 export abstract class SimpleFormatContext implements FormatContext {
   protected values: ValueType[] = [];
 
-  constructor(protected paramKey: string) {}
+  constructor(protected paramKey: string, protected escapeKey: string) {}
 
   appendValue(value: ValueType): string {
     this.values.push(value);
@@ -16,7 +16,7 @@ export abstract class SimpleFormatContext implements FormatContext {
   }
 
   escape(value: string): string {
-    return '`' + value + '`';
+    return this.escapeKey + value + this.escapeKey;
   }
 
   abstract getDataType(type: string): string;

@@ -4,7 +4,7 @@ import { createPersonTable } from '../../../../../testing/schema/test-schema';
 import { Person } from '../../../../../docs/example/models/person';
 
 describe('relational/sql/ddl/drop-table', () => {
-  const clients = testClient('pg', 'sqlite');
+  const clients = testClient('pg', 'sqlite', 'mariadb');
 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {

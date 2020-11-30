@@ -4,7 +4,7 @@ import { Person } from '../../../../../docs/example/models/person';
 import { testClient } from '../../../../../testing/relational/adapters';
 
 describe('relational/sql/ddl/alter-table', () => {
-  const clients = testClient('pg', 'sqlite');
+  const clients = testClient('pg', 'sqlite', 'mariadb');
 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {

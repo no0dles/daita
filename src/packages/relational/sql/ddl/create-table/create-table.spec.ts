@@ -2,7 +2,7 @@ import { createPerson, createPersonTable } from '../../../../../testing/schema/t
 import { testClient } from '../../../../../testing/relational/adapters';
 
 describe('relational/sql/ddl/create-table', () => {
-  const clients = testClient('pg', 'sqlite');
+  const clients = testClient('pg', 'sqlite', 'mariadb');
   describe.each(clients)('%s', (client) => {
     it('should create person table', async () => {
       await createPersonTable(client);

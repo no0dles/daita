@@ -1,6 +1,7 @@
 import { testAdapter as pgAdapter } from '../../packages/pg-adapter/testing/postgres-test-adapter';
 import { testAdapter as sqliteAdapter } from '../../packages/sqlite-adapter';
 import { testAdapter as httpAdapter } from '../../packages/http-adapter';
+import { testAdapter as mariadbAdapter } from '../../packages/mariadb-adapter';
 import { TransactionContext } from '../../packages/orm/context/transaction-context';
 import { OrmRelationalSchema } from '../../packages/orm/schema/orm-relational-schema';
 import { isMigrationTree, MigrationTree } from '../../packages/orm/migration/migration-tree';
@@ -9,14 +10,17 @@ import { getClient } from '../../packages/relational/client/get-client';
 import { getContext } from '../../packages/orm/context/get-context';
 import { MigrationContext } from '../../packages/orm/context/get-migration-context';
 
-export type TestClientType = 'pg' | 'sqlite';
-export type TestContextType = 'pg' | 'sqlite' | 'http-sqlite';
+export type TestClientType = 'pg' | 'sqlite' | 'mariadb';
+export type TestContextType = 'pg' | 'sqlite' | 'mariadb' | 'http-sqlite';
 
 export function testClient(...types: TestClientType[]) {
   const clients: TransactionClient<any>[] = [];
 
   if (types.some((t) => t === 'pg')) {
     clients.push(getClient(pgAdapter, {}));
+  }
+  if (types.some((t) => t === 'mariadb')) {
+    clients.push(getClient(mariadbAdapter, {}));
   }
   if (types.some((t) => t === 'sqlite')) {
     clients.push(getClient(sqliteAdapter, { type: 'memory' }));
@@ -41,6 +45,10 @@ export function testContext(schemaOrMigrationTree: OrmRelationalSchema | Migrati
   if (types.indexOf('sqlite') >= 0) {
     contexts.push(getContext(sqliteAdapter, { migrationTree, type: 'memory' }));
     contexts.push(getContext(sqliteAdapter, { migrationTree, type: 'file' }));
+  }
+
+  if (types.indexOf('mariadb') >= 0) {
+    contexts.push(getContext(mariadbAdapter, { migrationTree }));
   }
 
   if (types.indexOf('http-sqlite') >= 0) {

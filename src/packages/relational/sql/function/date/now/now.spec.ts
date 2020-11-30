@@ -2,7 +2,7 @@ import { now } from './now';
 import { testClient } from '../../../../../../testing/relational/adapters';
 
 describe('relational/sql/function/date/now', () => {
-  const clients = testClient('pg', 'sqlite');
+  const clients = testClient('pg', 'sqlite', 'mariadb');
 
   describe.each(clients)('%s', (client) => {
     afterAll(() => client.close());

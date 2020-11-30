@@ -7,7 +7,7 @@ import { greaterThan } from '../../../operands/comparison/greater-than/greater-t
 import { field } from '../../../keyword/field/field';
 
 describe('relational/sql/function/aggregation/count', () => {
-  const clients = testClient('pg', 'sqlite');
+  const clients = testClient('pg', 'sqlite', 'mariadb');
 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {

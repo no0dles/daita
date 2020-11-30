@@ -22,7 +22,7 @@ describe('packages/orm/migration/steps/drop-table', () => {
       after: 'init',
     },
   ]);
-  const ctxs = testContext(schema, 'pg', 'sqlite');
+  const ctxs = testContext(schema, 'pg', 'sqlite', 'mariadb');
   describe.each(ctxs)('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.migrate();

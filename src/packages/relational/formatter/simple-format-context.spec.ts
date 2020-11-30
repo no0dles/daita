@@ -3,7 +3,7 @@ import { SimpleFormatContext } from './simple-format-context';
 describe('simple-format-context', () => {
   class TestContext extends SimpleFormatContext {
     constructor() {
-      super('?');
+      super('?', '`');
     }
 
     getDataType(type: string): string {

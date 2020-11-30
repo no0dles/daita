@@ -5,7 +5,7 @@ import { sum } from './sum';
 import { testClient } from '../../../../../../testing/relational/adapters';
 
 describe('relational/sql/function/aggregation/sum', () => {
-  const clients = testClient('pg', 'sqlite');
+  const clients = testClient('pg', 'sqlite', 'mariadb');
 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {

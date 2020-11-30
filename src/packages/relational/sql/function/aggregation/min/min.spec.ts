@@ -5,7 +5,7 @@ import { Mountain } from '../../../../../../docs/example/models/mountain';
 import { min } from './min';
 
 describe('relational/sql/function/aggregation/min', () => {
-  const clients = testClient('pg', 'sqlite');
+  const clients = testClient('pg', 'sqlite', 'mariadb');
 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {

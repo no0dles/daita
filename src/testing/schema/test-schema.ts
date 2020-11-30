@@ -22,7 +22,7 @@ export async function createTestSchema(client: Client<CreateTestSchemaSql>) {
 
 export function createPersonTable(client: Client<CreateTestSchemaSql>) {
   return createTable(client, Person, [
-    { type: 'string', primaryKey: true, notNull: true, name: 'id' },
+    { type: 'uuid', primaryKey: true, notNull: true, name: 'id' },
     { type: 'string', primaryKey: false, notNull: true, name: 'firstName' },
     { type: 'string', primaryKey: false, notNull: true, name: 'lastName' },
     { type: 'date', primaryKey: false, notNull: false, name: 'birthday' },
@@ -37,7 +37,7 @@ export function createCantonTable(client: Client<CreateTestSchemaSql>) {
 }
 export function createMountainTable(client: Client<CreateTestSchemaSql>) {
   return createTable(client, Mountain, [
-    { type: 'string', primaryKey: true, notNull: true, name: 'id' },
+    { type: 'uuid', primaryKey: true, notNull: true, name: 'id' },
     { type: 'string', primaryKey: false, notNull: true, name: 'name' },
     { type: 'string', primaryKey: false, notNull: true, name: 'cantonShortname' },
     { type: 'number', primaryKey: false, notNull: true, name: 'elevation' },
@@ -47,15 +47,15 @@ export function createMountainTable(client: Client<CreateTestSchemaSql>) {
 }
 export function createAscentTable(client: Client<CreateTestSchemaSql>) {
   return createTable(client, Ascent, [
-    { type: 'string', primaryKey: true, notNull: true, name: 'id' },
-    { type: 'string', primaryKey: false, notNull: true, name: 'mountainId' },
+    { type: 'uuid', primaryKey: true, notNull: true, name: 'id' },
+    { type: 'uuid', primaryKey: false, notNull: true, name: 'mountainId' },
     { type: 'date', primaryKey: false, notNull: true, name: 'date' },
   ]);
 }
 export function createAscentPersonTable(client: Client<CreateTestSchemaSql>) {
   return createTable(client, AscentPerson, [
-    { type: 'string', primaryKey: true, notNull: true, name: 'ascentId' },
-    { type: 'string', primaryKey: true, notNull: true, name: 'personId' },
+    { type: 'uuid', primaryKey: true, notNull: true, name: 'ascentId' },
+    { type: 'uuid', primaryKey: true, notNull: true, name: 'personId' },
   ]);
 }
 

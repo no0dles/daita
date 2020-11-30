@@ -4,6 +4,8 @@ import { CreateTableFormatter } from '../../relational/sql/ddl/create-table/crea
 import { DropTableFormatter } from '../../relational/sql/ddl/drop-table/drop-table';
 import { ansiFormatter } from '../../relational/formatter/ansi-formatter';
 import { TableFormatter } from '../../relational/sql/keyword/table/table-formatter';
+import { CreateSchemaFormatter } from '../../relational/sql/ddl/create-schema/create-schema';
+import { NowFormatter } from './now-formatter';
 
 export const mariadbFormatter = new Formatter();
 mariadbFormatter.extend(ansiFormatter);
@@ -11,3 +13,5 @@ mariadbFormatter.add(new DropTableFormatter());
 mariadbFormatter.add(new CreateTableFormatter());
 mariadbFormatter.add(new AlterTableAddColumnFormatter());
 mariadbFormatter.add(new TableFormatter());
+mariadbFormatter.add(new CreateSchemaFormatter());
+mariadbFormatter.add(new NowFormatter());

@@ -5,7 +5,7 @@ import { avg } from './avg';
 import { Mountain } from '../../../../../../docs/example/models/mountain';
 
 describe('relational/sql/function/aggregation/avg', () => {
-  const clients = testClient('pg', 'sqlite');
+  const clients = testClient('pg', 'sqlite', 'mariadb');
 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {
