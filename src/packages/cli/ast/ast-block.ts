@@ -2,17 +2,10 @@ import { AstSourceFile } from './ast-source-file';
 import { AstClassDeclaration } from './ast-class-declaration';
 import { AstFunctionDeclaration } from './ast-function-declaration';
 import { AstVariableDeclaration } from './ast-variable-declaration';
-import { AstError, isKind } from '../ast/utils';
+import { isKind } from '../ast/utils';
 import { getName } from './utils';
 import { AstValue } from './ast-value';
-import {
-  BlockLike,
-  createKeywordTypeNode,
-  Expression,
-  Identifier,
-  QualifiedName,
-  SyntaxKind,
-} from 'typescript';
+import { BlockLike, factory, Identifier, QualifiedName, SyntaxKind } from 'typescript';
 import { AstType } from './ast-type';
 import { AstEnumDeclaration } from './ast-enum-declaration';
 import { AstExpressionStatement } from './ast-expression-statement';
@@ -101,9 +94,7 @@ export class AstBlock {
     const name = getName(identifier, 'identifier');
 
     if (name === 'undefined') {
-      return new AstKeywordValue(
-        createKeywordTypeNode(SyntaxKind.UndefinedKeyword),
-      );
+      return new AstKeywordValue(factory.createKeywordTypeNode(SyntaxKind.UndefinedKeyword));
     }
 
     const variable = this.variable(name);

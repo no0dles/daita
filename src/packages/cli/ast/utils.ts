@@ -52,8 +52,11 @@ export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.ExportDecl
 export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.EnumDeclaration): ts.EnumDeclaration | null;
 export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.TrueKeyword): ts.BooleanLiteral | null;
 export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.FalseKeyword): ts.BooleanLiteral | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NullKeyword): ts.KeywordTypeNode | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.UndefinedKeyword): ts.KeywordTypeNode | null;
+export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NullKeyword): ts.NullLiteral | null;
+export function isKind(
+  node: ts.Node | undefined,
+  kind: ts.SyntaxKind.UndefinedKeyword,
+): ts.KeywordTypeNode<SyntaxKind.UndefinedKeyword> | null;
 export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.SpreadAssignment): ts.SpreadAssignment | null;
 export function isKind(
   node: ts.Node | undefined,

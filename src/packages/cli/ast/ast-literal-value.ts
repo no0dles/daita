@@ -1,4 +1,12 @@
-import { BooleanLiteral, createKeywordTypeNode, NumericLiteral, StringLiteral, SyntaxKind, Node } from 'typescript';
+import {
+  BooleanLiteral,
+  createKeywordTypeNode,
+  NumericLiteral,
+  StringLiteral,
+  SyntaxKind,
+  Node,
+  factory,
+} from 'typescript';
 import { AstKeywordType } from './ast-keyword-type';
 import { AstNode } from './ast-node';
 import { failNever } from '../../common/utils/fail-never';
@@ -17,7 +25,7 @@ export class AstStringLiteralValue extends AstLiteralValue<string> implements As
   }
 
   get type() {
-    return new AstKeywordType(createKeywordTypeNode(SyntaxKind.StringKeyword));
+    return new AstKeywordType(factory.createKeywordTypeNode(SyntaxKind.StringKeyword));
   }
 
   get value() {
@@ -31,7 +39,7 @@ export class AstBooleanLiteralValue extends AstLiteralValue<boolean> implements 
   }
 
   get type() {
-    return new AstKeywordType(createKeywordTypeNode(SyntaxKind.BooleanKeyword));
+    return new AstKeywordType(factory.createKeywordTypeNode(SyntaxKind.BooleanKeyword));
   }
 
   get value() {
@@ -41,7 +49,7 @@ export class AstBooleanLiteralValue extends AstLiteralValue<boolean> implements 
     if (this.node.kind === SyntaxKind.FalseKeyword) {
       return false;
     }
-    failNever(this.node.kind, 'unknown kind');
+    failNever(this.node, 'unknown kind');
   }
 }
 
@@ -51,7 +59,7 @@ export class AstNumericLiteralValue extends AstLiteralValue<number> implements A
   }
 
   get type() {
-    return new AstKeywordType(createKeywordTypeNode(SyntaxKind.NumberKeyword));
+    return new AstKeywordType(factory.createKeywordTypeNode(SyntaxKind.NumberKeyword));
   }
 
   get value() {

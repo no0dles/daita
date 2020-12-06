@@ -1,11 +1,6 @@
 import { getName, hasModifier, isSameType } from './utils';
 import { AstEnumMember } from './ast-enum-member';
-import {
-  createKeywordTypeNode,
-  createUnionTypeNode,
-  EnumDeclaration,
-  SyntaxKind,
-} from 'typescript';
+import { EnumDeclaration, factory, SyntaxKind } from 'typescript';
 import { AstBlock } from './ast-block';
 import { AstKeywordType } from './ast-keyword-type';
 import { AstType } from './ast-type';
@@ -30,11 +25,9 @@ export class AstEnumDeclaration implements AstNode {
     }
 
     if (types.length === 0) {
-      return new AstKeywordType(
-        createKeywordTypeNode(SyntaxKind.NumberKeyword),
-      );
+      return new AstKeywordType(factory.createKeywordTypeNode(SyntaxKind.NumberKeyword));
     } else if (types.length > 1) {
-      return new AstUnionType(this.block, createUnionTypeNode([])); //TODO
+      return new AstUnionType(this.block, factory.createUnionTypeNode([])); //TODO
     } else {
       return types[0];
     }
@@ -61,10 +54,7 @@ export class AstEnumDeclaration implements AstNode {
     let currentValue = 0;
     for (const member of this.node.members) {
       const enumMember = new AstEnumMember(this.block, member, currentValue);
-      if (
-        enumMember.value instanceof AstLiteralValue &&
-        enumMember.value instanceof AstNumericLiteralValue
-      ) {
+      if (enumMember.value instanceof AstLiteralValue && enumMember.value instanceof AstNumericLiteralValue) {
         currentValue = enumMember.value.value + 1;
       }
       yield enumMember;

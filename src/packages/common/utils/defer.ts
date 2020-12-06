@@ -1,5 +1,5 @@
 export class Defer<T> {
-  private resolveFn: ((value?: T) => void) | null = null;
+  private resolveFn: ((value: T) => void) | null = null;
   private rejectFn: ((err?: Error) => void) | null = null;
   private promiseResolved = false;
   private promiseRejected = false;
@@ -9,7 +9,7 @@ export class Defer<T> {
   promise: Promise<T>;
 
   constructor() {
-    this.promise = new Promise((resolve, reject) => {
+    this.promise = new Promise<T>((resolve, reject) => {
       this.rejectFn = reject;
       this.resolveFn = resolve;
     });

@@ -22,7 +22,7 @@ export class MariadbFormatContext extends SimpleFormatContext {
       case 'number':
         return 'DECIMAL(26,10)';
       case 'date':
-        return 'DATETIME';
+        return 'DATETIME(3)';
       case 'boolean':
         return 'BOOLEAN';
       case 'uuid':

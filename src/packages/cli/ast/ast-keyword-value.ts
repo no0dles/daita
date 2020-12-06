@@ -1,9 +1,9 @@
-import { Identifier, KeywordTypeNode, SyntaxKind } from 'typescript';
+import { KeywordTypeNode, NullLiteral, SyntaxKind } from 'typescript';
 import { AstNode } from './ast-node';
 import { AstError } from './utils';
 
 export class AstKeywordValue implements AstNode {
-  constructor(public node: KeywordTypeNode) {}
+  constructor(public node: KeywordTypeNode<SyntaxKind.UndefinedKeyword> | NullLiteral) {}
 
   get value() {
     if (this.node.kind === SyntaxKind.NullKeyword) {

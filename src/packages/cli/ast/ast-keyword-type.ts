@@ -1,8 +1,8 @@
-import { KeywordTypeNode, SyntaxKind } from 'typescript';
+import { KeywordTypeNode, NullLiteral, SyntaxKind } from 'typescript';
 import { AstNode } from './ast-node';
 
 export class AstKeywordType implements AstNode {
-  constructor(public node: KeywordTypeNode) {}
+  constructor(public node: KeywordTypeNode | NullLiteral) {}
 
   equals(type: AstKeywordType) {
     return this.node.kind === type.node.kind;
