@@ -25,6 +25,8 @@ export interface MismatchResult {
   path: string[];
 }
 
+export const isMismatchResult = (val: MatchResult): val is MismatchResult => !val.matches;
+
 export function matchesObject(
   ruleContext: RuleContext,
   authSql: any,
@@ -199,7 +201,7 @@ export function evaluateRule(sql: Sql<any>, rule: Rule, ctx: RuleContext): RuleV
     }
 
     const error = matchesObject(ctx, rule.sql, sql, [], 1);
-    if (error.matches) {
+    if (!isMismatchResult(error)) {
       return { type: 'allow' };
     }
 
