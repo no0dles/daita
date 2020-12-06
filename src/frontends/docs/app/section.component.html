@@ -1,14 +1,4 @@
 <div [id]="section.id" class="text-gray-700" [ngClass]="{'text-4xl': level===0, 'text-3xl': level===1, 'text-2xl': level===2}">{{section.title}}</div>
 <div class="text-gray-500">{{section.description}}</div>
-<div *ngFor="let snippet of section.snippets || []" class="mb-2">
-  <div *ngIf="snippet.description">{{snippet.description}}</div>
-  <div class="rounded-t text-gray-300 px-2 pt-1 bg-gray-800 w-16 text-center">Code</div>
-  <code *ngIf="snippet.code" class="shadow rounded-b whitespace-pre" [highlight]="format(snippet.code)" [lineNumbers]="true"></code>
-  <div class="rounded-t text-gray-700 px-2 pt-1 bg-gray-200 w-16 text-center mt-2">SQL</div>
-  <div class="flex flex-col bg-gray-200 rounded">
-    <div class="px-3 py-1 rounded text-xs"
-         *ngFor="let db of snippet.supportedBy">{{db}}: {{sqlFormat(db, snippet.code)}}</div>
-  </div>
-</div>
-
+<app-snippet [snippet]="snippet" *ngFor="let snippet of section.snippets || []" class="mb-6"></app-snippet>
 <app-section *ngFor="let subSection of section.sections || []" [level]="level+1" [section]="subSection"></app-section>

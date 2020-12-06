@@ -8,9 +8,10 @@ import { HighlightPlusModule } from 'ngx-highlightjs/plus';
 import { SectionComponent } from './section.component';
 import { CommonModule } from '@angular/common';
 import { SectionSidemenuComponent } from './section-sidemenu.component';
+import { SnippetComponent } from './components/snippet/snippet.component';
 
 @NgModule({
-  declarations: [AppComponent, SectionComponent, SectionSidemenuComponent],
+  declarations: [AppComponent, SectionComponent, SectionSidemenuComponent, SnippetComponent],
   imports: [BrowserModule, AppRoutingModule, CommonModule, HighlightModule, HighlightPlusModule],
   providers: [
     {

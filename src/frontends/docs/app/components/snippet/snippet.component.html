@@ -1,0 +1,12 @@
+<div *ngIf="snippet.description">{{snippet.description}}</div>
+<div class="rounded-t text-gray-300 px-2 pt-1 bg-gray-800 w-16 text-center">Code</div>
+<code *ngIf="snippet.code" class="shadow rounded-b rounded-tr whitespace-pre" [highlight]="format(snippet.code)" [lineNumbers]="true"></code>
+<div class="flex">
+  <div class="rounded-t text-gray-700 px-3 pt-1 mr-1 text-center mt-2 cursor-pointer"
+       [ngClass]="{'bg-gray-300': selectedDb === db, ' bg-gray-200': selectedDb !== db}"
+       (click)="select(db)"
+       *ngFor="let db of snippet.supportedBy">{{db}}</div>
+</div>
+<div class="flex flex-col bg-gray-300 px-3 py-3 rounded-b rounded-tr text-gray-600">
+  {{sql}}
+</div>

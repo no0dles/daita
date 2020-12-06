@@ -7,10 +7,12 @@ export interface Section {
   title: string;
   description?: string;
   id: string;
-  snippets?: {
-    description?: string;
-    code: Sql<any>;
-    supportedBy: Db[];
-  }[];
+  snippets?: Snippet[];
   sections?: Section[];
+}
+
+export interface Snippet {
+  description?: string;
+  code: Sql<any>;
+  supportedBy: Db[];
 }
