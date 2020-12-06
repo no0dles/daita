@@ -1,11 +1,11 @@
-import { testContext } from '../../../../testing/relational/adapters';
-import { createMigrationTree } from '../create-migration-tree';
-import { field, table } from '../../../relational';
+import { testContext } from '../../../../../testing/relational/adapters';
+import { createMigrationTree } from '../../create-migration-tree';
+import { field, table } from '../../../../relational';
 
 describe('packages/orm/migration/steps/relational-add-table', () => {
   const schema = createMigrationTree([
     { kind: 'add_table', table: 'foo', schema: 'bar' },
-    { kind: 'add_table_field', table: 'foo', schema: 'bar', fieldName: 'id', required: true, type: 'string' },
+    { kind: 'add_table_field', table: 'foo', schema: 'bar', fieldName: 'id', required: true, type: 'uuid' },
   ]);
   class TestTable {
     static schema = 'bar';

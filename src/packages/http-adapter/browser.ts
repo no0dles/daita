@@ -1,5 +1,5 @@
 import { HttpTransactionAdapter } from './http-transaction-adapter';
-import { HttpAdapterImplementation, HttpAdapterOptions } from './adapter-implementation';
+import { HttpAdapterImplementation } from './adapter-implementation';
 import { BrowserHttp } from '../http-client-common/browser-http';
 import { HttpTestAdapterImplementation } from './test-adapter-implementation';
 

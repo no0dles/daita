@@ -6,7 +6,7 @@ export function parseSchemas(sourceFile: AstSourceFile): SchemaDeclaration[] {
   const schemas: SchemaDeclaration[] = [];
   for (const variable of sourceFile.block.variables) {
     const variableType = variable.type;
-    if (!(variableType instanceof AstClassDeclaration)) {
+    if (variableType == null || !(variableType instanceof AstClassDeclaration)) {
       continue;
     }
     if (variableType.name === 'RelationalSchema') {

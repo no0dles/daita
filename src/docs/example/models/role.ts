@@ -1,4 +1,6 @@
+import { UUID } from '../../../packages/relational/types/uuid';
+
 export class Role {
-  id!: string;
+  id!: UUID;
   name!: string;
 }

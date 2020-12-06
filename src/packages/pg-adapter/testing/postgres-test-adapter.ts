@@ -2,13 +2,13 @@ import { RelationalTransactionAdapterImplementation } from '../../relational/ada
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
 import { PostgresSql } from '../sql/postgres-sql';
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
-import { postgresFormatter } from '../formatters/postgres-formatter';
 import { PostgresMigrationAdapter } from '../adapter/postgres-migration-adapter';
 import { Pool } from 'pg';
 import { getRandomTestPort } from '../../node/random-port';
 import { execCommand, runContainer } from '../../node/docker';
 import { sleep } from '../../common/utils/sleep';
 import { adapter } from '..';
+import { Resolvable } from '../../common/utils/resolvable';
 
 export interface PostgresDb {
   connectionString: string;
@@ -25,18 +25,29 @@ class PostgresTestAdapterImplementation
   implements
     RelationalTransactionAdapterImplementation<PostgresSql, PostgresTestAdapterOptions>,
     RelationalMigrationAdapterImplementation<PostgresSql, PostgresTestAdapterOptions> {
-  getRelationalAdapter(options: PostgresTestAdapterOptions): RelationalMigrationAdapter<PostgresSql> {
-    const prepare = (async () => {
-      const db = await getPostgresDb();
-      return new Pool({
-        connectionString: db.connectionString,
-        connectionTimeoutMillis: 10000,
-        keepAlive: true,
-        max: 20,
-        idleTimeoutMillis: 10000,
-      });
-    })();
-    return new PostgresMigrationAdapter(prepare, { listenForNotifications: options.listenForNotifications || false });
+  getRelationalAdapter(
+    options: PostgresTestAdapterOptions,
+  ): RelationalMigrationAdapter<PostgresSql> & PostgresMigrationAdapter {
+    const dbResolvable = new Resolvable(getPostgresDb, (db) => db?.close());
+    const poolResolvable = new Resolvable(
+      async () => {
+        const db = await dbResolvable.get();
+        return new Pool({
+          connectionString: db.connectionString,
+          connectionTimeoutMillis: 10000,
+          keepAlive: true,
+          max: 20,
+          idleTimeoutMillis: 10000,
+        });
+      },
+      async (pool) => {
+        pool?.end();
+        await dbResolvable.close();
+      },
+    );
+    return new PostgresMigrationAdapter(poolResolvable, {
+      listenForNotifications: options.listenForNotifications || false,
+    });
   }
 
   supportsQuery<S>(

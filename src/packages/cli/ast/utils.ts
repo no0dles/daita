@@ -362,8 +362,6 @@ export function getTypeFromTypeOrExpression(
         return getTypeFromValue(value.value);
       } else if (value instanceof AstNewExpression) {
         return value.type;
-      } else {
-        throw new AstError(value.node, `unknown type or expression`);
       }
     }
   }

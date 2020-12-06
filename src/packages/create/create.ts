@@ -94,11 +94,11 @@ export function setupDaitaConfig(options: SetupOptions) {
   const configFile = path.join(options.projectDirectory, 'daita.json');
   const configContent = readJsonFile<any>(configFile, {});
 
-  if (configContent.context) {
+  if (!configContent.context) {
     configContent.context = {};
   }
 
-  if (configContent.$schema) {
+  if (!configContent.$schema) {
     configContent.$schema = './node_modules/@daita/cli/schema.json';
   }
 

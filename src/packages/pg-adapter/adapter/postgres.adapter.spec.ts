@@ -1,13 +1,26 @@
-import { PostgresAdapter } from './postgres.adapter';
+import { PostgresTransactionAdapter } from './postgres-transaction-adapter';
 import { getPostgresDb, PostgresDb } from '../testing/postgres-test-adapter';
+import { Pool } from 'pg';
+import { Resolvable } from '../../common/utils/resolvable';
 
 describe('pg-adapter/adapter/postgres-adapter', () => {
-  let adapter: PostgresAdapter;
+  let adapter: PostgresTransactionAdapter;
   let db: PostgresDb;
 
   beforeAll(async () => {
     db = await getPostgresDb();
-    adapter = new PostgresAdapter(db.connectionString, { listenForNotifications: false });
+    adapter = new PostgresTransactionAdapter(
+      new Resolvable<Pool>(
+        new Pool({
+          connectionString: db.connectionString,
+          connectionTimeoutMillis: 10000,
+          keepAlive: true,
+          max: 20,
+          idleTimeoutMillis: 10000,
+        }),
+      ),
+      { listenForNotifications: false },
+    );
   });
 
   it('should select 1', async () => {

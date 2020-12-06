@@ -6,11 +6,17 @@ import { join } from '../../../relational/sql/dml/select/join/join';
 import { and } from '../../../relational/sql/keyword/and/and';
 import { equal } from '../../../relational/sql/operands/comparison/equal/equal';
 import { asc } from '../../../relational/sql/keyword/asc/asc';
+import { Migrations } from './migrations';
+import { MigrationSteps } from './migration-steps';
 
 export class MigrationStorage {
   private initalizedSchema = false;
 
-  constructor() {}
+  constructor(private options = { idType: 'string' }) {}
+
+  hasInitialized() {
+    return this.initalizedSchema;
+  }
 
   async initalize(client: Client<any>) {
     if (this.initalizedSchema) {
@@ -25,10 +31,10 @@ export class MigrationStorage {
       createTable: table(Migrations),
       ifNotExists: true,
       columns: [
-        { name: 'id', type: 'string', notNull: true, primaryKey: true },
+        { name: 'id', type: this.options.idType, notNull: true, primaryKey: true },
         {
           name: 'schema',
-          type: 'string',
+          type: this.options.idType,
           notNull: true,
           primaryKey: true,
         },
@@ -40,31 +46,29 @@ export class MigrationStorage {
       columns: [
         {
           name: 'migrationId',
-          type: 'string',
+          type: this.options.idType,
           notNull: true,
           primaryKey: true,
         },
         {
           name: 'migrationSchema',
-          type: 'string',
+          type: this.options.idType,
           notNull: true,
           primaryKey: true,
         },
         { name: 'index', type: 'number', notNull: true, primaryKey: true },
         { name: 'step', type: 'string', notNull: true, primaryKey: false },
       ],
-    });
-    await client.exec({
-      alterTable: table(MigrationSteps),
-      add: {
-        foreignKey: ['migrationId', 'migrationSchema'],
-        references: {
-          table: table(Migrations),
-          primaryKeys: ['id', 'schema'],
+      foreignKey: {
+        migration: {
+          key: ['migrationId', 'migrationSchema'],
+          references: {
+            table: table(Migrations),
+            primaryKey: ['id', 'schema'],
+          },
         },
       },
     });
-
     this.initalizedSchema = true;
   }
 

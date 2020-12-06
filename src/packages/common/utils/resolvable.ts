@@ -13,6 +13,10 @@ export class Resolvable<T> {
     private closeFn: (value: T | null) => Promise<void> | void = () => {},
   ) {}
 
+  instant(): T | null {
+    return this.value;
+  }
+
   async get(): Promise<T> {
     if (!this.value) {
       if (isResolvableFunction(this.resolveFn)) {

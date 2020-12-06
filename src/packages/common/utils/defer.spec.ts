@@ -36,7 +36,7 @@ describe('utils/defer', () => {
   });
 
   it('should have result null if none defined', async () => {
-    const defer = new Defer<string>();
+    const defer = new Defer<void>();
     defer.resolve();
     expect(defer.resolvedResult).toBe(null);
   });

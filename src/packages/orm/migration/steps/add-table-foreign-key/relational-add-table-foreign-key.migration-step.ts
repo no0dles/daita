@@ -1,4 +1,4 @@
-export interface RelationalAddTableForeignKey {
+export interface RelationalAddTableForeignKeyMigrationStep {
   kind: 'add_table_foreign_key';
   table: string;
   schema?: string;

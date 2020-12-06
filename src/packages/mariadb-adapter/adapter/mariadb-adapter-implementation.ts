@@ -7,10 +7,10 @@ import { RelationalTransactionAdapter } from '../../relational/adapter/relationa
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import { MariadbSql } from '../sql/mariadb-sql';
 import { sqliteFormatter } from '../../sqlite-adapter/formatter/sqlite-formatter';
-import { MariadbRelationalMigrationAdapter } from './mariadb-relational-adapter';
 import { createPool } from 'mariadb';
 import { isConnectionStringOptions, MariadbAdapterOptions } from './mariadb-adapter-options';
 import { Resolvable } from '../../common/utils/resolvable';
+import { MariadbRelationalMigrationAdapter } from './mariadb-relational-migration-adapter';
 
 class MariadbAdapterImplementation
   implements

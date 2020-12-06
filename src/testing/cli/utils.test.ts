@@ -130,7 +130,6 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
       cloneDirectory(schemaPath, resultPath);
     }
 
-    const cliPath = path.join(process.cwd(), './src/packages/cli/index.ts');
     const context: CliEnvironment = {
       cwd: resultPath,
       env: (name: string, value: string) => {

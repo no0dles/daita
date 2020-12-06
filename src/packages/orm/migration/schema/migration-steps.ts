@@ -1,4 +1,4 @@
-class MigrationSteps {
+export class MigrationSteps {
   static schema = 'daita';
   static table = 'migrationSteps';
 

@@ -1,8 +1,6 @@
 import { Http, HttpSendResult } from '../http-client-common/http';
 import { RelationalRawResult } from '../relational/adapter/relational-raw-result';
 import { RelationalDataAdapter } from '../relational/adapter/relational-data-adapter';
-import { RuleError } from '../orm/error/rule-error';
-import { HttpSentEvent } from '@angular/common/http';
 import { handleErrorResponse } from './error-handling';
 
 export class HttpDataAdapter implements RelationalDataAdapter {

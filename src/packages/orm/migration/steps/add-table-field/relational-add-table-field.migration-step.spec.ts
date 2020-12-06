@@ -1,7 +1,7 @@
-import { testContext } from '../../../../testing/relational/adapters';
-import { MigrationTree } from '../migration-tree';
-import { table } from '../../../relational';
-import { all } from '../../../relational/sql/keyword/all/all';
+import { testContext } from '../../../../../testing/relational/adapters';
+import { MigrationTree } from '../../migration-tree';
+import { table } from '../../../../relational';
+import { all } from '../../../../relational/sql/keyword/all/all';
 
 describe('packages/orm/migration/steps/add-table-field', () => {
   const migrationTree = new MigrationTree('', [
@@ -9,7 +9,7 @@ describe('packages/orm/migration/steps/add-table-field', () => {
       id: 'init',
       steps: [
         { kind: 'add_table', table: 'foo' },
-        { kind: 'add_table_field', table: 'foo', fieldName: 'id', type: 'string', required: true },
+        { kind: 'add_table_field', table: 'foo', fieldName: 'id', type: 'uuid', required: true },
         { kind: 'add_table_field', table: 'foo', fieldName: 'text', type: 'string', required: false },
         { kind: 'add_table_field', table: 'foo', fieldName: 'count', type: 'number', required: false },
       ],
@@ -34,7 +34,7 @@ describe('packages/orm/migration/steps/add-table-field', () => {
       await ctx.insert({
         into: table('foo'),
         insert: {
-          id: 'abc',
+          id: 'd015a090-7c69-4472-b108-a4f8ab77443d',
           text: 'test',
           count: 2,
           date,
@@ -47,7 +47,7 @@ describe('packages/orm/migration/steps/add-table-field', () => {
       });
       expect(row).not.toBeNull();
       expect(row).not.toBeUndefined();
-      expect(row.id).toEqual('abc');
+      expect(row.id).toEqual('d015a090-7c69-4472-b108-a4f8ab77443d');
       expect(row.text).toEqual('test');
       expect(row.count).toEqual(2);
       expect(row.date).toBeInstanceOf(Date);

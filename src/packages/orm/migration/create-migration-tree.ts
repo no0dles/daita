@@ -10,7 +10,7 @@ export function createMigrationTree(...steps: MigrationStep[]): MigrationTree;
 export function createMigrationTree(...steps: MigrationStep[][]): MigrationTree;
 export function createMigrationTree(...steps: MigrationStep[] | MigrationStep[][]): MigrationTree {
   if (steps.length === 0) {
-    return new MigrationTree('', []);
+    return new MigrationTree('default', []);
   }
   if (isMigrationStepArray(steps)) {
     const migrations: MigrationDescription[] = [];
@@ -23,9 +23,9 @@ export function createMigrationTree(...steps: MigrationStep[] | MigrationStep[][
       });
       migrationId++;
     }
-    return new MigrationTree('', migrations);
+    return new MigrationTree('default', migrations);
   } else {
-    return new MigrationTree('', [
+    return new MigrationTree('default', [
       {
         id: 'init',
         steps: steps,

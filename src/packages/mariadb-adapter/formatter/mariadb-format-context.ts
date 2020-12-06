@@ -7,7 +7,11 @@ export class MariadbFormatContext extends SimpleFormatContext {
   }
 
   appendValue(value: ValueType): string {
-    this.values.push(value);
+    if (value === undefined) {
+      this.values.push(null);
+    } else {
+      this.values.push(value);
+    }
     return this.paramKey;
   }
 
@@ -23,6 +27,12 @@ export class MariadbFormatContext extends SimpleFormatContext {
         return 'BOOLEAN';
       case 'uuid':
         return 'VARCHAR(36)';
+      case 'string[]':
+        return 'JSON';
+    }
+
+    if (type.startsWith('VARCHAR(')) {
+      return type;
     }
 
     throw new Error(`unknown data type ${type}`);
