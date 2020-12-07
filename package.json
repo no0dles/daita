@@ -9,9 +9,9 @@
     "publish:npm": "node -r ts-node/register src/scripts/publish-npm-package.ts",
     "build:docker": "node -r ts-node/register src/scripts/build-docker-image.ts",
     "push:docker": "node -r ts-node/register src/scripts/push-docker-image.ts",
+    "build:docs": "NODE_ENV=production ng build --prod docs",
     "clean": "git clean -fX -d dist",
     "rebuild": "npm run clean && npm run build",
-    "build:docs": "cd src/docs && docusaurus build --out-dir ../dist/docs",
     "docs": "cd src/docs && docusaurus start",
     "api:docs": "typedoc",
     "ng": "ng"
