@@ -23,39 +23,55 @@ There is also an example project located in the [src/examples](./src/examples) f
 		<col width="50%">
 		<col width="50%">
 	</colgroup>
-	<tr>
-	<td align=right>
-    <img alt="productivity" src="assets/undraw_dev_productivity_umsq.svg" height=100 />
+	<tr style="background: transparent">
+	<td align=right style="border: 0">
+        <img alt="productivity" src="assets/undraw_dev_productivity_umsq.svg" height=100 />
     </td>
-    <td>
-    Daita lets you focus on your business, and we'll do the chores. Go
-    ahead check out our demos and docs.
+    <td style="border: 0">
+        Daita lets you focus on your business, and we'll do the chores. Go
+        ahead check out our demos and docs.
     </td>
   </tr>   
-  <tr>
-  	<td align=right>Daita was designed from the ground up to be as lightweight as possible
-    and have a minimum of external dependencies.</td>
-    <td>
-    <img alt="fast" src="assets/undraw_fast_loading_0lbh.svg" height=100 />
+  <tr style="background: transparent">
+  	<td align=right style="border: 0">
+        Daita was designed from the ground up to be as lightweight as possible
+        and have a minimum of external dependencies.</td>
+    <td style="border: 0">
+        <img alt="fast" src="assets/undraw_fast_loading_0lbh.svg" height=100 />
     </td>
   </tr> 
-  <tr>
-  	<td align=right><img alt="fast" src="assets/undraw_fixing_bugs_w7gi.svg" height=100 /></td>
-  	<td>Catch errors early during compile time, but keep flexibility without adding more build tools.
-    Everything works with plain typescript and requires no additional build steps.</td>
+  <tr style="background: transparent">
+  	<td align=right style="border: 0">
+        <img alt="fast" src="assets/undraw_fixing_bugs_w7gi.svg" height=100 />
+    </td>
+  	<td style="border: 0">
+        Catch errors early during compile time, but keep flexibility without adding more build tools.
+        Everything works with plain typescript and requires no additional build steps.
+    </td>
   </tr>
-  <tr>
-  	<td align=right>Take more control over the way it's allowed to execute a query and which data can be accessed.</td>
-  	<td><img alt="security" src="assets/undraw_security_o890.svg" height=100 /></td>
+  <tr style="background: transparent">
+  	<td align=right style="border: 0">
+        Take more control over the way it's allowed to execute a query and which data can be accessed.
+    </td>
+  	<td style="border: 0">
+        <img alt="security" src="assets/undraw_security_o890.svg" height=100 />
+    </td>
   </tr>
-  <tr>
-  	<td align=right><img alt="programming" src="assets/undraw_programming_2svr.svg" height=100/></td>
-  	<td>
-Take advantage of the complete set of SQL capabilities with additional type checks and linting rules.</td>
+  <tr style="background: transparent">
+  	<td align=right style="border: 0">
+        <img alt="programming" src="assets/undraw_programming_2svr.svg" height=100/>
+    </td>
+  	<td style="border: 0">
+        Take advantage of the complete set of SQL capabilities with additional type checks and linting rules.
+    </td>
   </tr>
-  <tr>
-  	<td align=right>Generate sql migrations with the powerfull daita cli with support for backward compatible schema changes.</td>
-  	<td><img alt="cli" height=100 src="assets/undraw_hacker_mindset_gjwq.svg" /></td>
+  <tr style="background: transparent">
+  	<td align=right style="border: 0">
+        Generate sql migrations with the powerfull daita cli with support for backward compatible schema changes.
+    </td>
+  	<td style="border: 0">
+        <img alt="cli" height=100 src="assets/undraw_hacker_mindset_gjwq.svg" />
+    </td>
   </tr>
 </table>
 
