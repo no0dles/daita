@@ -1,67 +1,8 @@
 import { Component } from '@angular/core';
-import { relationalSections } from './docs/relational';
-import { Navigation } from './navigation';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  sections = relationalSections;
-  navigations: Navigation[] = [
-    {
-      title: 'Intro',
-      items: [
-        { title: 'About', slug: 'intro/about' },
-        { title: 'Installation', slug: 'intro/installation' },
-        {
-          title: 'Examples',
-          slug: 'intro/examples',
-        },
-      ],
-    },
-    {
-      title: 'Getting started',
-      items: [
-        { title: 'node.js and sqlite', slug: 'getting-started/nodejs-sqlite' },
-        { title: 'node.js and postgres', slug: 'getting-started/nodejs-postgres' },
-        { title: 'angular', slug: 'getting-started/angular' },
-      ],
-    },
-    {
-      title: 'Packages',
-      items: [
-        { title: 'relational', slug: 'packages/relational' },
-        { title: 'orm', slug: 'packages/orm' },
-        { title: 'cli', slug: 'packages/cli' },
-      ],
-    },
-    {
-      title: 'Adapters',
-      items: [
-        { title: 'Sqlite', slug: 'adapters/sqlite' },
-        { title: 'Postgres', slug: 'adapters/postgres' },
-        { title: 'MariaDB', slug: 'adapters/mariadb' },
-        { title: 'HTTP', slug: 'adapters/http' },
-        { title: 'Websocket', slug: 'adapters/websocket' },
-      ],
-    },
-    {
-      title: 'Containers',
-      items: [
-        { title: 'HTTP Server', slug: 'containers/http-server' },
-        { title: 'Websocket Server', slug: 'containers/websocket-server' },
-        { title: 'Auth Server', slug: 'containers/auth-server' },
-      ],
-    },
-    {
-      title: 'Daita',
-      items: [
-        { title: 'Design Goals', slug: 'daita/design-goals' },
-        { title: 'Roadmap', slug: 'daita/roadmap' },
-        { title: 'FAQ', slug: 'daita/faq' },
-      ],
-    },
-  ];
-}
+export class AppComponent {}

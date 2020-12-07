@@ -19,16 +19,16 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 module.exports = {
-  plugins: [new CompressionPlugin()],
+  //plugins: [new CompressionPlugin()],
   module: {
     rules: [
       {
         test: /\.scss$/,
         loader: 'postcss-loader',
         options: {
-          ident: 'postcss',
-          syntax: 'postcss-scss',
-          plugins: () => postCssPlugins,
+          postcssOptions: {
+            plugins: postCssPlugins,
+          },
         },
       },
     ],
