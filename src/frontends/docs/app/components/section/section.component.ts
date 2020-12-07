@@ -1,5 +1,5 @@
 import { Component, HostBinding, Input } from '@angular/core';
-import { Section } from './section';
+import { Section } from '../../section';
 
 @Component({
   selector: 'app-section',

@@ -5,9 +5,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HighlightModule, HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 import { HighlightPlusModule } from 'ngx-highlightjs/plus';
-import { SectionComponent } from './section.component';
+import { SectionComponent } from './components/section/section.component';
 import { CommonModule } from '@angular/common';
-import { SectionSidemenuComponent } from './section-sidemenu.component';
+import { SectionSidemenuComponent } from './components/section-sidemenu/section-sidemenu.component';
 import { SnippetComponent } from './components/snippet/snippet.component';
 
 @NgModule({

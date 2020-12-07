@@ -13,44 +13,10 @@
 
   <div class="flex flex-grow">
     <div class="w-64 bg-white flex-shrink-0">
-      <div class="ml-3 mb-3 bg-white p-4">
-        <div class="text-lg text-gray-700 border-b border-gray-300 mb-1">Intro</div>
-        <div class="text-gray-500">About</div>
-        <div class="text-gray-500">Installation</div>
-        <div class="text-gray-500">Examples</div>
-      </div>
-
-      <div class="ml-3 mb-3 bg-white p-4">
-        <div class="text-lg text-gray-700 border-b border-gray-300 mb-1">Getting started</div>
-        <div class="text-gray-500">node.js and sqlite</div>
-        <div class="text-gray-500">node.js and postgres</div>
-        <div class="text-gray-500">angular</div>
-      </div>
-      <div class="ml-3 mb-3 bg-white p-4">
-        <div class="text-lg text-gray-700 border-b border-gray-300 mb-1">Packages</div>
-        <div class="text-gray-500">relational</div>
-        <div class="text-gray-500">orm</div>
-        <div class="text-gray-500">cli</div>
-      </div>
-      <div class="ml-3 mb-3 bg-white p-4">
-        <div class="text-lg text-gray-700 border-b border-gray-300 mb-1">Adapters</div>
-        <div class="text-gray-500">sqlite</div>
-        <div class="text-gray-500">postgres</div>
-        <div class="text-gray-500">mariadb</div>
-        <div class="text-gray-500">http</div>
-        <div class="text-gray-500">websocket</div>
-      </div>
-      <div class="ml-3 mb-3 p-4">
-        <div class="text-lg text-gray-700 border-b border-gray-300 mb-1">Containers</div>
-        <div class="text-gray-500">http-server</div>
-        <div class="text-gray-500">websocket-server</div>
-        <div class="text-gray-500">auth-server</div>
-      </div>
-      <div class="ml-3 mb-3 p-4">
-        <div class="text-lg text-gray-700 border-b border-gray-300 mb-1">Daita</div>
-        <div class="text-gray-500">Design Goals</div>
-        <div class="text-gray-500">Roadmap</div>
-        <div class="text-gray-500">FAQ</div>
+      <div class="ml-3 mb-3 bg-white p-4" *ngFor="let navigation of navigations">
+        <div class="text-lg text-gray-700 border-b border-gray-300 mb-1">{{navigation.title}}</div>
+        <a class="text-gray-500 block" [routerLink]="[item.slug]"
+           *ngFor="let item of navigation.items">{{item.title}}</a>
       </div>
     </div>
     <div class="flex-grow p-5">

@@ -1,14 +1,6 @@
 import { Component } from '@angular/core';
-import { allDbs, Section } from './section';
-import { all } from '../../../packages/relational/sql/keyword/all/all';
-import { field, table } from '../../../packages/relational';
-import { Mountain } from '../../../docs/example/models/mountain';
-import { subSelect } from '../../../packages/relational/sql/dml/select/subquery/sub-select';
-import { count } from '../../../packages/relational/sql/function/aggregation/count/count';
-import { Canton } from '../../../docs/example/models/canton';
-import { equal } from '../../../packages/relational/sql/operands/comparison/equal/equal';
-import { greaterThan } from '../../../packages/relational/sql/operands/comparison/greater-than/greater-than';
-import { concat } from '../../../packages/relational/sql/function/string/concat/concat';
+import { relationalSections } from './docs/relational';
+import { Navigation } from './navigation';
 
 @Component({
   selector: 'app-root',
@@ -16,329 +8,60 @@ import { concat } from '../../../packages/relational/sql/function/string/concat/
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  sections: Section[] = [
+  sections = relationalSections;
+  navigations: Navigation[] = [
     {
-      title: 'select',
-      id: 'query-select',
-      description: '',
-      sections: [
+      title: 'Intro',
+      items: [
+        { title: 'About', slug: 'intro/about' },
+        { title: 'Installation', slug: 'intro/installation' },
         {
-          title: 'select',
-          id: 'select',
-          description: '',
-          sections: [
-            {
-              title: 'field',
-              id: 'select-field',
-              description: '',
-              snippets: [
-                {
-                  code: {
-                    select: field(Mountain, 'name'),
-                    from: table(Mountain),
-                  },
-                  supportedBy: allDbs,
-                },
-                {
-                  code: {
-                    select: { name: field(Mountain, 'name') },
-                    from: table(Mountain),
-                  },
-                  supportedBy: allDbs,
-                },
-              ],
-            },
-            {
-              title: 'all',
-              id: 'select-all',
-              description: '',
-              snippets: [
-                {
-                  code: {
-                    select: all(),
-                    from: table(Mountain),
-                  },
-                  supportedBy: allDbs,
-                },
-                {
-                  code: {
-                    select: all(Mountain),
-                    from: table(Mountain),
-                  },
-                  supportedBy: allDbs,
-                },
-              ],
-            },
-            {
-              title: 'subquery',
-              id: 'select-subquery',
-              snippets: [
-                {
-                  code: {
-                    select: {
-                      name: field(Mountain, 'name'),
-                      cantonName: subSelect({
-                        select: count(),
-                        from: table(Canton),
-                        where: equal(field(Canton, 'shortname'), field(Mountain, 'cantonShortname')),
-                      }),
-                    },
-                    from: table(Mountain),
-                  },
-                  supportedBy: allDbs,
-                },
-              ],
-            },
-          ],
-        },
-        {
-          title: 'join',
-          id: 'select-join',
-          sections: [
-            { title: 'left join', id: 'select-join-left' },
-            { title: 'right join', id: 'select-join-right' },
-          ],
-        },
-        {
-          title: 'where',
-          id: 'select-where',
-          sections: [
-            { title: 'and', id: 'select-where-and' },
-            { title: 'or', id: 'select-where-or' },
-          ],
-        },
-        {
-          title: 'group by',
-          id: 'select-group-by',
-          snippets: [
-            {
-              code: {
-                select: { canton: field(Mountain, 'cantonShortname'), count: count() },
-                from: table(Mountain),
-                groupBy: field(Mountain, 'cantonShortname'),
-              },
-              supportedBy: allDbs,
-            },
-          ],
-        },
-        {
-          title: 'having by',
-          id: 'select-having-by',
-          snippets: [
-            {
-              code: {
-                select: { canton: field(Mountain, 'cantonShortname'), count: count() },
-                from: table(Mountain),
-                groupBy: field(Mountain, 'cantonShortname'),
-                having: greaterThan(count(), 10),
-              },
-              supportedBy: allDbs,
-            },
-          ],
-        },
-        {
-          title: 'order by',
-          id: 'select-order-by',
-          snippets: [
-            {
-              code: {
-                select: field(Mountain, 'name'),
-                from: table(Mountain),
-                orderBy: field(Mountain, 'name'),
-              },
-              supportedBy: allDbs,
-            },
-          ],
-        },
-        {
-          title: 'limit',
-          id: 'select-limit',
-          snippets: [
-            {
-              code: {
-                select: all(),
-                from: table(Mountain),
-                limit: 10,
-              },
-              supportedBy: allDbs,
-            },
-          ],
-        },
-        {
-          title: 'offset',
-          id: 'select-offset',
-          snippets: [
-            {
-              code: {
-                select: all(),
-                from: table(Mountain),
-                limit: 10,
-                offset: 20,
-              },
-              supportedBy: allDbs,
-            },
-          ],
+          title: 'Examples',
+          slug: 'intro/examples',
         },
       ],
     },
     {
-      title: 'update',
-      id: 'query-update',
-      sections: [
-        { title: 'update', id: 'update' },
-        { title: 'set', id: 'update-set' },
-        { title: 'where', id: 'update-where' },
+      title: 'Getting started',
+      items: [
+        { title: 'node.js and sqlite', slug: 'getting-started/nodejs-sqlite' },
+        { title: 'node.js and postgres', slug: 'getting-started/nodejs-postgres' },
+        { title: 'angular', slug: 'getting-started/angular' },
       ],
     },
     {
-      title: 'insert',
-      id: 'query-insert',
-      sections: [
-        {
-          id: 'insert-row',
-          title: 'row',
-          snippets: [
-            {
-              code: {
-                insert: {
-                  id: 'matterhorn',
-                  name: 'Matterhorn',
-                  cantonShortname: 'VS',
-                  elevation: 4478,
-                  prominence: 1042,
-                },
-                into: table(Mountain),
-              },
-              supportedBy: allDbs,
-            },
-          ],
-        },
-        {
-          id: 'insert-rows',
-          title: 'rows',
-          snippets: [
-            {
-              code: {
-                insert: [
-                  {
-                    id: 'matterhorn',
-                    name: 'Matterhorn',
-                    cantonShortname: 'VS',
-                    elevation: 4478,
-                    prominence: 1042,
-                  },
-                  { elevation: 4158, prominence: 695, name: 'Jungfrau', id: 'jungfrau', cantonShortname: 'BE' },
-                ],
-                into: table(Mountain),
-              },
-              supportedBy: allDbs,
-            },
-          ],
-        },
-        {
-          id: 'insert-select',
-          title: 'select',
-          snippets: [
-            {
-              code: {
-                insert: {
-                  select: {
-                    id: concat(field(Mountain, 'id'), '-2'),
-                    name: field(Mountain, 'name'),
-                    cantonShortname: field(Mountain, 'cantonShortname'),
-                    elevation: field(Mountain, 'elevation'),
-                    prominence: field(Mountain, 'prominence'),
-                  },
-                  from: table(Mountain),
-                },
-                into: table(Mountain),
-              },
-              supportedBy: allDbs,
-            },
-          ],
-        },
+      title: 'Packages',
+      items: [
+        { title: 'relational', slug: 'packages/relational' },
+        { title: 'orm', slug: 'packages/orm' },
+        { title: 'cli', slug: 'packages/cli' },
       ],
     },
     {
-      title: 'delete',
-      id: 'query-delete',
-      snippets: [
-        {
-          code: {
-            delete: table(Mountain),
-            where: equal(field(Mountain, 'id'), 'matterhorn'),
-          },
-          supportedBy: allDbs,
-        },
+      title: 'Adapters',
+      items: [
+        { title: 'Sqlite', slug: 'adapters/sqlite' },
+        { title: 'Postgres', slug: 'adapters/postgres' },
+        { title: 'MariaDB', slug: 'adapters/mariadb' },
+        { title: 'HTTP', slug: 'adapters/http' },
+        { title: 'Websocket', slug: 'adapters/websocket' },
       ],
     },
     {
-      title: 'operands',
-      id: 'query-operands',
-      sections: [
-        { title: 'equal', id: 'operand-equal' },
-        { title: 'not equal', id: 'operand-not-equal' },
-        { title: 'lower than', id: 'operand-lower-than' },
-        { title: 'lower equal than', id: 'operand-lower-equal-than' },
-        { title: 'greater than', id: 'operand-greater-than' },
-        { title: 'greater equal than', id: 'operand-greater-equal-than' },
-        { title: 'between', id: 'operand-between' },
-        { title: 'not between', id: 'operand-not-between' },
-        { title: 'in', id: 'operand-in' },
-        { title: 'not in', id: 'operand-not-in' },
-        { title: 'like', id: 'operand-like' },
-        { title: 'not like', id: 'operand-not-like' },
-        { title: 'exists', id: 'operand-exists' },
+      title: 'Containers',
+      items: [
+        { title: 'HTTP Server', slug: 'containers/http-server' },
+        { title: 'Websocket Server', slug: 'containers/websocket-server' },
+        { title: 'Auth Server', slug: 'containers/auth-server' },
       ],
     },
     {
-      title: 'functions',
-      id: 'query-functions',
-      sections: [
-        { title: 'concat', id: 'functions-concat' },
-        { title: 'now', id: 'functions-now' },
+      title: 'Daita',
+      items: [
+        { title: 'Design Goals', slug: 'daita/design-goals' },
+        { title: 'Roadmap', slug: 'daita/roadmap' },
+        { title: 'FAQ', slug: 'daita/faq' },
       ],
-    },
-    {
-      title: 'create table',
-      id: 'query-create-table',
-      sections: [
-        { title: 'columns', id: 'create-table-columns' },
-        { title: 'foreign keys', id: 'create-table-foreign-keys' },
-      ],
-    },
-    {
-      title: 'alter table',
-      id: 'query-alter-table',
-      sections: [
-        { title: 'add column', id: 'alter-table-add-column' },
-        { title: 'drop column', id: 'alter-table-drop-column' },
-        { title: 'rename column', id: 'alter-table-rename-column' },
-        { title: 'add primary key', id: 'alter-table-add-primary-key' },
-        { title: 'drop primary key', id: 'alter-table-drop-primary-key' },
-        { title: 'add foreign key', id: 'alter-table-add-foreign-key' },
-        { title: 'drop foreign key', id: 'alter-table-drop-foreign-key' },
-      ],
-    },
-    {
-      title: 'drop table',
-      id: 'query-drop-table',
-      sections: [{ title: 'if exists', id: 'drop-table-if-exists' }],
-    },
-    {
-      title: 'create view',
-      id: 'query-create-view',
-      sections: [{ title: 'or replace', id: 'create-view-or-replace' }],
-    },
-    {
-      title: 'create index',
-      id: 'query-create-index',
-      sections: [{ title: 'unique', id: 'create-index-unique' }],
-    },
-    {
-      title: 'drop index',
-      id: 'query-drop-index',
-      sections: [],
     },
   ];
 }

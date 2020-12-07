@@ -15,6 +15,7 @@ import { isCountDescription } from '../../../../../packages/relational/sql/funct
 import { isSubSelectDescription } from '../../../../../packages/relational/sql/dml/select/subquery/sub-select-description';
 import { isTableDescription } from '../../../../../packages/relational/sql/keyword/table/table-description';
 import { failNever } from '../../../../../packages/common/utils/fail-never';
+import { isConcatDescription } from '../../../../../packages/relational/sql/function/string/concat/concat-description';
 
 @Component({
   selector: 'app-snippet',
@@ -70,6 +71,9 @@ export class SnippetComponent implements OnInit {
       } else {
         return `all()`;
       }
+    }
+    if (isConcatDescription(sql)) {
+      return `concat(${sql.concat.map((c) => this.format(c, level)).join(', ')})`;
     }
     if (isGreaterThanDescription(sql)) {
       return `greaterThan(${this.format(sql.greaterThan.left, level)}, ${this.format(sql.greaterThan.right, level)})`;
