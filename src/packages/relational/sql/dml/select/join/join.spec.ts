@@ -3,9 +3,9 @@ import { table } from '../../../keyword/table/table';
 import { join } from './join';
 import { equal } from '../../../operands/comparison/equal/equal';
 import { expectedSql } from '../../../../../../testing/relational/formatter.test';
-import { User } from '../../../../../../docs/example/models/user';
-import { Role } from '../../../../../../docs/example/models/role';
-import { UserRole } from '../../../../../../docs/example/models/user-role';
+import { User } from '../../../../../../examples/mowntain/models/user';
+import { Role } from '../../../../../../examples/mowntain/models/role';
+import { UserRole } from '../../../../../../examples/mowntain/models/user-role';
 
 describe('select/join', () => {
   it('should join User, UserRole and Role', () => {

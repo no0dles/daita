@@ -1,10 +1,10 @@
 import { allDbs, Section } from '../../section';
 import { field, table } from '../../../../../packages/relational';
-import { Mountain } from '../../../../../docs/example/models/mountain';
+import { Mountain } from '../../../../../examples/mowntain/models/mountain';
 import { all } from '../../../../../packages/relational/sql/keyword/all/all';
 import { subSelect } from '../../../../../packages/relational/sql/dml/select/subquery/sub-select';
 import { count } from '../../../../../packages/relational/sql/function/aggregation/count/count';
-import { Canton } from '../../../../../docs/example/models/canton';
+import { Canton } from '../../../../../examples/mowntain/models/canton';
 import { equal } from '../../../../../packages/relational/sql/operands/comparison/equal/equal';
 import { greaterThan } from '../../../../../packages/relational/sql/operands/comparison/greater-than/greater-than';
 import { concat } from '../../../../../packages/relational/sql/function/string/concat/concat';

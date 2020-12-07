@@ -14,20 +14,54 @@ Daita does this by removing the need for a backend service to access and store d
 
 
 ## Documentation and examples
-The Documentation and getting started guide is available [here](https://daita.ch/). 
-There is also an example project located in the [src/docs/example](./src/docs/example) folder.
+The Documentation and getting started guide is available at [docs.daita.ch](https://docs.daita.ch/). 
+There is also an example project located in the [src/examples](./src/examples) folder.
 
-## Packages
-A short description about the packages and their purpose.
+## Why use daita
 
-### Core
+<div>
+    <img alt="productivity" src="assets/undraw_dev_productivity_umsq.svg" />
+    <p>
+    Daita lets you focus on your business, and we'll do the chores. Go
+    ahead check out our demos and docs.
+    </p>
+</div>
+
+<div>
+    <p>
+    Daita was designed from the ground up to be as lightweight as possible
+    and have a minimum of external dependencies.
+    </p>
+    <img alt="fast" src="assets/undraw_fast_loading_0lbh.svg" />
+</div>
+
+
+<div>
+    <img alt="fast" src="assets/undraw_fixing_bugs_w7gi.svg" />
+    <p>
+    Catch errors early during compile time, but keep flexibility without adding more build tools.
+    Everything works with plain typescript and requires no additional build steps.
+    </p>
+</div>
+
+
+<div>
+    <p>
+    Take more control over the way it's allowed to execute a query and which data can be accessed.
+    </p>
+    <img alt="fast" src="assets/undraw_security_o890.svg" />
+</div>
+
+Take advantage of the complete set of SQL capabilities with additional type checks and linting rules.
+
+Generate sql migrations with the powerfull daita cli with support for backward compatible schema changes.
+
+
+### Packages
 | Package | Description | Downloads | Coverage | Status |
 | --- | --- | --- | --- | --- |
-| @daita/common | A set of advanced types and utility classes that a regularly used. | <img alt='npm' src='https://img.shields.io/npm/dm/@daita/common.svg'> | | beta |
 | @daita/relational | SQL abstractions for accessing relational databases | <img alt='npm' src='https://img.shields.io/npm/dm/@daita/relational.svg'> | | beta |
 | @daita/orm | An OR mapper which handles schema migrations for relational databases | <img alt='npm' src='https://img.shields.io/npm/dm/@daita/orm.svg'> | | alpha |
-| @daita/odm | An object mapper which handles data migrations for document databases | <img alt='npm' src='https://img.shields.io/npm/dm/@daita/odm.svg'> | | - |
-
 
 ### Adapters
 | Package | Description | Downloads | Coverage | Status |
@@ -35,7 +69,6 @@ A short description about the packages and their purpose.
 | @daita/pg-adapter | Postgres adapter | <img alt='npm' src='https://img.shields.io/npm/dm/@daita/pg-adapter.svg'> | | alpha |
 | @daita/sqlite-adapter | Sqlite adapter | <img alt='npm' src='https://img.shields.io/npm/dm/@daita/sqlite-adapter.svg'> | | - |
 | @daita/http-adapter | HTTP adapter | <img alt='npm' src='https://img.shields.io/npm/dm/@daita/http-adapter.svg'> | | alpha |
-| @daita/websocket-adapter | HTTP adapter | <img alt='npm' src='https://img.shields.io/npm/dm/@daita/websocket-adapter.svg'> | | - |
 
 ### Development & Tooling
 
@@ -44,8 +77,3 @@ A short description about the packages and their purpose.
 | @daita/create | Bootstrapping and initalizing new daita projects using `npm init @daita` or `npx @daita/create` | <img alt='npm' src='https://img.shields.io/npm/dm/@daita/create.svg'> | | alpha |
 | @daita/cli | A cli used during development to generate migrations and diagrams | <img alt='npm' src='https://img.shields.io/npm/dm/@daita/cli.svg'> | | alpha |
 | @daita/eslint-config | Linting rules for daita related code | <img alt='npm' src='https://img.shields.io/npm/dm/@daita/http-adapter.svg'> | | alpha |
-
-
-## Contributing
-As I use this for my own projects, I know this might not be the perfect approach for all the projects out there. 
-If you have any ideas, just open an issue and tell me what you think.

@@ -2,7 +2,7 @@ import { min } from '../../function/aggregation/min/min';
 import { field } from '../../keyword/field/field';
 import { table } from '../../keyword/table/table';
 import { expectedSql } from '../../../../../testing/relational/formatter.test';
-import { User } from '../../../../../docs/example/models/user';
+import { User } from '../../../../../examples/mowntain/models/user';
 import { asc } from '../../keyword/asc/asc';
 import { and } from '../../keyword/and/and';
 import { isIn } from '../../operands/comparison/in/in';

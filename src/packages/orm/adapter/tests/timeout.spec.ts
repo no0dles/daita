@@ -1,6 +1,6 @@
 import { testContext } from '../../../../testing/relational/adapters';
 import { createPerson, createPersonTable } from '../../../../testing/schema/test-schema';
-import { Person } from '../../../../docs/example/models/person';
+import { Person } from '../../../../examples/mowntain/models/person';
 import { MigrationTree } from '../../migration/migration-tree';
 import { TimeoutError } from '../../../relational/error/timeout-error';
 import { allow } from '../../../relational/permission/function/allow';

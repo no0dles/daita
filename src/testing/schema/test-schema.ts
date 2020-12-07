@@ -2,12 +2,12 @@ import { table } from '../../packages/relational/sql/keyword/table/table';
 import { CreateTableColumn, CreateTableSql } from '../../packages/relational/sql/ddl/create-table/create-table-sql';
 import { Client } from '../../packages/relational/client/client';
 import { InsertSql } from '../../packages/relational/sql/dml/insert/insert-sql';
-import { Person } from '../../docs/example/models/person';
+import { Person } from '../../examples/mowntain/models/person';
 import { randomNumber, randomString, randomUuid } from '../../packages/common/utils/random-string';
-import { Canton } from '../../docs/example/models/canton';
-import { Mountain } from '../../docs/example/models/mountain';
-import { Ascent } from '../../docs/example/models/ascent';
-import { AscentPerson } from '../../docs/example/models/ascent-person';
+import { Canton } from '../../examples/mowntain/models/canton';
+import { Mountain } from '../../examples/mowntain/models/mountain';
+import { Ascent } from '../../examples/mowntain/models/ascent';
+import { AscentPerson } from '../../examples/mowntain/models/ascent-person';
 import { Constructable } from '../../packages/common/types/constructable';
 
 type CreateTestSchemaSql = CreateTableSql;

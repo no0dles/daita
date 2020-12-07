@@ -1,7 +1,7 @@
 import { all } from './all';
 import { table } from '../table/table';
 import { createPerson, createPersonTable } from '../../../../../testing/schema/test-schema';
-import { Person } from '../../../../../docs/example/models/person';
+import { Person } from '../../../../../examples/mowntain/models/person';
 import { testClient } from '../../../../../testing/relational/adapters';
 
 describe('relational/sql/keyword/all', () => {

@@ -1,7 +1,7 @@
 import { table } from '../../../keyword/table/table';
 import { testClient } from '../../../../../../testing/relational/adapters';
 import { createMountain, createMountainTable } from '../../../../../../testing/schema/test-schema';
-import { Mountain } from '../../../../../../docs/example/models/mountain';
+import { Mountain } from '../../../../../../examples/mowntain/models/mountain';
 import { count } from './count';
 import { greaterThan } from '../../../operands/comparison/greater-than/greater-than';
 import { field } from '../../../keyword/field/field';

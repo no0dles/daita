@@ -1,6 +1,6 @@
 import { createPerson, createPersonTable } from '../../../../testing/schema/test-schema';
 import { table } from '../../../relational/sql/keyword/table/table';
-import { Person } from '../../../../docs/example/models/person';
+import { Person } from '../../../../examples/mowntain/models/person';
 import { field } from '../../../relational/sql/keyword/field/field';
 import { equal } from '../../../relational/sql/operands/comparison/equal/equal';
 import { testClient } from '../../../../testing/relational/adapters';

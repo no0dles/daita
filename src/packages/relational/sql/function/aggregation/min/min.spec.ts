@@ -1,7 +1,7 @@
 import { table } from '../../../keyword/table/table';
 import { testClient } from '../../../../../../testing/relational/adapters';
 import { createMountain, createMountainTable } from '../../../../../../testing/schema/test-schema';
-import { Mountain } from '../../../../../../docs/example/models/mountain';
+import { Mountain } from '../../../../../../examples/mowntain/models/mountain';
 import { min } from './min';
 
 describe('relational/sql/function/aggregation/min', () => {

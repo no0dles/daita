@@ -1,7 +1,7 @@
 import { table } from '../../keyword/table/table';
 import { testClient } from '../../../../../testing/relational/adapters';
 import { createPersonTable } from '../../../../../testing/schema/test-schema';
-import { Person } from '../../../../../docs/example/models/person';
+import { Person } from '../../../../../examples/mowntain/models/person';
 
 describe('relational/sql/ddl/drop-table', () => {
   const clients = testClient('pg', 'sqlite', 'mariadb');
