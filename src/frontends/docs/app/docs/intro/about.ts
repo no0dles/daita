@@ -8,7 +8,7 @@ export const aboutSections: Section[] = [
       'Daita is a set of tools to store and access data in typescript. \n' +
       'Each of which adds functionality and tries to make your application simpler. \n' +
       '\n' +
-      'There is the [relational](/docs/@daita/relational) package that contains all the standard sql syntax and a common interface that each database provider has to provide.\n' +
+      'There is the <a href="/packages/relational">relational</a> package that contains all the standard sql syntax and a common interface that each database provider has to provide.\n' +
       '\n' +
       'There is the [orm](/docs/@daita/orm) package that contains logic for generating and applying sql migrations with support for schemas, tables, indices and views. \n' +
       'While being able to define permissions and ensure access controls.\n' +

@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { DocComponent } from '../components/doc/doc.component';
-import { aboutSections } from '../docs/intro/about';
-import { installationSections } from '../docs/intro/installation';
-import { examplesSections } from '../docs/intro/examples';
+import { nodeSqliteSections } from '../docs/getting-started/nodejs-sqlite';
+import { nodePostgresSections } from '../docs/getting-started/nodejs-postgres';
+import { angularSections } from '../docs/getting-started/angular';
 
 @NgModule({
   imports: [
@@ -11,32 +11,31 @@ import { examplesSections } from '../docs/intro/examples';
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'about',
+        redirectTo: 'nodejs-sqlite',
       },
       {
-        path: 'about',
+        path: 'nodejs-sqlite',
         component: DocComponent,
         data: {
-          sections: aboutSections,
-          hideSidebar: true,
+          sections: nodeSqliteSections,
         },
       },
       {
-        path: 'examples',
+        path: 'nodejs-postgres',
         component: DocComponent,
         data: {
-          sections: examplesSections,
+          sections: nodePostgresSections,
         },
       },
       {
-        path: 'installation',
+        path: 'angular',
         component: DocComponent,
         data: {
-          sections: installationSections,
+          sections: angularSections,
         },
       },
     ]),
   ],
   exports: [RouterModule],
 })
-export class IntroRoutingModule {}
+export class GettingStartedRoutingModule {}

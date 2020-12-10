@@ -8,6 +8,10 @@ const routes: Routes = [
     loadChildren: () => import('./modules/daita.module').then((m) => m.DaitaModule),
   },
   {
+    path: 'getting-started',
+    loadChildren: () => import('./modules/getting-started.module').then((m) => m.GettingStartedModule),
+  },
+  {
     path: 'intro',
     loadChildren: () => import('./modules/intro.module').then((m) => m.IntroModule),
   },

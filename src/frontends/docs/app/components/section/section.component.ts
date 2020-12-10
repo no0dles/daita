@@ -3,6 +3,7 @@ import { Section } from '../../section';
 
 @Component({
   selector: 'app-section',
+  styleUrls: ['./section.component.scss'],
   templateUrl: './section.component.html',
 })
 export class SectionComponent {

@@ -1,4 +1,4 @@
 <div [id]="section.id" class="text-gray-700" [ngClass]="{'text-4xl': level===0, 'text-3xl': level===1, 'text-2xl': level===2}">{{section.title}}</div>
-<div class="text-gray-500 whitespace-pre">{{section.description}}</div>
-<app-snippet [snippet]="snippet" *ngFor="let snippet of section.snippets || []" class="mb-6"></app-snippet>
+<div class="text-gray-500 whitespace-pre-wrap	break-words mb-4" [innerHTML]="section.description"></div>
+<app-snippet [snippet]="snippet" *ngFor="let snippet of section.snippets || []" class="mb-8"></app-snippet>
 <app-section *ngFor="let subSection of section.sections || []" [level]="level+1" [section]="subSection"></app-section>

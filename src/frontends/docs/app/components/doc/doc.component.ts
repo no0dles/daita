@@ -12,6 +12,7 @@ import { Section } from '../../section';
 })
 export class DocComponent {
   sections$: Observable<Section[]>;
+  showSidebar$: Observable<boolean>;
   navigations: Navigation[] = [
     {
       title: 'Intro',
@@ -70,5 +71,6 @@ export class DocComponent {
 
   constructor(private route: ActivatedRoute) {
     this.sections$ = this.route.data.pipe(map((data) => data.sections));
+    this.showSidebar$ = this.route.data.pipe(map((data) => !data.hideSidebar));
   }
 }

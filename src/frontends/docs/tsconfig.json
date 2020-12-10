@@ -23,13 +23,10 @@
     "enableResourceInlining": true
   },
   "files": [
-    "src/frontends/angular/public-api.ts",
-    "src/frontends/auth/main.ts",
-    "src/frontends/auth/polyfills.ts",
-    "src/frontends/docs/main.ts",
-    "src/frontends/docs/polyfills.ts"
+    "main.ts",
+    "polyfills.ts"
   ],
   "include": [
-    "src/**.ts"
+    "app/**.ts"
   ]
 }

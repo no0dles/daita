@@ -30,7 +30,9 @@ export class SnippetComponent implements OnInit {
   sql!: string;
 
   ngOnInit() {
-    this.select(this.snippet.supportedBy[0]);
+    if (this.snippet.supportedBy && this.snippet.supportedBy[0]) {
+      this.select(this.snippet.supportedBy[0]);
+    }
   }
 
   select(db: Db) {

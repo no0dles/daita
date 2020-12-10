@@ -13,6 +13,9 @@ export interface Section {
 
 export interface Snippet {
   description?: string;
-  code: Sql<any>;
-  supportedBy: Db[];
+  code?: Sql<any>;
+  bash?: string;
+  typescript?: string;
+  filename?: string;
+  supportedBy?: Db[];
 }

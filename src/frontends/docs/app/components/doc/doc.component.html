@@ -8,9 +8,9 @@
     <div class="flex-grow"></div>
     <div class="flex-shrink-0 mr-4">
       <a href="https://github.com/no0dles/daita" class="flex items-center">
-        <div class="flex-col justify-end">
-          <div class="leading-none text-lg">Github</div>
-          <div class="text-gray-300 text-sm">no0dles/daita</div>
+        <div>
+          <div class="leading-none text-lg text-right">Github</div>
+          <div class="text-gray-300 text-sm text-right">no0dles/daita</div>
         </div>
         <img src="assets/GitHub-Mark-Light-32px.png" alt="github" class="ml-2"/>
       </a>
@@ -25,11 +25,11 @@
            *ngFor="let item of navigation.items">{{item.title}}</a>
       </div>
     </div>
-    <div class="flex-grow p-5">
+    <div class="flex-grow p-5 min-w-0">
       <app-section *ngFor="let section of sections$ | async" [section]="section" [level]="0"></app-section>
     </div>
 
-    <div class="w-64 bg-gray-200 leading-relaxed flex-shrink-0 text-gray-700 p-4">
+    <div class="w-64 bg-gray-200 leading-relaxed flex-shrink-0 text-gray-700 p-4 invisible md:visible" *ngIf="showSidebar$ | async">
       <app-section-sidemenu *ngFor="let section of sections$ | async" [section]="section" class="mt-2"></app-section-sidemenu>
     </div>
   </div>

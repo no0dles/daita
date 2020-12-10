@@ -19,11 +19,11 @@ There is also an example project located in the [src/examples](./src/examples) f
 ## Why use daita
 
 <table>
-	<colgroup>
-		<col width="50%">
-		<col width="50%">
-	</colgroup>
-	<tr style="background: transparent">
+  <colgroup>
+    <col width="50%">
+    <col width="50%">
+  </colgroup>
+  <tr style="background: transparent">
 	<td align=right style="border: 0">
         <img alt="productivity" src="assets/undraw_dev_productivity_umsq.svg" height=100 />
     </td>
