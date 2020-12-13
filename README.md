@@ -20,7 +20,7 @@ There is also an example project located in the [src/examples](./src/examples) f
 
 <table border="0">
   <tr style="background-color: transparent">
-	<td align=right width="50%" style="border: 0; width: 50%" background="transparent">
+	<td align=right width="50%" style="border: 0; width: 50%" background="transparent" border="0">
         <img alt="productivity" src="assets/undraw_dev_productivity_umsq.svg" height=100 />
     </td>
     <td style="border: 0">
