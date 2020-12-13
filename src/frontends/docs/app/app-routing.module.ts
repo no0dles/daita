@@ -20,6 +20,10 @@ const routes: Routes = [
     loadChildren: () => import('./modules/packages.module').then((m) => m.PackagesModule),
   },
   {
+    path: 'containers',
+    loadChildren: () => import('./modules/containers.module').then((m) => m.ContainersModule),
+  },
+  {
     path: 'adapters',
     loadChildren: () => import('./modules/adapter.module').then((m) => m.AdapterModule),
   },

@@ -54,9 +54,9 @@ export class DocComponent {
     {
       title: 'Containers',
       items: [
-        { title: 'HTTP Server', slug: '/containers/http-server' },
-        { title: 'Websocket Server', slug: '/containers/websocket-server' },
-        { title: 'Auth Server', slug: '/containers/auth-server' },
+        { title: 'HTTP Server', slug: '/containers/http' },
+        { title: 'Websocket Server', slug: '/containers/websocket' },
+        { title: 'Auth Server', slug: '/containers/auth' },
       ],
     },
     {

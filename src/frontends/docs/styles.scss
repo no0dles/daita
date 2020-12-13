@@ -8,6 +8,10 @@ html, body {
   height: 100vh;
 }
 
+div {
+  scroll-behavior: smooth;
+}
+
 .hljs-ln-n {
   padding-right: 8px;
 }

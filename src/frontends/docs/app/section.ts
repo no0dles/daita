@@ -1,5 +1,3 @@
-import { Sql } from '../../../packages/relational/sql/sql';
-
 export type Db = 'postgres' | 'sqlite' | 'mariadb';
 export const allDbs: Db[] = ['postgres', 'sqlite', 'mariadb'];
 
@@ -13,9 +11,11 @@ export interface Section {
 
 export interface Snippet {
   description?: string;
-  code?: Sql<any>;
-  bash?: string;
-  typescript?: string;
-  filename?: string;
-  supportedBy?: Db[];
+  sourceCodes: SnippetSourceCode[];
+}
+
+export interface SnippetSourceCode {
+  title: string;
+  code: string;
+  type: string;
 }

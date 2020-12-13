@@ -1,36 +1,35 @@
-<div class="bg-gray-100 flex flex-col w-screen">
-  <div class="flex items-center flex-shrink-0 px-4 bg-gray-700 h-16 text-white">
-    <img src="assets/logo.svg" class="w-8 mr-4"/>
-    <div>
-      <div class="leading-none text-lg">Daita</div>
-      <div class="text-gray-300 text-sm">Documentation</div>
-    </div>
-    <div class="flex-grow"></div>
-    <div class="flex-shrink-0 mr-4">
-      <a href="https://github.com/no0dles/daita" class="flex items-center">
-        <div>
-          <div class="leading-none text-lg text-right">Github</div>
-          <div class="text-gray-300 text-sm text-right">no0dles/daita</div>
-        </div>
-        <img src="assets/GitHub-Mark-Light-32px.png" alt="github" class="ml-2"/>
-      </a>
+
+<div class="flex items-center flex-shrink-0 px-4 bg-gray-700 h-16 text-white">
+  <img src="assets/logo.svg" class="w-8 mr-4"/>
+  <div>
+    <div class="leading-none text-lg">Daita</div>
+    <div class="text-gray-300 text-sm">Documentation</div>
+  </div>
+  <div class="flex-grow"></div>
+  <div class="flex-shrink-0 mr-4">
+    <a href="https://github.com/no0dles/daita" class="flex items-center">
+      <div>
+        <div class="leading-none text-lg text-right">Github</div>
+        <div class="text-gray-300 text-sm text-right">no0dles/daita</div>
+      </div>
+      <img src="assets/GitHub-Mark-Light-32px.png" alt="github" class="ml-2"/>
+    </a>
+  </div>
+</div>
+
+<div class="flex flex-grow min-h-0">
+  <div class="w-64 bg-white flex-shrink-0 overflow-y-auto">
+    <div class="ml-3 mb-3 bg-white p-4" *ngFor="let navigation of navigations">
+      <div class="text-lg text-gray-700 border-b border-gray-300 mb-1">{{navigation.title}}</div>
+      <a class="text-gray-500 block" [routerLink]="[item.slug]"
+         *ngFor="let item of navigation.items">{{item.title}}</a>
     </div>
   </div>
+  <div class="flex-grow p-5 overflow-y-auto">
+    <app-section *ngFor="let section of sections$ | async" [section]="section" [level]="0"></app-section>
+  </div>
 
-  <div class="flex flex-grow">
-    <div class="w-64 bg-white flex-shrink-0">
-      <div class="ml-3 mb-3 bg-white p-4" *ngFor="let navigation of navigations">
-        <div class="text-lg text-gray-700 border-b border-gray-300 mb-1">{{navigation.title}}</div>
-        <a class="text-gray-500 block" [routerLink]="[item.slug]"
-           *ngFor="let item of navigation.items">{{item.title}}</a>
-      </div>
-    </div>
-    <div class="flex-grow p-5 min-w-0">
-      <app-section *ngFor="let section of sections$ | async" [section]="section" [level]="0"></app-section>
-    </div>
-
-    <div class="w-64 bg-gray-200 leading-relaxed flex-shrink-0 text-gray-700 p-4 invisible md:visible" *ngIf="showSidebar$ | async">
-      <app-section-sidemenu *ngFor="let section of sections$ | async" [section]="section" class="mt-2"></app-section-sidemenu>
-    </div>
+  <div class="w-64 bg-gray-200 leading-relaxed flex-shrink-0 overflow-y-auto text-gray-700 p-4 invisible md:visible" *ngIf="showSidebar$ | async">
+    <app-section-sidemenu *ngFor="let section of sections$ | async" [section]="section" class="mt-2"></app-section-sidemenu>
   </div>
 </div>

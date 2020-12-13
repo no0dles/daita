@@ -1,11 +1,11 @@
-import { Component, HostBinding, Input } from '@angular/core';
+import { Component, HostBinding, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Section } from '../../section';
 
 @Component({
   selector: 'app-section-sidemenu',
   templateUrl: './section-sidemenu.component.html',
 })
-export class SectionSidemenuComponent {
+export class SectionSidemenuComponent implements OnInit, OnChanges {
   @HostBinding('style')
   style = { display: 'block' };
 
@@ -14,4 +14,18 @@ export class SectionSidemenuComponent {
 
   @Input()
   level!: number;
+
+  sectionUrl: string;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.updateUrl();
+  }
+
+  ngOnInit(): void {
+    this.updateUrl();
+  }
+
+  private updateUrl() {
+    this.sectionUrl = `${location.protocol}//${location.host}${location.pathname}#${this.section?.id}`;
+  }
 }

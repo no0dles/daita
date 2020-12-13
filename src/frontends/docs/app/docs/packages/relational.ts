@@ -8,6 +8,7 @@ import { Canton } from '../../../../../examples/mowntain/models/canton';
 import { equal } from '../../../../../packages/relational/sql/operands/comparison/equal/equal';
 import { greaterThan } from '../../../../../packages/relational/sql/operands/comparison/greater-than/greater-than';
 import { concat } from '../../../../../packages/relational/sql/function/string/concat/concat';
+import { getSnippet } from '../../format';
 
 export const relationalSections: Section[] = [
   {
@@ -25,20 +26,14 @@ export const relationalSections: Section[] = [
             id: 'select-field',
             description: '',
             snippets: [
-              {
-                code: {
-                  select: field(Mountain, 'name'),
-                  from: table(Mountain),
-                },
-                supportedBy: allDbs,
-              },
-              {
-                code: {
-                  select: { name: field(Mountain, 'name') },
-                  from: table(Mountain),
-                },
-                supportedBy: allDbs,
-              },
+              getSnippet(allDbs, {
+                select: field(Mountain, 'name'),
+                from: table(Mountain),
+              }),
+              getSnippet(allDbs, {
+                select: { name: field(Mountain, 'name') },
+                from: table(Mountain),
+              }),
             ],
           },
           {
@@ -46,40 +41,31 @@ export const relationalSections: Section[] = [
             id: 'select-all',
             description: '',
             snippets: [
-              {
-                code: {
-                  select: all(),
-                  from: table(Mountain),
-                },
-                supportedBy: allDbs,
-              },
-              {
-                code: {
-                  select: all(Mountain),
-                  from: table(Mountain),
-                },
-                supportedBy: allDbs,
-              },
+              getSnippet(allDbs, {
+                select: all(),
+                from: table(Mountain),
+              }),
+              getSnippet(allDbs, {
+                select: all(Mountain),
+                from: table(Mountain),
+              }),
             ],
           },
           {
             title: 'subquery',
             id: 'select-subquery',
             snippets: [
-              {
-                code: {
-                  select: {
-                    name: field(Mountain, 'name'),
-                    cantonName: subSelect({
-                      select: count(),
-                      from: table(Canton),
-                      where: equal(field(Canton, 'shortname'), field(Mountain, 'cantonShortname')),
-                    }),
-                  },
-                  from: table(Mountain),
+              getSnippet(allDbs, {
+                select: {
+                  name: field(Mountain, 'name'),
+                  cantonName: subSelect({
+                    select: count(),
+                    from: table(Canton),
+                    where: equal(field(Canton, 'shortname'), field(Mountain, 'cantonShortname')),
+                  }),
                 },
-                supportedBy: allDbs,
-              },
+                from: table(Mountain),
+              }),
             ],
           },
         ],
@@ -104,72 +90,57 @@ export const relationalSections: Section[] = [
         title: 'group by',
         id: 'select-group-by',
         snippets: [
-          {
-            code: {
-              select: { canton: field(Mountain, 'cantonShortname'), count: count() },
-              from: table(Mountain),
-              groupBy: field(Mountain, 'cantonShortname'),
-            },
-            supportedBy: allDbs,
-          },
+          getSnippet(allDbs, {
+            select: { canton: field(Mountain, 'cantonShortname'), count: count() },
+            from: table(Mountain),
+            groupBy: field(Mountain, 'cantonShortname'),
+          }),
         ],
       },
       {
         title: 'having by',
         id: 'select-having-by',
         snippets: [
-          {
-            code: {
-              select: { canton: field(Mountain, 'cantonShortname'), count: count() },
-              from: table(Mountain),
-              groupBy: field(Mountain, 'cantonShortname'),
-              having: greaterThan(count(), 10),
-            },
-            supportedBy: allDbs,
-          },
+          getSnippet(allDbs, {
+            select: { canton: field(Mountain, 'cantonShortname'), count: count() },
+            from: table(Mountain),
+            groupBy: field(Mountain, 'cantonShortname'),
+            having: greaterThan(count(), 10),
+          }),
         ],
       },
       {
         title: 'order by',
         id: 'select-order-by',
         snippets: [
-          {
-            code: {
-              select: field(Mountain, 'name'),
-              from: table(Mountain),
-              orderBy: field(Mountain, 'name'),
-            },
-            supportedBy: allDbs,
-          },
+          getSnippet(allDbs, {
+            select: field(Mountain, 'name'),
+            from: table(Mountain),
+            orderBy: field(Mountain, 'name'),
+          }),
         ],
       },
       {
         title: 'limit',
         id: 'select-limit',
         snippets: [
-          {
-            code: {
-              select: all(),
-              from: table(Mountain),
-              limit: 10,
-            },
-            supportedBy: allDbs,
-          },
+          getSnippet(allDbs, {
+            select: all(),
+            from: table(Mountain),
+            limit: 10,
+          }),
         ],
       },
       {
         title: 'offset',
         id: 'select-offset',
         snippets: [
-          {
-            code: {
-              select: all(),
-              from: table(Mountain),
-              limit: 10,
-              offset: 20,
-            },
-            supportedBy: allDbs,
-          },
+          getSnippet(allDbs, {
+            select: all(),
+            from: table(Mountain),
+            limit: 10,
+            offset: 20,
+          }),
         ],
       },
     ],
@@ -191,63 +162,54 @@ export const relationalSections: Section[] = [
         id: 'insert-row',
         title: 'row',
         snippets: [
-          {
-            code: {
-              insert: {
-                id: 'matterhorn',
-                name: 'Matterhorn',
-                cantonShortname: 'VS',
-                elevation: 4478,
-                prominence: 1042,
-              },
-              into: table(Mountain),
+          getSnippet(allDbs, {
+            insert: {
+              id: 'matterhorn',
+              name: 'Matterhorn',
+              cantonShortname: 'VS',
+              elevation: 4478,
+              prominence: 1042,
             },
-            supportedBy: allDbs,
-          },
+            into: table(Mountain),
+          }),
         ],
       },
       {
         id: 'insert-rows',
         title: 'rows',
         snippets: [
-          {
-            code: {
-              insert: [
-                {
-                  id: 'matterhorn',
-                  name: 'Matterhorn',
-                  cantonShortname: 'VS',
-                  elevation: 4478,
-                  prominence: 1042,
-                },
-                { elevation: 4158, prominence: 695, name: 'Jungfrau', id: 'jungfrau', cantonShortname: 'BE' },
-              ],
-              into: table(Mountain),
-            },
-            supportedBy: allDbs,
-          },
+          getSnippet(allDbs, {
+            insert: [
+              {
+                id: 'matterhorn',
+                name: 'Matterhorn',
+                cantonShortname: 'VS',
+                elevation: 4478,
+                prominence: 1042,
+              },
+              { elevation: 4158, prominence: 695, name: 'Jungfrau', id: 'jungfrau', cantonShortname: 'BE' },
+            ],
+            into: table(Mountain),
+          }),
         ],
       },
       {
         id: 'insert-select',
         title: 'select',
         snippets: [
-          {
-            code: {
-              insert: {
-                select: {
-                  id: concat(field(Mountain, 'id'), '-2'),
-                  name: field(Mountain, 'name'),
-                  cantonShortname: field(Mountain, 'cantonShortname'),
-                  elevation: field(Mountain, 'elevation'),
-                  prominence: field(Mountain, 'prominence'),
-                },
-                from: table(Mountain),
+          getSnippet(allDbs, {
+            insert: {
+              select: {
+                id: concat(field(Mountain, 'id'), '-2'),
+                name: field(Mountain, 'name'),
+                cantonShortname: field(Mountain, 'cantonShortname'),
+                elevation: field(Mountain, 'elevation'),
+                prominence: field(Mountain, 'prominence'),
               },
-              into: table(Mountain),
+              from: table(Mountain),
             },
-            supportedBy: allDbs,
-          },
+            into: table(Mountain),
+          }),
         ],
       },
     ],
@@ -256,13 +218,10 @@ export const relationalSections: Section[] = [
     title: 'delete',
     id: 'query-delete',
     snippets: [
-      {
-        code: {
-          delete: table(Mountain),
-          where: equal(field(Mountain, 'id'), 'matterhorn'),
-        },
-        supportedBy: allDbs,
-      },
+      getSnippet(allDbs, {
+        delete: table(Mountain),
+        where: equal(field(Mountain, 'id'), 'matterhorn'),
+      }),
     ],
   },
   {

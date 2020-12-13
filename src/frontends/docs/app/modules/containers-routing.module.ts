@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { DocComponent } from '../components/doc/doc.component';
-import { aboutSections } from '../docs/intro/about';
-import { installationSections } from '../docs/intro/installation';
-import { examplesSections } from '../docs/intro/examples';
+import { authContainerSections } from '../docs/containers/auth-server';
+import { httpContainerSections } from '../docs/containers/http-server';
+import { websocketContainerSections } from '../docs/containers/websocket-server';
 
 @NgModule({
   imports: [
@@ -11,31 +11,31 @@ import { examplesSections } from '../docs/intro/examples';
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'about',
+        redirectTo: 'http',
       },
       {
-        path: 'about',
+        path: 'http',
         component: DocComponent,
         data: {
-          sections: aboutSections,
+          sections: httpContainerSections,
         },
       },
       {
-        path: 'examples',
+        path: 'auth',
         component: DocComponent,
         data: {
-          sections: examplesSections,
+          sections: authContainerSections,
         },
       },
       {
-        path: 'installation',
+        path: 'websocket',
         component: DocComponent,
         data: {
-          sections: installationSections,
+          sections: websocketContainerSections,
         },
       },
     ]),
   ],
   exports: [RouterModule],
 })
-export class IntroRoutingModule {}
+export class ContainersRoutingModule {}
