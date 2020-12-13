@@ -20,7 +20,7 @@ There is also an example project located in the [src/examples](./src/examples) f
 
 <table>
   <tr style="background-color: transparent">
-	<td align=right style="border: 0; width: 50%">
+	<td align=right width="50%" style="border: 0; width: 50%">
         <img alt="productivity" src="assets/undraw_dev_productivity_umsq.svg" height=100 />
     </td>
     <td style="border: 0">
@@ -29,7 +29,7 @@ There is also an example project located in the [src/examples](./src/examples) f
     </td>
   </tr>   
   <tr style="background-color: transparent">
-  	<td align=right style="border: 0; width: 50%">
+  	<td align=right width="50%" style="border: 0; width: 50%">
         Daita was designed from the ground up to be as lightweight as possible
         and have a minimum of external dependencies.</td>
     <td style="border: 0">
@@ -37,7 +37,7 @@ There is also an example project located in the [src/examples](./src/examples) f
     </td>
   </tr> 
   <tr style="background-color: transparent">
-  	<td align=right style="border: 0; width: 50%">
+  	<td align=right width="50%" style="border: 0; width: 50%">
         <img alt="fast" src="assets/undraw_fixing_bugs_w7gi.svg" height=100 />
     </td>
   	<td style="border: 0">
@@ -46,7 +46,7 @@ There is also an example project located in the [src/examples](./src/examples) f
     </td>
   </tr>
   <tr style="background-color: transparent">
-  	<td align=right style="border: 0; width: 50%">
+  	<td align=right width="50%" style="border: 0; width: 50%">
         Take more control over the way it's allowed to execute a query and which data can be accessed.
     </td>
   	<td style="border: 0">
@@ -54,7 +54,7 @@ There is also an example project located in the [src/examples](./src/examples) f
     </td>
   </tr>
   <tr style="background-color: transparent">
-  	<td align=right style="border: 0; width: 50%">
+  	<td align=right width="50%" style="border: 0; width: 50%">
         <img alt="programming" src="assets/undraw_programming_2svr.svg" height=100/>
     </td>
   	<td style="border: 0">
@@ -62,7 +62,7 @@ There is also an example project located in the [src/examples](./src/examples) f
     </td>
   </tr>
   <tr style="background-color: transparent">
-  	<td align=right style="border: 0; width: 50%">
+  	<td align=right width="50%" style="border: 0; width: 50%">
         Generate sql migrations with the powerfull daita cli with support for backward compatible schema changes.
     </td>
   	<td style="border: 0">
