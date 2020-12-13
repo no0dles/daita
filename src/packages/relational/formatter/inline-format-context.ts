@@ -1,4 +1,4 @@
-import { FormatContext } from './format-context';
+import { FormatContext, FormatDataType } from './format-context';
 import { ValueType } from '../sql/operands/value-type';
 
 export class InlineFormatContext implements FormatContext {
@@ -33,7 +33,7 @@ export class InlineFormatContext implements FormatContext {
     return this.baseFormatContext.escape(value);
   }
 
-  getDataType(type: string): string {
+  getDataType(type: FormatDataType): string {
     return this.baseFormatContext.getDataType(type);
   }
 }

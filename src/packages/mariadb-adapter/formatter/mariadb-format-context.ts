@@ -1,5 +1,6 @@
 import { SimpleFormatContext } from '../../relational/formatter/simple-format-context';
 import { ValueType } from '../../relational/sql/operands/value-type';
+import { FormatDataType } from '../../relational/formatter/format-context';
 
 export class MariadbFormatContext extends SimpleFormatContext {
   constructor() {
@@ -15,9 +16,12 @@ export class MariadbFormatContext extends SimpleFormatContext {
     return this.paramKey;
   }
 
-  getDataType(type: string): string {
-    switch (type) {
+  getDataType(options: FormatDataType): string {
+    switch (options.type) {
       case 'string':
+        if (options.size) {
+          return `VARCHAR(${options.size})`;
+        }
         return 'TEXT';
       case 'number':
         return 'DECIMAL(26,10)';
@@ -31,10 +35,6 @@ export class MariadbFormatContext extends SimpleFormatContext {
         return 'JSON';
     }
 
-    if (type.startsWith('VARCHAR(')) {
-      return type;
-    }
-
-    throw new Error(`unknown data type ${type}`);
+    throw new Error(`unknown data type ${options.type}`);
   }
 }

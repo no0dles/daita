@@ -8,6 +8,7 @@ export class RelationalTableFieldDescription {
     public key: string,
     public name: string,
     public type: RelationalTableSchemaTableFieldType,
+    public size: number | undefined,
     public required: boolean,
     public defaultValue: any,
   ) {}

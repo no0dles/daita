@@ -2,11 +2,8 @@ import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migrati
 import { PostgresSql } from '../sql/postgres-sql';
 import { MigrationDescription } from '../../orm/migration/migration-description';
 import { table } from '../../relational/sql/keyword/table/table';
-import { CreateTableSql } from '../../relational/sql/ddl/create-table/create-table-sql';
-import { getTableDescriptionIdentifier } from '../../orm/schema/description/relational-schema-description';
 import { failNever } from '../../common/utils/fail-never';
 import { PostgresTransactionAdapter } from './postgres-transaction-adapter';
-import { Pool } from 'pg';
 import { MigrationPlan } from '../../orm/context/relational-migration-context';
 import { MigrationStorage } from '../../orm/migration/schema/migration-storage';
 import { Resolvable } from '../../common/utils/resolvable';
@@ -35,8 +32,8 @@ export class PostgresMigrationAdapter
   implements RelationalMigrationAdapter<PostgresSql> {
   private readonly storage = new MigrationStorage();
 
-  constructor(pool: Resolvable<Pool>, options: { listenForNotifications: boolean }) {
-    super(pool, options);
+  constructor(connectionString: Resolvable<string>) {
+    super(connectionString);
   }
 
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {

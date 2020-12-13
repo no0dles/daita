@@ -9,7 +9,12 @@ import { InitialMigration } from './migrations/2020-10-01-165516-initial';
 export const schema = new RelationalSchema('test-schema');
 schema.table(Ascent);
 schema.table(AscentPerson, { key: ['ascentId', 'personId'] });
-schema.table(Canton, { key: ['shortname'] });
+schema.table(Canton, {
+  key: ['shortname'],
+  columns: {
+    shortname: { size: 2 },
+  },
+});
 schema.table(Mountain);
 schema.table(Person);
 schema.migration(InitialMigration);

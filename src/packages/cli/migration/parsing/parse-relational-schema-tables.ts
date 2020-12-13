@@ -53,7 +53,7 @@ export function parseRelationalSchemaTables(
       tableDescription.schema,
     );
 
-    parseRelationalSchemaTableFields(table, classArgument);
+    parseRelationalSchemaTableFields(table, classArgument, optionsObject);
     parseRelationalSchemaTablePrimaryKeys(table, optionsObject);
 
     if (optionsObject) {

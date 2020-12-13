@@ -27,7 +27,7 @@ import { Client } from '../../relational/client/client';
 export class MariadbRelationalMigrationAdapter
   extends MariadbRelationalTransactionAdapter
   implements RelationalMigrationAdapter<MariadbSql> {
-  private storage = new MigrationStorage({ idType: 'VARCHAR(255)' });
+  private storage = new MigrationStorage({ idType: { type: 'string', size: 255 } });
 
   async applyMigration(schema: string, migrationPlans: MigrationPlan[]): Promise<void> {
     await this.transaction(async (trx) => {

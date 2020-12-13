@@ -1,12 +1,14 @@
 import { CounterFormatContext } from '../../relational/formatter/counter-format-context';
+import { FormatDataType } from '../../relational/formatter/format-context';
 
 export class PostgresFormatContext extends CounterFormatContext {
   constructor() {
     super('$');
   }
 
-  getDataType(type: string): string {
-    switch (type) {
+  getDataType(options: FormatDataType): string {
+    // TODO support size
+    switch (options.type) {
       case 'string':
         return 'VARCHAR';
       case 'number':
@@ -27,6 +29,6 @@ export class PostgresFormatContext extends CounterFormatContext {
         return 'uuid';
     }
 
-    throw new Error(`unknown data type ${type}`);
+    throw new Error(`unknown data type ${options.type}`);
   }
 }

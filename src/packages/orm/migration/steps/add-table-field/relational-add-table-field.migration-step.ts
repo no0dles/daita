@@ -9,6 +9,7 @@ export interface RelationalAddTableFieldMigrationStep {
   type: RelationalTableSchemaTableFieldType;
   required: boolean;
   defaultValue?: any;
+  size?: number;
 }
 
 export const isAddTableFieldStep = (val: MigrationStep): val is RelationalAddTableFieldMigrationStep =>

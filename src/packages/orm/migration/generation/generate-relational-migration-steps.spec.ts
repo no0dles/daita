@@ -234,6 +234,7 @@ interface ExpectedSchema {
           required?: boolean;
           type: RelationalTableSchemaTableFieldType;
           defaultValue?: any;
+          size?: number;
         };
       };
       indices?: {
@@ -259,6 +260,7 @@ function createSchema(schema: ExpectedSchema) {
           fieldKey,
           fieldKey,
           field.type,
+          field.size,
           field.required ?? true,
           field.defaultValue,
         );

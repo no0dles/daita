@@ -50,6 +50,7 @@ export function parseRelationalSchemaTableReferences(
           key,
           key,
           primaryKey.type,
+          undefined,
           isRequiredProperty(property),
           undefined,
         );

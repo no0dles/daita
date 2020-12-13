@@ -32,10 +32,11 @@ import { SubSelectFormatter } from '../../packages/relational/sql/dml/select/sub
 import { IsNullFormatter } from '../../packages/relational/sql/operands/comparison/is-null/is-null-formatter';
 import { UpdateFormatter } from '../../packages/relational/sql/dml/update/update-formatter';
 import { InFormatter } from '../../packages/relational/sql/operands/comparison/in/in-formatter';
+import { FormatDataType } from '../../packages/relational/formatter/format-context';
 
 export class TestFormatContext extends CounterFormatContext {
-  getDataType(type: string): string {
-    return type;
+  getDataType(options: FormatDataType): string {
+    return options.type;
   }
 }
 

@@ -12,4 +12,8 @@ export class AstLiteralType implements AstNode {
   get isNumber() {
     return !!isKind(this.node.literal, SyntaxKind.NumericLiteral);
   }
+
+  get isNull() {
+    return !!isKind(this.node.literal, SyntaxKind.NullKeyword);
+  }
 }

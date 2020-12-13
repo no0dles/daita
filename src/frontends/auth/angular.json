@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "docs": {
+    "auth": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -20,7 +20,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "../../../dist/frontends/docs",
+            "outputPath": "../../../dist/frontends/auth",
             "index": "index.html",
             "main": "main.ts",
             "polyfills": "polyfills.ts",
@@ -69,16 +69,16 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "docs:build"
+            "browserTarget": "auth:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "docs:build:production"
+              "browserTarget": "auth:build:production"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "docs"
+  "defaultProject": "auth"
 }

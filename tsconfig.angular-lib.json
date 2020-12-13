@@ -1,9 +1,0 @@
-{
-  "extends": "./src/frontends/docs/tsconfig.angular.json",
-  "compilerOptions": {
-    "declarationMap": false
-  },
-  "angularCompilerOptions": {
-    "enableIvy": false
-  }
-}

@@ -21,7 +21,7 @@ export class AlterTableAddColumnFormatter implements FormatHandle<AlterTableAddC
   handle(param: AlterTableAddColumnSql, ctx: FormatContext, formatter: Formatter): string {
     return `ALTER TABLE ${formatter.format(param.alterTable, ctx)} ADD COLUMN ${ctx.escape(
       param.add.column,
-    )} ${ctx.getDataType(param.add.type)}`;
+    )} ${ctx.getDataType({ type: param.add.type, size: param.add.size })}`;
   }
 }
 

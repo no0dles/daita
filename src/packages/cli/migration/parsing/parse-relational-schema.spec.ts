@@ -77,6 +77,7 @@ describe('parse-relational-schema', () => {
         type: 'string',
         defaultValue: '1234',
         name: 'password',
+        size: 64,
       },
       {
         required: true,
@@ -274,6 +275,7 @@ function shouldHaveTable(relationalSchema: RelationalSchemaDescription, options:
         expect(field.defaultValue).toEqual(fieldOptions.defaultValue);
         expect(field.type).toEqual(fieldOptions.type);
         expect(field.name).toEqual(fieldOptions.name);
+        expect(field.size).toEqual(fieldOptions.size);
       });
     }
 
@@ -306,4 +308,5 @@ interface ExpectedTableField {
   type: string;
   required: boolean;
   defaultValue: any;
+  size?: number;
 }

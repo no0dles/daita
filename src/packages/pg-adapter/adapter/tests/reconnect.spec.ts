@@ -2,24 +2,12 @@ import { PostgresTransactionAdapter } from '../postgres-transaction-adapter';
 import { getPostgresDb } from '../../testing/postgres-test-adapter';
 import { ConnectionError } from '../../../relational/error/connection-error';
 import { RelationalDataAdapter } from '../../../relational/adapter/relational-data-adapter';
-import { Pool } from 'pg';
 import { Resolvable } from '../../../common/utils/resolvable';
 
 describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
   it('should handle disconnect after initial connection', async () => {
     const db = await getPostgresDb();
-    const adapter = new PostgresTransactionAdapter(
-      new Resolvable<Pool>(
-        new Pool({
-          connectionString: db.connectionString,
-          connectionTimeoutMillis: 10000,
-          keepAlive: true,
-          max: 20,
-          idleTimeoutMillis: 10000,
-        }),
-      ),
-      { listenForNotifications: false },
-    );
+    const adapter = new PostgresTransactionAdapter(new Resolvable<string>(db.connectionString));
     try {
       await testConnection(adapter);
       await db.stop();
@@ -40,18 +28,7 @@ describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
     const db = await getPostgresDb();
     await db.stop();
 
-    const adapter = new PostgresTransactionAdapter(
-      new Resolvable<Pool>(
-        new Pool({
-          connectionString: db.connectionString,
-          connectionTimeoutMillis: 10000,
-          keepAlive: true,
-          max: 20,
-          idleTimeoutMillis: 10000,
-        }),
-      ),
-      { listenForNotifications: false },
-    );
+    const adapter = new PostgresTransactionAdapter(new Resolvable<string>(db.connectionString));
     try {
       try {
         await testConnection(adapter);

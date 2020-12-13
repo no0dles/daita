@@ -3,7 +3,6 @@ import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/rela
 import { PostgresSql } from '../sql/postgres-sql';
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import { PostgresMigrationAdapter } from '../adapter/postgres-migration-adapter';
-import { Pool } from 'pg';
 import { getRandomTestPort } from '../../node/random-port';
 import { execCommand, runContainer } from '../../node/docker';
 import { sleep } from '../../common/utils/sleep';
@@ -17,9 +16,7 @@ export interface PostgresDb {
   start(): Promise<void>;
 }
 
-export interface PostgresTestAdapterOptions {
-  listenForNotifications?: boolean;
-}
+export interface PostgresTestAdapterOptions {}
 
 class PostgresTestAdapterImplementation
   implements
@@ -32,22 +29,13 @@ class PostgresTestAdapterImplementation
     const poolResolvable = new Resolvable(
       async () => {
         const db = await dbResolvable.get();
-        return new Pool({
-          connectionString: db.connectionString,
-          connectionTimeoutMillis: 10000,
-          keepAlive: true,
-          max: 20,
-          idleTimeoutMillis: 10000,
-        });
+        return db.connectionString;
       },
-      async (pool) => {
-        pool?.end();
+      async () => {
         await dbResolvable.close();
       },
     );
-    return new PostgresMigrationAdapter(poolResolvable, {
-      listenForNotifications: options.listenForNotifications || false,
-    });
+    return new PostgresMigrationAdapter(poolResolvable);
   }
 
   supportsQuery<S>(
@@ -78,7 +66,7 @@ export async function getPostgresDb(): Promise<PostgresDb> {
       isReady = await execCommand(container, ['pg_isready']);
     }
     //TODO figure out why connect does not work after pg_isready
-    await sleep(200);
+    await sleep(1000);
   }
 
   await awaitForReady();

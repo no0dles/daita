@@ -27,11 +27,11 @@ export const isAlterTableDropConstraintSql = (val: any): val is AlterTableDropCo
 
 export interface AlterTableAddColumnSql {
   alterTable: TableDescription<any>;
-  add: { column: string; type: string };
+  add: { column: string; type: string; size?: number };
 }
 
 export const isAlterTableAddColumnSql = (val: any): val is AlterTableAddColumnSql =>
-  isExactKind<AlterTableAddColumnSql>(val, ['alterTable', 'add']) && isExactKind(val.add, ['column', 'type']);
+  isExactKind<AlterTableAddColumnSql>(val, ['alterTable', 'add']) && isKind(val.add, ['column', 'type']);
 
 export interface AlterTableAddForeignKeySql<T> {
   alterTable: TableDescription<any>;

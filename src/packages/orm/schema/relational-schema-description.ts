@@ -36,6 +36,7 @@ export function getSchemaDescription(
             step.fieldName,
             fieldName,
             step.type,
+            step.size,
             step.required,
             step.defaultValue,
           ),

@@ -6,10 +6,11 @@ import { RelationalRawResult } from '../../relational/adapter/relational-raw-res
 import { RelationalDataAdapter } from '../../relational/adapter/relational-data-adapter';
 import { createLogger } from '../../common/utils/logger';
 import { Resolvable } from '../../common/utils/resolvable';
+import { ConnectionError } from '../../relational/error/connection-error';
 
-export class PostgresDataAdapter implements RelationalDataAdapter {
+export class PostgresDataAdapter<TClient extends PoolClient | Pool> implements RelationalDataAdapter {
   protected readonly logger = createLogger({ package: 'pg-adapter' });
-  constructor(private client: Resolvable<PoolClient> | Resolvable<Pool>) {
+  constructor(protected client: Resolvable<TClient>) {
     types.setTypeParser(1700, (val) => parseFloat(val));
     types.setTypeParser(701, (val) => parseFloat(val));
     types.setTypeParser(20, (val) => parseInt(val));
@@ -55,11 +56,15 @@ export class PostgresDataAdapter implements RelationalDataAdapter {
         }
         throw new DuplicateKeyError(e, sql, values, e.schema, e.table, e.constraint, obj);
       }
+      if (e.errno === -111) {
+        throw new ConnectionError('TODO', e); // TODO change after db connection string parse rewrite
+      }
       if (e.code === '42P01') {
         const regex = /.+"(?<schema>.*?)\.?(?<relation>.*?)" does not exist/g;
         const groups = regex.exec(e.message)?.groups || {};
         throw new RelationDoesNotExistsError(e, sql, values, groups.schema, groups.relation);
       }
+      console.log(JSON.stringify(e));
       throw new UnknownError(e, sql, values);
     }
   }

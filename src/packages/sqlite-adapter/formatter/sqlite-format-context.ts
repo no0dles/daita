@@ -1,5 +1,6 @@
 import { SimpleFormatContext } from '../../relational/formatter/simple-format-context';
 import { ValueType } from '../../relational/sql/operands/value-type';
+import { FormatDataType } from '../../relational/formatter/format-context';
 
 export class SqliteFormatContext extends SimpleFormatContext {
   constructor() {
@@ -15,8 +16,9 @@ export class SqliteFormatContext extends SimpleFormatContext {
     return this.paramKey;
   }
 
-  getDataType(type: string): string {
-    switch (type) {
+  getDataType(options: FormatDataType): string {
+    // TODO support size
+    switch (options.type) {
       case 'string':
         return 'TEXT';
       case 'number':
@@ -35,6 +37,6 @@ export class SqliteFormatContext extends SimpleFormatContext {
         return 'TEXT';
     }
 
-    throw new Error(`unknown data type ${type}`);
+    throw new Error(`unknown data type ${options.type}`);
   }
 }

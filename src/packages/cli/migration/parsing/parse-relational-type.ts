@@ -36,6 +36,8 @@ export function parseRelationalType(type: AstType): RelationalTableSchemaTableFi
       return 'number';
     } else if (type.isString) {
       return 'string';
+    } else if (type.isNull) {
+      throw new AstError(type.node, 'unexpected null type');
     } else {
       throw new AstError(type.node, 'unknown literal type');
     }
@@ -61,7 +63,10 @@ export function parseRelationalType(type: AstType): RelationalTableSchemaTableFi
     const relationalTypes: RelationalTableSchemaTableFieldType[] = [];
 
     for (const unionType of type.types) {
-      if (unionType instanceof AstKeywordType && (unionType.isNull || unionType.isUndefined)) {
+      if (
+        (unionType instanceof AstKeywordType && (unionType.isNull || unionType.isUndefined)) ||
+        (unionType instanceof AstLiteralType && unionType.isNull)
+      ) {
         continue;
       }
 
@@ -98,6 +103,10 @@ export function isRequiredProperty(property: AstClassDeclarationProp) {
     for (const subType of propertyType.types) {
       if (subType instanceof AstKeywordType) {
         if (subType.isNull || subType.isUndefined) {
+          return false;
+        }
+      } else if (subType instanceof AstLiteralType) {
+        if (subType.isNull) {
           return false;
         }
       }

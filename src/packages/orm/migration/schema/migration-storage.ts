@@ -8,11 +8,16 @@ import { equal } from '../../../relational/sql/operands/comparison/equal/equal';
 import { asc } from '../../../relational/sql/keyword/asc/asc';
 import { Migrations } from './migrations';
 import { MigrationSteps } from './migration-steps';
+import { FormatDataType } from '../../../relational/formatter/format-context';
+
+export interface MigrationStorageOptions {
+  idType: FormatDataType;
+}
 
 export class MigrationStorage {
   private initalizedSchema = false;
 
-  constructor(private options = { idType: 'string' }) {}
+  constructor(private options: MigrationStorageOptions = { idType: { type: 'string' } }) {}
 
   hasInitialized() {
     return this.initalizedSchema;
@@ -31,10 +36,11 @@ export class MigrationStorage {
       createTable: table(Migrations),
       ifNotExists: true,
       columns: [
-        { name: 'id', type: this.options.idType, notNull: true, primaryKey: true },
+        { name: 'id', type: this.options.idType.type, size: this.options.idType.size, notNull: true, primaryKey: true },
         {
           name: 'schema',
-          type: this.options.idType,
+          type: this.options.idType.type,
+          size: this.options.idType.size,
           notNull: true,
           primaryKey: true,
         },
@@ -46,13 +52,15 @@ export class MigrationStorage {
       columns: [
         {
           name: 'migrationId',
-          type: this.options.idType,
+          type: this.options.idType.type,
+          size: this.options.idType.size,
           notNull: true,
           primaryKey: true,
         },
         {
           name: 'migrationSchema',
-          type: this.options.idType,
+          type: this.options.idType.type,
+          size: this.options.idType.size,
           notNull: true,
           primaryKey: true,
         },

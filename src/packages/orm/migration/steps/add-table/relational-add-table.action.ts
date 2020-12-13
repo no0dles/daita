@@ -20,6 +20,7 @@ export async function addTableAction(
       .map((columnStep) => ({
         name: columnStep.fieldName,
         type: columnStep.type,
+        size: columnStep.size,
         primaryKey: migration.steps.some(
           (s) =>
             s.kind === 'add_table_primary_key' &&

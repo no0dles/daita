@@ -56,10 +56,15 @@ export function getOrderedNpmPackages(): PackageInfo[] {
   });
 }
 
+export const skipPackages = ['websocket-server', 'websocket-adapter'];
 export function* getNpmPackages(): Iterable<PackageInfo> {
   const packagesDir = path.join(__dirname, '../../dist/packages');
 
   for (const packageName of fs.readdirSync(packagesDir)) {
+    if (skipPackages.indexOf(packageName) >= 0) {
+      continue;
+    }
+
     yield {
       path: path.join(packagesDir, packageName),
       name: packageName,

@@ -1,4 +1,4 @@
-import { FormatContext } from './format-context';
+import { FormatContext, FormatDataType } from './format-context';
 import { ValueType } from '../sql/operands/value-type';
 
 export abstract class CounterFormatContext implements FormatContext {
@@ -24,5 +24,5 @@ export abstract class CounterFormatContext implements FormatContext {
     return `"${value}"`;
   }
 
-  abstract getDataType(type: string): string;
+  abstract getDataType(options: FormatDataType): string;
 }

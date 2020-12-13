@@ -90,17 +90,10 @@ class PostgresAdapterImplementation
     options: PostgresAdapterOptions,
   ): RelationalTransactionAdapter<PostgresSql> & RelationalMigrationAdapter<PostgresSql> {
     return new PostgresMigrationAdapter(
-      new Resolvable<Pool>(async () => {
+      new Resolvable<string>(async () => {
         const connectionString = await prepareDatabase(options);
-        return new Pool({
-          connectionString: connectionString,
-          connectionTimeoutMillis: 10000,
-          keepAlive: true,
-          max: 20,
-          idleTimeoutMillis: 10000,
-        });
+        return connectionString;
       }),
-      { listenForNotifications: options?.listenForNotifications ?? false },
     );
   }
 

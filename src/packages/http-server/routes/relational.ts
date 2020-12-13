@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { validateExecBody } from '../middleswares/validate-body.middleware';
-import { ContextManager, TransactionContextManager } from '../../http-server-common/context-manager';
+import { ContextManager } from '../../http-server-common/context-manager';
 import {
   AppOptions,
   HttpServerTransactionOptions,
@@ -8,6 +8,7 @@ import {
 } from '../../http-server-common/app-options';
 import { TransactionManager } from '../../http-server-common/transaction-manager';
 import { getRequestContext } from '../get-request-context';
+import { TransactionContextManager } from '../../http-server-common/transaction-context-manager';
 
 export function relationalRoute(options: AppOptions) {
   const router = relationalDataRoute(options);

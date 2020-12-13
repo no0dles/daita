@@ -16,7 +16,7 @@ export class BaseTable {
 export class User extends BaseTable {
   id!: UUID;
   username!: string;
-  password: string = '1234';
+  password = '1234';
   lastLogin!: Date;
   userType = UserType.Local;
   userStatus!: UserStatus;
@@ -71,6 +71,11 @@ schema.table(User, {
     username: {
       unique: true,
       columns: ['username'],
+    },
+  },
+  columns: {
+    password: {
+      size: 64,
     },
   },
 });

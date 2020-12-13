@@ -1,4 +1,5 @@
 import { SimpleFormatContext } from './simple-format-context';
+import { FormatDataType } from './format-context';
 
 describe('simple-format-context', () => {
   class TestContext extends SimpleFormatContext {
@@ -6,8 +7,8 @@ describe('simple-format-context', () => {
       super('?', '`');
     }
 
-    getDataType(type: string): string {
-      return type;
+    getDataType(options: FormatDataType): string {
+      return options.type;
     }
   }
 

@@ -16,8 +16,6 @@
     "declaration": true,
     "declarationMap": false,
     "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "incremental": true,
     "sourceMap": false,
     "composite": true,
@@ -29,6 +27,6 @@
     "node_modules",
     "dist",
     "src/tests",
-    "src/experimental"
+    "src/frontends"
   ]
 }
