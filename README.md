@@ -18,9 +18,9 @@ There is also an example project located in the [src/examples](./src/examples) f
 
 ## Why use daita
 
-<table>
+<table border="0">
   <tr style="background-color: transparent">
-	<td align=right width="50%" style="border: 0; width: 50%">
+	<td align=right width="50%" style="border: 0; width: 50%" background="transparent">
         <img alt="productivity" src="assets/undraw_dev_productivity_umsq.svg" height=100 />
     </td>
     <td style="border: 0">
@@ -28,7 +28,7 @@ There is also an example project located in the [src/examples](./src/examples) f
         ahead check out our demos and docs.
     </td>
   </tr>   
-  <tr style="background-color: transparent">
+  <tr style="background-color: transparent" background="transparent">
   	<td align=right width="50%" style="border: 0; width: 50%">
         Daita was designed from the ground up to be as lightweight as possible
         and have a minimum of external dependencies.</td>
