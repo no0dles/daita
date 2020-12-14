@@ -11,17 +11,21 @@ const keyStores: { [key: string]: Promise<jose.JWKS.KeyStore> } = {};
 function getKeystore(userPoolId: string) {
   if (!keyStores[userPoolId]) {
     keyStores[userPoolId] = new Promise((resolve, reject) => {
-      const keystore = new jose.JWKS.KeyStore([]);
-      const keyPath = path.join(process.cwd(), 'keys');
-      if (!fs.existsSync(keyPath)) {
-        return resolve(keystore);
+      try {
+        const keystore = new jose.JWKS.KeyStore([]);
+        const keyPath = path.join(process.cwd(), 'keys');
+        if (!fs.existsSync(keyPath)) {
+          return resolve(keystore);
+        }
+        for (const keyFile of fs.readdirSync(keyPath)) {
+          const content = fs.readFileSync(path.join(keyPath, keyFile));
+          const key = jose.JWK.asKey(content);
+          keystore.add(key);
+        }
+        resolve(keystore);
+      } catch (e) {
+        reject(e);
       }
-      for (const keyFile of fs.readdirSync(keyPath)) {
-        const content = fs.readFileSync(path.join(keyPath, keyFile));
-        const key = jose.JWK.asKey(content);
-        keystore.add(key);
-      }
-      resolve(keystore);
     });
   }
   return keyStores[userPoolId];

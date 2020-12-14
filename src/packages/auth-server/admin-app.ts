@@ -16,7 +16,7 @@ export function createAuthAdminApp(context: TransactionContext<any>, port: numbe
   const adminApp = express();
   const logger = createLogger({ package: 'auth-server' });
 
-  adminApp.use(helmet());
+  // adminApp.use(helmet());
   adminApp.use(bodyParser.json());
 
   if (process.env.NODE_ENV !== 'production') {
@@ -45,7 +45,7 @@ export function createAuthAdminApp(context: TransactionContext<any>, port: numbe
   adminApp.use('/admin', express.static(path.join(process.cwd(), 'www')));
   adminApp.get('/admin/*', (req, res, next) => {
     if (req.accepts('html')) {
-      return res.sendFile(path.join(process.cwd(), 'www/dist/web/index.html'));
+      return res.sendFile(path.join(process.cwd(), 'www/index.html'));
     }
 
     next();

@@ -1,6 +1,8 @@
 import { UserPool } from './user-pool';
 
 export class User {
+  static table = 'User';
+
   username!: string;
   email?: string;
   emailVerified?: boolean;

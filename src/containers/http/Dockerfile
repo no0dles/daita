@@ -1,4 +1,4 @@
-FROM node:14-alpine as build
+FROM node:13-alpine as build
 
 WORKDIR /build
 COPY package.json .
@@ -13,7 +13,7 @@ COPY src/packages src/packages
 RUN npx tsc
 
 ###################################
-FROM node:14-alpine as runtime
+FROM node:13-alpine as runtime
 
 WORKDIR /app
 COPY src/containers/http/package.json .

@@ -1,6 +1,8 @@
 import { User } from './user';
 
 export class UserToken {
+  static table = 'UserToken';
+
   id!: string;
   user!: User;
   userUsername!: string;

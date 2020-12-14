@@ -4,7 +4,7 @@ import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/rela
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import path from 'path';
 import os from 'os';
-import fs from 'fs/promises';
+import { promises as fs } from 'fs';
 import { adapter } from '../index';
 import { randomString } from '../../common/utils/random-string';
 import { SqliteRelationalMigrationAdapter } from '../adapter/sqlite-relational-migration-adapter';

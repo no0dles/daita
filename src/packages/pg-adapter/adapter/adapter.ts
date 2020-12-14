@@ -1,4 +1,3 @@
-import { Pool } from 'pg';
 import { dropDatabase, ensureDatabaseExists } from '../postgres.util';
 import {
   RelationalDataAdapterImplementation,

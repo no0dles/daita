@@ -9,6 +9,7 @@ import { all } from '../../packages/relational/sql/keyword/all/all';
 import { table } from '../../packages/relational/sql/keyword/table/table';
 import { equal } from '../../packages/relational/sql/operands/comparison/equal/equal';
 import { createLogger } from '../../packages/common/utils/logger';
+import { UserPoolUser } from '../../packages/auth-server/models/user-pool-user';
 
 export async function seedAuthDefaults(client: Client<any>) {
   const logger = createLogger({ container: 'auth-pg', task: 'seed' });
@@ -48,6 +49,13 @@ export async function seedAuthDefaults(client: Client<any>) {
         userPoolId: 'admin',
         disabled: false,
         password: await hashPassword(password),
+      },
+    });
+    await client.insert({
+      into: table(UserPoolUser),
+      insert: {
+        userPoolId: 'admin',
+        userUsername: 'admin',
       },
     });
     logger.info(`created admin user with password \"${password}\"`);

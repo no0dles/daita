@@ -8,6 +8,8 @@ const dbUrl = process.env.DATABASE_URL || './http.db';
 const adapter: RelationalMigrationAdapterImplementation<any, any> = dbUrl.startsWith('postgres')
   ? pgAdapter
   : sqliteAdapter;
+
+console.log(`use ${adapter} adapter with connectionString ${dbUrl}`); // TODO redact pw, use logger
 run(
   getContext(adapter, {
     connectionString: process.env.DATABASE_URL!,

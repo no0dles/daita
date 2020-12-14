@@ -1,4 +1,6 @@
 export class UserPool {
+  static table = 'UserPool';
+
   id!: string;
   name!: string;
   allowRegistration?: boolean;

@@ -2,6 +2,8 @@ import { User } from './user';
 import { Role } from './role';
 
 export class UserRole {
+  static table = 'UserRole';
+
   user!: User;
   userUsername!: string;
   role!: Role;

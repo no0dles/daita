@@ -1,4 +1,4 @@
-FROM node:14-alpine AS api
+FROM node:13-alpine AS api
 
 WORKDIR /app
 COPY package-lock.json .
@@ -19,7 +19,7 @@ ENV NODE_ENV production
 RUN npx ng build --prod --base-href /admin/ auth
 
 ###############
-FROM node:14-alpine
+FROM node:13-alpine
 
 ENV NODE_ENV=production
 
@@ -30,6 +30,7 @@ RUN npm install --production
 COPY --from=api /app/dist/containers/auth containers/auth
 COPY --from=api /app/dist/packages packages
 COPY --from=api /app/dist/frontends/auth /app/www
+RUN mkdir /app/keys && chown node:node /app/keys
 
 USER node
 CMD ["node", "containers/auth/index.js"]

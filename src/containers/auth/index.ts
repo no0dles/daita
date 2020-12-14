@@ -19,6 +19,8 @@ const adapter: RelationalMigrationAdapterImplementation<any, any> = dbUrl.starts
   : dbUrl.startsWith('mariadb')
   ? mariadbAdapter
   : sqliteAdapter;
+logger.info(`use ${adapter} adapter with connectionString ${dbUrl}`); // TODO redact pw
+
 const ctx = getContext(adapter, {
   schema: authSchema,
   connectionString: dbUrl,

@@ -1,6 +1,6 @@
 import { publishNpmPackages } from './npm';
 import { getNpmRegistry, NpmRegistry } from '../testing/npm-registry';
-import fs from 'fs/promises';
+import { promises as fs } from 'fs';
 import path from 'path';
 import { setupEnv } from '../testing/cli/utils.test';
 import { shell } from '../packages/node/command';
