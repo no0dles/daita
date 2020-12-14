@@ -4,7 +4,7 @@ import { adapter as sqliteAdapter } from '../../packages/sqlite-adapter';
 import { getContext } from '../../packages/orm/context/get-context';
 import { RelationalMigrationAdapterImplementation } from '../../packages/orm/adapter/relational-migration-adapter-implementation';
 
-const dbUrl = process.env.DATABASE_URL || './auth.db';
+const dbUrl = process.env.DATABASE_URL || './http.db';
 const adapter: RelationalMigrationAdapterImplementation<any, any> = dbUrl.startsWith('postgres')
   ? pgAdapter
   : sqliteAdapter;

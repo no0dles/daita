@@ -36,5 +36,8 @@ ctx
     application.close(err);
   });
 
-application.attach(createAuthApp(ctx, 4000));
-application.attach(createAuthAdminApp(ctx, 5000));
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 4000;
+const ADMIN_PORT = process.env.ADMIN_PORT ? parseInt(process.env.ADMIN_PORT) : 5000;
+
+application.attach(createAuthApp(ctx, PORT));
+application.attach(createAuthAdminApp(ctx, ADMIN_PORT));

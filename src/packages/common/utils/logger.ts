@@ -56,12 +56,21 @@ const plainFormatter: LogFormatter = {
     }
   },
 };
+
+function padLeft(val: number, length = 2) {
+  return val.toString().padStart(length, '0');
+}
 const prettyFormatter: LogFormatter = {
   log(msg: LogMessage) {
     console.log(
-      `[${msg.time.getDay()}.${msg.time.getMonth()}.${msg.time.getFullYear()} ${msg.time.getHours()}:${msg.time.getMinutes()}:${msg.time.getSeconds()}.${msg.time.getMilliseconds()}] ${
-        msg.level
-      }: ${msg.message}`,
+      `[${padLeft(msg.time.getDay())}.${padLeft(msg.time.getMonth())}.${msg.time.getFullYear()} ${padLeft(
+        msg.time.getHours(),
+      )}:${padLeft(msg.time.getMinutes())}:${padLeft(msg.time.getSeconds())}.${padLeft(
+        msg.time.getMilliseconds(),
+        3,
+      )}] [${Object.keys(msg.props)
+        .map((k) => `${k}=${msg.props[k]}`)
+        .join(', ')}] ${msg.level}: ${msg.message}`,
     );
   },
 };

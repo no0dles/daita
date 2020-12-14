@@ -6,6 +6,7 @@ export interface Closable {
 export class Application {
   private logger = createLogger({ package: 'node' });
   private closed = false;
+  private shutdownTimeout: any | undefined;
   private instances: Closable[] = [];
 
   constructor() {
@@ -18,11 +19,21 @@ export class Application {
         process.exit(1);
       });
 
-    process.on('SIGTERM', () => {
-      setTimeout(() => {
+    const handleShutdown = () => {
+      if (!this.shutdownTimeout) {
+        this.logger.info('requested shutdown, schedule shutdown in 15 seconds, press Ctrl-C again to skip');
+        this.shutdownTimeout = setTimeout(() => {
+          this.close();
+        }, 15000);
+      } else {
+        clearTimeout(this.shutdownTimeout);
+        this.logger.info('force shutdown');
         this.close();
-      }, 15000);
-    });
+      }
+    };
+
+    process.on('SIGINT', handleShutdown);
+    process.on('SIGTERM', handleShutdown);
   }
 
   attach(instance: Closable): void;

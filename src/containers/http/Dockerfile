@@ -1,4 +1,4 @@
-FROM node:13-alpine as build
+FROM node:14-alpine as build
 
 WORKDIR /build
 COPY package.json .
@@ -13,12 +13,15 @@ COPY src/packages src/packages
 RUN npx tsc
 
 ###################################
-FROM node:13-alpine as runtime
+FROM node:14-alpine as runtime
 
 WORKDIR /app
 COPY src/containers/http/package.json .
+ENV NODE_ENV=production
 RUN npm install --production
 
 COPY --from=build /build/dist/containers/http containers/http
 COPY --from=build /build/dist/packages packages
+
+USER node
 CMD ["node", "containers/http/index.js"]
