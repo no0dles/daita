@@ -42,7 +42,7 @@ export function createAuthAdminApp(context: TransactionContext<any>, port: numbe
     return res.redirect('/admin');
   });
 
-  adminApp.use('/admin', express.static(path.join(process.cwd(), 'www/dist/web')));
+  adminApp.use('/admin', express.static(path.join(process.cwd(), 'www')));
   adminApp.get('/admin/*', (req, res, next) => {
     if (req.accepts('html')) {
       return res.sendFile(path.join(process.cwd(), 'www/dist/web/index.html'));

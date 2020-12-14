@@ -29,7 +29,7 @@ RUN npm install --production
 
 COPY --from=api /app/dist/containers/auth containers/auth
 COPY --from=api /app/dist/packages packages
-COPY --from=api /app/dist/frontends/auth /app/www/dist
+COPY --from=api /app/dist/frontends/auth /app/www
 
 USER node
 CMD ["node", "containers/auth/index.js"]
