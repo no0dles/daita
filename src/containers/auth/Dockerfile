@@ -32,4 +32,4 @@ COPY --from=api /app/dist/packages packages
 COPY --from=api /app/dist/frontends/auth /app/www/dist
 
 USER node
-CMD ["node", "containers/auth-pg/index.js"]
+CMD ["node", "containers/auth/index.js"]
