@@ -13,5 +13,6 @@ console.log(`use ${adapter} adapter with connectionString ${dbUrl}`); // TODO re
 run(
   getContext(adapter, {
     connectionString: process.env.DATABASE_URL!,
+    schemaName: process.env.SCHEMA_NAME || 'default',
   }),
 );

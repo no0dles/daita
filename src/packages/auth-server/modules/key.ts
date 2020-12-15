@@ -1,9 +1,9 @@
 import { UserPoolAlgorithm } from '../models/user-pool';
 import * as crypto from 'crypto';
-import * as jose from 'jose';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
+import * as jose from 'jose';
 import { Defer } from '../../common/utils/defer';
 
 const keyStores: { [key: string]: Promise<jose.JWKS.KeyStore> } = {};

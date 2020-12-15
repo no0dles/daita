@@ -110,8 +110,8 @@ describe('http-server/app', () => {
     const res = await httpGet(httpApp, '', {
       headers: { Authorization: 'Bearer asd' },
     });
-    expect(res.statusCode).toEqual(401);
-    expect(res.body).toEqual({ message: 'jwt malformed' });
+    expect(res.statusCode).toEqual(400);
+    expect(res.body).toEqual({ message: 'invalid token format' });
   });
 
   it('should login with token', async () => {

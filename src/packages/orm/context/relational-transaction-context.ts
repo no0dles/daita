@@ -5,11 +5,12 @@ import { OrmRelationalSchema } from '../schema/orm-relational-schema';
 import { Client } from '../../relational/client/client';
 import { MigrationTree } from '../migration/migration-tree';
 import { RuleContext } from '../../relational/permission/description/rule-context';
+import { Resolvable } from '../../common/utils/resolvable';
 
 export class RelationalTransactionContext extends RelationalContext implements TransactionContext<any> {
   constructor(
     protected transactionAdapter: RelationalTransactionAdapter<any>,
-    migrationTree: MigrationTree,
+    migrationTree: Resolvable<MigrationTree>,
     auth: RuleContext | null,
   ) {
     super(transactionAdapter, migrationTree, auth);

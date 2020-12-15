@@ -15,6 +15,7 @@ import { RelationalContext } from './relational-context';
 import { MigrationTree } from '../migration/migration-tree';
 import { RuleContext } from '../../relational/permission/description/rule-context';
 import { isKind } from '../../common/utils/is-kind';
+import { Resolvable } from '../../common/utils/resolvable';
 
 export interface ContextSchemaOptions {
   schema: OrmRelationalSchema;
@@ -28,10 +29,16 @@ export interface ContextMigrationTreeOptions {
 export const isContextMigrationTreeOptions = (val: ContextOptions): val is ContextMigrationTreeOptions =>
   isKind(val, ['migrationTree']);
 export type ContextOptions = ContextSchemaOptions | ContextMigrationTreeOptions;
+export interface ContextSchemaNameOptions {
+  schemaName: string;
+}
+export type MigrationContextOptions = ContextOptions | ContextSchemaNameOptions;
+export const isContextSchemaNameOptions = (val: MigrationContextOptions): val is ContextSchemaNameOptions =>
+  isKind(val, ['schemaName']);
 
 export function getContext<TQuery, TOptions>(
   adapterImplementation: RelationalMigrationAdapterImplementation<TQuery, TOptions>,
-  options: Partial<ContextOptions> & TOptions,
+  options: MigrationContextOptions & TOptions,
 ): MigrationContext<TQuery>;
 export function getContext<TQuery, TOptions>(
   adapterImplementation: RelationalTransactionAdapterImplementation<TQuery, TOptions>,
@@ -52,10 +59,22 @@ export function getContext<TQuery, TOptions>(
   const migrationTree = isContextSchemaOptions(options) ? options.schema.getMigrations() : options.migrationTree;
   const auth: RuleContext | null = options.auth || null;
   if (isRelationalMigrationAdapter(dataAdapter)) {
-    return new RelationalMigrationContext(dataAdapter, migrationTree, auth);
+    if (!migrationTree) {
+      if (isContextSchemaNameOptions(options)) {
+        const migrationResolvable = new Resolvable(async () => {
+          const migrations = await dataAdapter.getAppliedMigrations(options.schemaName);
+          return new MigrationTree(options.schemaName, migrations);
+        });
+        return new RelationalMigrationContext(dataAdapter, migrationResolvable, auth);
+      } else {
+        throw new Error('unsupported options'); // TODO improve typing to remove this
+      }
+    } else {
+      return new RelationalMigrationContext(dataAdapter, new Resolvable<MigrationTree>(migrationTree), auth);
+    }
   } else if (isRelationalTransactionAdapter(dataAdapter)) {
-    return new RelationalTransactionContext(dataAdapter, migrationTree, auth);
+    return new RelationalTransactionContext(dataAdapter, new Resolvable<MigrationTree>(migrationTree), auth);
   } else {
-    return new RelationalContext(dataAdapter, migrationTree, auth);
+    return new RelationalContext(dataAdapter, new Resolvable<MigrationTree>(migrationTree), auth);
   }
 }

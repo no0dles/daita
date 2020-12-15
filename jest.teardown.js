@@ -1,4 +1,5 @@
-const Docker = require('dockerode');
+import Docker from 'dockerode';
+
 async function tearDown() {
   const docker = new Docker();
   const infos = await docker.listContainers({ all: true, filters: { label: ['ch.daita.source=test'] } });

@@ -9,6 +9,7 @@ import { SchemaDescription } from '../schema/description/relational-schema-descr
 import { getSchemaDescription } from '../schema/relational-schema-description';
 import { SchemaMapper } from '../schema/description/schema-mapper';
 import { NormalMapper } from '../schema/description/normal-mapper';
+import { Resolvable } from '../../common/utils/resolvable';
 
 export interface MigrationPlan {
   migration: MigrationDescription;
@@ -19,7 +20,7 @@ export interface MigrationPlan {
 export class RelationalMigrationContext extends RelationalTransactionContext implements MigrationContext<any> {
   constructor(
     private migrationAdapter: RelationalMigrationAdapter<any> & RelationalTransactionAdapter<any>,
-    migrationTree: MigrationTree,
+    migrationTree: Resolvable<MigrationTree>,
     auth: RuleContext | null,
   ) {
     super(migrationAdapter, migrationTree, auth);
@@ -36,17 +37,19 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
 
   async migrate(options?: MigrationContextUpdateOptions): Promise<void> {
     const pendingMigrations = await this.getPendingMigrations(options);
-    await this.migrationAdapter.applyMigration(this.migrationTree.name, pendingMigrations);
+    const migrationTree = await this.migrationTree.get();
+    await this.migrationAdapter.applyMigration(migrationTree.name, pendingMigrations);
   }
 
   private async getPendingMigrations(options?: MigrationContextUpdateOptions): Promise<MigrationPlan[]> {
-    const appliedMigrations = await this.migrationAdapter.getAppliedMigrations(this.migrationTree.name);
+    const migrationTree = await this.migrationTree.get();
+    const appliedMigrations = await this.migrationAdapter.getAppliedMigrations(migrationTree.name);
 
-    let currentMigrations = this.migrationTree.roots();
+    let currentMigrations = migrationTree.roots();
 
     const targetMigrationId = options?.targetMigration;
     if (targetMigrationId) {
-      const targetMigration = this.migrationTree.get(targetMigrationId);
+      const targetMigration = migrationTree.get(targetMigrationId);
       if (!targetMigration) {
         throw new Error('unable to find target migration ' + targetMigrationId);
       }
@@ -78,11 +81,7 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
       const currentMigration = currentMigrations[0];
       migrations.push(currentMigration);
       if (!appliedMigrations.some((m) => m.id === currentMigration.id)) {
-        const schema = getSchemaDescription(
-          this.migrationTree.name,
-          new SchemaMapper(() => new NormalMapper()),
-          migrations,
-        );
+        const schema = getSchemaDescription(migrationTree.name, new SchemaMapper(() => new NormalMapper()), migrations);
         pendingMigrations.push({ migration: currentMigration, direction: 'forward', targetSchema: schema });
       }
 
@@ -90,7 +89,7 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
         break;
       }
 
-      currentMigrations = this.migrationTree.next(currentMigration.id);
+      currentMigrations = migrationTree.next(currentMigration.id);
     }
 
     return pendingMigrations;

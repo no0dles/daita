@@ -50,7 +50,7 @@ export function createHttpServerApp(options: AppOptions, port: number) {
   }
 
   app.use('/api/relational', relationalRoute(options));
-  app.use(errorMiddleware());
+  app.use(errorMiddleware(logger));
 
   return new Promise<Server>((resolve) => {
     const server = app.listen(port, () => {

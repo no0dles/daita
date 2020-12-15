@@ -48,7 +48,7 @@ export async function runContainer(options: {
 export async function pullImage(imageName: string) {
   const docker = new Docker();
   const images = await docker.listImages({});
-  if (images.some((i) => i.RepoTags.some((repoTag) => repoTag === imageName))) {
+  if (images.some((i) => i.RepoTags?.some((repoTag) => repoTag === imageName))) {
     return;
   }
 

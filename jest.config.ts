@@ -1,4 +1,6 @@
-module.exports = {
+import type { Config } from '@jest/types';
+
+const config: Config.InitialOptions = {
   setupFilesAfterEnv: ['jest-extended'],
   moduleFileExtensions: ['ts', 'js'],
   transform: {
@@ -25,3 +27,5 @@ module.exports = {
   globalTeardown: '<rootDir>/jest.teardown.js',
   coverageReporters: ['json', 'html', 'lcov'],
 };
+
+export default config;
