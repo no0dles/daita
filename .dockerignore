@@ -7,6 +7,8 @@ dist
 keys
 .github
 src/experimental
+src/**/*.spec.ts
+src/**/*.test.ts
 src/tests
 **/Dockerfile
 *.tgz
