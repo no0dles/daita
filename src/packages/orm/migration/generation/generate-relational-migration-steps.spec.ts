@@ -1,12 +1,7 @@
 import { generateRelationalMigrationSteps } from './generate-relational-migration-steps';
-import { RelationalTableSchemaTableFieldType } from '../../schema/relational-table-schema-table-field-type';
-import { RelationalSchemaDescription } from '../../schema/description/relational-schema-description';
-import { RelationalTableDescription } from '../../schema/description/relational-table-description';
-import { RelationalTableFieldDescription } from '../../schema/description/relational-table-field-description';
-import { RelationalTableReferenceKeyDescription } from '../../schema/description/relational-table-reference-key-description';
-import { RelationalTableReferenceDescription } from '../../schema/description/relational-table-reference-description';
-import { RelationalTableIndexDescription } from '../../schema/description/relational-table-index-description';
+import { SchemaTableFieldTypeDescription } from '../../schema/schema-table-field-type-description';
 import { table } from '../../../relational/sql/keyword/table/table';
+import { addTableReference, SchemaDescription } from '../../schema/description/relational-schema-description';
 
 describe('get-migration-steps', () => {
   it('should add table', () => {
@@ -232,7 +227,7 @@ interface ExpectedSchema {
         [key: string]: {
           primaryKey?: boolean;
           required?: boolean;
-          type: RelationalTableSchemaTableFieldType;
+          type: SchemaTableFieldTypeDescription;
           defaultValue?: any;
           size?: number;
         };
@@ -247,8 +242,8 @@ interface ExpectedSchema {
   };
 }
 
-function createSchema(schema: ExpectedSchema) {
-  const description = new RelationalSchemaDescription('test');
+function createSchema(schema: ExpectedSchema): SchemaDescription {
+  const description: SchemaDescription = { name: 'test', views: {}, tables: {}, rules: {} };
   if (schema.tables) {
     for (const tableKey of Object.keys(schema.tables)) {
       const expectedTable = schema.tables[tableKey];
@@ -290,6 +285,9 @@ function createSchema(schema: ExpectedSchema) {
     for (const tableKey of Object.keys(schema.tables)) {
       const tableDescription = schema.tables[tableKey];
       if (tableDescription.references) {
+        addTableReference(tableDescription, {
+          name,
+        });
         const currentTable = description.table(table(tableKey));
         for (const key of Object.keys(tableDescription.references)) {
           const ref = tableDescription.references[key];

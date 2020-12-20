@@ -23,7 +23,7 @@ describe('packages/orm/migration/steps/add-table-field', () => {
       after: 'init',
     },
   ]);
-  const ctxs = testContext(migrationTree, 'sqlite', 'pg', 'mariadb');
+  const ctxs = testContext(migrationTree, ['sqlite', 'pg', 'mariadb']);
 
   describe.each(ctxs)('%s', (ctx) => {
     beforeAll(async () => {

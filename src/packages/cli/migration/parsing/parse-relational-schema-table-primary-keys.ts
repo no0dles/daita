@@ -2,10 +2,13 @@ import { AstObjectValue } from '../../ast/ast-object-value';
 import { getArrayValue, getStringValue } from '../../ast/utils';
 import { AstArrayValue } from '../../ast/ast-array-value';
 import { AstLiteralValue } from '../../ast/ast-literal-value';
-import { RelationalTableDescription } from '../../../orm/schema/description/relational-table-description';
+import {
+  SchemaTableDescription,
+  setTablePrimaryKey,
+} from '../../../orm/schema/description/relational-schema-description';
 
 export function parseRelationalSchemaTablePrimaryKeys(
-  table: RelationalTableDescription,
+  table: SchemaTableDescription,
   optionsArgument: AstObjectValue | null,
 ) {
   const key = optionsArgument?.prop('key');
@@ -27,8 +30,5 @@ export function parseRelationalSchemaTablePrimaryKeys(
     keys.push('id');
   }
 
-  for (const key of keys) {
-    const field = table.field(key);
-    table.addPrimaryKey(field);
-  }
+  setTablePrimaryKey(table, keys);
 }

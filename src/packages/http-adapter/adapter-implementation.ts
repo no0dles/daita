@@ -1,22 +1,19 @@
 import { AuthProvider } from '../http-client-common/auth-provider';
-import { RelationalTransactionAdapterImplementation } from '../relational/adapter/relational-adapter-implementation';
-import { HttpTransactionAdapter } from './http-transaction-adapter';
-import { RelationalTransactionAdapter } from '../relational/adapter/relational-transaction-adapter';
 import { Http } from '../http-client-common/http';
+import { RelationalMigrationAdapterImplementation } from '../orm/adapter/relational-migration-adapter-implementation';
+import { RelationalMigrationAdapter } from '../orm/adapter/relational-migration-adapter';
+import { HttpMigrationAdapter } from './http-migration-adapter';
+import { Resolvable } from '../common/utils/resolvable';
 
 export interface HttpAdapterOptions {
   baseUrl: string;
   authProvider: AuthProvider | null | undefined;
 }
 
-export class HttpAdapterImplementation implements RelationalTransactionAdapterImplementation<any, HttpAdapterOptions> {
+export class HttpAdapterImplementation implements RelationalMigrationAdapterImplementation<any, HttpAdapterOptions> {
   constructor(private httpFactory: (options: HttpAdapterOptions) => Http) {}
-  getRelationalAdapter(options: HttpAdapterOptions): RelationalTransactionAdapter<any> {
+  getRelationalAdapter(options: HttpAdapterOptions): RelationalMigrationAdapter<any> {
     const http = this.httpFactory(options);
-    return new HttpTransactionAdapter(http, Promise.resolve(), () => {});
-  }
-
-  supportsQuery<S>(sql: S): this is RelationalTransactionAdapterImplementation<any | S, HttpAdapterOptions> {
-    return false;
+    return new HttpMigrationAdapter(new Resolvable<Http>(http));
   }
 }

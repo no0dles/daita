@@ -3,23 +3,31 @@ import { InsertSql } from '../../relational/sql/dml/insert/insert-sql';
 import { CreateTableForeignKey, CreateTableSql } from '../../relational/sql/ddl/create-table/create-table-sql';
 import { DropTableSql } from '../../relational/sql/ddl/drop-table/drop-table-sql';
 import { field, table } from '../../relational';
-import { SchemaDescription } from '../../orm/schema/description/relational-schema-description';
-import { RelationalTableFieldDescription } from '../../orm/schema/description/relational-table-field-description';
-import { RelationalTableReferenceDescription } from '../../orm/schema/description/relational-table-reference-description';
+import {
+  getFieldNamesFromSchemaTable,
+  getFieldsFromSchemaTable,
+  getReferencesFromSchemaTable,
+  getTableDescriptionIdentifier,
+  getTableFromSchema,
+  SchemaDescription,
+  SchemaTableFieldDescription,
+  SchemaTableReferenceDescription,
+} from '../../orm/schema/description/relational-schema-description';
 
 export async function migrateTableAction(
   client: Client<InsertSql<any> | CreateTableSql | DropTableSql>,
   tableName: string,
   schema: string | undefined,
-  filterFields: (field: RelationalTableFieldDescription) => boolean,
-  referenceFilter: (field: RelationalTableReferenceDescription) => boolean,
+  filterFields: (field: SchemaTableFieldDescription) => boolean,
+  referenceFilter: (field: SchemaTableReferenceDescription) => boolean,
   targetSchema: SchemaDescription,
 ) {
   const tbl = table(tableName, schema);
   const tmpTbl = table(tableName + '_tmp', schema);
-  const tableDescription = targetSchema.table(tbl);
-  const newFields = tableDescription.fields.filter(filterFields);
-  const newReferences = tableDescription.references.filter(referenceFilter);
+
+  const tableDescription = getTableFromSchema(targetSchema, tbl);
+  const newFields = getFieldsFromSchemaTable(tableDescription).filter(filterFields);
+  const newReferences = getReferencesFromSchemaTable(tableDescription).filter(referenceFilter);
 
   const selectFields = newFields.reduce<any>((fields, fld) => {
     fields[fld.name] = field(tbl, fld.name);
@@ -30,11 +38,18 @@ export async function migrateTableAction(
     return fields;
   }, {});
   const foreignKey = newReferences.reduce<{ [key: string]: CreateTableForeignKey }>((refs, ref) => {
+    const refTable = getTableFromSchema(targetSchema, table(ref.table, ref.schema));
     refs[ref.name] = {
-      key: ref.keys.map((k) => k.field.name),
+      key: getFieldNamesFromSchemaTable(
+        tableDescription,
+        ref.keys.map((k) => k.field),
+      ),
       references: {
-        primaryKey: ref.keys.map((k) => k.foreignField.name),
-        table: table(ref.table.name, ref.table.schema),
+        primaryKey: getFieldNamesFromSchemaTable(
+          refTable,
+          ref.keys.map((k) => k.foreignField),
+        ),
+        table: table(refTable.name, refTable.schema),
       },
     };
     return refs;

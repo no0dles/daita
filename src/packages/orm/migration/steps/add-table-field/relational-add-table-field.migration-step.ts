@@ -1,4 +1,4 @@
-import { RelationalTableSchemaTableFieldType } from '../../../schema/relational-table-schema-table-field-type';
+import { SchemaTableFieldTypeDescription } from '../../../schema/schema-table-field-type-description';
 import { MigrationStep } from '../../migration-step';
 
 export interface RelationalAddTableFieldMigrationStep {
@@ -6,7 +6,7 @@ export interface RelationalAddTableFieldMigrationStep {
   table: string;
   schema?: string;
   fieldName: string;
-  type: RelationalTableSchemaTableFieldType;
+  type: SchemaTableFieldTypeDescription;
   required: boolean;
   defaultValue?: any;
   size?: number;

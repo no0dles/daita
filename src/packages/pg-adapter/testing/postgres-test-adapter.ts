@@ -6,7 +6,6 @@ import { PostgresMigrationAdapter } from '../adapter/postgres-migration-adapter'
 import { getRandomTestPort } from '../../node/random-port';
 import { execCommand, runContainer } from '../../node/docker';
 import { sleep } from '../../common/utils/sleep';
-import { adapter } from '..';
 import { Resolvable } from '../../common/utils/resolvable';
 
 export interface PostgresDb {
@@ -36,12 +35,6 @@ class PostgresTestAdapterImplementation
       },
     );
     return new PostgresMigrationAdapter(poolResolvable);
-  }
-
-  supportsQuery<S>(
-    sql: S,
-  ): this is RelationalMigrationAdapterImplementation<PostgresSql | S, PostgresTestAdapterOptions> {
-    return adapter.supportsQuery(sql);
   }
 }
 

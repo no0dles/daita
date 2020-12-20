@@ -39,9 +39,7 @@ export async function serve(opts: {
     throw new Error('no relational adapter');
   }
 
-  if (isMigrationContext(ctx)) {
-    await ctx.migrate();
-  }
+  await ctx.migrate();
 
   const authorization = getAuthorization(opts);
   const disableAuth = !authorization || opts.disableAuth;
@@ -63,6 +61,7 @@ export async function serve(opts: {
   const httpOptions: AppOptions = {
     context: ctx,
     authorization,
+    enableTransactions: true,
     cors: true,
   };
   const server = await createHttpServerApp(httpOptions, httpPort);
@@ -73,9 +72,7 @@ export async function serve(opts: {
     if (!isTransactionContext(ctx)) {
       throw new Error('authorization api requires a transaction capable adapter');
     }
-    if (isMigrationContext(ctx)) {
-      await ctx.migrate();
-    }
+    await ctx.migrate();
     await seedUserPool(ctx, {
       id: 'cli',
       name: 'cli',

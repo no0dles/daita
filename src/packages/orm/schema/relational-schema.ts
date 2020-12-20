@@ -1,6 +1,5 @@
 import { SchemaTableOptions, SchemaTableRequiredKeyOptions } from './schema-table-options';
 import { RelationalSchemaOptions } from './relational-schema-options';
-import { RelationalSchemaDescription } from './description/relational-schema-description';
 import { RelationalMapper } from '../context/relational-mapper';
 import { RelationalBackwardCompatibleMapper, RelationalNormalMapper } from '../context/orm-mapper';
 import { OrmRelationalSchema } from './orm-relational-schema';
@@ -9,6 +8,7 @@ import { MigrationDescription } from '../migration/migration-description';
 import { MigrationTree } from '../migration/migration-tree';
 import { Rule } from '../../relational/permission/description/rule';
 import { Constructable, DefaultConstructable } from '../../common/types/constructable';
+import { SchemaDescription } from './description/relational-schema-description';
 
 export class RelationalSchema implements OrmRelationalSchema {
   private migrationTree = new MigrationTree(this.name);
@@ -47,7 +47,7 @@ export class RelationalSchema implements OrmRelationalSchema {
     this.migrationTree.add(migration);
   }
 
-  private getSchemaDescription(): RelationalSchemaDescription {
+  private getSchemaDescription(): SchemaDescription {
     return this.migrationTree.getSchemaDescription();
   }
 

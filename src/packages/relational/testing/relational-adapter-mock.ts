@@ -43,8 +43,4 @@ export class RelationalAdapterMockImplementation
   getRelationalAdapter(options: MockAdapterOptions<any>): RelationalTransactionAdapter<any> {
     return new RelationalAdapterMock(options);
   }
-
-  supportsQuery<S>(sql: S): this is RelationalTransactionAdapterImplementation<any | S, MockAdapterOptions<any>> {
-    return true;
-  }
 }

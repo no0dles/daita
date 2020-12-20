@@ -11,9 +11,7 @@ import {
 } from '../../relational/adapter/relational-adapter-implementation';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
 import { MigrationTree } from '../../orm/migration/migration-tree';
-import { TransactionContext } from '../../orm/context/transaction-context';
 import { getContext } from '../../orm/context/get-context';
-import { Context } from '../../orm/context/context';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;
 
@@ -102,10 +100,7 @@ function getAdapter(options: any, contextConfig: DaitaContextConfig) {
   }
 }
 
-export function getContextFromConfig(
-  options: any,
-  migrationTree: MigrationTree,
-): TransactionContext<any> | MigrationContext<any> | Context<any> {
+export function getContextFromConfig(options: any, migrationTree: MigrationTree): MigrationContext<any> {
   const contextConfig = getProjectConfig(options);
   if (!contextConfig.connectionString) {
     throw new Error('missing connection string');

@@ -6,9 +6,9 @@ import { randomString } from '../common/utils/random-string';
 
 export class HttpTransactionAdapter extends HttpDataAdapter implements RelationalTransactionAdapter {
   async transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
-    await this.init;
+    const http = await this.http.get();
     const tid = randomString(12);
-    const transaction = new HttpTransactionDataAdapter(tid, this.http);
+    const transaction = new HttpTransactionDataAdapter(tid, http);
     return transaction.run(() => action(transaction));
   }
 

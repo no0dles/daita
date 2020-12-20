@@ -11,8 +11,9 @@ import { adminTokenRoute } from './routes/admin-token';
 import { Server } from 'http';
 import { createLogger } from '../common/utils/logger';
 import { TransactionContext } from '../orm/context/transaction-context';
+import { MigrationContext } from '../orm/context/get-migration-context';
 
-export function createAuthAdminApp(context: TransactionContext<any>, port: number) {
+export function createAuthAdminApp(context: MigrationContext<any>, port: number) {
   const adminApp = express();
   const logger = createLogger({ package: 'auth-server' });
 
@@ -33,6 +34,7 @@ export function createAuthAdminApp(context: TransactionContext<any>, port: numbe
     relationalRoute({
       context,
       authorization: false,
+      enableTransactions: true,
       cors: false,
       transactionTimeout: 4000,
     }),

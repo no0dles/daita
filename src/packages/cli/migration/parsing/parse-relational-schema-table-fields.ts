@@ -1,15 +1,13 @@
 import { getRawValue, isRequiredProperty, parseRelationalType } from './parse-relational-type';
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { AstReferenceType } from '../../ast/ast-reference-type';
-import { RelationalTableFieldDescription } from '../../../orm/schema/description/relational-table-field-description';
-import { RelationalTableDescription } from '../../../orm/schema/description/relational-table-description';
 import { AstObjectValue } from '../../ast/ast-object-value';
-import { AstLiteralType } from '../../ast/ast-literal-type';
 import { AstObjectPropertyAssignmentValue } from '../../ast/ast-object-property-value';
 import { AstNumericLiteralValue } from '../../ast/ast-literal-value';
+import { addTableField, SchemaTableDescription } from '../../../orm/schema/description/relational-schema-description';
 
 export function parseRelationalSchemaTableFields(
-  table: RelationalTableDescription,
+  table: SchemaTableDescription,
   classDeclaration: AstClassDeclaration,
   optionsValue: AstObjectValue | null,
 ) {
@@ -44,17 +42,12 @@ export function parseRelationalSchemaTableFields(
     }
 
     const type = parseRelationalType(property.type);
-    table.addField(
-      property.name,
-      new RelationalTableFieldDescription(
-        table,
-        property.name,
-        property.name,
-        type,
-        size,
-        isRequiredProperty(property),
-        getRawValue(property.value),
-      ),
-    );
+    addTableField(table, {
+      key: property.name,
+      type,
+      size,
+      required: isRequiredProperty(property),
+      defaultValue: getRawValue(property.value),
+    });
   }
 }

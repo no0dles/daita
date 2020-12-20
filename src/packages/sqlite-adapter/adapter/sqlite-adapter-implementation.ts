@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import { RelationalTransactionAdapterImplementation } from '../../relational/adapter/relational-adapter-implementation';
 import { isKind } from '../../common/utils/is-kind';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
-import { sqliteFormatter } from '../formatter/sqlite-formatter';
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import { SqliteSql } from '../sql/sqlite-sql';
 import { SqliteRelationalMigrationAdapter } from './sqlite-relational-migration-adapter';
@@ -51,9 +50,5 @@ export class SqliteAdapterImplementation
     }
 
     return new SqliteRelationalMigrationAdapter(new Resolvable<string>(':memory:'));
-  }
-
-  supportsQuery<S>(sql: S): this is RelationalMigrationAdapterImplementation<SqliteSql | S, SqliteAdapterOptions> {
-    return sqliteFormatter.canHandle(sql);
   }
 }

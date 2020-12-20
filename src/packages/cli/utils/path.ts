@@ -5,8 +5,8 @@ import { SchemaDeclaration } from '../migration/parsing/schema-declaration';
 import { parseSchemaMigrations, parseSchemaMigrationVariables } from '../migration/parsing/parse-schema-migrations';
 import { parseRelationalSchema } from '../migration/parsing/parse-relational-schema';
 import { getProjectConfig } from './config';
-import { RelationalSchemaDescription } from '../../orm/schema/description/relational-schema-description';
 import { createLogger } from '../../common/utils/logger';
+import { SchemaDescription } from '../../orm/schema/description/relational-schema-description';
 
 export function getMigrationRelativePath(schemaFilePath: string, migrationFilePath: string) {
   const relativePath = path.relative(schemaFilePath, migrationFilePath);
@@ -85,7 +85,7 @@ export class SchemaInformation {
     return parseSchemaMigrations(this.schemaDeclaration.variable);
   }
 
-  getRelationalSchema(): RelationalSchemaDescription {
+  getRelationalSchema(): SchemaDescription {
     return parseRelationalSchema(this.schemaDeclaration.variable);
   }
 

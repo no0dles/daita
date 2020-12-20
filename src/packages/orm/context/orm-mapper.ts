@@ -5,10 +5,16 @@ import {
   TableAliasDescription,
 } from '../../relational/sql/dml/select/table-alias-description';
 import { isSelectSql, SelectSql } from '../../relational/sql/dml/select/select-sql';
-import { RelationalSchemaDescription } from '../schema/description/relational-schema-description';
 import { FieldDescription, isFieldDescription } from '../../relational/sql/keyword/field/field-description';
 import { isTableDescription, TableDescription } from '../../relational/sql/keyword/table/table-description';
 import { SourceTableDescription } from '../../relational/sql/dml/select/source-table';
+import {
+  getFieldFromSchemaTable,
+  getFieldsFromSchemaTable,
+  getTableFromSchema,
+  SchemaDescription,
+} from '../schema/description/relational-schema-description';
+import { validateValueForTableField } from '../schema/description/relational-table-field-description';
 
 export class RelationalNormalMapper implements RelationalMapper {
   normalizeData<T>(table: TableDescription<T>, data: T[]): T[] {
@@ -21,7 +27,7 @@ export class RelationalNormalMapper implements RelationalMapper {
 }
 
 export class RelationalBackwardCompatibleMapper implements RelationalMapper {
-  constructor(private schemaDescription: RelationalSchemaDescription) {}
+  constructor(private schemaDescription: SchemaDescription) {}
 
   normalizeSql<T>(sql: T): T {
     if (isSelectSql(sql)) {
@@ -90,19 +96,19 @@ export class RelationalBackwardCompatibleMapper implements RelationalMapper {
 
   private normalizeField(field: FieldDescription): FieldDescription {
     if (isTableDescription(field.field.table)) {
-      const tableDescription = this.schemaDescription.table(field.field.table);
+      const tableDescription = getTableFromSchema(this.schemaDescription, field.field.table);
       return {
         field: {
-          key: tableDescription.field(field.field.key).name,
+          key: getFieldFromSchemaTable(tableDescription, field.field.key).name,
           table: this.normalizeTable(field.field.table),
         },
       };
     } else {
       if (isTableDescription(field.field.table.alias.table)) {
-        const tableDescription = this.schemaDescription.table(field.field.table.alias.table);
+        const tableDescription = getTableFromSchema(this.schemaDescription, field.field.table.alias.table);
         return {
           field: {
-            key: tableDescription.field(field.field.key).name,
+            key: getFieldFromSchemaTable(tableDescription, field.field.key).name,
             table: {
               alias: {
                 name: field.field.table.alias.name,
@@ -158,7 +164,7 @@ export class RelationalBackwardCompatibleMapper implements RelationalMapper {
   }
 
   private normalizeTable(table: TableDescription<any>) {
-    const tableDescription = this.schemaDescription.table(table);
+    const tableDescription = getTableFromSchema(this.schemaDescription, table);
     if (table.schema) {
       return { schema: table.schema, table: tableDescription.name };
     } else {
@@ -168,18 +174,18 @@ export class RelationalBackwardCompatibleMapper implements RelationalMapper {
 
   normalizeData<T>(table: TableDescription<T>, data: T[]): T[] {
     //TODO verify all fields for insert
-    const tableDescription = this.schemaDescription.table(table);
+    const tableDescription = getTableFromSchema(this.schemaDescription, table);
     const items: any[] = [];
 
     for (const item of data) {
       const objectKeys = Object.keys(item);
       const object: any = {};
-      for (const fieldDescription of tableDescription.fields) {
+      for (const fieldDescription of getFieldsFromSchemaTable(tableDescription)) {
         const index = objectKeys.indexOf(fieldDescription.key);
         if (index >= 0) {
           objectKeys.splice(index, 1);
           object[fieldDescription.name] = (item as any)[fieldDescription.key];
-          fieldDescription.validateValue(object[fieldDescription.name]);
+          validateValueForTableField(fieldDescription, object[fieldDescription.name]);
         }
       }
 

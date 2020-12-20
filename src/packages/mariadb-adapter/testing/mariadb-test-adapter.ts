@@ -75,10 +75,6 @@ class MariadbTestAdapterImplementation implements RelationalMigrationAdapterImpl
       ),
     );
   }
-
-  supportsQuery<S>(sql: S): this is RelationalMigrationAdapterImplementation<MariadbSql | S, {}> {
-    return adapter.supportsQuery(sql);
-  }
 }
 
 export const testAdapter = new MariadbTestAdapterImplementation();

@@ -12,10 +12,10 @@ import { AstLiteralValue } from '../../ast/ast-literal-value';
 import { AstKeywordValue } from '../../ast/ast-keyword-value';
 import { AstPropertyAccessExpression } from '../../ast/ast-property-access-expression';
 import { AstError } from '../../ast/utils';
-import { RelationalTableSchemaTableFieldType } from '../../../orm/schema/relational-table-schema-table-field-type';
+import { SchemaTableFieldTypeDescription } from '../../../orm/schema/schema-table-field-type-description';
 import { AstTypeDeclaration } from '../../ast/ast-type-declaration';
 
-export function parseRelationalType(type: AstType): RelationalTableSchemaTableFieldType {
+export function parseRelationalType(type: AstType): SchemaTableFieldTypeDescription {
   if (type instanceof AstArrayType) {
     if (!type.elementType) {
       throw new Error('array requires type');
@@ -60,7 +60,7 @@ export function parseRelationalType(type: AstType): RelationalTableSchemaTableFi
       return parseRelationalType(refType.type);
     }
   } else if (type instanceof AstUnionType) {
-    const relationalTypes: RelationalTableSchemaTableFieldType[] = [];
+    const relationalTypes: SchemaTableFieldTypeDescription[] = [];
 
     for (const unionType of type.types) {
       if (

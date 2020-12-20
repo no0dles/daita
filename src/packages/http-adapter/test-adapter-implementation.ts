@@ -1,42 +1,102 @@
-import { RelationalTransactionAdapterImplementation } from '../relational/adapter/relational-adapter-implementation';
-import { HttpTransactionAdapter } from './http-transaction-adapter';
 import { getRandomTestPort } from '../node/random-port';
-import { ContextOptions } from '../orm/context/get-context';
 import { HttpAdapterOptions } from './adapter-implementation';
 import { Server } from 'http';
 import { createHttpServerApp } from '../http-server/app';
-import { TransactionContext } from '../orm/context/transaction-context';
-import { RelationalTransactionAdapter } from '../relational/adapter/relational-transaction-adapter';
-import { Context } from '../orm/context/context';
 import { Http } from '../http-client-common/http';
+import { RelationalMigrationAdapter } from '../orm/adapter/relational-migration-adapter';
+import { MigrationContext } from '../orm/context/get-migration-context';
+import { RelationalMigrationAdapterImplementation } from '../orm/adapter/relational-migration-adapter-implementation';
+import { HttpMigrationAdapter } from './http-migration-adapter';
+import { createAuthApp } from '../auth-server/app';
+import { authSchema } from '../auth-server/schema';
+import { Resolvable } from '../common/utils/resolvable';
+import { createToken, seedPoolUser, seedRoles, seedUserPool, seedUserRole } from '../auth-server/seed';
+import { createAuthAdminApp } from '../auth-server/admin-app';
 
-export type HttpTestAdapterOptions = ContextOptions & { context: TransactionContext<any> | Context<any> };
+export interface HttpTestAdapterOptions {
+  context: MigrationContext<any>;
+  user?: {
+    roles: string[];
+  };
+}
 
 export class HttpTestAdapterImplementation
-  implements RelationalTransactionAdapterImplementation<any, HttpTestAdapterOptions> {
+  implements RelationalMigrationAdapterImplementation<any, HttpTestAdapterOptions> {
   constructor(private httpFactory: (options: HttpAdapterOptions) => Http) {}
-  getRelationalAdapter(options: HttpTestAdapterOptions): RelationalTransactionAdapter<any> {
-    const port = getRandomTestPort();
-    const http = this.httpFactory({ baseUrl: `http://localhost:${port}`, authProvider: null });
+  getRelationalAdapter(options: HttpTestAdapterOptions): RelationalMigrationAdapter<any> {
     let server: Server;
-    const init = createHttpServerApp(
-      {
-        context: options.context,
-        authorization: false,
-        cors: true,
-        transactionTimeout: 2000,
-      },
-      port,
-    ).then((res) => {
-      server = res;
-    });
-    return new HttpTransactionAdapter(http, init, () => {
-      server?.close();
-      options.context.close();
-    });
-  }
+    let authAdminServer: Server;
 
-  supportsQuery<S>(sql: S): this is RelationalTransactionAdapterImplementation<any | S, HttpTestAdapterOptions> {
-    return false;
+    return new HttpMigrationAdapter(
+      new Resolvable<Http>(
+        async () => {
+          const port = getRandomTestPort();
+          const authPort = getRandomTestPort();
+
+          const authCtx = options.context.forSchema(authSchema.getMigrations());
+          await authCtx.migrate();
+          await seedUserPool(authCtx, {
+            id: 'test',
+            accessTokenExpiresIn: 3600,
+            algorithm: 'RS256',
+            allowRegistration: false,
+            checkPasswordForBreach: false,
+            emailVerifyExpiresIn: 3600,
+            name: 'Test',
+            passwordRegex: undefined,
+            refreshRefreshExpiresIn: 3600,
+          });
+          await seedPoolUser(authCtx, {
+            username: 'test',
+            disabled: false,
+            userPoolId: 'test',
+            password: '123456',
+          });
+          for (const role of options?.user?.roles || []) {
+            await seedRoles(authCtx, {
+              userPoolId: 'test',
+              name: role,
+            });
+            await seedUserRole(authCtx, {
+              userUsername: 'test',
+              roleUserPoolId: 'test',
+              roleName: role,
+            });
+          }
+          const token = await createToken(authCtx, {
+            name: 'test',
+            userPoolId: 'test',
+            username: 'test',
+          });
+
+          // authServer = await createAuthApp(options.context, authPort);
+          authAdminServer = await createAuthAdminApp(options.context, authPort);
+          server = await createHttpServerApp(
+            {
+              context: options.context,
+              enableTransactions: true,
+              authorization: {
+                providers: [],
+                tokenEndpoints: [{ issuer: 'test', uri: `http://localhost:${authPort}` }],
+              },
+              cors: true,
+              transactionTimeout: 2000,
+            },
+            port,
+          );
+
+          const http = this.httpFactory({
+            baseUrl: `http://localhost:${port}`,
+            authProvider: { token },
+          });
+          return http;
+        },
+        () => {
+          server?.close();
+          authAdminServer?.close();
+          options.context.close();
+        },
+      ),
+    );
   }
 }

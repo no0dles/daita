@@ -24,7 +24,7 @@ describe('relational/adapter/relational-transaction-adapter/timeout', () => {
     ]),
     'http-sqlite',
   );
-  describe.each(remoteClients)('%s', (client) => {
+  describe.each([remoteClients])('%s', (client) => {
     beforeAll(async () => {
       await createPersonTable(client);
       await createPerson(client, { firstName: 'Foo', lastName: 'Bar', id: 'a' });

@@ -6,7 +6,6 @@ import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/rela
 import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import { MariadbSql } from '../sql/mariadb-sql';
-import { sqliteFormatter } from '../../sqlite-adapter/formatter/sqlite-formatter';
 import { createPool } from 'mariadb';
 import { isConnectionStringOptions, MariadbAdapterOptions } from './mariadb-adapter-options';
 import { Resolvable } from '../../common/utils/resolvable';
@@ -39,10 +38,6 @@ class MariadbAdapterImplementation
         ),
       );
     }
-  }
-
-  supportsQuery<S>(sql: S): this is RelationalMigrationAdapterImplementation<MariadbSql | S, MariadbAdapterOptions> {
-    return sqliteFormatter.canHandle(sql);
   }
 }
 

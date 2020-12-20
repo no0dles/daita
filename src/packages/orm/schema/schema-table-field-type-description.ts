@@ -1,4 +1,4 @@
-export type RelationalTableSchemaTableFieldType =
+export type SchemaTableFieldTypeDescription =
   | 'string'
   | 'number'
   | 'date'

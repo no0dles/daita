@@ -1,24 +1,20 @@
 import { Request, Response, Router } from 'express';
 import { validateExecBody } from '../middleswares/validate-body.middleware';
 import { ContextManager } from '../../http-server-common/context-manager';
-import {
-  AppOptions,
-  HttpServerTransactionOptions,
-  isHttpServerTransactionOptions,
-} from '../../http-server-common/app-options';
+import { AppOptions } from '../../http-server-common/app-options';
 import { TransactionManager } from '../../http-server-common/transaction-manager';
 import { getRequestContext } from '../get-request-context';
 import { TransactionContextManager } from '../../http-server-common/transaction-context-manager';
 
 export function relationalRoute(options: AppOptions) {
   const router = relationalDataRoute(options);
-  if (isHttpServerTransactionOptions(options)) {
+  if (options.enableTransactions) {
     extendTransactionRoutes(options, router);
   }
   return router;
 }
 
-function extendTransactionRoutes(options: HttpServerTransactionOptions, router: Router) {
+function extendTransactionRoutes(options: AppOptions, router: Router) {
   const manager = new TransactionContextManager(options);
 
   function getTransactionId(req: Request, res: Response): string | null {
