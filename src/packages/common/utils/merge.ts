@@ -9,32 +9,42 @@ export interface MergeArrayResult {
   removed: string[];
 }
 
-export function mergeArray(currentItems: string[], newItems: string[]): MergeArrayResult {
+export function mergeArray(
+  currentItems: string[] | null | undefined,
+  newItems: string[] | null | undefined,
+): MergeArrayResult {
+  const currentItemsArray: string[] = currentItems || [];
+  const newItemsArray: string[] = newItems || [];
   return {
-    added: newItems.filter((newItem) => currentItems.indexOf(newItem) === -1),
-    removed: currentItems.filter((currentItem) => newItems.indexOf(currentItem) === -1),
+    added: newItemsArray.filter((newItem) => currentItemsArray.indexOf(newItem) === -1),
+    removed: currentItemsArray.filter((currentItem) => newItemsArray.indexOf(currentItem) === -1),
   };
 }
 
-export function merge<T>(currentItems: { [key: string]: T }, newItems: { [key: string]: T }): MergeListResult<T> {
-  const leftItemKeys = Object.keys(newItems);
+export function merge<T>(
+  currentItems: { [key: string]: T } | undefined | null,
+  newItems: { [key: string]: T } | undefined | null,
+): MergeListResult<T> {
+  const currentItemMap = currentItems || {};
+  const newItemMap = newItems || {};
+  const leftItemKeys = Object.keys(newItemMap);
   const result: MergeListResult<T> = { added: [], merge: [], removed: [] };
-  for (const currentItemKey of Object.keys(currentItems)) {
+  for (const currentItemKey of Object.keys(currentItems || {})) {
     const newItemIndex = leftItemKeys.indexOf(currentItemKey);
     if (newItemIndex >= 0) {
       leftItemKeys.splice(newItemIndex, 1);
       result.merge.push({
-        current: currentItems[currentItemKey],
-        target: newItems[currentItemKey],
+        current: currentItemMap[currentItemKey],
+        target: newItemMap[currentItemKey],
         key: currentItemKey,
       });
     } else {
-      result.removed.push({ key: currentItemKey, item: currentItems[currentItemKey] });
+      result.removed.push({ key: currentItemKey, item: currentItemMap[currentItemKey] });
     }
   }
 
   for (const leftItemKey of leftItemKeys) {
-    result.added.push({ key: leftItemKey, item: newItems[leftItemKey] });
+    result.added.push({ key: leftItemKey, item: newItemMap[leftItemKey] });
   }
 
   return result;

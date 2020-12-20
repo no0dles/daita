@@ -34,13 +34,13 @@ export async function diagram(options: { cwd?: string; schema?: string; filename
   const relationalSchema = schemaInfo.getRelationalSchema();
   for (const table of getTablesFromSchema(relationalSchema)) {
     content += `[${table.name}|${getFieldsFromSchemaTable(table)
-      .map((f) => `${f.name}${f.required ? '!' : ''}:${f.type}`)
+      .map((f) => `${f.field.name}${f.field.required ? '!' : ''}:${f.field.type}`)
       .join(';')}]\n`;
     for (const foreignKey of getReferencesFromSchemaTable(table)) {
       const foreignKeyTable = getReferenceTableFromKey(relationalSchema, foreignKey);
       content += `[${table.name}] ${foreignKey.name}${
         isTableReferenceRequiredInTable(table, foreignKey) ? '+' : 'o'
-      }-> [${foreignKeyTable.name}]\n`;
+      }-> [${foreignKeyTable.table.name}]\n`;
     }
   }
 

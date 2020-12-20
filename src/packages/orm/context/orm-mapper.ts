@@ -96,19 +96,19 @@ export class RelationalBackwardCompatibleMapper implements RelationalMapper {
 
   private normalizeField(field: FieldDescription): FieldDescription {
     if (isTableDescription(field.field.table)) {
-      const tableDescription = getTableFromSchema(this.schemaDescription, field.field.table);
+      const { table } = getTableFromSchema(this.schemaDescription, field.field.table);
       return {
         field: {
-          key: getFieldFromSchemaTable(tableDescription, field.field.key).name,
+          key: getFieldFromSchemaTable(table, field.field.key).name,
           table: this.normalizeTable(field.field.table),
         },
       };
     } else {
       if (isTableDescription(field.field.table.alias.table)) {
-        const tableDescription = getTableFromSchema(this.schemaDescription, field.field.table.alias.table);
+        const { table } = getTableFromSchema(this.schemaDescription, field.field.table.alias.table);
         return {
           field: {
-            key: getFieldFromSchemaTable(tableDescription, field.field.key).name,
+            key: getFieldFromSchemaTable(table, field.field.key).name,
             table: {
               alias: {
                 name: field.field.table.alias.name,
@@ -166,9 +166,9 @@ export class RelationalBackwardCompatibleMapper implements RelationalMapper {
   private normalizeTable(table: TableDescription<any>) {
     const tableDescription = getTableFromSchema(this.schemaDescription, table);
     if (table.schema) {
-      return { schema: table.schema, table: tableDescription.name };
+      return { schema: table.schema, table: tableDescription.table.name };
     } else {
-      return { table: tableDescription.name };
+      return { table: tableDescription.table.name };
     }
   }
 
@@ -180,12 +180,12 @@ export class RelationalBackwardCompatibleMapper implements RelationalMapper {
     for (const item of data) {
       const objectKeys = Object.keys(item);
       const object: any = {};
-      for (const fieldDescription of getFieldsFromSchemaTable(tableDescription)) {
-        const index = objectKeys.indexOf(fieldDescription.key);
+      for (const { field, key } of getFieldsFromSchemaTable(tableDescription.table)) {
+        const index = objectKeys.indexOf(key);
         if (index >= 0) {
           objectKeys.splice(index, 1);
-          object[fieldDescription.name] = (item as any)[fieldDescription.key];
-          validateValueForTableField(fieldDescription, object[fieldDescription.name]);
+          object[field.name] = (item as any)[key];
+          validateValueForTableField(key, field, object[field.name]);
         }
       }
 

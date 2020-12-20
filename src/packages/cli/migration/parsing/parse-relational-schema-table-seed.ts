@@ -29,7 +29,7 @@ export function parseRelationalSchemaTableSeed(schema: SchemaDescription, schema
     if (seedValue instanceof AstArrayValue) {
       for (const ruleElement of seedValue.elements) {
         const seed = convertValue(ruleElement);
-        addSeed(table, seed);
+        addSeed(table.key, table.table, seed);
       }
     } else {
       throw new AstError(seedValue?.node ?? seed.node, 'unable to parse seed');

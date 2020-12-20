@@ -7,7 +7,6 @@ import {
   getFieldNamesFromSchemaTable,
   getFieldsFromSchemaTable,
   getReferencesFromSchemaTable,
-  getTableDescriptionIdentifier,
   getTableFromSchema,
   SchemaDescription,
   SchemaTableFieldDescription,
@@ -26,8 +25,10 @@ export async function migrateTableAction(
   const tmpTbl = table(tableName + '_tmp', schema);
 
   const tableDescription = getTableFromSchema(targetSchema, tbl);
-  const newFields = getFieldsFromSchemaTable(tableDescription).filter(filterFields);
-  const newReferences = getReferencesFromSchemaTable(tableDescription).filter(referenceFilter);
+  const newFields = getFieldsFromSchemaTable(tableDescription.table)
+    .map((f) => f.field)
+    .filter(filterFields);
+  const newReferences = getReferencesFromSchemaTable(tableDescription.table).filter(referenceFilter);
 
   const selectFields = newFields.reduce<any>((fields, fld) => {
     fields[fld.name] = field(tbl, fld.name);
@@ -41,15 +42,15 @@ export async function migrateTableAction(
     const refTable = getTableFromSchema(targetSchema, table(ref.table, ref.schema));
     refs[ref.name] = {
       key: getFieldNamesFromSchemaTable(
-        tableDescription,
+        tableDescription.table,
         ref.keys.map((k) => k.field),
       ),
       references: {
         primaryKey: getFieldNamesFromSchemaTable(
-          refTable,
+          refTable.table,
           ref.keys.map((k) => k.foreignField),
         ),
-        table: table(refTable.name, refTable.schema),
+        table: table(refTable.table.name, refTable.table.schema),
       },
     };
     return refs;

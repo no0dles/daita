@@ -50,7 +50,7 @@ export function generateRelationalTableMigrationSteps(
     });
     steps.push({
       kind: 'add_table_primary_key',
-      fieldNames: getFieldNamesFromSchemaTable(newTable, newTable.primaryKeys),
+      fieldNames: getFieldNamesFromSchemaTable(newTable, newTable.primaryKeys || []),
       schema: newTable.schema,
       table: newTable.name,
     });
@@ -69,10 +69,10 @@ export function generateRelationalTableMigrationSteps(
         addedRef.item.keys.map((k) => k.field),
       ),
       foreignFieldNames: getFieldNamesFromSchemaTable(
-        foreignTable,
+        foreignTable.table,
         addedRef.item.keys.map((k) => k.foreignField),
       ),
-      foreignTable: foreignTable.name,
+      foreignTable: foreignTable.table.name,
       required: isTableReferenceRequiredInTable(newTable, addedRef.item),
     });
   }

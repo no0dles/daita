@@ -23,7 +23,7 @@ export function generateRelationalMigrationSteps(currentSchema: SchemaDescriptio
 
   for (const table of mergedTables.added) {
     steps.push({ kind: 'add_table', table: table.item.name, schema: table.item.schema });
-    for (const field of getFieldsFromSchemaTable(table.item)) {
+    for (const { field } of getFieldsFromSchemaTable(table.item)) {
       steps.push({
         kind: 'add_table_field',
         table: table.item.name,
@@ -35,11 +35,13 @@ export function generateRelationalMigrationSteps(currentSchema: SchemaDescriptio
       });
     }
 
-    steps.push({
-      kind: 'add_table_primary_key',
-      table: table.item.name,
-      fieldNames: getFieldNamesFromSchemaTable(table.item, table.item.primaryKeys),
-    });
+    if (table.item.primaryKeys && table.item.primaryKeys.length > 0) {
+      steps.push({
+        kind: 'add_table_primary_key',
+        table: table.item.name,
+        fieldNames: getFieldNamesFromSchemaTable(table.item, table.item.primaryKeys),
+      });
+    }
 
     for (const index of getIndicesFromSchemaTable(table.item)) {
       steps.push({
@@ -101,7 +103,7 @@ export function generateRelationalMigrationSteps(currentSchema: SchemaDescriptio
           foreignKey.keys.map((k) => k.field),
         ),
         foreignFieldNames: getFieldNamesFromSchemaTable(
-          foreignTable,
+          foreignTable.table,
           foreignKey.keys.map((k) => k.foreignField),
         ),
         foreignTable: foreignKey.table,
