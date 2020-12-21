@@ -1,9 +1,4 @@
-export function capitalize(word: string) {
-  if (!word) {
-    return word;
-  }
-  return word[0].toUpperCase() + word.substr(1);
-}
+import { capitalize } from '../../common/utils/capitalize';
 
 export function splitByIrregularCharacters(text: string, regularCharacters: string): string[] {
   const result: string[] = [];

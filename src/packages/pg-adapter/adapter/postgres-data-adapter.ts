@@ -64,7 +64,6 @@ export class PostgresDataAdapter<TClient extends PoolClient | Pool> implements R
         const groups = regex.exec(e.message)?.groups || {};
         throw new RelationDoesNotExistsError(e, sql, values, groups.schema, groups.relation);
       }
-      console.log(JSON.stringify(e));
       throw new UnknownError(e, sql, values);
     }
   }

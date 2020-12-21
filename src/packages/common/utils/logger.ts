@@ -82,7 +82,7 @@ class LoggerImpl implements Logger {
   private readonly formatter: LogFormatter;
 
   constructor(private props: { [key: string]: any }) {
-    this.enabled = getBoolEnvironmentVariable('LOGGER_ENABLED', true);
+    this.enabled = getBoolEnvironmentVariable('LOGGER_ENABLED', process.env.JEST_WORKER_ID === undefined);
     this.format = getOptionEnvironmentVariable('LOGGER_FORMAT', ['plain', 'json', 'pretty'], 'pretty');
     this.level = getOptionEnvironmentVariable('LOGGER_LEVEL', ['trace', 'debug', 'info', 'warn', 'error'], 'info');
     switch (this.format) {

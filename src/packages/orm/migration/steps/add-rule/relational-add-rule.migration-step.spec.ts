@@ -7,7 +7,10 @@ import { getRuleId } from '../../../../relational/permission/rule-id';
 describe('packages/orm/migration/steps/relational-add-rule', () => {
   const testRule = allow(authorized(), { select: now() });
   const schema = createMigrationTree([{ kind: 'add_rule', rule: testRule, ruleId: getRuleId(testRule) }]);
-  const ctxs = testContext(schema, ['pg', 'sqlite', 'mariadb', 'http-sqlite']);
+  const ctxs = [
+    ...testContext(schema, ['pg', 'sqlite', 'mariadb']),
+    testContext(schema, 'http-sqlite', { user: { roles: ['daita:migration:admin'] } }),
+  ];
 
   describe.each(ctxs)('%s', (ctx) => {
     beforeAll(async () => {

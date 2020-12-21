@@ -18,6 +18,7 @@ describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
       }
       await db.start();
       await testConnection(adapter);
+      console.log('recovered');
     } finally {
       await adapter.close();
       await db.close();

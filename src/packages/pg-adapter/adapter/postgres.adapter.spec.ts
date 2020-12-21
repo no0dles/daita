@@ -1,6 +1,5 @@
 import { PostgresTransactionAdapter } from './postgres-transaction-adapter';
 import { getPostgresDb, PostgresDb } from '../testing/postgres-test-adapter';
-import { Pool } from 'pg';
 import { Resolvable } from '../../common/utils/resolvable';
 
 describe('pg-adapter/adapter/postgres-adapter', () => {

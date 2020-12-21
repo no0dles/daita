@@ -1,5 +1,6 @@
 import { SchemaMapper } from './description/schema-mapper';
 import {
+  addExistingSeed,
   addIndexToTable,
   addRuleToSchema,
   addSeed,
@@ -97,7 +98,7 @@ export function getSchemaDescription(
         view.query = step.query;
       } else if (step.kind === 'insert_seed') {
         const { key, table } = getTableFromSchema(schema, { schema: step.schema, table: step.table });
-        addSeed(key, table, step.seed);
+        addExistingSeed(key, table, step.seed, step.keys);
       } else if (step.kind === 'update_seed') {
         const { table, key } = getTableFromSchema(schema, { schema: step.schema, table: step.table });
         updateSeed(key, table, { keys: step.keys, seed: step.seed });

@@ -1,4 +1,4 @@
-import Docker from 'dockerode';
+import Docker, { Container } from 'dockerode';
 import { Defer } from '../common/utils/defer';
 
 export interface DockerCompose {
@@ -15,6 +15,12 @@ export interface DockerComposeService {
   links?: string[];
   ports?: string[];
   environment?: string[];
+}
+
+export async function getDynamicPort(container: Container, containerPort: number): Promise<number> {
+  const inspect = await container.inspect();
+  const newPort = inspect.NetworkSettings.Ports[`${containerPort}/tcp`][0].HostPort;
+  return parseInt(newPort, 0);
 }
 
 export async function runContainer(options: {
