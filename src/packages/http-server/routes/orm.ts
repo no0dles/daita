@@ -30,6 +30,7 @@ export function ormRoute(options: AppOptions) {
       }
 
       await options.context.migrationAdapter.applyMigration(req.params.schema, req.body.migrationPlan);
+      res.status(200).end();
     } catch (e) {
       next(e);
     }
