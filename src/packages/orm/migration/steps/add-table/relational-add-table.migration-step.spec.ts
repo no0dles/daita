@@ -12,7 +12,7 @@ describe('packages/orm/migration/steps/relational-add-table', () => {
     static table = 'foo';
     id!: string;
   }
-  const ctxs = testContext(schema, 'pg', 'sqlite', 'mariadb');
+  const ctxs = testContext(schema, ['pg', 'sqlite', 'mariadb']);
 
   describe.each(ctxs)('%s', (ctx) => {
     beforeAll(async () => {

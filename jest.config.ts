@@ -24,7 +24,7 @@ const config: Config.InitialOptions = {
     '!src/**/*.test.ts',
     '!src/**/*.spec.ts',
   ],
-  globalTeardown: '<rootDir>/jest.teardown.js',
+  globalTeardown: '<rootDir>/jest.teardown.ts',
   coverageReporters: ['json', 'html', 'lcov'],
 };
 

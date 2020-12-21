@@ -2,13 +2,13 @@ import { testAdapter as pgAdapter } from '../../packages/pg-adapter/testing/post
 import { testAdapter as sqliteAdapter } from '../../packages/sqlite-adapter';
 import { testAdapter as httpAdapter } from '../../packages/http-adapter';
 import { testAdapter as mariadbAdapter } from '../../packages/mariadb-adapter';
-import { TransactionContext } from '../../packages/orm/context/transaction-context';
 import { OrmRelationalSchema } from '../../packages/orm/schema/orm-relational-schema';
 import { isMigrationTree, MigrationTree } from '../../packages/orm/migration/migration-tree';
 import { TransactionClient } from '../../packages/relational/client/transaction-client';
 import { getClient } from '../../packages/relational/client/get-client';
 import { getContext } from '../../packages/orm/context/get-context';
 import { MigrationContext } from '../../packages/orm/context/get-migration-context';
+import { HttpTestAdapterOptions } from '../../packages/http-adapter/test-adapter-implementation';
 
 export type TestClientType = 'pg' | 'sqlite' | 'mariadb';
 export type TestContextType = 'pg' | 'sqlite' | 'mariadb' | 'http-sqlite';
@@ -30,32 +30,54 @@ export function testClient(...types: TestClientType[]) {
   return clients;
 }
 
-export function testContext(schema: OrmRelationalSchema, ...types: TestContextType[]): MigrationContext<any>[];
-export function testContext(migrationTree: MigrationTree, ...types: TestContextType[]): MigrationContext<any>[];
-export function testContext(schemaOrMigrationTree: OrmRelationalSchema | MigrationTree, ...types: TestContextType[]) {
-  const contexts: TransactionContext<any>[] = [];
+export function testContext(
+  schema: MigrationTree,
+  type: 'http-sqlite',
+  options: Partial<HttpTestAdapterOptions>,
+): MigrationContext<any>;
+export function testContext(schema: OrmRelationalSchema, type: TestContextType): MigrationContext<any>;
+export function testContext(migrationTree: MigrationTree, type: TestContextType): MigrationContext<any>;
+export function testContext(schema: OrmRelationalSchema, types: TestContextType[]): MigrationContext<any>[];
+export function testContext(migrationTree: MigrationTree, types: TestContextType[]): MigrationContext<any>[];
+export function testContext(
+  schemaOrMigrationTree: OrmRelationalSchema | MigrationTree,
+  types: TestContextType[] | TestContextType,
+  options?: Partial<HttpTestAdapterOptions>,
+): MigrationContext<any> | MigrationContext<any>[] {
+  const contexts: MigrationContext<any>[] = [];
   const migrationTree = isMigrationTree(schemaOrMigrationTree)
     ? schemaOrMigrationTree
     : schemaOrMigrationTree.getMigrations();
 
-  if (types.indexOf('pg') >= 0) {
+  function containsType(types: TestContextType[] | TestContextType, expectedType: TestContextType) {
+    return (types instanceof Array && types.indexOf(expectedType) >= 0) || types === expectedType;
+  }
+
+  if (containsType(types, 'pg')) {
     contexts.push(getContext(pgAdapter, { migrationTree }));
   }
 
-  if (types.indexOf('sqlite') >= 0) {
+  if (containsType(types, 'sqlite')) {
     contexts.push(getContext(sqliteAdapter, { migrationTree, type: 'memory' }));
     contexts.push(getContext(sqliteAdapter, { migrationTree, type: 'file' }));
   }
 
-  if (types.indexOf('mariadb') >= 0) {
+  if (containsType(types, 'mariadb')) {
     contexts.push(getContext(mariadbAdapter, { migrationTree }));
   }
 
-  if (types.indexOf('http-sqlite') >= 0) {
+  if (containsType(types, 'http-sqlite')) {
     contexts.push(
-      getContext(httpAdapter, { migrationTree, context: getContext(sqliteAdapter, { migrationTree, type: 'memory' }) }),
+      getContext(httpAdapter, {
+        ...options,
+        context: getContext(sqliteAdapter, { migrationTree, type: 'memory' }),
+        migrationTree,
+      }),
     );
   }
 
+  if (contexts.length === 1) {
+    return contexts[0];
+  }
   return contexts;
 }

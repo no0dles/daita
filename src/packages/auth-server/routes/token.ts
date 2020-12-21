@@ -1,13 +1,12 @@
 import * as express from 'express';
 import { UserToken } from '../models/user-token';
 import { authMiddleware } from '../middlewares/auth-middleware';
-import { getRandomCode } from '../modules/random';
-import { getSha1 } from '../modules/hash';
 import { field } from '../../relational/sql/keyword/field/field';
 import { and } from '../../relational/sql/keyword/and/and';
 import { table } from '../../relational/sql/keyword/table/table';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { TransactionContext } from '../../orm/context/transaction-context';
+import { createToken } from '../seed';
 
 export function tokenRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
@@ -35,22 +34,15 @@ export function tokenRoute(ctx: TransactionContext<any>) {
 
   router.post('/', async (req, res, next) => {
     try {
-      const token = await getRandomCode();
-      const hashedToken = await getSha1(token);
-      await ctx.insert({
-        insert: {
-          id: await getRandomCode(),
-          userUsername: req.user?.sub!,
-          token: hashedToken,
-          name: req.body.name,
-          expiresAt: req.body.expireAt || null,
-          createdAt: new Date(),
-        },
-        into: table(UserToken),
+      const token = await createToken(ctx, {
+        username: req.user?.sub!,
+        userPoolId: req.params.userPoolId,
+        name: req.body.name,
+        expiresAt: req.body.expireAt,
       });
 
       res.status(200).json({
-        token: `${req.params.userPoolId}:${token}`,
+        token,
       });
     } catch (e) {
       next(e);

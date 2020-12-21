@@ -1,9 +1,7 @@
-import { getRandomTestPort } from '../../node/random-port';
-import { execCommand, runContainer } from '../../node/docker';
+import { execCommand, getDynamicPort, runContainer } from '../../node/docker';
 import { sleep } from '../../common/utils/sleep';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
 import { MariadbSql } from '../sql/mariadb-sql';
-import { adapter } from '..';
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import { createPool } from 'mariadb';
 import { Resolvable } from '../../common/utils/resolvable';
@@ -17,17 +15,16 @@ export interface MariaDb {
 }
 
 export async function getMariaDb(): Promise<MariaDb> {
-  const newPort = getRandomTestPort();
-
   const container = await runContainer({
     image: 'mariadb:10',
     env: ['MYSQL_ROOT_PASSWORD=mariadb', 'MYSQL_DATABASE=test'],
     labels: {
       'ch.daita.source': 'test',
     },
-    portBinding: { 3306: newPort },
+    portBinding: { 3306: 0 },
   });
 
+  const newPort = await getDynamicPort(container, 3306);
   async function awaitForReady() {
     const cmd = ['mysqladmin', 'ping', '--password=mariadb'];
     let isReady = await execCommand(container, cmd);
@@ -74,10 +71,6 @@ class MariadbTestAdapterImplementation implements RelationalMigrationAdapterImpl
         },
       ),
     );
-  }
-
-  supportsQuery<S>(sql: S): this is RelationalMigrationAdapterImplementation<MariadbSql | S, {}> {
-    return adapter.supportsQuery(sql);
   }
 }
 

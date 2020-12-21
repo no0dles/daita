@@ -1,22 +1,30 @@
-import { RelationalTableDescription } from '../../schema/description/relational-table-description';
 import { MigrationStep } from '../migration-step';
-import { merge } from '../../../common/utils/merge';
+import { merge, mergeArray } from '../../../common/utils/merge';
+import {
+  getFieldNamesFromSchemaTable,
+  getTableFromSchema,
+  SchemaDescription,
+  SchemaTableDescription,
+} from '../../schema/description/relational-schema-description';
+import { isTableReferenceRequiredInTable } from '../../schema/description/relational-table-reference-description';
+import { table } from '../../../relational';
 
 export function generateRelationalTableMigrationSteps(
-  currentTable: RelationalTableDescription,
-  newTable: RelationalTableDescription,
+  newSchema: SchemaDescription,
+  currentTable: SchemaTableDescription,
+  newTable: SchemaTableDescription,
 ) {
   const steps: MigrationStep[] = [];
 
-  const mergedFields = merge(currentTable.fields, newTable.fields, (first, second) => first.name === second.name);
+  const mergedFields = merge(currentTable.fields, newTable.fields);
 
   for (const addedField of mergedFields.added) {
     steps.push({
       kind: 'add_table_field',
-      fieldName: addedField.name,
-      type: addedField.type,
-      required: addedField.required,
-      defaultValue: addedField.defaultValue,
+      fieldName: addedField.item.name,
+      type: addedField.item.type,
+      required: addedField.item.required,
+      defaultValue: addedField.item.defaultValue,
       table: newTable.name,
       schema: currentTable.schema,
     });
@@ -25,18 +33,14 @@ export function generateRelationalTableMigrationSteps(
     steps.push({
       kind: 'drop_table_field',
       table: newTable.name,
-      fieldName: removedField.name,
+      fieldName: removedField.item.name,
     });
   }
   if (mergedFields.merge.length > 0) {
     // TODO throw new Error('merge not supported yet');
   }
 
-  const mergedPrimaryKeys = merge(
-    currentTable.primaryKeys,
-    newTable.primaryKeys,
-    (first, second) => first.key === second.key,
-  );
+  const mergedPrimaryKeys = mergeArray(currentTable.primaryKeys, newTable.primaryKeys);
 
   if (mergedPrimaryKeys.added.length > 0 || mergedPrimaryKeys.removed.length > 0) {
     steps.push({
@@ -46,39 +50,42 @@ export function generateRelationalTableMigrationSteps(
     });
     steps.push({
       kind: 'add_table_primary_key',
-      fieldNames: newTable.primaryKeys.map((k) => k.name),
+      fieldNames: getFieldNamesFromSchemaTable(newTable, newTable.primaryKeys || []),
       schema: newTable.schema,
       table: newTable.name,
     });
   }
 
-  const mergedReferences = merge(
-    currentTable.references,
-    newTable.references,
-    (first, second) => first.name === second.name,
-  );
+  const mergedReferences = merge(currentTable.references, newTable.references);
   for (const addedRef of mergedReferences.added) {
+    const foreignTable = getTableFromSchema(newSchema, table(addedRef.item.table, addedRef.item.schema));
     steps.push({
       kind: 'add_table_foreign_key',
       table: currentTable.name,
       schema: currentTable.schema,
-      name: addedRef.name,
-      fieldNames: addedRef.keys.map((key) => key.field.name),
-      foreignFieldNames: addedRef.keys.map((key) => key.foreignField.name),
-      foreignTable: addedRef.table.name,
-      required: addedRef.required,
+      name: addedRef.item.name,
+      fieldNames: getFieldNamesFromSchemaTable(
+        newTable,
+        addedRef.item.keys.map((k) => k.field),
+      ),
+      foreignFieldNames: getFieldNamesFromSchemaTable(
+        foreignTable.table,
+        addedRef.item.keys.map((k) => k.foreignField),
+      ),
+      foreignTable: foreignTable.table.name,
+      required: isTableReferenceRequiredInTable(newTable, addedRef.item),
     });
   }
 
-  const mergedIndices = merge(currentTable.indices, newTable.indices, (first, second) => first.name === second.name);
+  const mergedIndices = merge(currentTable.indices, newTable.indices);
   for (const addedIndex of mergedIndices.added) {
     steps.push({
       kind: 'create_index',
       table: currentTable.name,
       schema: currentTable.schema,
-      unique: addedIndex.unique,
-      name: addedIndex.name,
-      fields: addedIndex.fields.map((f) => f.name),
+      unique: addedIndex.item.unique,
+      name: addedIndex.item.name,
+      fields: getFieldNamesFromSchemaTable(newTable, addedIndex.item.fields),
     });
   }
   for (const removedIndex of mergedIndices.removed) {
@@ -86,19 +93,19 @@ export function generateRelationalTableMigrationSteps(
       kind: 'drop_index',
       table: currentTable.name,
       schema: currentTable.schema,
-      name: removedIndex.name,
+      name: removedIndex.item.name,
     });
   }
   for (const mergedIndex of mergedIndices.merge) {
     throw new Error('chaning index is not supported yet');
   }
 
-  const mergedSeeds = merge(currentTable.seeds, newTable.seeds, (first, second) => first.key === second.key);
+  const mergedSeeds = merge(currentTable.seeds, newTable.seeds);
   for (const addedSeed of mergedSeeds.added) {
     steps.push({
       kind: 'insert_seed',
-      seed: addedSeed.seed,
-      keys: addedSeed.seedKeys,
+      seed: addedSeed.item.seed,
+      keys: addedSeed.item.seedKeys,
       table: currentTable.name,
       schema: currentTable.schema,
     });
@@ -123,7 +130,7 @@ export function generateRelationalTableMigrationSteps(
   for (const deletedSeeds of mergedSeeds.removed) {
     steps.push({
       kind: 'delete_seed',
-      keys: deletedSeeds.seedKeys,
+      keys: deletedSeeds.item.seedKeys,
       table: currentTable.name,
       schema: currentTable.schema,
     });

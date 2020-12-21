@@ -3,7 +3,7 @@ import { AppAuthorization } from '../../packages/http-server-common/app-authoriz
 import { createHttpServerApp } from '../../packages/http-server/app';
 import { Application } from '../../packages/node/application';
 import { createLogger } from '../../packages/common/utils/logger';
-import { Context } from '../../packages/orm/context/context';
+import { MigrationContext } from '../../packages/orm/context/get-migration-context';
 
 const logger = createLogger({ container: 'http' });
 const TRANSACTION_TIMEOUT = process.env.TRANSACTION_TIMEOUT ? parseInt(process.env.TRANSACTION_TIMEOUT) : 4000;
@@ -27,7 +27,7 @@ if (fs.existsSync(AUTH_FILE)) {
   }
 }
 
-export function run(context: Context<any>) {
+export function run(context: MigrationContext<any>) {
   const application = new Application();
   application.attach(context);
   application.attach(
@@ -35,6 +35,7 @@ export function run(context: Context<any>) {
       {
         context,
         transactionTimeout: TRANSACTION_TIMEOUT,
+        enableTransactions: true, // TODO make it configurable
         authorization: authentication,
         cors: true, //TODO make it configurable
       },

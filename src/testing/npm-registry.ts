@@ -1,6 +1,6 @@
 import { sleep } from '../packages/common/utils/sleep';
 import { getRandomTestPort } from '../packages/node/random-port';
-import { runContainer } from '../packages/node/docker';
+import { getDynamicPort, runContainer } from '../packages/node/docker';
 import { waitForPort } from '../packages/node/network';
 import { shell } from '../packages/node/command';
 
@@ -10,16 +10,15 @@ export interface NpmRegistry {
 }
 
 export async function getNpmRegistry(): Promise<NpmRegistry> {
-  const newPort = getRandomTestPort();
-
   const image = 'verdaccio/verdaccio:4';
   const container = await runContainer({
     image,
     labels: {
       'ch.daita.source': 'test',
     },
-    portBinding: { 4873: newPort },
+    portBinding: { 4873: 0 },
   });
+  const newPort = await getDynamicPort(container, 4873);
   await waitForPort(newPort);
   await sleep(500);
 

@@ -27,20 +27,7 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   }
 
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
-    if (this.resultDefer.isRejected || this.resultDefer.isResolved) {
-      throw new Error('transaction already closed');
-    }
-
-    const response = await this.http.json({
-      path: `api/relational/trx/${this.transactionId}/exec`,
-      data: {
-        sql,
-        values,
-      },
-      authorized: true,
-    });
-    this.handleErrorResponse(response);
-    return response.data;
+    throw new Error('not supported over http');
   }
 
   async exec(sql: any): Promise<RelationalRawResult> {
@@ -60,7 +47,7 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   }
 
   supportsQuery(sql: any): boolean {
-    throw new Error('Method not implemented.');
+    throw new Error('not supported over http');
   }
 
   async close(): Promise<void> {}

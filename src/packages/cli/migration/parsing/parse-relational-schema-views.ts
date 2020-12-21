@@ -3,13 +3,9 @@ import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { convertValue } from './convert-value';
 import { AstError } from '../../ast/utils';
 import { parseTableDescription } from './parse-table-description';
-import { RelationalViewDescription } from '../../../orm/schema/description/relational-view-description';
-import { RelationalSchemaDescription } from '../../../orm/schema/description/relational-schema-description';
+import { addViewToSchema, SchemaDescription } from '../../../orm/schema/description/relational-schema-description';
 
-export function parseRelationalSchemaViews(
-  schema: RelationalSchemaDescription,
-  schemaVariable: AstVariableDeclaration,
-) {
+export function parseRelationalSchemaViews(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
   const calls = schemaVariable.callsByName('view');
   for (const call of calls) {
     const classArgument = call.argumentAt(0);
@@ -25,15 +21,10 @@ export function parseRelationalSchemaViews(
 
     const tableDescription = parseTableDescription(classArgument);
     const query = convertValue(queryArgument);
-    schema.addView(
-      tableDescription,
-      new RelationalViewDescription(
-        schema,
-        query,
-        tableDescription.table,
-        tableDescription.table,
-        tableDescription.schema,
-      ),
-    );
+    addViewToSchema(schema, {
+      query,
+      name: tableDescription.table,
+      schema: tableDescription.schema,
+    });
   }
 }

@@ -4,7 +4,7 @@ import { testContext } from '../../../../../testing/relational/adapters';
 import { schema } from '../../../schema';
 
 describe('docs/example/sql/dml/select', () => {
-  const clients = testContext(schema, 'pg', 'sqlite', 'mariadb');
+  const clients = testContext(schema, ['pg', 'sqlite', 'mariadb']);
 
   describe.each(clients)('%s', (ctx) => {
     beforeAll(async () => ctx.migrate());

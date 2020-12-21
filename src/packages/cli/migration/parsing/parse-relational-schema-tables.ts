@@ -7,13 +7,14 @@ import { parseRelationalSchemaTableIndices } from './parse-relational-schema-tab
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { AstError } from '../../ast/utils';
-import { RelationalSchemaDescription } from '../../../orm/schema/description/relational-schema-description';
-import { RelationalTableDescription } from '../../../orm/schema/description/relational-table-description';
+import {
+  addTableToSchema,
+  containsTableInSchema,
+  getTablesFromSchema,
+  SchemaDescription,
+} from '../../../orm/schema/description/relational-schema-description';
 
-export function parseRelationalSchemaTables(
-  schema: RelationalSchemaDescription,
-  schemaVariable: AstVariableDeclaration,
-) {
+export function parseRelationalSchemaTables(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
   const calls = schemaVariable.callsByName('table');
   const classDeclarations: { [key: string]: AstClassDeclaration } = {};
 
@@ -38,7 +39,7 @@ export function parseRelationalSchemaTables(
 
     const tableDescription = parseTableDescription(classArgument);
 
-    if (schema.containsTable(tableDescription)) {
+    if (containsTableInSchema(schema, tableDescription)) {
       throw new Error('name already registered');
     }
 
@@ -46,12 +47,10 @@ export function parseRelationalSchemaTables(
       throw new Error(`missing table class name`);
     }
 
-    const table = new RelationalTableDescription(
-      schema,
-      tableDescription.table,
-      tableDescription.table,
-      tableDescription.schema,
-    );
+    const table = addTableToSchema(schema, {
+      table: tableDescription.table,
+      schema: tableDescription.schema,
+    });
 
     parseRelationalSchemaTableFields(table, classArgument, optionsObject);
     parseRelationalSchemaTablePrimaryKeys(table, optionsObject);
@@ -60,11 +59,10 @@ export function parseRelationalSchemaTables(
       parseRelationalSchemaTableIndices(table, optionsObject);
     }
 
-    schema.addTable(tableDescription, table);
     classDeclarations[classArgument.name] = classArgument;
   }
 
-  for (const table of schema.tables) {
+  for (const table of getTablesFromSchema(schema)) {
     parseRelationalSchemaTableReferences(schema, table, classDeclarations[table.name]);
   }
 }

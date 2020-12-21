@@ -36,10 +36,4 @@ export class SqliteTestAdapterImplementation
       );
     }
   }
-
-  supportsQuery<S>(
-    sql: S,
-  ): this is RelationalMigrationAdapterImplementation<SqliteSql | S, SqliteTestAdapterMemoryOptions> {
-    return adapter.supportsQuery(sql);
-  }
 }

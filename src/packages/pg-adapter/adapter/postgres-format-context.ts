@@ -1,9 +1,14 @@
 import { CounterFormatContext } from '../../relational/formatter/counter-format-context';
 import { FormatDataType } from '../../relational/formatter/format-context';
+import { ValueType } from '../../relational/sql/operands/value-type';
 
 export class PostgresFormatContext extends CounterFormatContext {
   constructor() {
     super('$');
+  }
+
+  appendValue(value: ValueType): string {
+    return super.appendValue(value ?? null);
   }
 
   getDataType(options: FormatDataType): string {

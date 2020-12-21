@@ -3,10 +3,8 @@ import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/rela
 import { PostgresSql } from '../sql/postgres-sql';
 import { RelationalMigrationAdapter } from '../../orm/adapter/relational-migration-adapter';
 import { PostgresMigrationAdapter } from '../adapter/postgres-migration-adapter';
-import { getRandomTestPort } from '../../node/random-port';
-import { execCommand, runContainer } from '../../node/docker';
+import { execCommand, getDynamicPort, runContainer } from '../../node/docker';
 import { sleep } from '../../common/utils/sleep';
-import { adapter } from '..';
 import { Resolvable } from '../../common/utils/resolvable';
 
 export interface PostgresDb {
@@ -37,27 +35,21 @@ class PostgresTestAdapterImplementation
     );
     return new PostgresMigrationAdapter(poolResolvable);
   }
-
-  supportsQuery<S>(
-    sql: S,
-  ): this is RelationalMigrationAdapterImplementation<PostgresSql | S, PostgresTestAdapterOptions> {
-    return adapter.supportsQuery(sql);
-  }
 }
 
 export const testAdapter = new PostgresTestAdapterImplementation();
 
 export async function getPostgresDb(): Promise<PostgresDb> {
-  const newPort = getRandomTestPort();
-
   const container = await runContainer({
     image: 'postgres:12',
     env: ['POSTGRES_PASSWORD=postgres'],
     labels: {
       'ch.daita.source': 'test',
     },
-    portBinding: { 5432: newPort },
+    portBinding: { 5432: 0 },
   });
+
+  const newPort = await getDynamicPort(container, 5432);
 
   async function awaitForReady() {
     let isReady = await execCommand(container, ['pg_isready']);

@@ -10,6 +10,7 @@ import { getSchemaDescription } from '../schema/relational-schema-description';
 import { SchemaMapper } from '../schema/description/schema-mapper';
 import { NormalMapper } from '../schema/description/normal-mapper';
 import { Resolvable } from '../../common/utils/resolvable';
+import { OrmRelationalSchema } from '../schema/orm-relational-schema';
 
 export interface MigrationPlan {
   migration: MigrationDescription;
@@ -19,7 +20,7 @@ export interface MigrationPlan {
 
 export class RelationalMigrationContext extends RelationalTransactionContext implements MigrationContext<any> {
   constructor(
-    private migrationAdapter: RelationalMigrationAdapter<any> & RelationalTransactionAdapter<any>,
+    public migrationAdapter: RelationalMigrationAdapter<any> & RelationalTransactionAdapter<any>,
     migrationTree: Resolvable<MigrationTree>,
     auth: RuleContext | null,
   ) {
@@ -28,6 +29,22 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
 
   authorize(auth: RuleContext): RelationalTransactionContext {
     return new RelationalMigrationContext(this.migrationAdapter, this.migrationTree, auth);
+  }
+
+  forSchema(migrationTree: MigrationTree | OrmRelationalSchema, auth?: RuleContext) {
+    if (migrationTree instanceof MigrationTree) {
+      return new RelationalMigrationContext(
+        this.migrationAdapter,
+        new Resolvable<MigrationTree>(migrationTree),
+        auth || null,
+      );
+    } else {
+      return new RelationalMigrationContext(
+        this.migrationAdapter,
+        new Resolvable<MigrationTree>(migrationTree.getMigrations()),
+        auth || null,
+      );
+    }
   }
 
   async needsMigration(options?: MigrationContextUpdateOptions): Promise<boolean> {

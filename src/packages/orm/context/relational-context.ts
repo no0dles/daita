@@ -7,6 +7,7 @@ import { RuleContext } from '../../relational/permission/description/rule-contex
 import { MigrationTree } from '../migration/migration-tree';
 import { RuleError } from '../error/rule-error';
 import { Resolvable } from '../../common/utils/resolvable';
+import { getRulesFromSchema } from '../schema/description/relational-schema-description';
 
 export class RelationalContext extends RelationalBaseContext implements Context<any> {
   constructor(
@@ -26,7 +27,11 @@ export class RelationalContext extends RelationalBaseContext implements Context<
       return super.exec(sql);
     }
 
-    const result = validateRules(sql, (await this.migrationTree.get()).getSchemaDescription().rulesList, this.auth);
+    const result = validateRules(
+      sql,
+      getRulesFromSchema((await this.migrationTree.get()).getSchemaDescription()),
+      this.auth,
+    );
     if (result.type === 'forbid') {
       throw new RuleError(result.error);
     }

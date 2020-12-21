@@ -1,11 +1,20 @@
 import { AstContext } from '../../ast/ast-context';
 import * as path from 'path';
 import { parseRelationalSchema } from './parse-relational-schema';
-import { isNotNull } from '../../../../testing/cli/utils.test';
 import 'jest-extended';
 import { allow } from '../../../relational/permission/function/allow';
 import { authorized } from '../../../relational/permission/function/authorized';
-import { RelationalSchemaDescription } from '../../../orm/schema/description/relational-schema-description';
+import {
+  getFieldsFromSchemaTable,
+  getIndicesFromSchemaTable,
+  getReferencesFromSchemaTable,
+  getRulesFromSchema,
+  getTableFromSchema,
+  getTablesFromSchema,
+  SchemaDescription,
+  SchemaTableDescription,
+  SchemaTableFieldDescription,
+} from '../../../orm/schema/description/relational-schema-description';
 import { all } from '../../../relational/sql/keyword/all/all';
 import { table } from '../../../relational/sql/keyword/table/table';
 
@@ -21,7 +30,7 @@ describe('parse-relational-schema', () => {
   });
 
   it('should parse schema table names', () => {
-    expect(parsedSchema.tables.map((t) => t.name)).toIncludeAllMembers([
+    expect(getTablesFromSchema(parsedSchema).map((t) => t.name)).toIncludeAllMembers([
       'UserRole',
       'Role',
       'RolePermission',
@@ -31,282 +40,210 @@ describe('parse-relational-schema', () => {
   });
 
   it('should parse view', () => {
-    expect(parsedSchema.views).toHaveLength(1);
+    expect(Object.keys(parsedSchema.views || {})).toHaveLength(1);
   });
 
   it(`should parse rules`, () => {
-    const actualRules = parsedSchema.rules.map((r) => r.rule);
+    const actualRules = getRulesFromSchema(parsedSchema);
     expect(actualRules).toEqual([allow(authorized(), { select: all(), from: table('User') })]);
   });
 
-  const baseFields: ExpectedTableField[] = [
-    {
+  const baseFields: { [key: string]: SchemaTableFieldDescription } = {
+    createdDate: {
       required: true,
       type: 'date',
       defaultValue: undefined,
       name: 'createdDate',
     },
-    {
+    modifiedDate: {
       required: false,
       type: 'date',
       defaultValue: undefined,
       name: 'modifiedDate',
     },
-  ];
+  };
 
   shouldHaveTable(parsedSchema, {
     name: 'User',
-    foreignKeys: [],
     primaryKeys: ['id'],
-    indices: { username: { columns: ['username'], unique: true } },
-    fields: [
-      {
+    indices: { username: { fields: ['username'], unique: true, name: 'username' } },
+    fields: {
+      id: {
         required: true,
         type: 'uuid',
         defaultValue: undefined,
         name: 'id',
       },
-      {
+      username: {
         required: true,
         type: 'string',
         defaultValue: undefined,
         name: 'username',
       },
-      {
+      password: {
         required: true,
         type: 'string',
         defaultValue: '1234',
         name: 'password',
         size: 64,
       },
-      {
+      lastLogin: {
         required: true,
         type: 'date',
         defaultValue: undefined,
         name: 'lastLogin',
       },
-      {
+      userType: {
         required: true,
         type: 'string',
         name: 'userType',
         defaultValue: 'local',
       },
-      {
+      userStatus: {
         required: true,
         type: 'number',
         name: 'userStatus',
         defaultValue: undefined,
       },
-      {
+      admin: {
         required: true,
         type: 'boolean',
         defaultValue: false,
         name: 'admin',
       },
       ...baseFields,
-    ],
+    },
   });
 
   shouldHaveTable(parsedSchema, {
     name: 'Role',
-    foreignKeys: [
-      {
+    references: {
+      parentRole: {
         name: 'parentRole',
         table: 'Role',
-        keys: ['parentRoleName'],
-        foreignKeys: ['name'],
-        required: false,
+        keys: [{ field: 'parentRoleName', foreignField: 'name' }],
       },
-    ],
+    },
     primaryKeys: ['name'],
-    indices: { desc: { columns: ['description'], unique: false } },
-    fields: [
-      {
+    indices: { desc: { fields: ['description'], unique: false, name: 'desc' } },
+    fields: {
+      name: {
         required: true,
         type: 'string',
         defaultValue: undefined,
         name: 'name',
       },
-      {
+      description: {
         required: false,
         type: 'string',
         defaultValue: null,
         name: 'description',
       },
-      {
+      parentRoleName: {
         required: false,
         type: 'string',
         defaultValue: undefined,
         name: 'parentRoleName',
       },
       ...baseFields,
-    ],
+    },
   });
 
   shouldHaveTable(parsedSchema, {
     name: 'Permission',
-    foreignKeys: [],
     primaryKeys: ['name'],
-    fields: [
-      {
+    fields: {
+      name: {
         required: true,
         type: 'string',
         defaultValue: undefined,
         name: 'name',
       },
       ...baseFields,
-    ],
+    },
   });
 
   shouldHaveTable(parsedSchema, {
     name: 'UserRole',
-    foreignKeys: [
-      {
+    references: {
+      role: {
         name: 'role',
         table: 'Role',
-        keys: ['roleName'],
-        foreignKeys: ['name'],
-        required: true,
+        keys: [{ field: 'roleName', foreignField: 'name' }],
       },
-      {
+      user: {
         name: 'user',
         table: 'User',
-        keys: ['userId'],
-        foreignKeys: ['id'],
-        required: true,
+        keys: [{ field: 'userId', foreignField: 'id' }],
       },
-    ],
+    },
     primaryKeys: ['roleName', 'userId'],
-    fields: [
-      {
+    fields: {
+      userId: {
         required: true,
         defaultValue: undefined,
         name: 'userId',
         type: 'uuid',
       },
-      {
+      roleName: {
         required: true,
         defaultValue: undefined,
         name: 'roleName',
         type: 'string',
       },
       ...baseFields,
-    ],
+    },
   });
 
   shouldHaveTable(parsedSchema, {
     name: 'RolePermission',
-    foreignKeys: [
-      {
+    references: {
+      role: {
         name: 'role',
         table: 'Role',
-        keys: ['roleName'],
-        foreignKeys: ['name'],
-        required: true,
+        keys: [{ field: 'roleName', foreignField: 'name' }],
       },
-      {
+      permission: {
         name: 'permission',
         table: 'Permission',
-        keys: ['permissionName'],
-        foreignKeys: ['name'],
-        required: true,
+        keys: [{ field: 'permissionName', foreignField: 'name' }],
       },
-    ],
+    },
     primaryKeys: ['roleName', 'permissionName'],
-    fields: [
-      {
+    fields: {
+      permissionName: {
         required: true,
         defaultValue: undefined,
         name: 'permissionName',
         type: 'string',
       },
-      {
+      roleName: {
         required: true,
         defaultValue: undefined,
         name: 'roleName',
         type: 'string',
       },
       ...baseFields,
-    ],
+    },
   });
 });
 
-function shouldHaveTable(relationalSchema: RelationalSchemaDescription, options: ExpectedTable) {
-  describe(`${options.name} table`, () => {
-    const roleTable = relationalSchema.table(table(options.name));
-    isNotNull(roleTable);
+function shouldHaveTable(relationalSchema: SchemaDescription, expected: SchemaTableDescription) {
+  describe(`${expected.name} table`, () => {
+    const roleTable = getTableFromSchema(relationalSchema, table(expected.name));
 
     it('should parse primary keys', () => {
-      expect(roleTable.primaryKeys.map((k) => k.name)).toIncludeAllMembers(options.primaryKeys);
+      expect(roleTable.table.primaryKeys).toEqual(expected.primaryKeys);
     });
 
-    if (options.indices) {
-      for (const name of Object.keys(options.indices)) {
-        const expectedIndex = options.indices[name];
-        it(`should parse index ${name}`, () => {
-          const index = roleTable.getIndex(name);
-          expect(index).toBeDefined();
-          expect(index).not.toBeNull();
-          expect(index!.name).toEqual(name);
-          expect(index!.unique).toEqual(expectedIndex.unique);
-          expect(index!.fields.map((f) => f.name)).toEqual(expectedIndex.columns);
-        });
-      }
-    }
-
-    for (const foreignKey of options.foreignKeys) {
-      it(`should parse ${foreignKey.name} foreign key`, () => {
-        const tableForeignKey = roleTable.reference(foreignKey.name);
-        expect({
-          name: tableForeignKey.name,
-          required: tableForeignKey.required,
-          table: tableForeignKey.table.name,
-          keys: tableForeignKey.keys.map((k) => k.field.name),
-          foreignKeys: tableForeignKey.keys.map((k) => k.foreignField.name),
-        }).toEqual(foreignKey);
-      });
-    }
-
-    for (const fieldOptions of options.fields) {
-      it(`should parse ${fieldOptions.name} field`, () => {
-        const field = roleTable.field(fieldOptions.name);
-        isNotNull(field);
-        expect(field.required).toEqual(fieldOptions.required);
-        expect(field.defaultValue).toEqual(fieldOptions.defaultValue);
-        expect(field.type).toEqual(fieldOptions.type);
-        expect(field.name).toEqual(fieldOptions.name);
-        expect(field.size).toEqual(fieldOptions.size);
-      });
-    }
-
-    it('should not contain more foreign keys', () => {
-      expect(roleTable.references.map((ref) => ref.name)).toEqual(options.foreignKeys.map((field) => field.name));
+    it('should parse indices', () => {
+      expect(getIndicesFromSchemaTable(roleTable.table)).toEqual(getIndicesFromSchemaTable(expected));
     });
-
-    it('should not contain more fields', () => {
-      expect(roleTable.fields.map((f) => f.name)).toIncludeAllMembers(options.fields.map((field) => field.name));
+    it('should parse references', () => {
+      expect(getReferencesFromSchemaTable(roleTable.table)).toEqual(getReferencesFromSchemaTable(expected));
+    });
+    it('should parse fields', () => {
+      expect(getFieldsFromSchemaTable(roleTable.table)).toEqual(getFieldsFromSchemaTable(expected));
     });
   });
-}
-
-interface ExpectedTable {
-  name: string;
-  primaryKeys: string[];
-  indices?: { [key: string]: { columns: string[]; unique: boolean } };
-  foreignKeys: {
-    name: string;
-    table: string;
-    keys: string[];
-    foreignKeys: string[];
-    required: boolean;
-  }[];
-  fields: ExpectedTableField[];
-}
-
-interface ExpectedTableField {
-  name: string;
-  type: string;
-  required: boolean;
-  defaultValue: any;
-  size?: number;
 }

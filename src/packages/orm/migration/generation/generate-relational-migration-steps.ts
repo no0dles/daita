@@ -1,25 +1,33 @@
-import { RelationalSchemaDescription } from '../../schema/description/relational-schema-description';
+import {
+  getFieldNamesFromSchemaTable,
+  getFieldsFromSchemaTable,
+  getIndicesFromSchemaTable,
+  getReferencesFromSchemaTable,
+  getSeedsFromSchemaTable,
+  getTableFromSchema,
+  getTablesFromSchema,
+  SchemaDescription,
+} from '../../schema/description/relational-schema-description';
 import { MigrationStep } from '../migration-step';
 import { generateRelationalTableMigrationSteps } from './generate-relational-table-migration-steps';
 import { merge } from '../../../common/utils/merge';
+import { table } from '../../../relational';
+import { isTableReferenceRequiredInTable } from '../../schema/description/relational-table-reference-description';
 
-export function generateRelationalMigrationSteps(
-  currentSchema: RelationalSchemaDescription,
-  newSchema: RelationalSchemaDescription,
-) {
+export function generateRelationalMigrationSteps(currentSchema: SchemaDescription, newSchema: SchemaDescription) {
   const steps: MigrationStep[] = [];
 
-  const mergedTables = merge(currentSchema.tables, newSchema.tables, (first, second) => first.key === second.key);
-  const mergedViews = merge(currentSchema.views, newSchema.views, (first, second) => first.key === second.key);
-  const mergedRules = merge(currentSchema.rules, newSchema.rules, (first, second) => first.id === second.id);
+  const mergedTables = merge(currentSchema.tables, newSchema.tables);
+  const mergedViews = merge(currentSchema.views, newSchema.views);
+  const mergedRules = merge(currentSchema.rules, newSchema.rules);
 
   for (const table of mergedTables.added) {
-    steps.push({ kind: 'add_table', table: table.name });
-    for (const field of table.fields) {
+    steps.push({ kind: 'add_table', table: table.item.name, schema: table.item.schema });
+    for (const { field } of getFieldsFromSchemaTable(table.item)) {
       steps.push({
         kind: 'add_table_field',
-        table: table.name,
-        schema: table.schema,
+        table: table.item.name,
+        schema: table.item.schema,
         fieldName: field.name,
         type: field.type,
         required: field.required,
@@ -27,28 +35,30 @@ export function generateRelationalMigrationSteps(
       });
     }
 
-    steps.push({
-      kind: 'add_table_primary_key',
-      table: table.name,
-      fieldNames: table.primaryKeys.map((k) => k.name),
-    });
-
-    for (const index of table.indices) {
+    if (table.item.primaryKeys && table.item.primaryKeys.length > 0) {
       steps.push({
-        kind: 'create_index',
-        table: table.name,
-        schema: table.schema,
-        unique: index.unique,
-        name: index.name,
-        fields: index.fields.map((f) => f.name),
+        kind: 'add_table_primary_key',
+        table: table.item.name,
+        fieldNames: getFieldNamesFromSchemaTable(table.item, table.item.primaryKeys),
       });
     }
 
-    for (const seed of table.seeds) {
+    for (const index of getIndicesFromSchemaTable(table.item)) {
+      steps.push({
+        kind: 'create_index',
+        table: table.item.name,
+        schema: table.item.schema,
+        unique: index.unique,
+        name: index.name,
+        fields: getFieldNamesFromSchemaTable(table.item, index.fields),
+      });
+    }
+
+    for (const seed of getSeedsFromSchemaTable(table.item)) {
       steps.push({
         kind: 'insert_seed',
-        table: table.name,
-        schema: table.schema,
+        table: table.item.name,
+        schema: table.item.schema,
         keys: seed.seedKeys,
         seed: seed.seed,
       });
@@ -56,16 +66,16 @@ export function generateRelationalMigrationSteps(
   }
 
   for (const merge of mergedTables.merge) {
-    steps.push(...generateRelationalTableMigrationSteps(merge.current, merge.target));
+    steps.push(...generateRelationalTableMigrationSteps(newSchema, merge.current, merge.target));
   }
 
   for (const view of mergedViews.removed) {
-    steps.push({ kind: 'drop_view', schema: view.schema, view: view.name });
+    steps.push({ kind: 'drop_view', schema: view.item.schema, view: view.item.name });
   }
 
-  for (const table of currentSchema.tables) {
-    for (const reference of table.references) {
-      if (mergedTables.removed.some((t) => t.key === reference.table.key)) {
+  for (const table of getTablesFromSchema(currentSchema)) {
+    for (const reference of getReferencesFromSchemaTable(table)) {
+      if (mergedTables.removed.some((t) => t.key === reference.table)) {
         steps.push({
           kind: 'drop_table_foreign_key',
           table: table.name,
@@ -77,20 +87,28 @@ export function generateRelationalMigrationSteps(
   }
 
   for (const table of mergedTables.removed) {
-    steps.push({ kind: 'drop_table', table: table.name });
+    steps.push({ kind: 'drop_table', table: table.item.name, schema: table.item.schema });
   }
 
-  for (const table of mergedTables.added) {
-    for (const foreignKey of table.references) {
+  for (const addedTable of mergedTables.added) {
+    for (const foreignKey of getReferencesFromSchemaTable(addedTable.item)) {
+      const foreignTable = getTableFromSchema(newSchema, table(foreignKey.table, foreignKey.schema));
       steps.push({
         kind: 'add_table_foreign_key',
-        table: table.name,
-        schema: table.schema,
+        table: addedTable.item.name,
+        schema: addedTable.item.schema,
         name: foreignKey.name,
-        fieldNames: foreignKey.keys.map((key) => key.field.name),
-        foreignFieldNames: foreignKey.keys.map((key) => key.foreignField.name),
-        foreignTable: foreignKey.table.name,
-        required: foreignKey.required,
+        fieldNames: getFieldNamesFromSchemaTable(
+          addedTable.item,
+          foreignKey.keys.map((k) => k.field),
+        ),
+        foreignFieldNames: getFieldNamesFromSchemaTable(
+          foreignTable.table,
+          foreignKey.keys.map((k) => k.foreignField),
+        ),
+        foreignTable: foreignKey.table,
+        foreignTableSchema: foreignKey.schema,
+        required: isTableReferenceRequiredInTable(addedTable.item, foreignKey),
       });
     }
   }
@@ -107,18 +125,18 @@ export function generateRelationalMigrationSteps(
   for (const view of mergedViews.added) {
     steps.push({
       kind: 'add_view',
-      view: view.name,
-      schema: view.schema,
-      query: view.query,
+      view: view.item.name,
+      schema: view.item.schema,
+      query: view.item.query,
     });
   }
 
   for (const rule of mergedRules.added) {
-    steps.push({ kind: 'add_rule', rule: rule.rule, ruleId: rule.id });
+    steps.push({ kind: 'add_rule', rule: rule.item, ruleId: rule.key });
   }
 
   for (const rule of mergedRules.removed) {
-    steps.push({ kind: 'drop_rule', ruleId: rule.id });
+    steps.push({ kind: 'drop_rule', ruleId: rule.key });
   }
 
   return steps.map((step) => {

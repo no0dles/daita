@@ -58,6 +58,7 @@ describe('http-server/app', () => {
       createHttpServerApp(
         {
           context: httpCtx,
+          enableTransactions: true,
           authorization: {
             providers: [
               {

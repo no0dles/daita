@@ -3,6 +3,13 @@ import { AstContext } from '../../ast/ast-context';
 import * as path from 'path';
 import * as fs from 'fs';
 import { createLogger } from '../../../common/utils/logger';
+import {
+  getFieldsFromSchemaTable,
+  getReferencesFromSchemaTable,
+  getReferenceTableFromKey,
+  getTablesFromSchema,
+} from '../../../orm/schema/description/relational-schema-description';
+import { isTableReferenceRequiredInTable } from '../../../orm/schema/description/relational-table-reference-description';
 
 export async function diagram(options: { cwd?: string; schema?: string; filename?: string }) {
   const logger = createLogger({ command: 'diagram', package: 'cli', options });
@@ -25,10 +32,15 @@ export async function diagram(options: { cwd?: string; schema?: string; filename
     '#arrowSize: 0.5\n';
 
   const relationalSchema = schemaInfo.getRelationalSchema();
-  for (const table of relationalSchema.tables) {
-    content += `[${table.name}|${table.fields.map((f) => `${f.name}${f.required ? '!' : ''}:${f.type}`).join(';')}]\n`;
-    for (const foreignKey of table.references) {
-      content += `[${table.name}] ${foreignKey.name}${foreignKey.required ? '+' : 'o'}-> [${foreignKey.table.name}]\n`;
+  for (const table of getTablesFromSchema(relationalSchema)) {
+    content += `[${table.name}|${getFieldsFromSchemaTable(table)
+      .map((f) => `${f.field.name}${f.field.required ? '!' : ''}:${f.field.type}`)
+      .join(';')}]\n`;
+    for (const foreignKey of getReferencesFromSchemaTable(table)) {
+      const foreignKeyTable = getReferenceTableFromKey(relationalSchema, foreignKey);
+      content += `[${table.name}] ${foreignKey.name}${
+        isTableReferenceRequiredInTable(table, foreignKey) ? '+' : 'o'
+      }-> [${foreignKeyTable.table.name}]\n`;
     }
   }
 

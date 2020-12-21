@@ -3,6 +3,8 @@ import { NodeHttp } from '../../../http-client-common/node-http';
 import { serve } from './serve';
 import { getPostgresDb, PostgresDb } from '../../../pg-adapter/testing/postgres-test-adapter';
 import { HttpTransactionAdapter } from '../../../http-adapter/http-transaction-adapter';
+import { Resolvable } from '../../../common/utils/resolvable';
+import { Http } from '../../../http-client-common/http';
 
 describe('cli/commands/serve', () => {
   let postgresDb: PostgresDb;
@@ -23,11 +25,7 @@ describe('cli/commands/serve', () => {
           disableAuth: true,
         });
 
-        const client = new HttpTransactionAdapter(
-          new NodeHttp('http://localhost:8765', null),
-          Promise.resolve(),
-          () => {},
-        );
+        const client = new HttpTransactionAdapter(new Resolvable<Http>(new NodeHttp('http://localhost:8765', null)));
         const result = await client.exec({ select: { date: 'test' } });
         expect(result.rowCount).toEqual(1);
         expect(result.rows[0].date).not.toBeNull();
