@@ -4,7 +4,7 @@ import { MigrationPlan } from '../orm/context/relational-migration-context';
 import { MigrationDescription } from '../orm/migration/migration-description';
 
 export class HttpMigrationAdapter extends HttpTransactionAdapter implements RelationalMigrationAdapter<any> {
-  async applyMigration(schema: string, migrationPlan: MigrationPlan[]): Promise<void> {
+  async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
     const http = await this.http.get();
     const result = await http.json({
       path: `api/orm/${schema}/migrations`,

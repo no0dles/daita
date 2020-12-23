@@ -34,14 +34,11 @@ export class SqliteRelationalMigrationAdapter
     return this.connectionString.instant() === ':memory:' ? 'sqlite-memory' : 'sqlite-file';
   }
 
-  async applyMigration(schema: string, migrationPlans: MigrationPlan[]): Promise<void> {
+  async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
     await this.transaction(async (trx) => {
       const client = new RelationalClient(trx);
-
-      for (const migrationPlan of migrationPlans) {
-        await this.applyMigrationPlan(client, migrationPlan);
-        await this.storage.add(client, schema, migrationPlan.migration);
-      }
+      await this.applyMigrationPlan(client, migrationPlan);
+      await this.storage.add(client, schema, migrationPlan.migration);
     });
   }
 

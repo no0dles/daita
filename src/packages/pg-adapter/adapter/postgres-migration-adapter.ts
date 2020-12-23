@@ -87,15 +87,13 @@ export class PostgresMigrationAdapter
     }
   }
 
-  async applyMigration(schema: string, migrationPlans: MigrationPlan[]): Promise<void> {
+  async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
     await this.transaction(async (trx) => {
       const client = new RelationalClient(trx);
       await this.storage.initalize(client);
       await client.exec({ lockTable: table(Migrations) });
-      for (const migrationPlan of migrationPlans) {
-        await this.applyMigrationPlan(client, migrationPlan);
-        await this.storage.add(client, schema, migrationPlan.migration);
-      }
+      await this.applyMigrationPlan(client, migrationPlan);
+      await this.storage.add(client, schema, migrationPlan.migration);
       await client.exec({ notify: 'daita_migrations' });
     });
   }

@@ -37,7 +37,7 @@ export function createHttpServerApp(options: AppOptions, port: number) {
       }),
     );
   }
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({}));
 
   if (
     options.authorization &&

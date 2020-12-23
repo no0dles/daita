@@ -24,7 +24,7 @@ export function ormRoute(options: AppOptions) {
 
   router.post('/:schema/migrations', async (req, res, next) => {
     try {
-      if (!req.body.migrationPlan || !(req.body.migrationPlan instanceof Array)) {
+      if (!req.body.migrationPlan) {
         // TODO extend validation
         return res.status(400).json({ message: 'invalid data' });
       }

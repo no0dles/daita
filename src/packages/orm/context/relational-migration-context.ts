@@ -55,7 +55,9 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
   async migrate(options?: MigrationContextUpdateOptions): Promise<void> {
     const pendingMigrations = await this.getPendingMigrations(options);
     const migrationTree = await this.migrationTree.get();
-    await this.migrationAdapter.applyMigration(migrationTree.name, pendingMigrations);
+    for (const migration of pendingMigrations) {
+      await this.migrationAdapter.applyMigration(migrationTree.name, migration);
+    }
   }
 
   private async getPendingMigrations(options?: MigrationContextUpdateOptions): Promise<MigrationPlan[]> {

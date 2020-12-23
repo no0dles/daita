@@ -29,14 +29,12 @@ export class MariadbRelationalMigrationAdapter
   implements RelationalMigrationAdapter<MariadbSql> {
   private storage = new MigrationStorage({ idType: { type: 'string', size: 255 } });
 
-  async applyMigration(schema: string, migrationPlans: MigrationPlan[]): Promise<void> {
+  async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
     await this.transaction(async (trx) => {
       const client = new RelationalClient(trx);
       await this.storage.initalize(client);
-      for (const migrationPlan of migrationPlans) {
-        await this.applyMigrationPlan(client, migrationPlan);
-        await this.storage.add(client, schema, migrationPlan.migration);
-      }
+      await this.applyMigrationPlan(client, migrationPlan);
+      await this.storage.add(client, schema, migrationPlan.migration);
     });
   }
 
