@@ -3,7 +3,7 @@ import { Rule } from '../../../relational/permission/description/rule';
 import { SelectSql } from '../../../relational/sql/dml/select/select-sql';
 import { SchemaTableFieldTypeDescription } from '../schema-table-field-type-description';
 import { table } from '../../../relational';
-import { capitalize } from '../../../cli/migration/utils';
+import { capitalize } from '../../../common/utils/capitalize';
 
 export function getTableDescriptionIdentifier(table: TableDescription<any>): string {
   if (table.schema) {
@@ -44,7 +44,7 @@ export function createSchema(
 export function addTableReference(
   table: SchemaTableDescription,
   options: { name: string; referenceTableKey: string; referenceTable: SchemaTableDescription; required: boolean },
-) {
+): void {
   const keys: SchemaTableReferenceKeyDescription[] = [];
   if (!options.referenceTable.primaryKeys || options.referenceTable.primaryKeys.length === 0) {
     throw new Error(`can not create foreign key without an primary key on ${options.referenceTableKey}`);
@@ -84,15 +84,15 @@ export function addTableReference(
   };
 }
 
-export function setTablePrimaryKey(table: SchemaTableDescription, keys: string[]) {
+export function setTablePrimaryKey(table: SchemaTableDescription, keys: string[]): void {
   table.primaryKeys = keys;
 }
 
-export function containsTableField(table: SchemaTableDescription, key: string) {
-  return table.fields && !!table.fields[key];
+export function containsTableField(table: SchemaTableDescription, key: string): boolean {
+  return !!table.fields && !!table.fields[key];
 }
 
-function getKeyForSeed(key: string, table: SchemaTableDescription, seed: any) {
+function getKeyForSeed(key: string, table: SchemaTableDescription, seed: any): string {
   if (!table.primaryKeys || table.primaryKeys.length === 0) {
     throw new Error(`can not add seed without primary key on ${key}`);
   }
@@ -103,7 +103,11 @@ function getKeyForSeed(key: string, table: SchemaTableDescription, seed: any) {
     .join('-');
 }
 
-export function updateSeed(tableKey: string, table: SchemaTableDescription, options: { keys: string[]; seed: any }) {
+export function updateSeed(
+  tableKey: string,
+  table: SchemaTableDescription,
+  options: { keys: string[]; seed: any },
+): void {
   if (!table.seeds) {
     table.seeds = {};
   }
@@ -115,14 +119,26 @@ export function updateSeed(tableKey: string, table: SchemaTableDescription, opti
   };
 }
 
-export function removeSeed(tableKey: string, table: SchemaTableDescription, keys: string[]) {
+export function removeSeed(tableKey: string, table: SchemaTableDescription, keys: string[]): void {
   if (table.seeds) {
     const key = getKeyForSeed(tableKey, table, keys);
     delete table.seeds[key];
   }
 }
 
-export function addSeed(tableKey: string, table: SchemaTableDescription, seed: any) {
+export function addExistingSeed(tableKey: string, table: SchemaTableDescription, seed: any, keys: any): void {
+  if (!table.seeds) {
+    table.seeds = {};
+  }
+
+  const key = getKeyForSeed(tableKey, table, keys);
+  table.seeds[key] = {
+    seed,
+    seedKeys: keys,
+  };
+}
+
+export function addSeed(tableKey: string, table: SchemaTableDescription, seed: any): void {
   if (!table.primaryKeys || table.primaryKeys.length === 0) {
     throw new Error(`can not add seed without primary key on ${tableKey}`);
   }
@@ -133,15 +149,7 @@ export function addSeed(tableKey: string, table: SchemaTableDescription, seed: a
     delete seed[primaryKey];
   }
 
-  if (!table.seeds) {
-    table.seeds = {};
-  }
-
-  const key = getKeyForSeed(tableKey, table, seedKeys);
-  table.seeds[key] = {
-    seed,
-    seedKeys,
-  };
+  addExistingSeed(tableKey, table, seed, seedKeys);
 }
 
 export function addTableField(
@@ -153,7 +161,7 @@ export function addTableField(
     required: boolean;
     defaultValue: any;
   },
-) {
+): void {
   if (!table.fields) {
     table.fields = {};
   }
@@ -167,21 +175,19 @@ export function addTableField(
   };
 }
 
-export function dropTableField(table: SchemaTableDescription, key: string) {
+export function dropTableField(table: SchemaTableDescription, key: string): void {
   if (table.fields) {
     delete table.fields[key];
   }
 }
 
 export interface SchemaTableSeedDescription {
-  //  key: string;
   seed: any;
   seedKeys: any;
 }
 
 export interface SchemaTableFieldDescription {
   name: string;
-  //key: string;
   type: SchemaTableFieldTypeDescription;
   size?: number | undefined;
   required: boolean;
@@ -338,7 +344,6 @@ export function containsTableInSchema(schema: SchemaDescription, key: TableDescr
 
 export function addTableToSchema(schema: SchemaDescription, table: { table: string; schema?: string }) {
   const tableDescription: SchemaTableDescription = {
-    //key: table.table,
     schema: table.schema,
     fields: {},
     references: {},
@@ -350,11 +355,12 @@ export function addTableToSchema(schema: SchemaDescription, table: { table: stri
   if (!schema.tables) {
     schema.tables = {};
   }
-  schema.tables[table.table] = tableDescription;
+  const key = getTableDescriptionIdentifier(table);
+  schema.tables[key] = tableDescription;
   return tableDescription;
 }
 
-export function addViewToSchema(schema: SchemaDescription, view: { query: any; schema?: string; name: string }) {
+export function addViewToSchema(schema: SchemaDescription, view: { query: any; schema?: string; name: string }): void {
   const identifier = getTableDescriptionIdentifier(table(view.name, view.schema));
   if (!schema.views) {
     schema.views = {};
@@ -370,7 +376,7 @@ export function addViewToSchema(schema: SchemaDescription, view: { query: any; s
 export function addIndexToTable(
   table: SchemaTableDescription,
   index: { key: string; fields: string[]; unique: boolean },
-) {
+): void {
   if (!table.indices) {
     table.indices = {};
   }
@@ -380,34 +386,34 @@ export function addIndexToTable(
     unique: index.unique,
   };
 }
-export function dropTableIndex(table: SchemaTableDescription, key: string) {
+export function dropTableIndex(table: SchemaTableDescription, key: string): void {
   if (table.indices) {
     delete table.indices[key];
   }
 }
 
-export function dropTableReference(table: SchemaTableDescription, key: string) {
+export function dropTableReference(table: SchemaTableDescription, key: string): void {
   if (table.references) {
     delete table.references[key];
   }
 }
 
-export function addRuleToSchema(schema: SchemaDescription, id: string, rule: Rule) {
+export function addRuleToSchema(schema: SchemaDescription, id: string, rule: Rule): void {
   if (schema.rules) {
     schema.rules[id] = rule;
   }
 }
-export function dropRuleFromSchema(schema: SchemaDescription, id: string) {
+export function dropRuleFromSchema(schema: SchemaDescription, id: string): void {
   if (schema.rules) {
     delete schema.rules[id];
   }
 }
-export function dropTableFromSchema(schema: SchemaDescription, key: TableDescription<any>) {
+export function dropTableFromSchema(schema: SchemaDescription, key: TableDescription<any>): void {
   if (schema.tables) {
     delete schema.tables[getTableDescriptionIdentifier(key)];
   }
 }
-export function dropViewFromSchema(schema: SchemaDescription, key: TableDescription<any>) {
+export function dropViewFromSchema(schema: SchemaDescription, key: TableDescription<any>): void {
   if (schema.views) {
     delete schema.views[getTableDescriptionIdentifier(key)];
   }

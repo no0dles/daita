@@ -7,7 +7,6 @@ import { RelationalMigrationAdapter } from '../orm/adapter/relational-migration-
 import { MigrationContext } from '../orm/context/get-migration-context';
 import { RelationalMigrationAdapterImplementation } from '../orm/adapter/relational-migration-adapter-implementation';
 import { HttpMigrationAdapter } from './http-migration-adapter';
-import { createAuthApp } from '../auth-server/app';
 import { authSchema } from '../auth-server/schema';
 import { Resolvable } from '../common/utils/resolvable';
 import { createToken, seedPoolUser, seedRoles, seedUserPool, seedUserRole } from '../auth-server/seed';

@@ -5,15 +5,19 @@ import { RelationalTransactionAdapter } from '../../relational/adapter/relationa
 import { RelationalDataAdapter } from '../../relational/adapter/relational-data-adapter';
 import { ConnectionError } from '../../relational/error/connection-error';
 import { Resolvable } from '../../common/utils/resolvable';
+import { createLogger } from '../../common/utils/logger';
 
 export interface PostgresNotificationSubscriber {
   (msg: string | undefined): void;
 }
 
+const logger = createLogger({ package: 'pg-adapter' });
+
 export class PostgresTransactionAdapter
   extends PostgresDataAdapter<Pool>
   implements RelationalTransactionAdapter<PostgresSql> {
   private closed = false;
+  private pool: Pool | null = null;
 
   private notificationPoolClient: PoolClient | undefined = undefined;
   private notificationPoolClientAdapter: RelationalDataAdapter<PostgresSql> | undefined = undefined;
@@ -24,19 +28,21 @@ export class PostgresTransactionAdapter
       new Resolvable(
         async () => {
           const connectionString = await this.connectionString.get();
-          const pool = new Pool({
+          this.pool = new Pool({
             connectionString,
             connectionTimeoutMillis: 10000,
             keepAlive: true,
             max: 20,
             idleTimeoutMillis: 10000,
+            application_name: 'daita',
           });
-          pool.on('error', (e) => {
-            console.log(e);
+          this.pool.on('error', (e) => {
+            logger.error(e, { client: 'pool' });
           });
-          return pool;
+          return this.pool;
         },
         () => {
+          this.pool?.end();
           return this.connectionString.close();
         },
       ),
@@ -58,7 +64,7 @@ export class PostgresTransactionAdapter
       const pool = await this.client.get();
       this.notificationPoolClient = await pool.connect();
       this.notificationPoolClient.on('error', (e) => {
-        console.log(e);
+        logger.error(e, { client: 'notification' });
       });
       this.notificationPoolClientAdapter = new PostgresDataAdapter(new Resolvable(this.notificationPoolClient));
       this.notificationPoolClient.on('notification', (msg) => {

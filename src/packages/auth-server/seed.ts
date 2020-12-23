@@ -23,17 +23,30 @@ export async function createToken(
 ) {
   const token = await getRandomCode();
   const hashedToken = await getSha1(token);
-  await client.insert({
-    insert: {
-      id: await getRandomCode(),
-      userUsername: options.username,
-      token: hashedToken,
-      name: options.name,
-      expiresAt: options.expiresAt,
-      createdAt: new Date(),
-    },
-    into: table(UserToken),
-  });
+  if (options.expiresAt) {
+    await client.insert({
+      insert: {
+        id: await getRandomCode(),
+        userUsername: options.username,
+        token: hashedToken,
+        name: options.name,
+        expiresAt: options.expiresAt,
+        createdAt: new Date(),
+      },
+      into: table(UserToken),
+    });
+  } else {
+    await client.insert({
+      insert: {
+        id: await getRandomCode(),
+        userUsername: options.username,
+        token: hashedToken,
+        name: options.name,
+        createdAt: new Date(),
+      },
+      into: table(UserToken),
+    });
+  }
 
   return `${options.userPoolId}:${token}`;
 }
