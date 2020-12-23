@@ -49,7 +49,7 @@ function getAdapterImpl<T>(
   RelationalDataAdapterImplementation<any, any> {
   const cwd = path.join(options?.cwd || process.cwd());
   if (contextConfig.module) {
-    return require(path.join(cwd, contextConfig.module)).adapter;
+    return require(path.relative(__dirname, path.join(cwd, contextConfig.module))).adapter;
   } else {
     return require(defaultModule).adapter;
   }

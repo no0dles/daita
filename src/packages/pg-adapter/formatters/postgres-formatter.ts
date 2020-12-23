@@ -18,6 +18,7 @@ import { ansiFormatter } from '../../relational/formatter/ansi-formatter';
 import { NowFormatter } from './now';
 import { TableFormatter } from '../../relational/sql/keyword/table/table-formatter';
 import { ConcatPipeFormatter } from '../../relational/sql/function/string/concat/concat-pipe-formatter';
+import { CreateViewFormatter } from '../../relational/sql/ddl/create-view/create-view';
 
 export const postgresFormatter = new Formatter();
 postgresFormatter.extend(ansiFormatter);
@@ -35,5 +36,6 @@ postgresFormatter.add(new DropIndexFormatter());
 postgresFormatter.add(new NotifyFormatter());
 postgresFormatter.add(new ListenFormatter());
 postgresFormatter.add(new NowFormatter());
+postgresFormatter.add(new CreateViewFormatter());
 postgresFormatter.add(new TableFormatter());
 postgresFormatter.add(new ConcatPipeFormatter());

@@ -26,6 +26,7 @@
   "exclude": [
     "node_modules",
     "jest.config.ts",
+    "jest.teardown.ts",
     "dist",
     "src/tests",
     "src/frontends"
