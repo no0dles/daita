@@ -38,6 +38,18 @@ export class MigrationStorage {
       columns: [
         { name: 'id', type: this.options.idType.type, size: this.options.idType.size, notNull: true, primaryKey: true },
         {
+          name: 'after',
+          type: this.options.idType.type,
+          size: this.options.idType.size,
+          notNull: false,
+        },
+        {
+          name: 'resolve',
+          type: this.options.idType.type,
+          size: this.options.idType.size,
+          notNull: false,
+        },
+        {
           name: 'schema',
           type: this.options.idType.type,
           size: this.options.idType.size,
@@ -85,6 +97,8 @@ export class MigrationStorage {
       select: {
         id: field(Migrations, 'id'),
         schema: field(Migrations, 'schema'),
+        resolve: field(Migrations, 'resolve'),
+        after: field(Migrations, 'after'),
         index: field(MigrationSteps, 'index'),
         step: field(MigrationSteps, 'step'),
       },
@@ -104,7 +118,7 @@ export class MigrationStorage {
 
     const migrationMap = steps.reduce<{ [key: string]: MigrationDescription }>((migrations, step) => {
       if (!migrations[step.id]) {
-        migrations[step.id] = { id: step.id, steps: [] };
+        migrations[step.id] = { id: step.id, after: step.after, resolve: step.resolve, steps: [] };
       }
       migrations[step.id].steps.push(JSON.parse(step.step));
       return migrations;
@@ -115,7 +129,7 @@ export class MigrationStorage {
 
   async add(client: Client<any>, schema: string, migration: MigrationDescription) {
     await client.exec({
-      insert: { id: migration.id, schema },
+      insert: { id: migration.id, schema, resolve: migration.resolve, after: migration.after },
       into: table(Migrations),
     });
 

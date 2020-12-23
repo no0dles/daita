@@ -4,4 +4,6 @@ export class Migrations {
 
   id!: string;
   schema!: string;
+  after?: string;
+  resolve?: string;
 }
