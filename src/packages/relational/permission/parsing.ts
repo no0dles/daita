@@ -43,7 +43,7 @@ function restoreRule(rule: Rule): Rule {
   }
 }
 
-function reviveRuleJson<T>(content: string): T {
+export function reviveRuleJson<T>(content: string): T {
   return JSON.parse(content, (key, value) => {
     if (key === '$requestContext') {
       return reviveRequestContext(value);

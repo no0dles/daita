@@ -43,6 +43,7 @@ export function jwtAuth(providers: AppAuthorizationProvider[]) {
       const keystore = await client.get();
 
       const verify = jose.JWT.verify(token, keystore) as any;
+      logger.trace(`request logged in as ${verify.sub} on ${verify.iss}`);
       req.user = {
         exp: verify.exp,
         iat: verify.iat,

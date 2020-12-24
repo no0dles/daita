@@ -9,11 +9,13 @@ export interface RuleResult {
   id: string;
   type: 'allow' | 'forbid';
   score: number;
+  matchCount: number;
+  conditionsCount: number;
   errors: RuleErrorResult[];
 }
 
 export interface RuleErrorResult {
-  path: string[];
+  path?: string[];
   message: string;
 }
 
@@ -201,49 +203,43 @@ export class RuleEvaluator {
     this.matchers = getRuleMatchers(rule.sql, []);
   }
 
+  private returnResult(errors: RuleErrorResult[], matchCount: number): RuleResult {
+    return {
+      errors,
+      score: matchCount / this.matchers.length,
+      conditionsCount: this.matchers.length,
+      matchCount,
+      type: this.rule.type,
+      id: this.id,
+    };
+  }
+
   evaluate(auth: RuleContext, sql: any): RuleResult {
     if (!auth.isAuthorized) {
       if (!this.allowAnonymous) {
-        return {
-          errors: [],
-          score: 0,
-          type: this.rule.type,
-          id: this.id,
-        };
+        return this.returnResult([{ message: 'anonymous is not allowed' }], 0);
       }
     } else {
       if (!this.allowAuthorized) {
-        return {
-          errors: [],
-          score: 0,
-          type: this.rule.type,
-          id: this.id,
-        };
+        return this.returnResult([{ message: 'authorized is not allowed' }], 0);
       }
       if (this.requiredRole && (!auth.roles || auth.roles.indexOf(this.requiredRole) === -1)) {
-        return {
-          errors: [],
-          score: 0,
-          type: this.rule.type,
-          id: this.id,
-        };
+        return this.returnResult([{ message: `missing role ${this.requiredRole}` }], 0);
       }
     }
 
     const errors: RuleErrorResult[] = [];
+    let count = 0;
     for (const matcher of this.matchers) {
       const error = matcher(sql, auth);
       if (error) {
         errors.push(error);
+      } else {
+        count++;
       }
     }
 
-    return {
-      errors,
-      id: this.id,
-      type: this.rule.type,
-      score: 1 - errors.length / this.matchers.length,
-    };
+    return this.returnResult(errors, count);
   }
 }
 
@@ -275,13 +271,15 @@ export function expectMatchingRule(sql: any, rule: Rule | Rule[], ctx: RuleConte
 
   if (result.type === 'forbid') {
     throw new Error(
-      `received forbid rule ${result.id}, ${result.errors.map((e) => `${e.message} (${e.path.join('.')})`).join(',')}`,
+      `received forbid rule ${result.id}, ${result.errors
+        .map((e) => `${e.message} ${e.path ? `(${e.path.join('.')})` : ''}`)
+        .join(',')}`,
     );
   }
   if (result.score !== 1) {
     throw new Error(
       `no matching rule ${result.id} score ${result.score}, ${result.errors
-        .map((e) => `${e.message} (${e.path.join('.')})`)
+        .map((e) => `${e.message} ${e.path ? `(${e.path.join('.')})` : ''}`)
         .join(',')}`,
     );
   }
@@ -305,193 +303,3 @@ export function expectUnmatchingRule(sql: any, rule: Rule | Rule[], ctx: RuleCon
     throw new Error(`received allow rule ${result.id}`);
   }
 }
-//
-// export const isMismatchResult = (val: MatchResult): val is MismatchResult => !val.matches;
-//
-// export function matchesObject(
-//   ruleContext: RuleContext,
-//   authSql: any,
-//   ctxSql: any,
-//   path: string[],
-//   score: number,
-// ): MatchResult {
-//   if (authSql instanceof Array || ctxSql instanceof Array) {
-//     if (authSql instanceof Array && !(ctxSql instanceof Array)) {
-//       return {
-//         path,
-//         matches: false,
-//         score,
-//         message: 'should be an array',
-//       };
-//     }
-//     if (!(authSql instanceof Array) && ctxSql instanceof Array) {
-//       return {
-//         path,
-//         matches: false,
-//         score,
-//         message: 'should not be an array',
-//       };
-//     }
-//     if (authSql.length !== ctxSql.length) {
-//       return {
-//         path,
-//         matches: false,
-//         score,
-//         message: `should have array length of ${authSql.length}`,
-//       };
-//     }
-//     for (let i = 0; i < authSql.length; i++) {
-//       const res = matchesObject(ruleContext, authSql[i], ctxSql[i], [...path, '0'], score + 1);
-//       if (res) {
-//         return res;
-//       }
-//     }
-//   }
-//
-//   const authKeys = Object.keys(authSql);
-//   const ctxKeys = Object.keys(ctxSql);
-//
-//   for (const key of authKeys) {
-//     const index = ctxKeys.indexOf(key);
-//     if (index === -1) {
-//       return {
-//         message: `should contain "${key}"`,
-//         path,
-//         score,
-//         matches: false,
-//       };
-//     }
-//     ctxKeys.splice(index, 1);
-//   }
-//
-//   if (ctxKeys.length > 0) {
-//     const keys = ctxKeys.map((k) => `"${k}"`).join(', ');
-//     return {
-//       matches: false,
-//       path,
-//       score,
-//       message: `should not contain ${keys}`,
-//     };
-//   }
-//
-//   for (const key of authKeys) {
-//     const result = matchesObject(ruleContext, authSql[key], ctxSql[key], [...path, key], score + 1);
-//     if (!result.matches) {
-//       return result;
-//     }
-//   }
-//
-//   return { matches: true, score };
-// }
-//
-// export function matchesAuthsDescription(auths: AuthDescription[] | AuthDescription, ctx: RuleContext): boolean {
-//   if (auths instanceof Array) {
-//     for (const item of auths) {
-//       if (matchesAuthDescription(item, ctx)) {
-//         return true;
-//       }
-//     }
-//     return false;
-//   } else {
-//     return matchesAuthDescription(auths, ctx);
-//   }
-// }
-//
-// export function matchesAuthDescription(auth: AuthDescription, ctx: RuleContext): boolean {
-//   if (auth.type === 'anonymous') {
-//     return !ctx.isAuthorized;
-//   } else if (auth.type === 'authorized') {
-//     return ctx.isAuthorized;
-//   } else if (auth.type === 'role') {
-//     return ctx.roles instanceof Array && ctx.roles.indexOf(auth.role) >= 0;
-//   } else {
-//     failNever(auth, 'unknown auth description');
-//   }
-// }
-//
-// export function matchesRules(sql: Sql<any>, rules: Rule[], ctx: RuleContext): boolean {
-//   const res = validateRules(sql, rules, ctx);
-//   return res.type === 'allow';
-// }
-//
-// export function evaluateRule(sql: Sql<any>, rule: Rule, ctx: RuleContext): RuleValidateResult {
-//   if (rule.type === 'allow') {
-//     if (!matchesAuthsDescription(rule.auth, ctx)) {
-//       return {
-//         type: 'next',
-//         error: 'did not match auth description',
-//         path: [],
-//         score: 0,
-//       };
-//     }
-//
-//     const error = matchesObject(ctx, rule.sql, sql, [], 1);
-//     if (!isMismatchResult(error)) {
-//       return { type: 'allow' };
-//     }
-//
-//     return {
-//       type: 'next',
-//       error: error.message,
-//       path: error.path,
-//       score: error.score,
-//     };
-//   } else if (rule.type === 'forbid') {
-//     if (!matchesAuthsDescription(rule.auth, ctx)) {
-//       return {
-//         type: 'next',
-//         error: 'did not match auth description',
-//         path: [],
-//         score: 0,
-//       };
-//     }
-//
-//     const error = matchesObject(ctx, rule.sql, sql, [], 1);
-//     if (error.matches) {
-//       return {
-//         type: 'forbid',
-//         error: 'should not match forbid rule',
-//         ruleId: getRuleId(rule),
-//       };
-//     }
-//     return { type: 'next', error: '', score: 0, path: [] }; // TODO not optimal type
-//   } else {
-//     failNever(rule.type, 'unknown rule type');
-//   }
-// }
-//
-// export function validateRules(
-//   sql: Sql<any>,
-//   rules: Rule[],
-//   ctx: RuleContext,
-// ): RuleValidateAllowResult | RuleValidateForbidResult {
-//   let error: {
-//     ruleId: string;
-//     error: string;
-//     score: number;
-//     path: string[];
-//   } | null = null;
-//   for (const rule of rules) {
-//     const res = evaluateRule(sql, rule, ctx);
-//     if (res.type === 'allow' || res.type === 'forbid') {
-//       return res;
-//     } else if (!error || res.score > error.score) {
-//       error = {
-//         error: res.error,
-//         ruleId: getRuleId(rule),
-//         score: res.score,
-//         path: res.path,
-//       };
-//     }
-//   }
-//   if (error) {
-//     return {
-//       type: 'forbid',
-//       error: error?.error,
-//       path: error?.path,
-//       ruleId: error?.ruleId,
-//     };
-//   } else {
-//     return { type: 'forbid', error: 'no rules defined' };
-//   }
-// }

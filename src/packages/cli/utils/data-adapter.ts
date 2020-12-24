@@ -2,7 +2,6 @@ import { getGlobalConfig, getProjectConfig } from './config';
 import { HttpAdapterOptions } from '../../http-adapter/adapter-implementation';
 import { SqliteAdapterOptions } from '../../sqlite-adapter/adapter/sqlite-adapter-implementation';
 import { PostgresAdapterOptions } from '../../pg-adapter/adapter/adapter';
-import { AppAuthorization } from '../../http-server-common/app-authorization';
 import path from 'path';
 import { MigrationContext } from '../../orm/context/get-migration-context';
 import {
@@ -12,6 +11,8 @@ import {
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
 import { MigrationTree } from '../../orm/migration/migration-tree';
 import { getContext } from '../../orm/context/get-context';
+import { AppAuthorizationProvider, AppAuthorizationTokenEndpoint } from '../../http-server-common/app-authorization';
+import { UserPoolAlgorithm } from '../../auth-server/models/user-pool';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;
 
@@ -31,13 +32,42 @@ export interface DaitaSqliteContextConfig extends BaseContextConfig {
   options: {
     dropIfExists?: boolean;
   };
-  authorization: AppAuthorization;
+  authorization: DaitaAuthorizationConfig;
 }
 export interface DaitaPostgresContextConfig extends BaseContextConfig {
   options: {
     createIfNotExists?: boolean;
   };
-  authorization: AppAuthorization;
+  authorization: DaitaAuthorizationConfig;
+}
+export interface DaitaAuthorizationConfig {
+  providers?: AppAuthorizationProvider[];
+  tokenEndpoints?: AppAuthorizationTokenEndpoint[];
+  userPools?: { [key: string]: DaitaAuthorizationIssuerConfig };
+}
+export interface DaitaAuthorizationIssuerConfig {
+  users?: { [key: string]: DaitaAuthorizationIssuerUserConfig };
+  cors?: string[];
+  roles?: { [key: string]: DaitaAuthorizationIssuerRoleConfig };
+  name?: string;
+  accessTokenExpiresIn?: number;
+  algorithm?: UserPoolAlgorithm;
+  allowRegistration?: boolean;
+  checkPasswordForBreach?: boolean;
+  emailVerifyExpiresIn?: number;
+  refreshRefreshExpiresIn?: number;
+}
+export interface DaitaAuthorizationIssuerRoleConfig {
+  description?: string;
+}
+export interface DaitaAuthorizationIssuerUserConfig {
+  password: string;
+  email?: string;
+  emailVerified?: boolean;
+  phone?: string;
+  phoneVerified?: boolean;
+  roles?: string[];
+  disabled?: boolean;
 }
 
 function getAdapterImpl<T>(

@@ -17,13 +17,20 @@ function convertFn(value: AstCallExpression) {
   if (!(type instanceof AstFunctionDeclaration)) {
     throw new AstError(value.node, 'expected function type');
   }
-  const requirePath = path.relative(__dirname, type.block.sourceFile.fileName);
+  const requirePath = path.relative(__dirname, getJavascriptFilename(type.block.sourceFile.fileName));
   const fn = require(requirePath)[value.methodName];
   const args: any[] = [];
   for (const arg of value.arguments) {
     args.push(convertValue(arg));
   }
   return fn.apply(fn, args);
+}
+
+export function getJavascriptFilename(fileName: string): string {
+  if (fileName.endsWith('.d.ts')) {
+    return fileName.substr(0, fileName.length - '.d.ts'.length) + '.js';
+  }
+  return fileName;
 }
 
 export function convertValue(value: AstValue): any {

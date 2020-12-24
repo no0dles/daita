@@ -6,11 +6,10 @@ import { applyMigration } from '../apply-migration/apply-migration';
 import { getProjectConfig } from '../../utils/config';
 import { createAuthApp } from '../../../auth-server/app';
 import { createHttpServerApp } from '../../../http-server/app';
-import { seedUserPool, seedUserPoolCors } from '../../../auth-server/seed';
+import { seedPoolUser, seedRoles, seedUserPool, seedUserPoolCors, seedUserRole } from '../../../auth-server/seed';
 import { Debouncer } from '../../../common/utils/debouncer';
 import { AstContext } from '../../ast/ast-context';
 import { Defer } from '../../../common/utils/defer';
-import { isMigrationContext } from '../../../orm/context/get-migration-context';
 import { isTransactionContext } from '../../../orm/context/transaction-context';
 import { createLogger } from '../../../common/utils/logger';
 import { AppOptions } from '../../../http-server-common/app-options';
@@ -73,19 +72,60 @@ export async function serve(opts: {
       throw new Error('authorization api requires a transaction capable adapter');
     }
     await ctx.migrate();
-    await seedUserPool(ctx, {
-      id: 'cli',
-      name: 'cli',
-      accessTokenExpiresIn: 600,
-      algorithm: 'RS256',
-      allowRegistration: true,
-      checkPasswordForBreach: false,
-      emailVerifyExpiresIn: 3600,
-      refreshRefreshExpiresIn: 3600,
-    });
 
-    const corsUrls = (contextConfig.authorization && contextConfig.authorization.cors) || [];
-    await seedUserPoolCors(ctx, 'cli', corsUrls);
+    const userPools = contextConfig.authorization?.userPools || {};
+    for (const issuerKey of Object.keys(userPools)) {
+      const issuer = userPools[issuerKey];
+
+      // TODO remove userpools
+      await seedUserPool(ctx, {
+        id: issuerKey,
+        name: issuer.name || issuerKey,
+        accessTokenExpiresIn: issuer.accessTokenExpiresIn ?? 600,
+        algorithm: issuer.algorithm ?? 'RS256',
+        allowRegistration: issuer.allowRegistration ?? true,
+        checkPasswordForBreach: issuer.checkPasswordForBreach ?? false,
+        emailVerifyExpiresIn: issuer.emailVerifyExpiresIn ?? 3600,
+        refreshRefreshExpiresIn: issuer.refreshRefreshExpiresIn ?? 3600,
+      });
+
+      await seedUserPoolCors(ctx, issuerKey, issuer.cors || []);
+
+      // TODO remove roles
+      const roles = issuer.roles || {};
+      for (const roleKey of Object.keys(roles)) {
+        await seedRoles(ctx, {
+          name: roleKey,
+          description: roles[roleKey].description,
+          userPoolId: issuerKey,
+        });
+      }
+
+      // TODO remove users
+      const users = issuer.users || {};
+      for (const userKey of Object.keys(users)) {
+        const user = users[userKey];
+        await seedPoolUser(ctx, {
+          password: user.password,
+          username: userKey,
+          emailVerified: user.emailVerified ?? true,
+          phone: user.phone,
+          phoneVerified: user.phoneVerified ?? true,
+          userPoolId: issuerKey,
+          email: user.email,
+          disabled: user.disabled ?? false,
+        });
+        // TODO remove user roles
+        for (const role of user.roles || []) {
+          await seedUserRole(ctx, {
+            roleUserPoolId: issuerKey,
+            roleName: role,
+            userUsername: userKey,
+          });
+        }
+      }
+    }
+
     const authPort = opts.authPort || 8766;
     authServer = await createAuthApp(ctx, authPort);
   }

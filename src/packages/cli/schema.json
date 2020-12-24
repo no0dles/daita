@@ -140,14 +140,115 @@
             "$ref": "#/definitions/authorizationToken"
           }
         },
+        "userPools": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Za-z0-9_]+$": {
+              "$ref": "#/definitions/authorizationUserPool"
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "authorizationUserPool": {
+      "type": "object",
+      "properties": {
         "cors": {
           "type": "array",
           "items": {
             "type": "string"
           }
+        },
+        "roles": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Za-z0-9_]+$": {
+              "$ref": "#/definitions/authorizationUserPoolRole"
+            }
+          }
+        },
+        "users": {
+          "type": "object",
+          "patternProperties": {
+            "^[A-Za-z0-9_]+$": {
+              "$ref": "#/definitions/authorizationUserPoolUser"
+            }
+          }
+        },
+        "name": {
+          "type": "string"
+        },
+        "accessTokenExpiresIn": {
+          "type": "number",
+          "default": 600,
+          "$comment": "in seconds"
+        },
+        "algorithm": {
+          "type": "string",
+          "default": "RS256",
+          "enum": ["RS256", "RS384", "RS512", "ES384", "ES512"]
+        },
+        "allowRegistration": {
+          "type": "boolean",
+          "default": true
+        },
+        "checkPasswordForBreach": {
+          "type": "boolean",
+          "default": false
+        },
+        "emailVerifyExpiresIn": {
+          "type": "number",
+          "default": 3600,
+          "$comment": "in seconds"
+        },
+        "refreshRefreshExpiresIn": {
+          "type": "number",
+          "default": 3600,
+          "$comment": "in seconds"
         }
       },
       "additionalProperties": false
+    },
+    "authorizationUserPoolRole": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "authorizationUserPoolUser": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "phone": {
+          "type": "string"
+        },
+        "phoneVerified": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "string"
+        },
+        "emailVerified": {
+          "type": "boolean"
+        },
+        "password": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": ["password"]
     },
     "authorizationProvider": {
       "type": "object",
