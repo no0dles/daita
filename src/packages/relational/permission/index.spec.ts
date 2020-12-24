@@ -1,12 +1,12 @@
 import { field } from '../sql/keyword/field/field';
 import { table } from '../sql/keyword/table/table';
 import { allow } from './function/allow';
-import { matchesRules } from './validate';
 import { requestContext } from './function/request-context';
 import { authorized } from './function/authorized';
 import { anything } from './function/anything';
 import { equal } from '../sql/operands/comparison/equal/equal';
 import { RuleContext } from './description/rule-context';
+import { expectMatchingRule, expectUnmatchingRule } from './validate';
 
 describe('permission', () => {
   class User {
@@ -26,7 +26,7 @@ describe('permission', () => {
     const ctx: RuleContext = { isAuthorized: true };
 
     it('should not allow without where condition', () => {
-      const isAllowed = matchesRules(
+      expectUnmatchingRule(
         {
           select: field(User, 'username'),
           from: table(User),
@@ -34,11 +34,10 @@ describe('permission', () => {
         rules,
         ctx,
       );
-      expect(isAllowed).toBeFalsy();
     });
 
     it('should not allow with different where condition', () => {
-      const isAllowed = matchesRules(
+      expectUnmatchingRule(
         {
           select: field(User, 'username'),
           from: table(User),
@@ -47,11 +46,10 @@ describe('permission', () => {
         rules,
         ctx,
       );
-      expect(isAllowed).toBeFalsy();
     });
 
     it('should allow with where condition on username', () => {
-      const isAllowed = matchesRules(
+      expectMatchingRule(
         {
           select: field(User, 'username'),
           from: table(User),
@@ -60,7 +58,6 @@ describe('permission', () => {
         rules,
         ctx,
       );
-      expect(isAllowed).toBeTruthy();
     });
   });
 
@@ -75,7 +72,7 @@ describe('permission', () => {
     const ctx: RuleContext = { isAuthorized: true };
 
     it('should allow to update one key with where', () => {
-      const isAllowed = matchesRules(
+      expectMatchingRule(
         {
           update: table(User),
           set: {
@@ -86,11 +83,10 @@ describe('permission', () => {
         rules,
         ctx,
       );
-      expect(isAllowed).toBeTruthy();
     });
 
     it('should not allow to update without where', () => {
-      const isAllowed = matchesRules(
+      expectUnmatchingRule(
         {
           update: table(User),
           set: {
@@ -100,11 +96,10 @@ describe('permission', () => {
         rules,
         ctx,
       );
-      expect(isAllowed).toBeFalsy();
     });
 
     it('should not allow to update different key', () => {
-      const isAllowed = matchesRules(
+      expectUnmatchingRule(
         {
           update: table(User),
           set: {
@@ -115,7 +110,6 @@ describe('permission', () => {
         rules,
         ctx,
       );
-      expect(isAllowed).toBeFalsy();
     });
   });
 
@@ -130,7 +124,7 @@ describe('permission', () => {
     const ctx: RuleContext = { isAuthorized: true, userId: 'foo' };
 
     it('should allow update own user', () => {
-      const isAllowed = matchesRules(
+      expectMatchingRule(
         {
           update: table(User),
           set: {
@@ -141,11 +135,10 @@ describe('permission', () => {
         rules,
         ctx,
       );
-      expect(isAllowed).toBeTruthy();
     });
 
     it('should not allow update other users', () => {
-      const isAllowed = matchesRules(
+      expectUnmatchingRule(
         {
           update: table(User),
           set: {
@@ -156,7 +149,6 @@ describe('permission', () => {
         rules,
         ctx,
       );
-      expect(isAllowed).toBeFalsy();
     });
   });
 
@@ -170,7 +162,7 @@ describe('permission', () => {
     const ctx: RuleContext = { isAuthorized: true };
 
     it('should not allow different value', () => {
-      const isAllowed = matchesRules(
+      expectUnmatchingRule(
         {
           into: table(User),
           insert: {
@@ -182,11 +174,10 @@ describe('permission', () => {
         rules,
         ctx,
       );
-      expect(isAllowed).toBeFalsy();
     });
 
     it('should allow specified value', () => {
-      const isAllowed = matchesRules(
+      expectMatchingRule(
         {
           into: table(User),
           insert: {
@@ -198,11 +189,10 @@ describe('permission', () => {
         rules,
         ctx,
       );
-      expect(isAllowed).toBeTruthy();
     });
 
     it('should not allow multiple insert', () => {
-      const isAllowed = matchesRules(
+      expectUnmatchingRule(
         {
           into: table(User),
           insert: [
@@ -216,7 +206,6 @@ describe('permission', () => {
         rules,
         ctx,
       );
-      expect(isAllowed).toBeFalsy();
     });
   });
 });

@@ -1,7 +1,6 @@
 import { parseRule, parseRules, serializeRule, serializeRules } from './parsing';
 import { field } from '../sql/keyword/field/field';
 import { table } from '../sql/keyword/table/table';
-import { matchesRules } from './validate';
 import { allow } from './function/allow';
 import { requestContext } from './function/request-context';
 import { and } from '../sql/keyword/and/and';
@@ -9,6 +8,7 @@ import { authorized } from './function/authorized';
 import { allowRegex } from './function/allow-regex';
 import { TableDescription } from '../sql/keyword/table/table-description';
 import { equal } from '../sql/operands/comparison/equal/equal';
+import { expectMatchingRule } from './validate';
 
 describe('parsing', () => {
   it('should serialize request context and regexp', () => {
@@ -25,7 +25,7 @@ describe('parsing', () => {
     ];
     const jsonRules = serializeRules(srcRules);
     const dstRules = parseRules(jsonRules);
-    const matches = matchesRules(
+    expectMatchingRule(
       {
         select: 'test',
         from: tbl,
@@ -34,7 +34,6 @@ describe('parsing', () => {
       dstRules,
       { isAuthorized: true, userId: 'foo' },
     );
-    expect(matches).toBeTruthy();
   });
 
   it('should serialize regexp', () => {

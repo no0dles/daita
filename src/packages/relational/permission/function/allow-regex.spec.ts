@@ -1,9 +1,9 @@
 import { allow } from './allow';
 import { authorized } from './authorized';
 import { allowRegex } from './allow-regex';
-import { evaluateRule } from '../validate';
 import { table } from '../../sql/keyword/table/table';
 import { RuleContext } from '../description/rule-context';
+import { expectMatchingRule, expectUnmatchingRule } from '../validate';
 
 describe('allow-regex', () => {
   class User {
@@ -21,7 +21,7 @@ describe('allow-regex', () => {
   const ctx: RuleContext = { isAuthorized: true };
 
   it('should allow when regex matches', () => {
-    const result = evaluateRule(
+    expectMatchingRule(
       {
         update: table(User),
         set: {
@@ -31,13 +31,10 @@ describe('allow-regex', () => {
       rule,
       ctx,
     );
-    expect(result).toEqual({
-      type: 'allow',
-    });
   });
 
   it('should forbid when regex does not matches', () => {
-    const result = evaluateRule(
+    expectUnmatchingRule(
       {
         update: table(User),
         set: {
@@ -47,11 +44,5 @@ describe('allow-regex', () => {
       rule,
       ctx,
     );
-    expect(result).toEqual({
-      type: 'next',
-      error: 'should match regexp /[a-z]+/',
-      path: ['set', 'username'],
-      score: 3,
-    });
   });
 });

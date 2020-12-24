@@ -3,6 +3,6 @@ import { Sql } from '../../sql/sql';
 
 export interface Rule {
   type: 'allow' | 'forbid';
-  auth: AuthDescription[] | AuthDescription;
+  auth: AuthDescription;
   sql: Sql<any>;
 }
