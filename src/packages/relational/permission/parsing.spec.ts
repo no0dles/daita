@@ -1,14 +1,15 @@
-import { parseRule, parseRules, serializeRule, serializeRules } from './parsing';
+import { parseRule, parseRules, reviveRuleObject, serializeRule, serializeRules } from './parsing';
 import { field } from '../sql/keyword/field/field';
 import { table } from '../sql/keyword/table/table';
 import { allow } from './function/allow';
-import { requestContext } from './function/request-context';
+import { isRequestContext, requestContext } from './function/request-context';
 import { and } from '../sql/keyword/and/and';
 import { authorized } from './function/authorized';
 import { allowRegex } from './function/allow-regex';
 import { TableDescription } from '../sql/keyword/table/table-description';
 import { equal } from '../sql/operands/comparison/equal/equal';
 import { expectMatchingRule } from './validate';
+import { anonymous } from './function/anonymous';
 
 describe('parsing', () => {
   it('should serialize request context and regexp', () => {
@@ -39,5 +40,15 @@ describe('parsing', () => {
   it('should serialize regexp', () => {
     const serialized = serializeRule(allow(authorized(), allowRegex(/^[a-z]+$/) as any));
     parseRule(serialized);
+  });
+
+  it('should revive rule requestContext', () => {
+    const obj = reviveRuleObject({
+      equal: {
+        left: { field: { key: 'ownerUsername', table: { table: 'Project' } } },
+        right: { $requestContext: [{ type: 'get', property: 'userId' }] },
+      },
+    });
+    expect(isRequestContext(obj.equal.right)).toBeTrue();
   });
 });

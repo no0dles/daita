@@ -4,6 +4,7 @@ import { AstError } from '../../ast/utils';
 import { convertValue } from './convert-value';
 import { getRuleId } from '../../../relational/permission/rule-id';
 import { addRuleToSchema, SchemaDescription } from '../../../orm/schema/description/relational-schema-description';
+import { reviveRuleObject } from '../../../relational/permission/parsing';
 
 export function parseRelationalSchemaTableRules(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
   const rules = schemaVariable.callsByName('rules');
@@ -15,7 +16,7 @@ export function parseRelationalSchemaTableRules(schema: SchemaDescription, schem
 
     if (ruleValue instanceof AstArrayValue) {
       for (const ruleElement of ruleValue.elements) {
-        const rule = convertValue(ruleElement);
+        const rule = reviveRuleObject(convertValue(ruleElement));
         const id = getRuleId(rule);
         addRuleToSchema(schema, id, rule);
       }

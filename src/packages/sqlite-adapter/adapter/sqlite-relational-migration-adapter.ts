@@ -6,10 +6,7 @@ import { failNever } from '../../common/utils/fail-never';
 import { MigrationDescription } from '../../orm/migration/migration-description';
 import { RelationalClient } from '../../relational/client/relational-client';
 import { SqliteRelationalTransactionAdapter } from './sqlite-relational-transaction-adapter';
-import {
-  addTableAction,
-  addTableWithSchemaAction,
-} from '../../orm/migration/steps/add-table/relational-add-table.action';
+import { addTableAction } from '../../orm/migration/steps/add-table/relational-add-table.action';
 import { addTableFieldAction } from '../../orm/migration/steps/add-table-field/relational-add-table-field.action';
 import { addTablePrimaryKeyAction } from '../../orm/migration/steps/add-table-primary-key/relational-add-table-primary-key.action';
 import { dropTableAction } from '../../orm/migration/steps/drop-table/relational-drop-table.action';
