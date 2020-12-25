@@ -9,7 +9,6 @@ import { asc } from '../../../relational/sql/keyword/asc/asc';
 import { Migrations } from './migrations';
 import { MigrationSteps } from './migration-steps';
 import { FormatDataType } from '../../../relational/formatter/format-context';
-import { reviveRuleJson } from '../../../relational/permission/parsing';
 
 export interface MigrationStorageOptions {
   idType: FormatDataType;
@@ -121,7 +120,7 @@ export class MigrationStorage {
       if (!migrations[step.id]) {
         migrations[step.id] = { id: step.id, after: step.after, resolve: step.resolve, steps: [] };
       }
-      migrations[step.id].steps.push(reviveRuleJson(step.step));
+      migrations[step.id].steps.push(JSON.parse(step.step));
       return migrations;
     }, {});
 

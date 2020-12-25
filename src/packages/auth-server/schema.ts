@@ -9,7 +9,7 @@ import { UserRole } from './models/user-role';
 import { UserToken } from './models/user-token';
 import { RelationalSchema } from '../orm/schema/relational-schema';
 import { UserPoolUser } from './models/user-pool-user';
-import { InitMigration } from './migrations/2020-10-03-213053-init';
+import {InitMigration} from './migrations/2020-11-05-102155-init';
 
 export const authSchema = new RelationalSchema('auth');
 

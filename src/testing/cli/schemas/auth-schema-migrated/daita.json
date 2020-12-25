@@ -4,7 +4,25 @@
     "default": {
       "schemaLocation": "src/schema.ts",
       "module": "../../../../src/packages/pg-adapter",
-      "connectionString": "postgres://localhost/postgres"
+      "connectionString": "postgres://localhost/postgres",
+      "authorization": {
+        "providers": [
+          {
+            "uri": "http://localhost:8766",
+            "issuer": "cli"
+          }
+        ],
+        "userPools": {
+          "cli": {
+            "cors": ["http://localhost:4200"],
+            "users": {
+              "test": {
+                "password": "123456"
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

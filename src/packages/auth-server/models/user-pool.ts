@@ -1,5 +1,6 @@
 export class UserPool {
   static table = 'UserPool';
+  static schema = 'daita';
 
   id!: string;
   name!: string;

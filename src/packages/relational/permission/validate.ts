@@ -53,7 +53,7 @@ export function getRuleMatchers(authSql: any, path: string[]): RuleEvaluatorMatc
     });
   } else if (isRequestContext(authSql)) {
     matchers.push((sql, ruleContext) => {
-      const contextValue = authSql.getContextValue(ruleContext);
+      const contextValue = ruleContext[authSql.$requestContext.key];
       const value = getValueFromPath(sql, path);
       if (value === contextValue) {
         return null;
@@ -65,6 +65,7 @@ export function getRuleMatchers(authSql: any, path: string[]): RuleEvaluatorMatc
       };
     });
   } else if (isAllowRegex(authSql)) {
+    const regex = new RegExp(authSql.allowRegex.regExp.substr(1, authSql.allowRegex.regExp.length - 2));
     matchers.push((sql) => {
       const value = getValueFromPath(sql, path);
       if (typeof value !== 'string') {
@@ -73,7 +74,7 @@ export function getRuleMatchers(authSql: any, path: string[]): RuleEvaluatorMatc
           path,
         };
       }
-      if (authSql.allowRegex.regExp.test(value)) {
+      if (regex.test(value)) {
         return null;
       } else {
         return {

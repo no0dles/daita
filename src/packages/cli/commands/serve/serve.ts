@@ -59,7 +59,7 @@ export async function serve(opts: {
   const httpPort = opts.port || 8765;
   const httpOptions: AppOptions = {
     context: ctx,
-    authorization,
+    authorization: disableAuth ? false : authorization,
     enableTransactions: true,
     cors: true,
   };

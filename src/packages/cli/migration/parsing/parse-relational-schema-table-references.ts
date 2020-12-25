@@ -40,7 +40,7 @@ export function parseRelationalSchemaTableReferences(
 
     addTableReference(table, {
       referenceTable: referenceTable.table,
-      referenceTableKey: referenceTable.key,
+      referenceTableKey: referenceTable.table.name,
       name: property.name,
       required: isRequiredProperty(property),
     });

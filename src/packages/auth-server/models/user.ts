@@ -2,6 +2,7 @@ import { UserPool } from './user-pool';
 
 export class User {
   static table = 'User';
+  static schema = 'daita';
 
   username!: string;
   email?: string;

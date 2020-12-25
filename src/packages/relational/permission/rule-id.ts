@@ -1,8 +1,7 @@
-import { serializeRule } from './parsing';
 import { Rule } from './description/rule';
 
 export function getRuleId(rule: Rule): string {
-  const content = serializeRule(rule);
+  const content = JSON.stringify(rule);
   let a = 1,
     c = 0,
     h,

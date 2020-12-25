@@ -39,6 +39,7 @@ export function generateRelationalMigrationSteps(currentSchema: SchemaDescriptio
       steps.push({
         kind: 'add_table_primary_key',
         table: table.item.name,
+        schema: table.item.schema,
         fieldNames: getFieldNamesFromSchemaTable(table.item, table.item.primaryKeys),
       });
     }

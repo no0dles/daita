@@ -1,9 +1,0 @@
-{
-  "daita": {
-    "context": {
-      "default": {
-        "uri": "postgres://daita:daita@localhost/daita"
-      }
-    }
-  }
-}

@@ -5,6 +5,9 @@ import { getPostgresDb, PostgresDb } from '../../../pg-adapter/testing/postgres-
 import { HttpTransactionAdapter } from '../../../http-adapter/http-transaction-adapter';
 import { Resolvable } from '../../../common/utils/resolvable';
 import { Http } from '../../../http-client-common/http';
+import { field, table } from '../../../relational';
+import { equal } from '../../../relational/sql/operands/comparison/equal/equal';
+import { User } from '../../../../testing/cli/schemas/auth-schema-migrated/src/models/user';
 
 describe('cli/commands/serve', () => {
   let postgresDb: PostgresDb;
@@ -22,15 +25,39 @@ describe('cli/commands/serve', () => {
 
         const task = await serve({
           cwd: ctx.cwd,
-          disableAuth: true,
         });
 
-        const client = new HttpTransactionAdapter(new Resolvable<Http>(new NodeHttp('http://localhost:8765', null)));
-        const result = await client.exec({ select: { date: 'test' } });
-        expect(result.rowCount).toEqual(1);
-        expect(result.rows[0].date).not.toBeNull();
-        expect(result.rows[0].date).not.toBeUndefined();
-        task.cancel();
+        try {
+          const client = new HttpTransactionAdapter(
+            new Resolvable<Http>(
+              new NodeHttp('http://localhost:8765', {
+                async getToken(): Promise<string | null> {
+                  const authHttp = new NodeHttp('http://localhost:8766', null);
+                  const res = await authHttp.json({
+                    authorized: false,
+                    method: 'POST',
+                    data: {
+                      username: 'test',
+                      password: '123456',
+                    },
+                    path: '/cli/login',
+                  });
+                  return `Bearer ${res.data.access_token}`;
+                },
+              }),
+            ),
+          );
+          const result = await client.exec({
+            update: table(User),
+            set: {
+              password: '1234',
+            },
+            where: equal(field(User, 'username'), 'cli|test'),
+          });
+          expect(result.rowCount).toEqual(0);
+        } finally {
+          task.cancel();
+        }
       },
       { schema: 'auth-schema-migrated' },
     ),

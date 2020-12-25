@@ -3,6 +3,7 @@ import { UserPool } from './user-pool';
 
 export class UserRefreshToken {
   static table = 'UserRefreshToken';
+  static schema = 'daita';
 
   token!: string;
   user!: User;

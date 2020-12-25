@@ -41,6 +41,7 @@ export async function addTableWithSchemaAction(
   if (step.schema) {
     await client.exec({
       createSchema: step.schema,
+      ifNotExists: true,
     });
   }
   await addTableAction(client, step, migration);
