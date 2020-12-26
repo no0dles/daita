@@ -15,7 +15,6 @@ import { getRandomCode } from './modules/random';
 import { UserToken } from './models/user-token';
 import { UserRole } from './models/user-role';
 import { Role } from './models/role';
-import { cli } from 'cli-ux';
 
 export async function createToken(
   client: TransactionClient<any>,

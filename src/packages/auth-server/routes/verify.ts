@@ -9,6 +9,19 @@ import { join } from '../../relational/sql/dml/select/join/join';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { isNull } from '../../relational/sql/operands/comparison/is-null/is-null';
 import { TransactionContext } from '../../orm/context/transaction-context';
+import { Counter } from 'prom-client';
+import { metricRegister } from '../metric';
+
+const invalidVerifyCounter = new Counter({
+  name: 'auth_invalid_verify',
+  help: 'failed verified user',
+  registers: [metricRegister],
+});
+const successVerifyCounter = new Counter({
+  name: 'auth_success_verify',
+  help: 'verified user',
+  registers: [metricRegister],
+});
 
 export function verifyRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
@@ -31,6 +44,7 @@ export function verifyRoute(ctx: TransactionContext<any>) {
       });
 
       if (!verify) {
+        invalidVerifyCounter.inc();
         return res.status(400).json({ message: 'invalid code' });
       }
 
@@ -52,6 +66,7 @@ export function verifyRoute(ctx: TransactionContext<any>) {
         });
       });
 
+      successVerifyCounter.inc();
       res.status(200).end();
     } catch (e) {
       next(e);

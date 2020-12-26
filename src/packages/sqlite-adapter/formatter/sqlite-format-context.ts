@@ -7,6 +7,22 @@ export class SqliteFormatContext extends SimpleFormatContext {
     super('?', '`');
   }
 
+  restoreValue(options: FormatDataType, value: any) {
+    if (options.type === 'date') {
+      return new Date(value);
+    } else if (options.type === 'boolean') {
+      if (value === 0) {
+        return true;
+      } else if (value === 1) {
+        return false;
+      } else {
+        return undefined;
+      }
+    } else {
+      return value;
+    }
+  }
+
   appendValue(value: ValueType): string {
     if (value instanceof Date) {
       this.values.push(value.toISOString());
@@ -17,7 +33,6 @@ export class SqliteFormatContext extends SimpleFormatContext {
   }
 
   getDataType(options: FormatDataType): string {
-    // TODO support size
     switch (options.type) {
       case 'string':
         return 'TEXT';

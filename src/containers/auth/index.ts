@@ -9,6 +9,7 @@ import { Application } from '../../packages/node/application';
 import { createLogger } from '../../packages/common/utils/logger';
 import { getContext } from '../../packages/orm/context/get-context';
 import { RelationalMigrationAdapterImplementation } from '../../packages/orm/adapter/relational-migration-adapter-implementation';
+import { createMetricsApp } from '../../packages/auth-server/metrics-app';
 
 const logger = createLogger({ container: 'auth' });
 const application = new Application();
@@ -40,6 +41,8 @@ ctx
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 4000;
 const ADMIN_PORT = process.env.ADMIN_PORT ? parseInt(process.env.ADMIN_PORT) : 5000;
+const METRICS_PORT = process.env.METRICS_PORT ? parseInt(process.env.METRICS_PORT) : 9000;
 
+application.attach(createMetricsApp(METRICS_PORT));
 application.attach(createAuthApp(ctx, PORT));
 application.attach(createAuthAdminApp(ctx, ADMIN_PORT));

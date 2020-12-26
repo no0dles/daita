@@ -36,4 +36,8 @@ export class InlineFormatContext implements FormatContext {
   getDataType(type: FormatDataType): string {
     return this.baseFormatContext.getDataType(type);
   }
+
+  restoreValue(type: FormatDataType, value: any): any {
+    return value;
+  }
 }

@@ -10,6 +10,14 @@ import { table } from '../../relational/sql/keyword/table/table';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { UserPoolUser } from '../models/user-pool-user';
 import { TransactionContext } from '../../orm/context/transaction-context';
+import { Counter } from 'prom-client';
+import { metricRegister } from '../metric';
+
+const successRegisterCounter = new Counter({
+  name: 'auth_success_registrations',
+  help: 'registered users',
+  registers: [metricRegister],
+});
 
 export function registerRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
@@ -82,9 +90,10 @@ export function registerRoute(ctx: TransactionContext<any>) {
           },
         });
         //TODO send email
-
-        res.status(200).end();
       });
+
+      successRegisterCounter.inc();
+      res.status(200).end();
     } catch (e) {
       next(e);
     }

@@ -25,4 +25,8 @@ export abstract class CounterFormatContext implements FormatContext {
   }
 
   abstract getDataType(options: FormatDataType): string;
+
+  restoreValue(type: FormatDataType, value: any): any {
+    return value;
+  }
 }

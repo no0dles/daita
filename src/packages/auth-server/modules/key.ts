@@ -2,9 +2,7 @@ import { UserPoolAlgorithm } from '../models/user-pool';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as jwt from 'jsonwebtoken';
 import * as jose from 'jose';
-import { Defer } from '../../common/utils/defer';
 
 const keyStores: { [key: string]: Promise<jose.JWKS.KeyStore> } = {};
 
@@ -48,14 +46,14 @@ export function getKeyAlgorithm(algorithm: UserPoolAlgorithm) {
   }
 }
 
-export async function getKey(userPoolId: string, algorithm: UserPoolAlgorithm) {
+export async function getKey(userPoolId: string, algorithm: UserPoolAlgorithm): Promise<jose.JWK.Key> {
   const keystore = await getKeystore(userPoolId);
   let key = keystore.get({
     kty: getKeyAlgorithm(algorithm),
   });
 
   if (key) {
-    return { id: key.kid, secret: key.toPEM(true) };
+    return key;
   }
 
   if (algorithm === 'RS256') {
@@ -122,7 +120,7 @@ export async function getKey(userPoolId: string, algorithm: UserPoolAlgorithm) {
   }
   const keyFile = path.join(keyPath, `${key.kid}.pem`);
   fs.writeFileSync(keyFile, key.toPEM(true));
-  return { id: key.kid, secret: key.toPEM(true) };
+  return key;
 }
 
 export async function getKeys(userPoolId: string) {
@@ -139,17 +137,14 @@ export async function getAccessToken<T>(
     issuer: string;
     algorithm: UserPoolAlgorithm;
   },
-) {
-  const defer = new Defer<string>();
+): Promise<string> {
   const key = await getKey(userPoolId, options.algorithm);
-  jwt.sign(payload, key.secret, { ...options, keyid: key.id }, (err, encoded) => {
-    if (err) {
-      return defer.reject(err);
-    }
-    if (!encoded) {
-      return defer.reject(new Error('empty payload'));
-    }
-    defer.resolve(encoded);
+  return jose.JWT.sign(payload, key, {
+    subject: options.subject,
+    expiresIn: `${options.expiresIn}s`,
+    iat: true,
+    algorithm: options.algorithm,
+    issuer: options.issuer,
+    kid: true,
   });
-  return defer.promise;
 }
