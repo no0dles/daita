@@ -120,7 +120,7 @@ function getAdapter(options: any, contextConfig: DaitaContextConfig) {
       adapter: getAdapterImpl<HttpAdapterOptions>(options, contextConfig, '@daita/http-adapter'),
       options: {
         baseUrl: contextConfig.connectionString,
-        authProvider: {
+        auth: {
           token,
         },
       },

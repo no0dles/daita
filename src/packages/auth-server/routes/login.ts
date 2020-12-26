@@ -69,7 +69,6 @@ export function loginRoute(ctx: TransactionContext<any>) {
       const idToken = await getAccessToken(
         req.params.userPoolId,
         {
-          roles,
           email: user.email,
           emailVerified: user.emailVerified,
         },

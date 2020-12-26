@@ -35,7 +35,7 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
       throw new Error('transaction already closed');
     }
 
-    const response = await this.http.json({
+    const response = await this.http.json<RelationalRawResult>({
       path: `api/relational/trx/${this.transactionId}/exec`,
       data: {
         sql: sql,

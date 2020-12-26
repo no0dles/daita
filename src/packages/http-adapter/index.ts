@@ -1,12 +1,11 @@
 import { HttpAdapterImplementation } from './adapter-implementation';
-import { NodeHttp } from '../http-client-common/node-http';
 import { HttpTestAdapterImplementation } from './test-adapter-implementation';
+import { BrowserAuth, TokenIssuer } from '../http-client-common/auth-provider';
+import { getHttpFactory } from '../http-client-common/http-factory';
 
-// export { HttpTransactionAdapter } from './http-transaction-adapter';
-// export { HttpDataAdapter } from './http-data-adapter';
+export const adapter = new HttpAdapterImplementation();
+export const testAdapter = new HttpTestAdapterImplementation();
 
-export const adapter = new HttpAdapterImplementation((options) => new NodeHttp(options.baseUrl, options.authProvider));
-
-export const testAdapter = new HttpTestAdapterImplementation(
-  (options) => new NodeHttp(options.baseUrl, options.authProvider),
-);
+export function createTokenIssuer(baseUrl: string, storage?: Storage): TokenIssuer {
+  return new BrowserAuth(getHttpFactory(baseUrl), storage ?? localStorage);
+}

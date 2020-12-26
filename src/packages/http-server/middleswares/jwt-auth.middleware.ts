@@ -3,9 +3,9 @@ import { HttpError } from '../http-error';
 import { NextFunction, Request, Response } from 'express';
 import { createLogger } from '../../common/utils/logger';
 import jose from 'jose';
-import { default as jwtDecode } from 'jwt-decode';
 import { Resolvable } from '../../common/utils/resolvable';
 import { NodeHttp } from '../../http-client-common/node-http';
+import { parseJwtPayload } from '../../common/utils/jwt';
 
 const logger = createLogger({ package: 'http-server', middleware: 'jwt-auth' });
 export function jwtAuth(providers: AppAuthorizationProvider[]) {
@@ -33,7 +33,7 @@ export function jwtAuth(providers: AppAuthorizationProvider[]) {
 
     const token = req.headers.authorization.substr('Bearer '.length);
     try {
-      const decodedPayload = jwtDecode<{ iss: string }>(token);
+      const decodedPayload = parseJwtPayload(token);
 
       const client = clients[decodedPayload.iss];
       if (!client) {
