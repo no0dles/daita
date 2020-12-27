@@ -11,6 +11,10 @@ export abstract class SimpleFormatContext implements FormatContext {
     return this.paramKey;
   }
 
+  restoreValue(type: FormatDataType, value: any) {
+    return value;
+  }
+
   getValues(): ValueType[] {
     return this.values;
   }

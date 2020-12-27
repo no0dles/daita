@@ -7,11 +7,10 @@ import { field } from '../relational/sql/keyword/field/field';
 import { all } from '../relational/sql/keyword/all/all';
 import { table } from '../relational/sql/keyword/table/table';
 import { notEqual } from '../relational/sql/operands/comparison/not-equal/not-equal';
-import { adapter } from '../pg-adapter';
+import { adapter } from '../sqlite-adapter';
 import { MigrationContext } from '../orm/context/get-migration-context';
 import { getServer, HttpServerApp } from '../../testing/http-server';
 import { User } from './models/user';
-import { getPostgresDb, PostgresDb } from '../pg-adapter/testing/postgres-test-adapter';
 import { getContext } from '../orm/context/get-context';
 import { NodeHttp } from '../http-client-common/node-http';
 import { equal } from '../relational/sql/operands/comparison/equal/equal';
@@ -19,15 +18,12 @@ import { equal } from '../relational/sql/operands/comparison/equal/equal';
 describe('app', () => {
   let app: HttpServerApp;
   let ctx: MigrationContext<any>;
-  let postgresDb: PostgresDb;
   let http: NodeHttp;
 
   beforeAll(async () => {
-    postgresDb = await getPostgresDb();
     ctx = getContext(adapter, {
       schema: authSchema,
-      connectionString: postgresDb.connectionString,
-      createIfNotExists: true,
+      memory: true,
     });
     app = getServer((port) => createAuthApp(ctx, port));
     http = new NodeHttp(`http://localhost:${app.port}`, null);
@@ -39,7 +35,6 @@ describe('app', () => {
   afterAll(async () => {
     await app?.close();
     await ctx.close();
-    await postgresDb.close();
   });
 
   it('should register', async () => {

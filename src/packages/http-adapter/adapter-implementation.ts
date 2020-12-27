@@ -4,16 +4,16 @@ import { RelationalMigrationAdapterImplementation } from '../orm/adapter/relatio
 import { RelationalMigrationAdapter } from '../orm/adapter/relational-migration-adapter';
 import { HttpMigrationAdapter } from './http-migration-adapter';
 import { Resolvable } from '../common/utils/resolvable';
+import { getHttpFactory } from '../http-client-common/http-factory';
 
 export interface HttpAdapterOptions {
   baseUrl: string;
-  authProvider: AuthProvider | null | undefined;
+  auth: AuthProvider;
 }
 
 export class HttpAdapterImplementation implements RelationalMigrationAdapterImplementation<any, HttpAdapterOptions> {
-  constructor(private httpFactory: (options: HttpAdapterOptions) => Http) {}
   getRelationalAdapter(options: HttpAdapterOptions): RelationalMigrationAdapter<any> {
-    const http = this.httpFactory(options);
+    const http = getHttpFactory(options.baseUrl, options.auth);
     return new HttpMigrationAdapter(new Resolvable<Http>(http));
   }
 }

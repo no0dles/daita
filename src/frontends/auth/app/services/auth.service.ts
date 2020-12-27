@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import jwt from 'jwt-decode';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { Defer } from '../../../../packages/common/utils/defer';

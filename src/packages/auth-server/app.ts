@@ -12,6 +12,7 @@ import { loginRoute } from './routes/login';
 import { Server } from 'http';
 import { createLogger } from '../common/utils/logger';
 import { TransactionContext } from '../orm/context/transaction-context';
+import { responseTimeMetricMiddleware } from './middlewares/response-time-middleware';
 
 declare global {
   namespace Express {
@@ -31,6 +32,7 @@ export function createAuthApp(ctx: TransactionContext<any>, port: number) {
   const app = express();
   const logger = createLogger({ package: 'auth-server' });
 
+  app.use(responseTimeMetricMiddleware('auth'));
   app.use(helmet());
   app.use(bodyParser.json());
 

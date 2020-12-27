@@ -14,6 +14,20 @@ import { join } from '../../relational/sql/dml/select/join/join';
 import { UserPoolUser } from '../models/user-pool-user';
 import { getRoles } from '../modules/roles';
 import { TransactionContext } from '../../orm/context/transaction-context';
+import { Counter } from 'prom-client';
+import { metricRegister } from '../metric';
+
+const invalidLoginCounter = new Counter({
+  name: 'auth_invalid_login',
+  help: 'invalid logins',
+  registers: [metricRegister],
+});
+
+const successfullLoginCounter = new Counter({
+  name: 'auth_success_login',
+  help: 'successfull logins',
+  registers: [metricRegister],
+});
 
 export function loginRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
@@ -44,11 +58,13 @@ export function loginRoute(ctx: TransactionContext<any>) {
       });
 
       if (!user) {
+        invalidLoginCounter.inc();
         return res.status(400).json({ message: 'invalid credentials' });
       }
 
       const matchesHash = await compareHash(req.body.password, user.password);
       if (!matchesHash) {
+        invalidLoginCounter.inc();
         return res.status(400).json({ message: 'invalid credentials' });
       }
 
@@ -69,7 +85,6 @@ export function loginRoute(ctx: TransactionContext<any>) {
       const idToken = await getAccessToken(
         req.params.userPoolId,
         {
-          roles,
           email: user.email,
           emailVerified: user.emailVerified,
         },
@@ -92,6 +107,7 @@ export function loginRoute(ctx: TransactionContext<any>) {
         into: table(UserRefreshToken),
       });
 
+      successfullLoginCounter.inc();
       res.status(200).json({
         refresh_token: refreshToken,
         access_token: accessToken,

@@ -11,6 +11,19 @@ import { join } from '../../relational/sql/dml/select/join/join';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { getRoles } from '../modules/roles';
 import { TransactionContext } from '../../orm/context/transaction-context';
+import { Counter } from 'prom-client';
+import { metricRegister } from '../metric';
+
+const successRefreshTokenCounter = new Counter({
+  name: 'auth_success_refresh_token',
+  help: 'refresh jwt token',
+  registers: [metricRegister],
+});
+const invalidRefreshTokenCounter = new Counter({
+  name: 'auth_invalid_refresh_token',
+  help: 'refresh jwt token',
+  registers: [metricRegister],
+});
 
 export function refreshRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
@@ -39,6 +52,7 @@ export function refreshRoute(ctx: TransactionContext<any>) {
       });
 
       if (!token) {
+        invalidRefreshTokenCounter.inc();
         return res.status(400).json({ message: 'invalid token' });
       }
 
@@ -49,6 +63,7 @@ export function refreshRoute(ctx: TransactionContext<any>) {
           delete: table(UserRefreshToken),
           where: equal(field(UserRefreshToken, 'token'), req.body.refreshToken),
         });
+        invalidRefreshTokenCounter.inc();
         return res.status(400).json({
           message: 'token expired',
         });
@@ -87,6 +102,7 @@ export function refreshRoute(ctx: TransactionContext<any>) {
         });
       });
 
+      successRefreshTokenCounter.inc();
       return res.status(200).json({
         refresh_token: refreshToken,
         access_token: accessToken,

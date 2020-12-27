@@ -71,17 +71,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
           } else {
             this.logger.trace(`all statement ${sql}`, { sql, values, rows });
             defer.resolve({
-              rows: rows.map((row) => {
-                for (const key of Object.keys(row)) {
-                  if (
-                    typeof row[key] === 'string' &&
-                    /[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z/.test(row[key])
-                  ) {
-                    row[key] = new Date(row[key]);
-                  }
-                }
-                return row;
-              }),
+              rows: rows,
               rowCount: rows.length,
             });
           }

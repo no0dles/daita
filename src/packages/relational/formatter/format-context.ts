@@ -10,4 +10,5 @@ export interface FormatContext {
   escape(value: string): string;
   appendValue(value: ValueType): string;
   getDataType(options: FormatDataType): string;
+  restoreValue(type: FormatDataType, value: any): any;
 }

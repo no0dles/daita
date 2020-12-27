@@ -1,7 +1,6 @@
 import { TransactionContext } from './transaction-context';
 import { RelationalContext } from './relational-context';
 import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';
-import { OrmRelationalSchema } from '../schema/orm-relational-schema';
 import { Client } from '../../relational/client/client';
 import { MigrationTree } from '../migration/migration-tree';
 import { RuleContext } from '../../relational/permission/description/rule-context';

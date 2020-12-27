@@ -17,7 +17,7 @@ export class ApiService {
   constructor(private auth: AuthService) {
     this.adapter = adapter.getRelationalAdapter({
       baseUrl: environment.authUrl,
-      authProvider: {
+      auth: {
         async getToken(): Promise<string | null> {
           return `Bearer ${await auth.getAccessToken()}`;
         },

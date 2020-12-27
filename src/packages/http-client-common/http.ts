@@ -1,5 +1,5 @@
 export interface Http {
-  json<T>(options: HttpRequestOptions): Promise<HttpSendResult>;
+  json<T>(options: HttpRequestOptions): Promise<HttpSendResult<T>>;
   formData(options: HttpRequestOptions): Promise<HttpSendResult>;
 }
 
@@ -12,8 +12,8 @@ export interface HttpRequestOptions {
   method?: 'POST' | 'GET';
 }
 
-export interface HttpSendResult {
-  data: any;
+export interface HttpSendResult<T = any> {
+  data: T;
   statusCode: number;
   headers: { 'x-transaction-timeout'?: number };
 }

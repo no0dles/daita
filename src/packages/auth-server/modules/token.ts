@@ -1,22 +1,21 @@
-import * as jwt from 'jsonwebtoken';
 import { getKeyForId } from './key';
-import { Defer } from '../../common/utils/defer';
+import { parseJwtHeader, parseJwtPayload } from '../../common/utils/jwt';
+import { JWT } from 'jose';
 
 export async function verifyToken(token: string): Promise<any> {
-  const payload = jwt.decode(token, { complete: true, json: true });
-  if (!payload || !payload.header) {
+  const header = parseJwtHeader(token);
+  const payload = parseJwtPayload(token);
+  if (!payload || !header) {
     return null;
   }
 
-  const key = await getKeyForId(payload.payload.iss, payload.header.kid);
+  if (!header.kid) {
+    // TODO log
+    return null;
+  }
 
-  const defer = new Defer<any>();
-  jwt.verify(token, key.toPEM(), (err) => {
-    if (err) {
-      defer.reject(err);
-    } else {
-      defer.resolve(payload.payload);
-    }
-  });
-  return defer.promise;
+  const key = await getKeyForId(payload.iss, header.kid);
+
+  JWT.verify(token, key, {});
+  return payload;
 }

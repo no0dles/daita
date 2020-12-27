@@ -8,14 +8,22 @@ export class HttpDataAdapter implements RelationalDataAdapter {
   constructor(protected http: Resolvable<Http>) {}
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
     const http = await this.http.get();
-    const result = await http.json({ path: 'api/relational/execRaw', data: { sql, values }, authorized: true });
+    const result = await http.json<RelationalRawResult>({
+      path: 'api/relational/execRaw',
+      data: { sql, values },
+      authorized: true,
+    });
     handleErrorResponse(result);
     return result.data;
   }
 
   async exec(sql: any): Promise<RelationalRawResult> {
     const http = await this.http.get();
-    const result = await http.json({ path: 'api/relational/exec', data: { sql }, authorized: true });
+    const result = await http.json<RelationalRawResult>({
+      path: 'api/relational/exec',
+      data: { sql },
+      authorized: true,
+    });
     handleErrorResponse(result);
     return result.data;
   }

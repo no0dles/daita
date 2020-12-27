@@ -10,7 +10,7 @@ export class NodeHttp implements Http {
   private readonly tokenProvider: TokenIssuer;
 
   constructor(protected baseUrl: string, authProvider: AuthProvider | null | undefined) {
-    this.tokenProvider = getTokenIssuer(authProvider, this);
+    this.tokenProvider = getTokenIssuer(authProvider);
   }
 
   formData(options: HttpRequestOptions): Promise<HttpSendResult> {

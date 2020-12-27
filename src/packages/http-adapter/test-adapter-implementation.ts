@@ -1,5 +1,4 @@
 import { getRandomTestPort } from '../node/random-port';
-import { HttpAdapterOptions } from './adapter-implementation';
 import { Server } from 'http';
 import { createHttpServerApp } from '../http-server/app';
 import { Http } from '../http-client-common/http';
@@ -11,6 +10,7 @@ import { authSchema } from '../auth-server/schema';
 import { Resolvable } from '../common/utils/resolvable';
 import { createToken, seedPoolUser, seedRoles, seedUserPool, seedUserRole } from '../auth-server/seed';
 import { createAuthAdminApp } from '../auth-server/admin-app';
+import { getHttpFactory } from '../http-client-common/http-factory';
 
 export interface HttpTestAdapterOptions {
   context: MigrationContext<any>;
@@ -21,7 +21,6 @@ export interface HttpTestAdapterOptions {
 
 export class HttpTestAdapterImplementation
   implements RelationalMigrationAdapterImplementation<any, HttpTestAdapterOptions> {
-  constructor(private httpFactory: (options: HttpAdapterOptions) => Http) {}
   getRelationalAdapter(options: HttpTestAdapterOptions): RelationalMigrationAdapter<any> {
     let server: Server;
     let authAdminServer: Server;
@@ -84,10 +83,7 @@ export class HttpTestAdapterImplementation
             port,
           );
 
-          const http = this.httpFactory({
-            baseUrl: `http://localhost:${port}`,
-            authProvider: { token },
-          });
+          const http = getHttpFactory(`http://localhost:${port}`, { token });
           return http;
         },
         () => {
