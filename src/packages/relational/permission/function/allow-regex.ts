@@ -9,4 +9,4 @@ export const isAllowRegex = (val: any): val is AllowRegexDescription =>
   isExactKind(val, ['allowRegex']) &&
   typeof val.allowRegex === 'object' &&
   isExactKind(val.allowRegex, ['regExp']) &&
-  val.allowRegex.regExp instanceof RegExp;
+  typeof val.allowRegex.regExp === 'string';
