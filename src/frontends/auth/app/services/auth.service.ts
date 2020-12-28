@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { Defer } from '../../../../packages/common/utils/defer';
+import { parseJwtPayload } from '../../../../packages/common/utils/jwt';
 
 @Injectable({
   providedIn: 'root',
@@ -63,8 +64,8 @@ export class AuthService {
     const refreshToken = localStorage.getItem('refresh_token');
 
     if (accessToken && idToken && refreshToken) {
-      this.accessToken = jwt(accessToken);
-      this.identityToken = jwt(idToken);
+      this.accessToken = parseJwtPayload(accessToken);
+      this.identityToken = parseJwtPayload(idToken);
       this.refreshToken = refreshToken;
 
       const expired = this.isAccessTokenExpired();
@@ -75,8 +76,8 @@ export class AuthService {
   }
 
   private save(response: { access_token: string; id_token: string; refresh_token: string }) {
-    this.accessToken = jwt(response.access_token);
-    this.identityToken = jwt(response.id_token);
+    this.accessToken = parseJwtPayload(response.access_token);
+    this.identityToken = parseJwtPayload(response.id_token);
     this.refreshToken = response.refresh_token;
 
     localStorage.setItem('access_token', response.access_token);
@@ -103,7 +104,7 @@ export class AuthService {
         .toPromise();
       localStorage.setItem('access_token', response.access_token);
       localStorage.setItem('refresh_token', response.refresh_token);
-      this.accessToken = jwt(response.access_token);
+      this.accessToken = parseJwtPayload(response.access_token);
       defer.resolve(true);
     } catch (e) {
       if (e instanceof HttpErrorResponse && e.error && e.error.message === 'invalid token') {

@@ -22,6 +22,10 @@ import { deepClone } from '../../common/utils/deep-clone';
 import { isMinDescription } from '../sql/function/aggregation/min/min-description';
 import { isFieldDescription } from '../sql/keyword/field/field-description';
 import { RelationalDataAdapter } from '../adapter/relational-data-adapter';
+import { isAddDescription } from '../sql/operands/arithmetic/add/add-description';
+import { isSubtractDescription } from '../sql/operands/arithmetic/substract/subtract-description';
+import { isMultiplyDescription } from '../sql/operands/arithmetic/multiply/multiply-description';
+import { isDivideDescription } from '../sql/operands/arithmetic/divide/divide-description';
 
 export class RelationalClient implements SelectClient, UpdateClient, DeleteClient, InsertClient, Client<any> {
   constructor(public dataAdapter: RelationalDataAdapter<any>) {}
@@ -74,6 +78,10 @@ export class RelationalClient implements SelectClient, UpdateClient, DeleteClien
       }
 
       if (
+        isAddDescription(fields) ||
+        isSubtractDescription(fields) ||
+        isMultiplyDescription(fields) ||
+        isDivideDescription(fields) ||
         isMinDescription(fields) ||
         isMaxDescription(fields) ||
         isAvgDescription(fields) ||

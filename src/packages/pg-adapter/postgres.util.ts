@@ -1,11 +1,95 @@
 import { Client } from 'pg';
-import { parse, ConnectionOptions } from 'pg-connection-string';
+import { parse } from 'url';
+import { decode, unescape } from 'querystring';
+
+export interface ParsedConnectionString {
+  host: string;
+  port?: number;
+  user?: string;
+  password?: string;
+  database?: string;
+  application_name?: string;
+  fallback_application_name?: string;
+  connect_timeout?: number;
+  client_encoding?: string;
+  keepalives?: boolean;
+  replication?: boolean | string;
+  sslmode?: 'disable' | 'allow' | 'prefer' | 'require' | 'verify-ca' | 'verify-full';
+  requiressl?: boolean;
+  sslcompression?: boolean;
+  sslcert?: string;
+  sslkey?: string;
+  sslpassword?: string;
+  sslrootcert?: string;
+  sslcrl?: string;
+}
+
+export function parseConnectionString(connectionString: string): ParsedConnectionString {
+  const parsed = parse(connectionString);
+  if (parsed.protocol !== 'postgresql:' && parsed.protocol !== 'postgres:') {
+    throw new Error('invalid protocol');
+  }
+
+  const query = parsed.query ? decode(parsed.query) : {};
+  const getQueryString = (key: string): string | undefined => {
+    const value = query[key];
+    if (!value) {
+      return undefined;
+    }
+    if (value instanceof Array) {
+      return value[0];
+    }
+    return value;
+  };
+  const getQueryNumber = (key: string): number | undefined => {
+    const value = getQueryString(key);
+    if (value) {
+      return parseInt(value, 0);
+    }
+    return undefined;
+  };
+
+  let host = parsed.hostname || getQueryString('host');
+  let database = parsed.pathname ? parsed.pathname.substr(1) : undefined;
+  if (!host && parsed.path?.startsWith('%2F')) {
+    const slashIndex = parsed.path?.indexOf('/');
+    if (slashIndex > 0) {
+      host = unescape(parsed.path?.substr(0, slashIndex));
+      database = parsed.path?.substr(slashIndex + 1);
+    } else {
+      host = unescape(parsed.path);
+      database = undefined;
+    }
+  }
+
+  return {
+    host: host || 'localhost',
+    port: (parsed.port ? parseInt(parsed.port, 0) : undefined) || getQueryNumber('port'),
+    application_name: getQueryString('application_name'),
+    connect_timeout: getQueryNumber('connect_timeout'),
+    client_encoding: getQueryString('client_encoding'),
+    database: database || getQueryString('database'),
+    fallback_application_name: getQueryString('fallback_application_name'),
+    user: parsed.auth
+      ? parsed.auth.indexOf(':') > 0
+        ? parsed.auth.substr(0, parsed.auth.indexOf(':'))
+        : parsed.auth
+      : undefined || getQueryString('user'),
+    password: parsed.auth
+      ? parsed.auth.indexOf(':') > 0
+        ? parsed.auth.substr(parsed.auth.indexOf(':') + 1)
+        : undefined
+      : undefined,
+  };
+}
 
 export async function ensureDatabaseExists(connectionString: string): Promise<void>;
-export async function ensureDatabaseExists(connectionOptions: ConnectionOptions): Promise<void>;
-export async function ensureDatabaseExists(connectionStringOrOptions: string | ConnectionOptions): Promise<void> {
+export async function ensureDatabaseExists(connectionOptions: ParsedConnectionString): Promise<void>;
+export async function ensureDatabaseExists(connectionStringOrOptions: string | ParsedConnectionString): Promise<void> {
   const config =
-    typeof connectionStringOrOptions === 'string' ? parse(connectionStringOrOptions) : connectionStringOrOptions;
+    typeof connectionStringOrOptions === 'string'
+      ? parseConnectionString(connectionStringOrOptions)
+      : connectionStringOrOptions;
   const client = await getClient(config);
   await client.query(`CREATE DATABASE "${config.database}";`).catch((err) => {
     //42501 permission denied to create database
@@ -18,10 +102,12 @@ export async function ensureDatabaseExists(connectionStringOrOptions: string | C
 }
 
 export async function dropDatabase(connectionString: string): Promise<void>;
-export async function dropDatabase(connectionOptions: ConnectionOptions): Promise<void>;
-export async function dropDatabase(connectionStringOrOptions: string | ConnectionOptions): Promise<void> {
+export async function dropDatabase(connectionOptions: ParsedConnectionString): Promise<void>;
+export async function dropDatabase(connectionStringOrOptions: string | ParsedConnectionString): Promise<void> {
   const config =
-    typeof connectionStringOrOptions === 'string' ? parse(connectionStringOrOptions) : connectionStringOrOptions;
+    typeof connectionStringOrOptions === 'string'
+      ? parseConnectionString(connectionStringOrOptions)
+      : connectionStringOrOptions;
   const client = await getClient(config);
   await client.query(`DROP DATABASE "${config.database}";`).catch((err) => {
     if (err.code !== '3D000') {
@@ -31,10 +117,10 @@ export async function dropDatabase(connectionStringOrOptions: string | Connectio
   await client.end();
 }
 
-async function getClient(config: ConnectionOptions) {
+async function getClient(config: ParsedConnectionString) {
   const client = new Client({
     host: config.host || undefined,
-    port: config.port !== undefined && config.port !== null ? parseInt(config.port, 0) : undefined,
+    port: config.port !== undefined && config.port !== null ? config.port : undefined,
     user: config.user || undefined,
     password: config.password || undefined,
     database: 'postgres',

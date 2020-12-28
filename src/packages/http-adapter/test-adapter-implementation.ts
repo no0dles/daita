@@ -95,3 +95,5 @@ export class HttpTestAdapterImplementation
     );
   }
 }
+
+export const testAdapter = new HttpTestAdapterImplementation();

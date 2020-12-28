@@ -1,6 +1,6 @@
 {
   "name": "daita",
-  "version": "0.3.0-alpha.34",
+  "version": "0.3.0-alpha.35",
   "scripts": {
     "test": "jest",
     "build": "tsc",
@@ -51,7 +51,6 @@
     "autoprefixer": "^10.1.0",
     "nomnoml": "^1.2.0",
     "pg": "^8.4.2",
-    "pg-connection-string": "^2.4.0",
     "rxjs": "~6.6.3",
     "sqlite3": "^5.0.0",
     "tailwindcss": "^2.0.2",
