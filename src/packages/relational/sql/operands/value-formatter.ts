@@ -1,6 +1,7 @@
 import { FormatHandle, Formatter, FormatType } from '../../formatter/formatter';
 import { ValueType } from './value-type';
 import { FormatContext } from '../../formatter/format-context';
+import { isJsonDescription } from '../../types/json/json-description';
 
 export class ValueFormatter implements FormatHandle<ValueType> {
   type = [FormatType.Value, FormatType.OrderBy];
@@ -12,11 +13,16 @@ export class ValueFormatter implements FormatHandle<ValueType> {
       param instanceof Date ||
       typeof param === 'boolean' ||
       param === null ||
-      param === undefined
+      param === undefined ||
+      isJsonDescription(param)
     );
   }
 
   handle(param: ValueType, ctx: FormatContext, formatter: Formatter): string {
-    return ctx.appendValue(param);
+    if (isJsonDescription(param)) {
+      return ctx.appendValue(param.json.value);
+    } else {
+      return ctx.appendValue(param);
+    }
   }
 }

@@ -26,6 +26,8 @@ import { isAddDescription } from '../sql/operands/arithmetic/add/add-description
 import { isSubtractDescription } from '../sql/operands/arithmetic/substract/subtract-description';
 import { isMultiplyDescription } from '../sql/operands/arithmetic/multiply/multiply-description';
 import { isDivideDescription } from '../sql/operands/arithmetic/divide/divide-description';
+import { isLeastDescription } from '../sql/function/conditional/least/least-description';
+import { isGreatestDescription } from '../sql/function/conditional/greatest/greatest-description';
 
 export class RelationalClient implements SelectClient, UpdateClient, DeleteClient, InsertClient, Client<any> {
   constructor(public dataAdapter: RelationalDataAdapter<any>) {}
@@ -82,6 +84,8 @@ export class RelationalClient implements SelectClient, UpdateClient, DeleteClien
         isSubtractDescription(fields) ||
         isMultiplyDescription(fields) ||
         isDivideDescription(fields) ||
+        isLeastDescription(fields) ||
+        isGreatestDescription(fields) ||
         isMinDescription(fields) ||
         isMaxDescription(fields) ||
         isAvgDescription(fields) ||

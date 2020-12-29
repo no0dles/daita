@@ -20,7 +20,7 @@ export const RuleMigration: MigrationDescription = {
           },
         },
       },
-      ruleId: '157870448',
+      ruleId: '220809938',
     },
   ],
 };

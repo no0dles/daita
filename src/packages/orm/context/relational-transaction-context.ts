@@ -5,6 +5,7 @@ import { Client } from '../../relational/client/client';
 import { MigrationTree } from '../migration/migration-tree';
 import { RuleContext } from '../../relational/permission/description/rule-context';
 import { Resolvable } from '../../common/utils/resolvable';
+import { Context } from './context';
 
 export class RelationalTransactionContext extends RelationalContext implements TransactionContext<any> {
   constructor(
@@ -19,7 +20,7 @@ export class RelationalTransactionContext extends RelationalContext implements T
     return new RelationalTransactionContext(this.transactionAdapter, this.migrationTree, auth);
   }
 
-  transaction<R>(action: (trx: Client<any>) => Promise<R>): Promise<R> {
+  transaction<R>(action: (trx: Context<any>) => Promise<R>): Promise<R> {
     return this.transactionAdapter.transaction<R>(async (adapter) => {
       return await action(new RelationalContext(adapter, this.migrationTree, this.auth));
     });

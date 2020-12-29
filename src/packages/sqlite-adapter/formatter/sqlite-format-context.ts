@@ -1,6 +1,7 @@
 import { SimpleFormatContext } from '../../relational/formatter/simple-format-context';
 import { ValueType } from '../../relational/sql/operands/value-type';
 import { FormatDataType } from '../../relational/formatter/format-context';
+import { isJsonDescription } from '../../relational/types/json/json-description';
 
 export class SqliteFormatContext extends SimpleFormatContext {
   constructor() {
@@ -25,7 +26,11 @@ export class SqliteFormatContext extends SimpleFormatContext {
 
   appendValue(value: ValueType): string {
     if (value instanceof Date) {
-      this.values.push(value.toISOString());
+      this.values.push('DATE-' + value.toISOString());
+    } else if (typeof value === 'object') {
+      this.values.push('JSON-' + JSON.stringify(value));
+    } else if (typeof value === 'boolean') {
+      this.values.push(`BOOL-${value}`);
     } else {
       this.values.push(value);
     }
@@ -41,7 +46,7 @@ export class SqliteFormatContext extends SimpleFormatContext {
       case 'date':
         return 'TEXT';
       case 'boolean':
-        return 'INTEGER';
+        return 'TEXT';
       case 'string[]':
         return 'TEXT';
       case 'boolean[]':
@@ -49,6 +54,8 @@ export class SqliteFormatContext extends SimpleFormatContext {
       case 'number[]':
         return 'TEXT';
       case 'uuid':
+        return 'TEXT';
+      case 'json':
         return 'TEXT';
     }
 

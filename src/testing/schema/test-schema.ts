@@ -9,6 +9,7 @@ import { Mountain } from '../../examples/mowntain/models/mountain';
 import { Ascent } from '../../examples/mowntain/models/ascent';
 import { AscentPerson } from '../../examples/mowntain/models/ascent-person';
 import { Constructable } from '../../packages/common/types/constructable';
+import { json } from '../../packages/relational/types/json/json';
 
 type CreateTestSchemaSql = CreateTableSql;
 
@@ -26,6 +27,7 @@ export function createPersonTable(client: Client<CreateTestSchemaSql>) {
     { type: 'string', primaryKey: false, notNull: true, name: 'firstName' },
     { type: 'string', primaryKey: false, notNull: true, name: 'lastName' },
     { type: 'date', primaryKey: false, notNull: false, name: 'birthday' },
+    { type: 'boolean', primaryKey: false, notNull: true, name: 'active' },
   ]);
 }
 export function createCantonTable(client: Client<CreateTestSchemaSql>) {
@@ -42,7 +44,8 @@ export function createMountainTable(client: Client<CreateTestSchemaSql>) {
     { type: 'string', primaryKey: false, notNull: true, name: 'cantonShortname' },
     { type: 'number', primaryKey: false, notNull: true, name: 'elevation' },
     { type: 'number', primaryKey: false, notNull: true, name: 'prominence' },
-    //{ type: 'json', primaryKey: false, notNull: true, name: 'coordinates' },
+    { type: 'number', primaryKey: false, notNull: false, name: 'ascents' },
+    { type: 'json', primaryKey: false, notNull: false, name: 'extra' },
   ]);
 }
 export function createAscentTable(client: Client<CreateTestSchemaSql>) {
@@ -67,6 +70,7 @@ export async function createPerson(client: Client<InsertSql<any>>, person: Parti
       firstName: person.firstName || randomString(6),
       lastName: person.lastName || randomString(8),
       birthday: person.birthday,
+      active: person.active ?? true,
     },
   });
 }
@@ -79,6 +83,11 @@ export async function createMountain(client: Client<InsertSql<any>>, mountain: P
       cantonShortname: mountain.cantonShortname || randomString(2),
       elevation: mountain.elevation || randomNumber(0, 5000),
       prominence: mountain.prominence || randomNumber(0, 5000),
+      extra:
+        mountain.extra ||
+        json({
+          foo: 'bar',
+        }),
     },
   });
 }

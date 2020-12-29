@@ -12,6 +12,7 @@ export class PostgresDataAdapter<TClient extends PoolClient | Pool> implements R
   protected readonly logger = createLogger({ package: 'pg-adapter' });
   constructor(protected client: Resolvable<TClient>) {
     types.setTypeParser(1700, (val) => parseFloat(val));
+    types.setTypeParser(700, (val) => parseFloat(val));
     types.setTypeParser(701, (val) => parseFloat(val));
     types.setTypeParser(20, (val) => parseInt(val));
   }

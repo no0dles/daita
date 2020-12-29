@@ -21,7 +21,7 @@ describe('relational/sql/keyword/all', () => {
         select: all(),
         from: table(Person),
       });
-      expect(result).toEqual({ firstName: 'Foo', lastName: 'Bar', id, birthday: null });
+      expect(result).toEqual({ firstName: 'Foo', lastName: 'Bar', id, birthday: null, active: true });
     });
 
     it('should select all fields from table', async () => {
@@ -29,7 +29,7 @@ describe('relational/sql/keyword/all', () => {
         select: all(Person),
         from: table(Person),
       });
-      expect(result).toEqual({ firstName: 'Foo', lastName: 'Bar', id, birthday: null });
+      expect(result).toEqual({ firstName: 'Foo', lastName: 'Bar', id, birthday: null, active: true });
     });
   });
 });

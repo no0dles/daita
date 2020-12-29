@@ -1,11 +1,11 @@
+import { table } from '../../../keyword/table/table';
+import { createMountain, createMountainTable } from '../../../../../../testing/schema/test-schema';
 import { Mountain } from '../../../../../../examples/mowntain/models/mountain';
 import { testClient } from '../../../../../../testing/relational/adapters';
-import { createMountain, createMountainTable } from '../../../../../../testing/schema/test-schema';
-import { add } from './add';
 import { field } from '../../../keyword/field/field';
-import { table } from '../../../keyword/table/table';
+import { least } from './least';
 
-describe('relational/sql/operands/add', () => {
+describe('relational/sql/function/number/least', () => {
   const clients = testClient('pg', 'sqlite', 'mariadb');
 
   describe.each(clients)('%s', (client) => {
@@ -16,33 +16,33 @@ describe('relational/sql/operands/add', () => {
 
     afterAll(() => client.close());
 
-    it('should add field and value', async () => {
+    it('should get from field and value', async () => {
       const result = await client.selectFirst({
-        select: add(field(Mountain, 'prominence'), 10),
+        select: least(field(Mountain, 'prominence'), 20),
+        from: table(Mountain),
+      });
+      expect(result).toEqual(10);
+    });
+
+    it('should get null and value', async () => {
+      const result = await client.selectFirst({
+        select: least(field(Mountain, 'ascents'), 20),
         from: table(Mountain),
       });
       expect(result).toEqual(20);
     });
 
-    it('should add value and value', async () => {
+    it('should get value and null', async () => {
       const result = await client.selectFirst({
-        select: add(10, 10),
+        select: least(20, field(Mountain, 'ascents')),
         from: table(Mountain),
       });
       expect(result).toEqual(20);
     });
 
-    it('should add nullable field and value', async () => {
+    it('should get null and null', async () => {
       const result = await client.selectFirst({
-        select: add(field(Mountain, 'ascents'), 10),
-        from: table(Mountain),
-      });
-      expect(result).toEqual(null);
-    });
-
-    it('should add null value and value', async () => {
-      const result = await client.selectFirst({
-        select: add(null, 10),
+        select: least(field(Mountain, 'ascents'), field(Mountain, 'ascents')),
         from: table(Mountain),
       });
       expect(result).toEqual(null);

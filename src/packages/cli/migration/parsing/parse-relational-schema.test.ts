@@ -1,12 +1,13 @@
 import { allow } from '../../../relational/permission/function/allow';
 import { field } from '../../../relational/sql/keyword/field/field';
 import { authorized } from '../../../relational/permission/function/authorized';
-import { UUID } from '../../../relational/types/uuid';
+import { UUID } from '../../../relational/types/uuid/uuid';
 import { RelationalSchema } from '../../../orm/schema/relational-schema';
 import { table } from '../../../relational/sql/keyword/table/table';
 import { join } from '../../../relational/sql/dml/select/join/join';
 import { equal } from '../../../relational/sql/operands/comparison/equal/equal';
 import { all } from '../../../relational/sql/keyword/all/all';
+import { Json } from '../../../relational/types/json/json';
 
 export class BaseTable {
   createdDate!: Date;
@@ -21,6 +22,8 @@ export class User extends BaseTable {
   userType = UserType.Local;
   userStatus!: UserStatus;
   admin = false;
+  extra: Json;
+  extraTyped!: Json<{ name: string }>;
 }
 
 export enum UserType {

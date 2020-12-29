@@ -71,7 +71,21 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
           } else {
             this.logger.trace(`all statement ${sql}`, { sql, values, rows });
             defer.resolve({
-              rows: rows,
+              rows: rows.map((row) => {
+                const columnKeys = Object.keys(row);
+                for (const columnKey of columnKeys) {
+                  const columnValue = row[columnKey];
+                  if (typeof columnValue === 'string' && columnValue.startsWith('JSON-')) {
+                    row[columnKey] = JSON.parse(columnValue.substr('JSON-'.length));
+                  } else if (typeof columnValue === 'string' && columnValue.startsWith('DATE-')) {
+                    row[columnKey] = new Date(columnValue.substr('DATE-'.length));
+                  } else if (typeof columnValue === 'string' && columnValue.startsWith('BOOL-')) {
+                    row[columnKey] = columnValue.substr('BOOL-'.length) === 'true';
+                  }
+                  //TODO improve and document, make tests with text values BOOL-, JSON-, DATE- and wrong formats
+                }
+                return row;
+              }),
               rowCount: rows.length,
             });
           }

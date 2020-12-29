@@ -5,7 +5,7 @@ import { TransactionClient } from '../../relational/client/transaction-client';
 import { RuleContext } from '../../relational/permission/description/rule-context';
 
 export interface TransactionContext<T> extends Context<T>, TransactionClient<T> {
-  transaction<R>(action: (trx: Client<T>) => Promise<R>): Promise<R>;
+  transaction<R>(action: (trx: Context<T>) => Promise<R>): Promise<R>;
   authorize(auth: RuleContext): TransactionContext<T>;
 }
 

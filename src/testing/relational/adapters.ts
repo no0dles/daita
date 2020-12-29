@@ -1,6 +1,6 @@
 import { testAdapter as pgAdapter } from '../../packages/pg-adapter/testing/postgres-test-adapter';
 import { testAdapter as sqliteAdapter } from '../../packages/sqlite-adapter';
-import { testAdapter as httpAdapter } from '../../packages/http-adapter';
+import { testAdapter as httpAdapter } from '../../packages/http-adapter/test-adapter-implementation';
 import { testAdapter as mariadbAdapter } from '../../packages/mariadb-adapter';
 import { OrmRelationalSchema } from '../../packages/orm/schema/orm-relational-schema';
 import { isMigrationTree, MigrationTree } from '../../packages/orm/migration/migration-tree';

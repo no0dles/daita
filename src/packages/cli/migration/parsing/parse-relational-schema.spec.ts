@@ -111,6 +111,16 @@ describe('parse-relational-schema', () => {
         defaultValue: false,
         name: 'admin',
       },
+      extra: {
+        required: true,
+        type: 'json',
+        name: 'extra',
+      },
+      extraTyped: {
+        required: true,
+        type: 'json',
+        name: 'extraTyped',
+      },
       ...baseFields,
     },
   });

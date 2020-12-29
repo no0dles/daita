@@ -33,6 +33,8 @@ export class MariadbFormatContext extends SimpleFormatContext {
         return 'VARCHAR(36)';
       case 'string[]':
         return 'JSON';
+      case 'json':
+        return 'JSON';
     }
 
     throw new Error(`unknown data type ${options.type}`);

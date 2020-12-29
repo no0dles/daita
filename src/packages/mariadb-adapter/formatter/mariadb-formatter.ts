@@ -13,6 +13,8 @@ import { CreateSchemaFormatter } from '../../relational/sql/ddl/create-schema/cr
 import { NowFormatter } from './now-formatter';
 import { ConcatFunctionFormatter } from '../../relational/sql/function/string/concat/concat-fn-formatter';
 import { LockTableFormatter } from './lock-table-formatter';
+import { LeastFormatter } from '../../relational/sql/function/conditional/least/least-formatter';
+import { GreatestFormatter } from '../../relational/sql/function/conditional/greatest/greatest-formatter';
 
 export const mariadbFormatter = new Formatter();
 mariadbFormatter.extend(ansiFormatter);
@@ -27,3 +29,5 @@ mariadbFormatter.add(new AlterTableDropColumnFormatter());
 mariadbFormatter.add(new AlterTableDropConstraintFormatter());
 mariadbFormatter.add(new ConcatFunctionFormatter());
 mariadbFormatter.add(new LockTableFormatter());
+mariadbFormatter.add(new LeastFormatter());
+mariadbFormatter.add(new GreatestFormatter());

@@ -28,7 +28,19 @@ export class MariadbRelationalDataAdapter implements RelationalDataAdapter<Maria
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
     const pool = await this.pool.get();
     try {
-      const result = await pool.query(sql, values);
+      const result = await pool.query(
+        {
+          sql,
+          typeCast: (column, next) => {
+            if (column.type == 'TINY' && column.columnLength === 1) {
+              const val = column.int();
+              return val === null ? null : val === 1;
+            }
+            return next();
+          },
+        },
+        values,
+      );
       return {
         rows: result instanceof Array ? [...result] : [],
         rowCount: result instanceof Array ? result.length : result.affectedRows,

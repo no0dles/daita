@@ -53,7 +53,7 @@ export function jwtAuth(providers: AppAuthorizationProvider[]) {
       };
       next();
     } catch (e) {
-      if (e.message.startsWith('Invalid token specified')) {
+      if (e.message.startsWith('invalid format')) {
         return next(new HttpError(400, `invalid token format`));
       }
       next(e);

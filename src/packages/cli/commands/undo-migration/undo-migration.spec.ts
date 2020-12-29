@@ -10,7 +10,7 @@ describe('cli/commands/migration-undo', () => {
       async (ctx) => {
         await undoMigration({ cwd: ctx.cwd });
         await ctx.exists('src/migrations');
-        await ctx.contains('src/migrations', []);
+        await ctx.contains('src/migrations', ['202016152817-init.ts']);
       },
       { schema: 'auth-schema-migrated' },
     ),

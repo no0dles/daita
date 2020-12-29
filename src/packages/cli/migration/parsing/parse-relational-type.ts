@@ -48,6 +48,8 @@ export function parseRelationalType(type: AstType): SchemaTableFieldTypeDescript
       return 'date';
     } else if (type.name === 'UUID') {
       return 'uuid';
+    } else if (type.name === 'Json') {
+      return 'json';
     }
     const refType = type.referenceType;
 

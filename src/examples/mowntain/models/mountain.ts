@@ -1,5 +1,6 @@
 import { Canton } from './canton';
-import { UUID } from '../../../packages/relational/types/uuid';
+import { UUID } from '../../../packages/relational/types/uuid/uuid';
+import { Json } from '../../../packages/relational/types/json/json';
 
 export class Mountain {
   id!: UUID;
@@ -8,6 +9,8 @@ export class Mountain {
   cantonShortname!: string;
   elevation!: number;
   prominence!: number;
+  ascents?: number;
+  extra?: Json;
   // coordinates!: {
   //   lat: number;
   //   lon: number;

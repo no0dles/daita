@@ -1,5 +1,5 @@
 import { Mountain } from './mountain';
-import { UUID } from '../../../packages/relational/types/uuid';
+import { UUID } from '../../../packages/relational/types/uuid/uuid';
 
 export class Ascent {
   id!: UUID;

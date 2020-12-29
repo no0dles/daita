@@ -1,7 +1,5 @@
 export function parseJwtHeader(token: string): JwtHeader {
-  const tokenPart = token.split('.')[0];
-  const content = Buffer.from(tokenPart, 'base64').toString();
-  return JSON.parse(content);
+  return parse(token, 0);
 }
 
 export interface JwtHeader {
@@ -17,8 +15,17 @@ export interface JwtPayload {
   sub: string;
 }
 
-export function parseJwtPayload<T>(token: string): T & JwtPayload {
-  const tokenPart = token.split('.')[1];
-  const content = Buffer.from(tokenPart, 'base64').toString();
+function parse(token: string, partIndex: number) {
+  const tokenPart = token.split('.')[partIndex];
+  let content = '';
+  try {
+    content = Buffer.from(tokenPart, 'base64').toString();
+  } catch (e) {
+    throw new Error('invalid format');
+  }
   return JSON.parse(content);
+}
+
+export function parseJwtPayload<T>(token: string): T & JwtPayload {
+  return parse(token, 1);
 }

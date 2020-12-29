@@ -6,6 +6,8 @@ import { NowFormatter } from '../sql/function/date/now-formatter';
 import { SqliteTableFormatter } from './sqlite-table-formatter';
 import { ConcatPipeFormatter } from '../../relational/sql/function/string/concat/concat-pipe-formatter';
 import { ansiFormatter } from '../../relational/formatter/ansi-formatter';
+import { LeastFormatter } from '../../relational/sql/function/conditional/least/least-formatter';
+import { GreatestFormatter } from '../../relational/sql/function/conditional/greatest/greatest-formatter';
 
 export const sqliteFormatter = new Formatter();
 sqliteFormatter.extend(ansiFormatter);
@@ -15,3 +17,5 @@ sqliteFormatter.add(new CreateTableFormatter());
 sqliteFormatter.add(new AlterTableAddColumnFormatter());
 sqliteFormatter.add(new SqliteTableFormatter());
 sqliteFormatter.add(new ConcatPipeFormatter());
+sqliteFormatter.add(new LeastFormatter());
+sqliteFormatter.add(new GreatestFormatter());
