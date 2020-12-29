@@ -2,9 +2,9 @@ export function getEnvironmentVariable(key: string): string | null;
 export function getEnvironmentVariable(key: string, defaultValue: string): string;
 export function getEnvironmentVariable(key: string, defaultValue?: string): string | null {
   if (typeof window !== 'undefined') {
-    return (<any>window)[key] || defaultValue || null;
+    return (<any>window)[key] ?? defaultValue ?? null;
   } else {
-    return process.env[key] || defaultValue || null;
+    return process.env[key] ?? defaultValue ?? null;
   }
 }
 

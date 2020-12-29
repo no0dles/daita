@@ -9,6 +9,7 @@ import { SqliteSql } from '../sql/sqlite-sql';
 import { createLogger } from '../../common/utils/logger';
 import { RelationDoesNotExistsError } from '../../relational/error/relational-error';
 import { Resolvable } from '../../common/utils/resolvable';
+import { parseJson } from '../../common/utils/json';
 
 export class SqliteRelationalDataAdapter implements RelationalDataAdapter<SqliteSql> {
   protected readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });
@@ -76,7 +77,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
                 for (const columnKey of columnKeys) {
                   const columnValue = row[columnKey];
                   if (typeof columnValue === 'string' && columnValue.startsWith('JSON-')) {
-                    row[columnKey] = JSON.parse(columnValue.substr('JSON-'.length));
+                    row[columnKey] = parseJson(columnValue.substr('JSON-'.length));
                   } else if (typeof columnValue === 'string' && columnValue.startsWith('DATE-')) {
                     row[columnKey] = new Date(columnValue.substr('DATE-'.length));
                   } else if (typeof columnValue === 'string' && columnValue.startsWith('BOOL-')) {

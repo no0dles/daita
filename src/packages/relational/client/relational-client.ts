@@ -49,7 +49,7 @@ export class RelationalClient implements SelectClient, UpdateClient, DeleteClien
     return this.mapResult(sql, result.rows);
   }
 
-  async update(sql: UpdateSql<any>): Promise<RelationalUpdateResult> {
+  async update<T>(sql: UpdateSql<T>): Promise<RelationalUpdateResult> {
     const result = await this.exec(sql);
     return { updatedRows: result.rowCount };
   }
@@ -59,7 +59,7 @@ export class RelationalClient implements SelectClient, UpdateClient, DeleteClien
     return { deletedRows: result.rowCount };
   }
 
-  async insert(sql: InsertSql<any>): Promise<RelationalInsertResult> {
+  async insert<T>(sql: InsertSql<T>): Promise<RelationalInsertResult> {
     const result = await this.exec(sql);
     return { insertedRows: result.rowCount };
   }

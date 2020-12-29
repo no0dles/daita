@@ -7,7 +7,7 @@ import { json } from './json';
 
 describe('relational/types/sql', () => {
   const clients = testClient('pg', 'sqlite', 'mariadb');
-  const jsonValue = { bool: true, text: 'foo', value: 10 };
+  const jsonValue = { bool: true, text: 'foo', value: 10, date: new Date() };
 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {

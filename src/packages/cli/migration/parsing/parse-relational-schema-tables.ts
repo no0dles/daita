@@ -10,13 +10,13 @@ import { AstError } from '../../ast/utils';
 import {
   addTableToSchema,
   containsTableInSchema,
-  getTablesFromSchema,
   SchemaDescription,
+  SchemaTableDescription,
 } from '../../../orm/schema/description/relational-schema-description';
 
 export function parseRelationalSchemaTables(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
   const calls = schemaVariable.callsByName('table');
-  const classDeclarations: { [key: string]: AstClassDeclaration } = {};
+  const tables: { classDeclaration: AstClassDeclaration; table: SchemaTableDescription }[] = [];
 
   for (const call of calls) {
     const classArgument = call.argumentAt(0);
@@ -59,10 +59,13 @@ export function parseRelationalSchemaTables(schema: SchemaDescription, schemaVar
       parseRelationalSchemaTableIndices(table, optionsObject);
     }
 
-    classDeclarations[classArgument.name] = classArgument;
+    tables.push({
+      table,
+      classDeclaration: classArgument,
+    });
   }
 
-  for (const table of getTablesFromSchema(schema)) {
-    parseRelationalSchemaTableReferences(schema, table, classDeclarations[table.name]);
+  for (const table of tables) {
+    parseRelationalSchemaTableReferences(schema, table.table, table.classDeclaration);
   }
 }

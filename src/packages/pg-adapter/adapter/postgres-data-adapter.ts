@@ -7,14 +7,17 @@ import { RelationalDataAdapter } from '../../relational/adapter/relational-data-
 import { createLogger } from '../../common/utils/logger';
 import { Resolvable } from '../../common/utils/resolvable';
 import { ConnectionError } from '../../relational/error/connection-error';
+import { parseJson } from '../../common/utils/json';
 
 export class PostgresDataAdapter<TClient extends PoolClient | Pool> implements RelationalDataAdapter {
   protected readonly logger = createLogger({ package: 'pg-adapter' });
   constructor(protected client: Resolvable<TClient>) {
-    types.setTypeParser(1700, (val) => parseFloat(val));
-    types.setTypeParser(700, (val) => parseFloat(val));
-    types.setTypeParser(701, (val) => parseFloat(val));
-    types.setTypeParser(20, (val) => parseInt(val));
+    types.setTypeParser(types.builtins.NUMERIC, (val) => parseFloat(val));
+    types.setTypeParser(types.builtins.FLOAT4, (val) => parseFloat(val));
+    types.setTypeParser(types.builtins.FLOAT8, (val) => parseFloat(val));
+    types.setTypeParser(types.builtins.INT8, (val) => parseInt(val));
+    types.setTypeParser(types.builtins.JSON, (val) => parseJson(val));
+    types.setTypeParser(types.builtins.JSONB, (val) => parseJson(val));
   }
 
   async close(): Promise<void> {

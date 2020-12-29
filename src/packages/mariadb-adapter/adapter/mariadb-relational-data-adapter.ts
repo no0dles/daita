@@ -7,6 +7,7 @@ import { mariadbFormatter } from '../formatter/mariadb-formatter';
 import { MariadbFormatContext } from '../formatter/mariadb-format-context';
 import { Resolvable } from '../../common/utils/resolvable';
 import { RelationDoesNotExistsError } from '../../relational/error/relational-error';
+import { parseJson } from '../../common/utils/json';
 
 export class MariadbRelationalDataAdapter implements RelationalDataAdapter<MariadbSql> {
   constructor(protected pool: Resolvable<Pool> | Resolvable<PoolConnection>) {}
@@ -35,6 +36,12 @@ export class MariadbRelationalDataAdapter implements RelationalDataAdapter<Maria
             if (column.type == 'TINY' && column.columnLength === 1) {
               const val = column.int();
               return val === null ? null : val === 1;
+            } else if (column.columnType === 252) {
+              const val = column.string();
+              if (!val) {
+                return val;
+              }
+              return parseJson(val);
             }
             return next();
           },

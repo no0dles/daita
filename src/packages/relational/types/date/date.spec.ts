@@ -6,7 +6,7 @@ import { Person } from '../../../../examples/mowntain/models/person';
 
 describe('relational/types/date', () => {
   const clients = testClient('pg', 'sqlite', 'mariadb');
-  const date = new Date();
+  const date = new Date(2020, 0, 31, 0, 0, 0);
 
   describe.each(clients)('%s', (client) => {
     beforeAll(async () => {

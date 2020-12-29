@@ -4,7 +4,7 @@ import { request as httpRequest } from 'http';
 import { parse } from 'url';
 import { AuthProvider, TokenIssuer } from './auth-provider';
 import { getTokenIssuer } from './shared-http';
-import { parseJson } from './json';
+import { parseJson } from '../common/utils/json';
 
 export class NodeHttp implements Http {
   private readonly tokenProvider: TokenIssuer;
