@@ -51,6 +51,9 @@ export function* getFilesAndDirectories(
       }
       yield { isFile: true, fileName };
     } else {
+      if (entry.name === 'node_modules') {
+        continue;
+      }
       const directory = path.join(directoryPath, entry.name);
       if (options?.selector && !options?.selector({ isFile: false, directory })) {
         continue;

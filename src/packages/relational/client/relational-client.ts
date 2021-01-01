@@ -17,7 +17,7 @@ import { RelationalRawResult } from '../adapter/relational-raw-result';
 import { isConcatDescription } from '../sql/function/string/concat/concat-description';
 import { InsertSql } from '../sql/dml/insert/insert-sql';
 import { DeleteSql } from '../sql/dml/delete/delete-sql';
-import { SelectSql } from '../sql/dml/select/select-sql';
+import { isSingleFieldSelect, SelectSql } from '../sql/dml/select/select-sql';
 import { deepClone } from '../../common/utils/deep-clone';
 import { isMinDescription } from '../sql/function/aggregation/min/min-description';
 import { isFieldDescription } from '../sql/keyword/field/field-description';
@@ -75,25 +75,7 @@ export class RelationalClient implements SelectClient, UpdateClient, DeleteClien
 
     const fields = sql.select;
     if (typeof fields === 'object') {
-      if (isFieldDescription(fields)) {
-        return rows.map((row) => row[fields.field.key]);
-      }
-
-      if (
-        isAddDescription(fields) ||
-        isSubtractDescription(fields) ||
-        isMultiplyDescription(fields) ||
-        isDivideDescription(fields) ||
-        isLeastDescription(fields) ||
-        isGreatestDescription(fields) ||
-        isMinDescription(fields) ||
-        isMaxDescription(fields) ||
-        isAvgDescription(fields) ||
-        isSumDescription(fields) ||
-        isCountDescription(fields) ||
-        isConcatDescription(fields) ||
-        isNowDescription(fields)
-      ) {
+      if (isSingleFieldSelect(fields)) {
         return rows.map((row) => row[Object.keys(row)[0]]);
       }
 

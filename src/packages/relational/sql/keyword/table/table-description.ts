@@ -11,3 +11,6 @@ export const isTableDescription = (val: any): val is TableDescription<any> =>
   typeof val.table === 'string' &&
   /^[a-zA-Z0-9_]+$/.test(val.table) &&
   (!val.schema || (typeof val.schema === 'string' && /^[a-zA-Z0-9_]+$/.test(val.schema)));
+
+export const compareTableDescription = (first: TableDescription<any>, second: TableDescription<any>) =>
+  first.table === second.table && first.schema === second.schema;

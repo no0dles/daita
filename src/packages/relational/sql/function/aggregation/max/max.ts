@@ -1,8 +1,13 @@
 import { MaxDescription } from './max-description';
 import { field } from '../../../keyword/field/field';
-import { PickByValue } from '../../../../../common/types/pick-by-value';
+import { KeysOfType, PickByValue } from '../../../../../common/types/pick-by-value';
 import { Constructable } from '../../../../../common/types/constructable';
+import { TableAliasDescription } from '../../../dml/select/table-alias-description';
+import { TableDescription } from '../../../keyword/table/table-description';
 
-export function max<T, K extends keyof PickByValue<T, number | Date>>(type: Constructable<T>, key: K): T[K] {
-  return (<MaxDescription>{ max: field(type, key as any) as any }) as any;
+export function max<T, K extends keyof KeysOfType<T, number | Date>>(
+  type: Constructable<T> | TableAliasDescription<T> | TableDescription<T>,
+  key: K,
+): T[K] {
+  return (<MaxDescription>{ max: field<T, K>(type as any, key) as any }) as any;
 }
