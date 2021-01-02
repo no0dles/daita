@@ -104,51 +104,28 @@ export class RelationalBackwardCompatibleMapper implements RelationalMapper {
         },
       };
     } else {
-      if (isTableDescription(field.field.table.alias.table)) {
-        const { table } = getTableFromSchema(this.schemaDescription, field.field.table.alias.table);
-        return {
-          field: {
-            key: getFieldFromSchemaTable(table, field.field.key).name,
-            table: {
-              alias: {
-                name: field.field.table.alias.name,
-                table: this.normalizeTable(field.field.table.alias.table),
-              },
+      const { table } = getTableFromSchema(this.schemaDescription, field.field.table.alias.table);
+      return {
+        field: {
+          key: getFieldFromSchemaTable(table, field.field.key).name,
+          table: {
+            alias: {
+              name: field.field.table.alias.name,
+              table: this.normalizeTable(field.field.table.alias.table),
             },
           },
-        };
-      } else {
-        return {
-          field: {
-            key: field.field.key,
-            table: {
-              alias: {
-                name: field.field.table.alias.name,
-                table: this.normalizeSelect(field.field.table.alias.table),
-              },
-            },
-          },
-        };
-      }
+        },
+      };
     }
   }
 
   private normalizeTableAlias(from: TableAliasDescription<any>): TableAliasDescription<any> {
-    if (isTableDescription(from.alias.table)) {
-      return {
-        alias: {
-          name: from.alias.name,
-          table: this.normalizeTable(from.alias.table),
-        },
-      };
-    } else {
-      return {
-        alias: {
-          name: from.alias.name,
-          table: this.normalizeSelect(from.alias.table),
-        },
-      };
-    }
+    return {
+      alias: {
+        name: from.alias.name,
+        table: this.normalizeTable(from.alias.table),
+      },
+    };
   }
 
   private normalizeFrom(from: SourceTableDescription<any>): SourceTableDescription<any> {

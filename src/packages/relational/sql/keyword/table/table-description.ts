@@ -1,4 +1,4 @@
-import { isKind } from '../../../../common/utils/is-kind';
+import {isKind} from '../../../../common/utils/is-kind';
 
 export interface TableDescription<T> {
   name?: undefined;
