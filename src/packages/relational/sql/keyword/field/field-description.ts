@@ -1,10 +1,6 @@
-import {compareTableDescription, isTableDescription, TableDescription} from '../table/table-description';
-import {
-  getTableDescription,
-  isTableAliasDescription,
-  TableAliasDescription,
-} from '../../dml/select/table-alias-description';
-import {isExactKind} from '../../../../common/utils/is-exact-kind';
+import { TableDescription } from '../table/table-description';
+import { getTableDescription, TableAliasDescription } from '../../dml/select/table-alias-description';
+import { isExactKind } from '../../../../common/utils/is-exact-kind';
 
 export interface FieldDescription {
   field: {
