@@ -3,6 +3,7 @@ import { AppAuthorizationTokenEndpoint } from '../../http-server-common/app-auth
 import { request as httpsRequest, RequestOptions } from 'https';
 import { request as httpRequest } from 'http';
 import { parse } from 'url';
+import { hasRequestUser, setRequestUser } from '../../http-server-common/get-request-user';
 
 class TokenCache {
   private cache: { [key: string]: TokenUser } = {};
@@ -68,7 +69,7 @@ export function tokenAuth(tokenEndpoints: AppAuthorizationTokenEndpoint[]) {
     endpointCaches[tokenEndpoint.issuer] = new TokenCache(tokenEndpoint);
   }
   return async (req: Request, res: Response, next: NextFunction) => {
-    if (req.user) {
+    if (hasRequestUser(req)) {
       return next();
     }
 
@@ -91,7 +92,7 @@ export function tokenAuth(tokenEndpoints: AppAuthorizationTokenEndpoint[]) {
       return res.status(401).json({ message: 'invalid token' });
     }
 
-    req.user = user;
+    setRequestUser(req, user);
     next();
   };
 }

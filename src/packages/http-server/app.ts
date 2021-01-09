@@ -10,20 +10,6 @@ import { Server } from 'http';
 import { createLogger } from '../common/utils/logger';
 import { ormRoute } from './routes/orm';
 
-declare global {
-  namespace Express {
-    export interface Request {
-      user?: {
-        sub: string;
-        iss: string;
-        iat?: number;
-        exp?: number;
-        roles?: string[];
-      };
-    }
-  }
-}
-
 export function createHttpServerApp(options: AppOptions, port: number) {
   const app = express();
   const logger = createLogger({ package: 'http-server' });

@@ -147,6 +147,9 @@
               "$ref": "#/definitions/authorizationUserPool"
             }
           }
+        },
+        "disableRules": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false

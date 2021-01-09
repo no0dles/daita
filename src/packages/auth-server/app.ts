@@ -14,20 +14,6 @@ import { createLogger } from '../common/utils/logger';
 import { TransactionContext } from '../orm/context/transaction-context';
 import { responseTimeMetricMiddleware } from './middlewares/response-time-middleware';
 
-declare global {
-  namespace Express {
-    export interface Request {
-      user?: {
-        sub: string;
-        iss: string;
-        iat?: number;
-        exp?: number;
-        roles?: string[];
-      };
-    }
-  }
-}
-
 export function createAuthApp(ctx: TransactionContext<any>, port: number) {
   const app = express();
   const logger = createLogger({ package: 'auth-server' });

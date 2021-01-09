@@ -6,6 +6,7 @@ import jose from 'jose';
 import { Resolvable } from '../../common/utils/resolvable';
 import { NodeHttp } from '../../http-client-common/node-http';
 import { parseJwtPayload } from '../../common/utils/jwt';
+import { hasRequestUser, setRequestUser } from '../../http-server-common/get-request-user';
 
 const logger = createLogger({ package: 'http-server', middleware: 'jwt-auth' });
 export function jwtAuth(providers: AppAuthorizationProvider[]) {
@@ -23,7 +24,7 @@ export function jwtAuth(providers: AppAuthorizationProvider[]) {
   }
 
   return async (req: Request, res: Response, next: NextFunction) => {
-    if (req.user) {
+    if (hasRequestUser(req)) {
       return next();
     }
 
@@ -44,13 +45,13 @@ export function jwtAuth(providers: AppAuthorizationProvider[]) {
 
       const verify = jose.JWT.verify(token, keystore) as any;
       logger.trace(`request logged in as ${verify.sub} on ${verify.iss}`);
-      req.user = {
+      setRequestUser(req, {
         exp: verify.exp,
         iat: verify.iat,
-        iss: verify.iss!,
-        sub: verify.sub!,
+        iss: verify.iss,
+        sub: verify.sub,
         roles: verify.roles,
-      };
+      });
       next();
     } catch (e) {
       if (e.message.startsWith('invalid format')) {

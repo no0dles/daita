@@ -29,6 +29,10 @@ export class BrowserAuth implements TokenIssuer {
     this.load();
   }
 
+  get user() {
+    return this.idPayload;
+  }
+
   private load() {
     try {
       const accessToken = this.storage.getItem('access_token');

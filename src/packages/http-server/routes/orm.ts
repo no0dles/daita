@@ -1,11 +1,12 @@
 import { AppOptions } from '../../http-server-common/app-options';
 import { Router } from 'express';
+import { getRequestUser } from '../../http-server-common/get-request-user';
 
 export function ormRoute(options: AppOptions) {
   const router = Router();
 
   router.use((req, res, next) => {
-    const hasMigrationRole = req.user?.roles?.some((r) => r === 'daita:migration:admin');
+    const hasMigrationRole = getRequestUser(req)?.roles?.some((r) => r === 'daita:migration:admin');
     if (hasMigrationRole) {
       next();
     } else {

@@ -36,7 +36,7 @@ export class RelationalClient implements SelectClient, UpdateClient, DeleteClien
     return this.dataAdapter.close();
   }
 
-  async selectFirst<T>(sql: SelectSql<T>): Promise<T> {
+  async selectFirst<T>(sql: SelectSql<T>): Promise<T | null> {
     const clonedSql = deepClone(sql);
     clonedSql.limit = 1;
     const result = await this.dataAdapter.exec(clonedSql);

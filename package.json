@@ -1,6 +1,6 @@
 {
   "name": "daita",
-  "version": "0.3.0-alpha.39",
+  "version": "0.3.0-alpha.42",
   "scripts": {
     "test": "jest",
     "build": "tsc",

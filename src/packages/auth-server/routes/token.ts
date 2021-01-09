@@ -7,6 +7,7 @@ import { table } from '../../relational/sql/keyword/table/table';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { TransactionContext } from '../../orm/context/transaction-context';
 import { createToken } from '../seed';
+import { getRequiredRequestUserProp } from '../../http-server-common/get-request-user';
 
 export function tokenRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
@@ -22,7 +23,7 @@ export function tokenRoute(ctx: TransactionContext<any>) {
           createdAt: field(UserToken, 'createdAt'),
         },
         from: table(UserToken),
-        where: equal(field(UserToken, 'userUsername'), req.user?.sub!),
+        where: equal(field(UserToken, 'userUsername'), getRequiredRequestUserProp(req, 'sub')),
         limit: 20,
         offset: parseInt(req.query.skip as string, 0) || 0,
       });
@@ -35,7 +36,7 @@ export function tokenRoute(ctx: TransactionContext<any>) {
   router.post('/', async (req, res, next) => {
     try {
       const token = await createToken(ctx, {
-        username: req.user?.sub!,
+        username: getRequiredRequestUserProp(req, 'sub'),
         userPoolId: req.params.userPoolId,
         name: req.body.name,
         expiresAt: req.body.expireAt,
@@ -55,7 +56,7 @@ export function tokenRoute(ctx: TransactionContext<any>) {
         delete: table(UserToken),
         where: and(
           equal(field(UserToken, 'id'), req.params.id),
-          equal(field(UserToken, 'userUsername'), req.user?.sub!),
+          equal(field(UserToken, 'userUsername'), getRequiredRequestUserProp(req, 'sub')),
         ),
       });
 
