@@ -71,14 +71,16 @@ export class HttpTestAdapterImplementation
           authAdminServer = await createAuthAdminApp(options.context, authPort);
           server = await createHttpServerApp(
             {
-              context: options.context,
-              enableTransactions: true,
+              relational: {
+                context: options.context,
+                enableTransactions: true,
+                transactionTimeout: 2000,
+              },
               authorization: {
                 providers: [],
                 tokenEndpoints: [{ issuer: 'test', uri: `http://localhost:${authPort}` }],
               },
               cors: true,
-              transactionTimeout: 2000,
             },
             port,
           );

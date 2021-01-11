@@ -1,9 +1,14 @@
-import { AppOptions } from '../../http-server-common/app-options';
+import { HttpServerOptions } from '../../http-server-common/http-server-options';
 import { Router } from 'express';
 import { getRequestUser } from '../../http-server-common/get-request-user';
 
-export function ormRoute(options: AppOptions) {
+export function ormRoute(options: HttpServerOptions) {
   const router = Router();
+
+  const context = options.relational?.context;
+  if (!context) {
+    return router;
+  }
 
   router.use((req, res, next) => {
     const hasMigrationRole = getRequestUser(req)?.roles?.some((r) => r === 'daita:migration:admin');
@@ -16,7 +21,7 @@ export function ormRoute(options: AppOptions) {
 
   router.get('/:schema/migrations', async (req, res, next) => {
     try {
-      const migrations = await options.context.migrationAdapter.getAppliedMigrations(req.params.schema);
+      const migrations = await context.migrationAdapter.getAppliedMigrations(req.params.schema);
       res.json({ migrations });
     } catch (e) {
       next(e);
@@ -30,7 +35,7 @@ export function ormRoute(options: AppOptions) {
         return res.status(400).json({ message: 'invalid data' });
       }
 
-      await options.context.migrationAdapter.applyMigration(req.params.schema, req.body.migrationPlan);
+      await context.migrationAdapter.applyMigration(req.params.schema, req.body.migrationPlan);
       res.status(200).end();
     } catch (e) {
       next(e);

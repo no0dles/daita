@@ -2,17 +2,16 @@ import { Resolvable } from '../../common/utils/resolvable';
 import { getSchema, IwentSchema } from '../../iwent/iwent-schema';
 import { randomUuid } from '../../common/utils/random-string';
 import { validate } from '../../common/validation/validate';
-import { AppOptions } from '../../http-server-common/app-options';
+import { HttpServerOptions } from '../../http-server-common/http-server-options';
 import { Router } from 'express';
-import { isIwentAdapter } from '../../iwent/iwent-adapter';
 import { getRequestUser } from '../../http-server-common/get-request-user';
 import { IwentContractType } from '../../iwent/iwent-contract';
 
-export function iwentRoute(options: AppOptions) {
+export function iwentRoute(options: HttpServerOptions) {
   const router = Router();
 
-  const adapter = options.context.migrationAdapter;
-  if (!isIwentAdapter(adapter)) {
+  const adapter = options.iwent?.adapter;
+  if (!adapter) {
     return router;
   }
 

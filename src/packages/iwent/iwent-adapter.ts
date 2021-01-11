@@ -9,6 +9,8 @@ export interface IwentAdapter {
   applyContract(contract: IwentContract): Promise<void>;
 
   getContracts(): Promise<IwentContract[]>;
+
+  close(): Promise<void>;
 }
 
 export const isIwentAdapter = (val: any): val is IwentAdapter =>

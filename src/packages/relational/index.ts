@@ -106,7 +106,7 @@ export { table } from './sql/keyword/table/table';
 // export { isNotEqualDescription, NotEqualDescription } from './sql/operands/comparison/not-equal/not-equal-description';
 // export { isNotIn } from './sql/operands/comparison/not-in/not-in';
 // export { isNotInDescription, NotInDescription } from './sql/operands/comparison/not-in/not-in-description';
-// export { UUID } from './types/uuid';
+// export { UUID } from './types/uuid/uuid';
 // export { ConnectionError } from './error/connection-error';
 // export { TimeoutError } from './error/timeout-error';
 // export { CreateSchemaFormatter } from './sql/ddl/create-schema/create-schema';

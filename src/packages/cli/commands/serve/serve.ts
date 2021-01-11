@@ -12,7 +12,7 @@ import { AstContext } from '../../ast/ast-context';
 import { Defer } from '../../../common/utils/defer';
 import { isTransactionContext } from '../../../orm/context/transaction-context';
 import { createLogger } from '../../../common/utils/logger';
-import { AppOptions } from '../../../http-server-common/app-options';
+import { HttpServerOptions } from '../../../http-server-common/http-server-options';
 import { authSchema } from '../../../auth-server/schema';
 
 const logger = createLogger({ package: 'cli', command: 'serve' });
@@ -57,10 +57,12 @@ export async function serve(opts: {
   }
 
   const httpPort = opts.port || 8765;
-  const httpOptions: AppOptions = {
-    context: ctx,
+  const httpOptions: HttpServerOptions = {
+    relational: {
+      context: ctx,
+      enableTransactions: true,
+    },
     authorization: disableAuth ? false : authorization,
-    enableTransactions: true,
     cors: true,
   };
   const server = await createHttpServerApp(httpOptions, httpPort);

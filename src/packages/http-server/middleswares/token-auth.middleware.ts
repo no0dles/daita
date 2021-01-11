@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { AppAuthorizationTokenEndpoint } from '../../http-server-common/app-authorization';
+import { HttpServerAuthorizationTokenEndpoint } from '../../http-server-common/http-server-authorization';
 import { request as httpsRequest, RequestOptions } from 'https';
 import { request as httpRequest } from 'http';
 import { parse } from 'url';
@@ -8,7 +8,7 @@ import { hasRequestUser, setRequestUser } from '../../http-server-common/get-req
 class TokenCache {
   private cache: { [key: string]: TokenUser } = {};
   private requestMethod = this.tokenEndpoint.uri.startsWith('https:') ? httpsRequest : httpRequest;
-  constructor(private tokenEndpoint: AppAuthorizationTokenEndpoint) {}
+  constructor(private tokenEndpoint: HttpServerAuthorizationTokenEndpoint) {}
 
   async get(token: string): Promise<TokenUser | null> {
     if (this.cache[token]) {
@@ -63,7 +63,7 @@ export interface TokenUser {
   iat: number;
 }
 
-export function tokenAuth(tokenEndpoints: AppAuthorizationTokenEndpoint[]) {
+export function tokenAuth(tokenEndpoints: HttpServerAuthorizationTokenEndpoint[]) {
   const endpointCaches: { [key: string]: TokenCache } = {};
   for (const tokenEndpoint of tokenEndpoints) {
     endpointCaches[tokenEndpoint.issuer] = new TokenCache(tokenEndpoint);

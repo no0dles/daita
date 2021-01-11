@@ -28,3 +28,19 @@ export function getBoolEnvironmentVariable(key: string, defaultValue?: boolean):
   }
   return null;
 }
+
+export function getNumberEnvironmentVariable(key: string): number | null;
+export function getNumberEnvironmentVariable(key: string, defaultValue: number): number;
+export function getNumberEnvironmentVariable(key: string, defaultValue?: number): number | null {
+  const value = getEnvironmentVariable(key);
+  if (value) {
+    const parsed = parseInt(value);
+    if (!isNaN(parsed)) {
+      return parsed;
+    }
+  }
+  if (defaultValue !== undefined) {
+    return defaultValue;
+  }
+  return null;
+}

@@ -27,11 +27,13 @@ export function createAuthAdminApp(context: MigrationContext<any>, port: number)
     '/api/relational',
     authMiddleware,
     relationalRoute({
-      context,
+      relational: {
+        context,
+        enableTransactions: true,
+        transactionTimeout: 4000,
+      },
       authorization: false,
-      enableTransactions: true,
       cors: false,
-      transactionTimeout: 4000,
     }),
   );
 

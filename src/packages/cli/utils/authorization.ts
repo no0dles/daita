@@ -1,7 +1,7 @@
 import { getProjectConfig } from './config';
-import { AppAuthorization } from '../../http-server-common/app-authorization';
+import { HttpServerAuthorization } from '../../http-server-common/http-server-authorization';
 
-export function getAuthorization(options: { cwd?: string; context?: string }): AppAuthorization | false {
+export function getAuthorization(options: { cwd?: string; context?: string }): HttpServerAuthorization | false {
   const config = getProjectConfig(options);
   return config.authorization || false;
 }

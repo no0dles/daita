@@ -11,7 +11,10 @@ import {
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
 import { MigrationTree } from '../../orm/migration/migration-tree';
 import { getContext } from '../../orm/context/get-context';
-import { AppAuthorizationProvider, AppAuthorizationTokenEndpoint } from '../../http-server-common/app-authorization';
+import {
+  HttpServerAuthorizationProvider,
+  HttpServerAuthorizationTokenEndpoint,
+} from '../../http-server-common/http-server-authorization';
 import { UserPoolAlgorithm } from '../../auth-server/models/user-pool';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;
@@ -41,8 +44,8 @@ export interface DaitaPostgresContextConfig extends BaseContextConfig {
   authorization: DaitaAuthorizationConfig;
 }
 export interface DaitaAuthorizationConfig {
-  providers?: AppAuthorizationProvider[];
-  tokenEndpoints?: AppAuthorizationTokenEndpoint[];
+  providers?: HttpServerAuthorizationProvider[];
+  tokenEndpoints?: HttpServerAuthorizationTokenEndpoint[];
   userPools?: { [key: string]: DaitaAuthorizationIssuerConfig };
 }
 export interface DaitaAuthorizationIssuerConfig {

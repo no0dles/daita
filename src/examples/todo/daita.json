@@ -1,0 +1,11 @@
+{
+  "$schema": "../../packages/cli/schema.json",
+  "context": {
+    "default": {
+      "module": "@daita/sqlite-adapter",
+      "schemaLocation": "todo.schema.ts",
+      "migrationLocation": "migrations",
+      "connectionString": "sqlite://:memory:"
+    }
+  }
+}

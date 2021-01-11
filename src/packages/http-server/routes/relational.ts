@@ -1,21 +1,33 @@
 import { Request, Response, Router } from 'express';
 import { validateExecBody } from '../middleswares/validate-body.middleware';
 import { ContextManager } from '../../http-server-common/context-manager';
-import { AppOptions } from '../../http-server-common/app-options';
+import { HttpServerOptions, HttpServerRelationalOptions } from '../../http-server-common/http-server-options';
 import { TransactionManager } from '../../http-server-common/transaction-manager';
 import { getRequestContext } from '../get-request-context';
 import { TransactionContextManager } from '../../http-server-common/transaction-context-manager';
 
-export function relationalRoute(options: AppOptions) {
-  const router = relationalDataRoute(options);
-  if (options.enableTransactions) {
-    extendTransactionRoutes(options, router);
+export function relationalRoute(options: HttpServerOptions) {
+  const router = Router();
+
+  const relationalOptions = options.relational;
+  if (!relationalOptions) {
+    return router;
   }
+
+  extendRelationalDataRoute(options, relationalOptions, router);
+  if (options.relational?.enableTransactions) {
+    extendTransactionRoutes(options, relationalOptions, router);
+  }
+
   return router;
 }
 
-function extendTransactionRoutes(options: AppOptions, router: Router) {
-  const manager = new TransactionContextManager(options);
+function extendTransactionRoutes(
+  options: HttpServerOptions,
+  relationalOptions: HttpServerRelationalOptions,
+  router: Router,
+) {
+  const manager = new TransactionContextManager(relationalOptions);
 
   function getTransactionId(req: Request, res: Response): string | null {
     if (typeof req.params['tid'] === 'string') {
@@ -59,7 +71,7 @@ function extendTransactionRoutes(options: AppOptions, router: Router) {
         return;
       }
 
-      const transaction = manager.create(getRequestContext(req, options), tid);
+      const transaction = manager.create(getRequestContext(req, options, relationalOptions), tid);
       await transaction.started;
       res.setHeader('X-Transaction', tid);
       res.status(200).send();
@@ -91,18 +103,18 @@ function extendTransactionRoutes(options: AppOptions, router: Router) {
   });
 }
 
-export function relationalDataRoute(options: AppOptions) {
-  const router = Router();
-
+export function extendRelationalDataRoute(
+  options: HttpServerOptions,
+  relationalOptions: HttpServerRelationalOptions,
+  router: Router,
+) {
   router.post('/exec', validateExecBody, async (req, res, next) => {
     try {
-      const context = new ContextManager(getRequestContext(req, options));
+      const context = new ContextManager(getRequestContext(req, options, relationalOptions));
       const result = await context.exec(req.body.sql);
       res.status(200).json(result);
     } catch (e) {
       next(e);
     }
   });
-
-  return router;
 }

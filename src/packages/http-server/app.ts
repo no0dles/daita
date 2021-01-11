@@ -5,13 +5,13 @@ import * as bodyParser from 'body-parser';
 import { jwtAuth } from './middleswares/jwt-auth.middleware';
 import { errorMiddleware } from './middleswares/error.middleware';
 import { tokenAuth } from './middleswares/token-auth.middleware';
-import { AppOptions } from '../http-server-common/app-options';
+import { HttpServerOptions } from '../http-server-common/http-server-options';
 import { Server } from 'http';
 import { createLogger } from '../common/utils/logger';
 import { ormRoute } from './routes/orm';
-import {iwentRoute} from './routes/iwent';
+import { iwentRoute } from './routes/iwent';
 
-export function createHttpServerApp(options: AppOptions, port: number) {
+export function createHttpServerApp(options: HttpServerOptions, port: number) {
   const app = express();
   const logger = createLogger({ package: 'http-server' });
 
@@ -40,6 +40,7 @@ export function createHttpServerApp(options: AppOptions, port: number) {
   app.use('/api/relational', relationalRoute(options));
   app.use('/api/orm', ormRoute(options));
   app.use('/api/iwent', iwentRoute(options));
+
   app.use(errorMiddleware(logger));
 
   return new Promise<Server>((resolve) => {

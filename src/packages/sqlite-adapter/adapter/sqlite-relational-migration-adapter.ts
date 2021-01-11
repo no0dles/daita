@@ -22,11 +22,35 @@ import { Client } from '../../relational/client/client';
 import { dropTableFieldAction } from '../orm/drop-table-field.action';
 import { dropTableForeignKeyAction } from '../orm/drop-table-foreign-key.action';
 import { RelationalTransactionClient } from '../../relational/client/relational-transaction-client';
+import { IwentAdapter } from '../../iwent/iwent-adapter';
+import { Iwent } from 'packages/iwent/iwent';
+import { IwentContract } from 'packages/iwent/iwent-contract';
+import { ContractStorage } from '../../iwent/schema/contract-storage';
 
 export class SqliteRelationalMigrationAdapter
   extends SqliteRelationalTransactionAdapter
-  implements RelationalMigrationAdapter<SqliteSql> {
+  implements RelationalMigrationAdapter<SqliteSql>, IwentAdapter {
+  async addEvent(event: Iwent): Promise<void> {
+    await this.contractStorage.addEvent(event);
+  }
+  getEvent(id: string): Promise<Iwent | null> {
+    return this.contractStorage.getEvent(id);
+  }
+  async applyContract(contract: IwentContract): Promise<void> {
+    await this.contractStorage.ensureInitialized(async (client) => {
+      await this.contractStorage.addContract(client, contract);
+    });
+  }
+
+  getContracts(): Promise<IwentContract[]> {
+    return this.contractStorage.getContract();
+  }
+
   private storage = new MigrationStorage({
+    idType: { type: 'string' },
+    transactionClient: new RelationalTransactionClient(this),
+  });
+  private contractStorage = new ContractStorage({
     idType: { type: 'string' },
     transactionClient: new RelationalTransactionClient(this),
   });

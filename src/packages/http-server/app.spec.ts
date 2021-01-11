@@ -1,37 +1,35 @@
-import { createHttpServerApp } from './app';
-import { createDefaultUser, createDefaultUserPool, loginWithDefaultUser } from '../../testing/auth-test';
-import { getServer, httpGet, httpPost, HttpServerApp } from '../../testing/http-server';
-import { createAuthApp } from '../auth-server/app';
+import { loginWithDefaultUser } from '../../testing/auth-test';
+import { httpGet, httpPost, HttpServerApp } from '../../testing/http-server';
 import { now } from '../relational/sql/function/date/now/now';
-import { authSchema } from '../auth-server/schema';
-import { createAuthAdminApp } from '../auth-server/admin-app';
 import { adapter } from '../pg-adapter';
-import { MigrationContext } from '../orm/context/get-migration-context';
-import { MigrationTree } from '../orm/migration/migration-tree';
 import { getPostgresDb, PostgresDb } from '../pg-adapter/testing/postgres-test-adapter';
-import { allow } from '../relational/permission/function/allow';
-import { authorized } from '../relational/permission/function/authorized';
-import { getContext } from '../orm/context/get-context';
+import { createTestAdminServer, AuthServerTestDisposable } from '../auth-server/testing/admin-server.test';
+import { createTestHttpServer, HttpTestServerDisposable } from './testing/create-test-http-server';
+import { MigrationTree } from '../orm/migration/migration-tree';
+import { allow, authorized } from '../relational';
 import { getRuleId } from '../relational/permission/rule-id';
 
 describe('http-server/app', () => {
-  let authCtx: MigrationContext<any>;
-  let httpCtx: MigrationContext<any>;
+  let authServerTest: AuthServerTestDisposable;
+  let httpServer: HttpTestServerDisposable;
   let postgresDb: PostgresDb;
-  let authApp: HttpServerApp;
-  let authAdminApp: HttpServerApp;
-  let httpApp: HttpServerApp;
 
   beforeAll(async () => {
     postgresDb = await getPostgresDb();
-    authCtx = getContext(adapter, {
-      schema: authSchema,
-      connectionString: postgresDb.connectionString,
-      createIfNotExists: true,
+    authServerTest = await createTestAdminServer({
+      adapter,
+      options: {
+        createIfNotExists: true,
+        connectionString: postgresDb.connectionString,
+      },
     });
-    httpCtx = getContext(adapter, {
-      connectionString: postgresDb.connectionString,
-      createIfNotExists: true,
+    httpServer = await createTestHttpServer({
+      adapter,
+      options: {
+        createIfNotExists: true,
+        connectionString: postgresDb.connectionString,
+      },
+      authServer: authServerTest,
       migrationTree: new MigrationTree('http', [
         {
           id: 'init',
@@ -51,53 +49,16 @@ describe('http-server/app', () => {
         },
       ]),
     });
-
-    authApp = getServer((port) => createAuthApp(authCtx, port));
-    authAdminApp = getServer((port) => createAuthAdminApp(authCtx, port));
-    httpApp = getServer((port) =>
-      createHttpServerApp(
-        {
-          context: httpCtx,
-          enableTransactions: true,
-          authorization: {
-            providers: [
-              {
-                issuer: 'default',
-                uri: `http://localhost:${authApp.port}`,
-              },
-            ],
-            tokenEndpoints: [
-              {
-                uri: `http://localhost:${authAdminApp.port}`,
-                issuer: 'default',
-              },
-            ],
-          },
-          cors: false,
-        },
-        port,
-      ),
-    );
-
-    await authCtx.migrate();
-    await createDefaultUserPool(authCtx);
-    await createDefaultUser(authCtx);
-
-    await authApp.start();
-    await authAdminApp.start();
-    await httpApp.start();
   });
 
   afterAll(async () => {
-    await authApp.close();
-    await authAdminApp.close();
-    await httpApp.close();
-    await authCtx.close();
+    await httpServer.close();
+    await authServerTest.close();
     await postgresDb.close();
   });
 
   it('should login', async () => {
-    const res = await httpPost(authApp, `/default/login`, {
+    const res = await httpPost(authServerTest.authHttp, `/default/login`, {
       username: 'user',
       password: '123456',
     });
@@ -108,7 +69,7 @@ describe('http-server/app', () => {
   });
 
   it('should handle malformed bearer token', async () => {
-    const res = await httpGet(httpApp, '', {
+    const res = await httpGet(httpServer.http, '', {
       headers: { Authorization: 'Bearer asd' },
     });
     expect(res.statusCode).toEqual(400);
@@ -116,9 +77,9 @@ describe('http-server/app', () => {
   });
 
   it('should login with token', async () => {
-    const accessToken = await loginWithDefaultUser(authApp);
+    const accessToken = await loginWithDefaultUser(authServerTest.authHttp);
     const tokenRes = await httpPost(
-      authApp,
+      authServerTest.authHttp,
       `/default/token`,
       {},
       {
@@ -129,7 +90,7 @@ describe('http-server/app', () => {
     );
     const apiToken = tokenRes.body.token;
     const res = await httpPost(
-      httpApp,
+      httpServer.http,
       '/api/relational/exec',
       {
         sql: {
@@ -146,9 +107,9 @@ describe('http-server/app', () => {
   });
 
   it('should return result', async () => {
-    const token = await loginWithDefaultUser(authApp);
+    const token = await loginWithDefaultUser(authServerTest.authHttp);
     const res = await httpPost(
-      httpApp,
+      httpServer.http,
       '/api/relational/exec',
       {
         sql: {
@@ -165,9 +126,9 @@ describe('http-server/app', () => {
   });
 
   it('should not allow undefined sql', async () => {
-    const token = await loginWithDefaultUser(authApp);
+    const token = await loginWithDefaultUser(authServerTest.authHttp);
     const res = await httpPost(
-      httpApp,
+      httpServer.http,
       '/api/relational/exec',
       {
         sql: {
@@ -182,7 +143,7 @@ describe('http-server/app', () => {
   });
 
   it('should not allow unauthorized result', async () => {
-    const res = await httpPost(httpApp, '/api/relational/exec', {
+    const res = await httpPost(httpServer.http, '/api/relational/exec', {
       sql: {
         select: now(),
       },

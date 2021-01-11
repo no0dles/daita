@@ -8,7 +8,6 @@ import { equal } from '../../../relational/sql/operands/comparison/equal/equal';
 import { asc } from '../../../relational/sql/keyword/asc/asc';
 import { Migrations } from './migrations';
 import { MigrationSteps } from './migration-steps';
-import { FormatDataType } from '../../../relational/formatter/format-context';
 import { RelationalStorage } from '../../../relational/storage/storage';
 
 export class MigrationStorage extends RelationalStorage {
@@ -132,6 +131,6 @@ export class MigrationStorage extends RelationalStorage {
           into: table(MigrationSteps),
         });
       }
-    });
+    }, client);
   }
 }

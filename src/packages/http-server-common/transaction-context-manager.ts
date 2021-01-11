@@ -1,5 +1,5 @@
 import { TransactionManager } from './transaction-manager';
-import { AppOptions } from './app-options';
+import { HttpServerRelationalOptions } from './http-server-options';
 import { TransactionClient } from '../relational/client/transaction-client';
 import { TimeoutError } from '../relational/error/timeout-error';
 
@@ -7,7 +7,7 @@ export class TransactionContextManager {
   private readonly transactionTimeout: number;
   private readonly transactions: { [key: string]: TransactionManager } = {};
 
-  constructor(private options: AppOptions) {
+  constructor(private options: HttpServerRelationalOptions) {
     this.transactionTimeout = options.transactionTimeout || 5000;
   }
 

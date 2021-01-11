@@ -1,4 +1,4 @@
-import { AppAuthorizationProvider } from '../../http-server-common/app-authorization';
+import { HttpServerAuthorizationProvider } from '../../http-server-common/http-server-authorization';
 import { HttpError } from '../http-error';
 import { NextFunction, Request, Response } from 'express';
 import { createLogger } from '../../common/utils/logger';
@@ -9,7 +9,7 @@ import { parseJwtPayload } from '../../common/utils/jwt';
 import { hasRequestUser, setRequestUser } from '../../http-server-common/get-request-user';
 
 const logger = createLogger({ package: 'http-server', middleware: 'jwt-auth' });
-export function jwtAuth(providers: AppAuthorizationProvider[]) {
+export function jwtAuth(providers: HttpServerAuthorizationProvider[]) {
   const clients: { [key: string]: Resolvable<jose.JWKS.KeyStore> } = {};
   for (const provider of providers) {
     const uri = provider.uri + '/' + provider.issuer + '/.well-known/jwks.json';
