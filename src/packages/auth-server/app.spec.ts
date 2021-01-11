@@ -73,7 +73,7 @@ describe('app', () => {
     const res = await http.json({
       path: '/default/refresh',
       data: {
-        refreshToken: token.token,
+        refreshToken: token!.token,
       },
     });
     expect(res.statusCode).toEqual(200);
@@ -117,12 +117,12 @@ describe('app', () => {
       const secondVerify = await ctx.selectFirst({
         select: all(UserEmailVerify),
         from: table(UserEmailVerify),
-        where: notEqual(field(UserEmailVerify, 'code'), firstVerify.code),
+        where: notEqual(field(UserEmailVerify, 'code'), firstVerify!.code),
       });
 
-      expect(firstVerify.code).not.toBe(secondVerify.code);
-      expect(firstVerify.email).toBe(secondVerify.email);
-      expect(firstVerify.userUsername).toBe(secondVerify.userUsername);
+      expect(firstVerify!.code).not.toBe(secondVerify!.code);
+      expect(firstVerify!.email).toBe(secondVerify!.email);
+      expect(firstVerify!.userUsername).toBe(secondVerify!.userUsername);
     });
 
     it('should create token', async () => {
@@ -152,7 +152,7 @@ describe('app', () => {
       method: 'GET',
       path: '/default/verify',
       query: {
-        code: verify.code,
+        code: verify!.code,
       },
     });
     expect(res.statusCode).toEqual(200);
@@ -160,15 +160,15 @@ describe('app', () => {
     const verifyEmail = await ctx.selectFirst({
       select: all(UserEmailVerify),
       from: table(UserEmailVerify),
-      where: equal(field(UserEmailVerify, 'code'), verify.code),
+      where: equal(field(UserEmailVerify, 'code'), verify!.code),
     });
-    expect(verifyEmail.verifiedAt).not.toBeNull();
-    expect(verifyEmail.verifiedAt).not.toBeUndefined();
+    expect(verifyEmail!.verifiedAt).not.toBeNull();
+    expect(verifyEmail!.verifiedAt).not.toBeUndefined();
 
     const user = await ctx.selectFirst({
       select: all(User),
       from: table(User),
     });
-    expect(user.emailVerified).toBeTrue();
+    expect(user!.emailVerified).toBeTrue();
   });
 });

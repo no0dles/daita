@@ -30,7 +30,7 @@ describe('relational/adapter/relational-transaction-adapter/transaction', () => 
       });
       expect(person).not.toBeUndefined();
       expect(person).not.toBeNull();
-      expect(person.birthday).toBeInstanceOf(Date);
+      expect(person!.birthday).toBeInstanceOf(Date);
     });
 
     it('should cancel transaction', async (done) => {
@@ -53,7 +53,7 @@ describe('relational/adapter/relational-transaction-adapter/transaction', () => 
       });
       expect(person).not.toBeUndefined();
       expect(person).not.toBeNull();
-      expect(person.firstName).toEqual('Foo');
+      expect(person!.firstName).toEqual('Foo');
       done();
     });
   });

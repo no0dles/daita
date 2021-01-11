@@ -21,11 +21,15 @@ import { deleteSeedAction } from '../../orm/migration/steps/delete-seed/relation
 import { Client } from '../../relational/client/client';
 import { dropTableFieldAction } from '../orm/drop-table-field.action';
 import { dropTableForeignKeyAction } from '../orm/drop-table-foreign-key.action';
+import { RelationalTransactionClient } from '../../relational/client/relational-transaction-client';
 
 export class SqliteRelationalMigrationAdapter
   extends SqliteRelationalTransactionAdapter
   implements RelationalMigrationAdapter<SqliteSql> {
-  private storage = new MigrationStorage();
+  private storage = new MigrationStorage({
+    idType: { type: 'string' },
+    transactionClient: new RelationalTransactionClient(this),
+  });
 
   toString() {
     return this.connectionString.instant() === ':memory:' ? 'sqlite-memory' : 'sqlite-file';
@@ -40,12 +44,7 @@ export class SqliteRelationalMigrationAdapter
   }
 
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
-    if (!this.storage.hasInitialized()) {
-      await this.transaction(async (trx) => {
-        await this.storage.initalize(new RelationalClient(trx));
-      });
-    }
-    return this.storage.get(new RelationalClient(this), schema);
+    return this.storage.get(schema);
   }
 
   private async applyMigrationPlan(client: Client<SqliteSql>, migrationPlan: MigrationPlan) {
@@ -57,7 +56,7 @@ export class SqliteRelationalMigrationAdapter
       } else if (step.kind === 'add_table_primary_key') {
         await addTablePrimaryKeyAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_foreign_key') {
-        // TODOawait addTableForeignKeyAction(client, step);
+        // TODO await addTableForeignKeyAction(client, step);
       } else if (step.kind === 'drop_table_primary_key') {
         // TODO await dropTablePrimaryKeyAction(client, step);
       } else if (step.kind === 'drop_table') {

@@ -5,7 +5,7 @@ import { Http } from '../http-client-common/http';
 import { RelationalMigrationAdapter } from '../orm/adapter/relational-migration-adapter';
 import { MigrationContext } from '../orm/context/get-migration-context';
 import { RelationalMigrationAdapterImplementation } from '../orm/adapter/relational-migration-adapter-implementation';
-import { HttpMigrationAdapter } from './http-migration-adapter';
+import { HttpAdapter } from './http-adapter';
 import { authSchema } from '../auth-server/schema';
 import { Resolvable } from '../common/utils/resolvable';
 import { createToken, seedPoolUser, seedRoles, seedUserPool, seedUserRole } from '../auth-server/seed';
@@ -25,7 +25,7 @@ export class HttpTestAdapterImplementation
     let server: Server;
     let authAdminServer: Server;
 
-    return new HttpMigrationAdapter(
+    return new HttpAdapter(
       new Resolvable<Http>(
         async () => {
           const port = getRandomTestPort();

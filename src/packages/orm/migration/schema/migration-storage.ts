@@ -9,25 +9,10 @@ import { asc } from '../../../relational/sql/keyword/asc/asc';
 import { Migrations } from './migrations';
 import { MigrationSteps } from './migration-steps';
 import { FormatDataType } from '../../../relational/formatter/format-context';
+import { RelationalStorage } from '../../../relational/storage/storage';
 
-export interface MigrationStorageOptions {
-  idType: FormatDataType;
-}
-
-export class MigrationStorage {
-  private initalizedSchema = false;
-
-  constructor(private options: MigrationStorageOptions = { idType: { type: 'string' } }) {}
-
-  hasInitialized() {
-    return this.initalizedSchema;
-  }
-
-  async initalize(client: Client<any>) {
-    if (this.initalizedSchema) {
-      return;
-    }
-
+export class MigrationStorage extends RelationalStorage {
+  async initialize(client: Client<any>) {
     const createSchema: CreateSchemaSql = { createSchema: 'daita', ifNotExists: true };
     if (client.supportsQuery(createSchema)) {
       await client.exec(createSchema);
@@ -89,61 +74,64 @@ export class MigrationStorage {
         },
       },
     });
-    this.initalizedSchema = true;
   }
 
-  async get(client: Client<any>, name: string) {
-    const steps = await client.select({
-      select: {
-        id: field(Migrations, 'id'),
-        schema: field(Migrations, 'schema'),
-        resolve: field(Migrations, 'resolve'),
-        after: field(Migrations, 'after'),
-        index: field(MigrationSteps, 'index'),
-        step: field(MigrationSteps, 'step'),
-      },
-      from: table(MigrationSteps),
-      join: [
-        join(
-          Migrations,
-          and(
-            equal(field(Migrations, 'id'), field(MigrationSteps, 'migrationId')),
-            equal(field(Migrations, 'schema'), field(MigrationSteps, 'migrationSchema')),
+  async get(name: string) {
+    return this.ensureInitialized(async (client) => {
+      const steps = await client.select({
+        select: {
+          id: field(Migrations, 'id'),
+          schema: field(Migrations, 'schema'),
+          resolve: field(Migrations, 'resolve'),
+          after: field(Migrations, 'after'),
+          index: field(MigrationSteps, 'index'),
+          step: field(MigrationSteps, 'step'),
+        },
+        from: table(MigrationSteps),
+        join: [
+          join(
+            Migrations,
+            and(
+              equal(field(Migrations, 'id'), field(MigrationSteps, 'migrationId')),
+              equal(field(Migrations, 'schema'), field(MigrationSteps, 'migrationSchema')),
+            ),
           ),
-        ),
-      ],
-      where: equal(field(Migrations, 'schema'), name),
-      orderBy: asc(field(MigrationSteps, 'index')),
+        ],
+        where: equal(field(Migrations, 'schema'), name),
+        orderBy: asc(field(MigrationSteps, 'index')),
+      });
+
+      const migrationMap = steps.reduce<{ [key: string]: MigrationDescription }>((migrations, step) => {
+        if (!migrations[step.id]) {
+          migrations[step.id] = { id: step.id, after: step.after, resolve: step.resolve, steps: [] };
+        }
+        migrations[step.id].steps.push(JSON.parse(step.step));
+        return migrations;
+      }, {});
+
+      return Object.keys(migrationMap).map((id) => migrationMap[id]);
     });
-
-    const migrationMap = steps.reduce<{ [key: string]: MigrationDescription }>((migrations, step) => {
-      if (!migrations[step.id]) {
-        migrations[step.id] = { id: step.id, after: step.after, resolve: step.resolve, steps: [] };
-      }
-      migrations[step.id].steps.push(JSON.parse(step.step));
-      return migrations;
-    }, {});
-
-    return Object.keys(migrationMap).map((id) => migrationMap[id]);
   }
 
   async add(client: Client<any>, schema: string, migration: MigrationDescription) {
-    await client.exec({
-      insert: { id: migration.id, schema, resolve: migration.resolve, after: migration.after },
-      into: table(Migrations),
-    });
-
-    let index = 0;
-    for (const step of migration.steps) {
+    return this.ensureInitialized(async (client) => {
       await client.exec({
-        insert: {
-          migrationId: migration.id,
-          migrationSchema: schema,
-          step: JSON.stringify(step),
-          index: index++,
-        },
-        into: table(MigrationSteps),
+        insert: { id: migration.id, schema, resolve: migration.resolve, after: migration.after },
+        into: table(Migrations),
       });
-    }
+
+      let index = 0;
+      for (const step of migration.steps) {
+        await client.exec({
+          insert: {
+            migrationId: migration.id,
+            migrationSchema: schema,
+            step: JSON.stringify(step),
+            index: index++,
+          },
+          into: table(MigrationSteps),
+        });
+      }
+    });
   }
 }

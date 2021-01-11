@@ -15,7 +15,7 @@ describe('relational/sql/function/date/now', () => {
       });
       expect(result).not.toBeNull();
       expect(result).not.toBeUndefined();
-      expect(result.date).toBeInstanceOf(Date);
+      expect(result!.date).toBeInstanceOf(Date);
     });
   });
 });

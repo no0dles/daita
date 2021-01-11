@@ -12,9 +12,11 @@ import { requestContext } from './function/request-context';
 
 describe('relational/permission', () => {
   it('should', async () => {
-    const storage = new MigrationStorage();
     const client = testClient('sqlite')[0];
-    await storage.initalize(client);
+    const storage = new MigrationStorage({
+      idType: { type: 'string' },
+      transactionClient: client,
+    });
     await storage.add(client, 'test', {
       id: 'init',
       steps: [
@@ -29,7 +31,7 @@ describe('relational/permission', () => {
         },
       ],
     });
-    const migrations = await storage.get(client, 'test');
+    const migrations = await storage.get('test');
     const migrationTree = new MigrationTree('test', migrations);
     const ruleMap = migrationTree.getSchemaDescription().rules || {};
     const evalator = new RulesEvaluator(Object.keys(ruleMap).map((k) => ({ id: k, rule: ruleMap[k] })));

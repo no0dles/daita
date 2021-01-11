@@ -8,6 +8,7 @@ import { and } from '../../relational/sql/keyword/and/and';
 import { table } from '../../relational/sql/keyword/table/table';
 import { equal } from '../../relational/sql/operands/comparison/equal/equal';
 import { TransactionContext } from '../../orm/context/transaction-context';
+import { getRequiredRequestUserProp } from '../../http-server-common/get-request-user';
 
 export function resendRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });
@@ -15,6 +16,7 @@ export function resendRoute(ctx: TransactionContext<any>) {
   router.use(authMiddleware);
   router.post('/', async (req, res, next) => {
     try {
+      const username = getRequiredRequestUserProp(req, 'sub');
       const user = await ctx.selectFirst({
         select: {
           username: field(User, 'username'),
@@ -22,10 +24,7 @@ export function resendRoute(ctx: TransactionContext<any>) {
           emailVerified: field(User, 'emailVerified'),
         },
         from: table(User),
-        where: and(
-          equal(field(User, 'username'), req?.user?.sub || ''),
-          equal(field(User, 'userPoolId'), req.params.userPoolId),
-        ),
+        where: and(equal(field(User, 'username'), username), equal(field(User, 'userPoolId'), req.params.userPoolId)),
       });
 
       if (!user) {

@@ -23,29 +23,26 @@ import { updateSeedAction } from '../../orm/migration/steps/update-seed/relation
 import { deleteSeedAction } from '../../orm/migration/steps/delete-seed/relational-delete-seed.action';
 import { failNever } from '../../common/utils/fail-never';
 import { Client } from '../../relational/client/client';
+import { RelationalTransactionClient } from '../../relational/client/relational-transaction-client';
 
 export class MariadbRelationalMigrationAdapter
   extends MariadbRelationalTransactionAdapter
   implements RelationalMigrationAdapter<MariadbSql> {
-  private storage = new MigrationStorage({ idType: { type: 'string', size: 255 } });
+  private storage = new MigrationStorage({
+    idType: { type: 'string', size: 255 },
+    transactionClient: new RelationalTransactionClient(this),
+  });
 
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
     await this.transaction(async (trx) => {
       const client = new RelationalClient(trx);
-      await this.storage.initalize(client);
       await this.applyMigrationPlan(client, migrationPlan);
       await this.storage.add(client, schema, migrationPlan.migration);
     });
   }
 
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
-    if (!this.storage.hasInitialized()) {
-      await this.transaction(async (trx) => {
-        const client = new RelationalClient(trx);
-        await this.storage.initalize(client);
-      });
-    }
-    return this.storage.get(new RelationalClient(this), schema);
+    return this.storage.get(schema);
   }
 
   private async applyMigrationPlan(client: Client<MariadbSql>, migrationPlan: MigrationPlan) {

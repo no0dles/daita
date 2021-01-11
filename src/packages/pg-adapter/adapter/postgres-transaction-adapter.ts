@@ -1,4 +1,4 @@
-import { Pool, PoolClient, types } from 'pg';
+import { Pool, PoolClient } from 'pg';
 import { PostgresDataAdapter } from './postgres-data-adapter';
 import { PostgresSql } from '../sql/postgres-sql';
 import { RelationalTransactionAdapter } from '../../relational/adapter/relational-transaction-adapter';

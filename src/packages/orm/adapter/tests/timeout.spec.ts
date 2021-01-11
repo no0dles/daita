@@ -53,7 +53,7 @@ describe('relational/adapter/relational-transaction-adapter/timeout', () => {
       });
       expect(person).not.toBeUndefined();
       expect(person).not.toBeNull();
-      expect(person.birthday).toBeNull();
+      expect(person!.birthday).toBeNull();
       done();
     });
 
@@ -78,7 +78,7 @@ describe('relational/adapter/relational-transaction-adapter/timeout', () => {
       });
       expect(person).not.toBeUndefined();
       expect(person).not.toBeNull();
-      expect(person.birthday).toBeNull();
+      expect(person!.birthday).toBeNull();
       done();
     });
   });

@@ -9,6 +9,7 @@ import { AppOptions } from '../http-server-common/app-options';
 import { Server } from 'http';
 import { createLogger } from '../common/utils/logger';
 import { ormRoute } from './routes/orm';
+import {iwentRoute} from './routes/iwent';
 
 export function createHttpServerApp(options: AppOptions, port: number) {
   const app = express();
@@ -38,6 +39,7 @@ export function createHttpServerApp(options: AppOptions, port: number) {
 
   app.use('/api/relational', relationalRoute(options));
   app.use('/api/orm', ormRoute(options));
+  app.use('/api/iwent', iwentRoute(options));
   app.use(errorMiddleware(logger));
 
   return new Promise<Server>((resolve) => {

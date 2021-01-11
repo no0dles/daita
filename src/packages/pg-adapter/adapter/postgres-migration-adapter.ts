@@ -26,23 +26,52 @@ import { dropTableForeignKeyAction } from '../../orm/migration/steps/drop-table-
 import { addTableForeignKeyAction } from '../../orm/migration/steps/add-table-foreign-key/relational-add-table-foreign-key.action';
 import { dropTablePrimaryKeyAction } from '../../orm/migration/steps/drop-table-primary-key/relational-drop-table-primary-key.action';
 import { Client } from '../../relational/client/client';
+import { IwentAdapter } from '../../iwent/iwent-adapter';
+import { Iwent } from 'packages/iwent/iwent';
+import { IwentContract } from 'packages/iwent/iwent-contract';
+import { ContractStorage } from '../../iwent/schema/contract-storage';
+import { DaitaContract } from '../../iwent/schema/contract';
+import { RelationalTransactionClient } from '../../relational/client/relational-transaction-client';
 
 export class PostgresMigrationAdapter
   extends PostgresTransactionAdapter
-  implements RelationalMigrationAdapter<PostgresSql> {
-  private readonly storage = new MigrationStorage();
+  implements RelationalMigrationAdapter<PostgresSql>, IwentAdapter {
+  private readonly migrationStorage = new MigrationStorage({
+    idType: { type: 'string' },
+    transactionClient: new RelationalTransactionClient(this),
+  });
+  private readonly contractStorage = new ContractStorage({
+    idType: { type: 'string' },
+    transactionClient: new RelationalTransactionClient(this),
+  });
 
   constructor(connectionString: Resolvable<string>) {
     super(connectionString);
   }
 
+  addEvent(event: Iwent): Promise<void> {
+    return this.contractStorage.addEvent(event);
+  }
+
+  async getEvent(id: string): Promise<Iwent | null> {
+    return this.contractStorage.getEvent(id);
+  }
+
+  async applyContract(contract: IwentContract): Promise<void> {
+    await this.transaction(async (trx) => {
+      const client = new RelationalClient(trx);
+      await client.exec({ lockTable: table(DaitaContract) });
+      await this.contractStorage.addContract(client, contract);
+      await client.exec({ notify: 'daita_contracts' });
+    });
+  }
+
+  async getContracts(): Promise<IwentContract[]> {
+    return this.contractStorage.getContract();
+  }
+
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
-    if (!this.storage.hasInitialized()) {
-      await this.transaction(async (trx) => {
-        await this.storage.initalize(new RelationalClient(trx));
-      });
-    }
-    return this.storage.get(new RelationalClient(this), schema);
+    return this.migrationStorage.get(schema);
   }
 
   private async applyMigrationPlan(client: Client<PostgresSql>, migrationPlan: MigrationPlan) {
@@ -90,10 +119,9 @@ export class PostgresMigrationAdapter
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
     await this.transaction(async (trx) => {
       const client = new RelationalClient(trx);
-      await this.storage.initalize(client);
       await client.exec({ lockTable: table(Migrations) });
       await this.applyMigrationPlan(client, migrationPlan);
-      await this.storage.add(client, schema, migrationPlan.migration);
+      await this.migrationStorage.add(client, schema, migrationPlan.migration);
       await client.exec({ notify: 'daita_migrations' });
     });
   }
