@@ -1,4 +1,4 @@
-import { getServer, HttpServerApp } from '../../../testing/http-server';
+import { getServer, HttpServerApp } from '../../node/testing/http-server';
 import { getContext } from '../../orm';
 import { MigrationTree } from '../../orm/migration/migration-tree';
 import { createHttpServerApp } from '../app';

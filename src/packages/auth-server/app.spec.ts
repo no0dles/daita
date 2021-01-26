@@ -9,7 +9,7 @@ import { table } from '../relational/sql/keyword/table/table';
 import { notEqual } from '../relational/sql/operands/comparison/not-equal/not-equal';
 import { adapter } from '../sqlite-adapter';
 import { MigrationContext } from '../orm/context/get-migration-context';
-import { getServer, HttpServerApp } from '../../testing/http-server';
+import { getServer, HttpServerApp } from '../node/testing/http-server';
 import { User } from './models/user';
 import { getContext } from '../orm/context/get-context';
 import { NodeHttp } from '../http-client-common/node-http';

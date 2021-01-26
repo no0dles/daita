@@ -130,7 +130,8 @@ export function getDaitaUsage(directory: string): UsageInfo {
 export function updatePaths(packages: Set<string>, root: string, directory: string) {
   const files = getFiles(directory, {
     selector: (file) =>
-      file.fileName.endsWith('.js') && !file.fileName.endsWith('.spec.js') && !file.fileName.endsWith('.test.js'),
+      (file.fileName.endsWith('.js') && !file.fileName.endsWith('.spec.js') && !file.fileName.endsWith('.test.js')) ||
+      file.fileName.endsWith('.d.ts'),
   });
   for (const file of files) {
     const content = fs.readFileSync(file.fileName).toString();
@@ -146,6 +147,9 @@ export function updatePaths(packages: Set<string>, root: string, directory: stri
         if (relativeImportPath.startsWith('..')) {
           const packageName = relativeImportPath.split(path.sep)[1];
           const packagePath = relativeImportPath.split(path.sep).slice(2).join(path.sep);
+          if (!/^[a-zA-Z0-9\-]+$/.test(packageName)) {
+            throw new Error('invalid package name' + packageName + ' in file ' + file.fileName);
+          }
           packages.add(`@daita/${packageName}`);
           return template(packageName, packagePath);
         }

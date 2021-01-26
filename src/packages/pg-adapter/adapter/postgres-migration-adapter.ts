@@ -27,11 +27,11 @@ import { addTableForeignKeyAction } from '../../orm/migration/steps/add-table-fo
 import { dropTablePrimaryKeyAction } from '../../orm/migration/steps/drop-table-primary-key/relational-drop-table-primary-key.action';
 import { Client } from '../../relational/client/client';
 import { IwentAdapter } from '../../iwent/iwent-adapter';
-import { Iwent } from 'packages/iwent/iwent';
-import { IwentContract } from 'packages/iwent/iwent-contract';
 import { ContractStorage } from '../../iwent/schema/contract-storage';
 import { DaitaContract } from '../../iwent/schema/contract';
 import { RelationalTransactionClient } from '../../relational/client/relational-transaction-client';
+import { Iwent } from '../../iwent/iwent';
+import { IwentContract } from '../../iwent/iwent-contract';
 
 export class PostgresMigrationAdapter
   extends PostgresTransactionAdapter

@@ -1,7 +1,7 @@
 import { getContext } from '../../orm';
 import { authSchema } from '../schema';
 import { RelationalMigrationAdapterImplementation } from '../../orm/adapter/relational-migration-adapter-implementation';
-import { getServer, HttpServerApp } from '../../../testing/http-server';
+import { getServer, HttpServerApp } from '../../node/testing/http-server';
 import { createAuthApp } from '../app';
 import { createAuthAdminApp } from '../admin-app';
 import { createDefaultUser, createDefaultUserPool } from '../../../testing/auth-test';

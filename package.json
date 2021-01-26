@@ -1,6 +1,6 @@
 {
   "name": "daita",
-  "version": "0.3.0-alpha.42",
+  "version": "0.3.0-alpha.44",
   "scripts": {
     "test": "jest",
     "test:browser": "karma start",

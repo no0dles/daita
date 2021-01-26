@@ -1,5 +1,5 @@
 import { loginWithDefaultUser } from '../../testing/auth-test';
-import { httpGet, httpPost, HttpServerApp } from '../../testing/http-server';
+import { httpGet, httpPost, HttpServerApp } from '../node/testing/http-server';
 import { now } from '../relational/sql/function/date/now/now';
 import { adapter } from '../pg-adapter';
 import { getPostgresDb, PostgresDb } from '../pg-adapter/testing/postgres-test-adapter';

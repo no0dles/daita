@@ -1,4 +1,4 @@
-import { getServer, httpPost, HttpServerApp } from '../../../testing/http-server';
+import { getServer, httpPost, HttpServerApp } from '../../node/testing/http-server';
 import { createHttpServerApp } from '../app';
 import { SqliteRelationalMigrationAdapter } from '../../sqlite-adapter/adapter/sqlite-relational-migration-adapter';
 import { Resolvable } from '../../common/utils/resolvable';

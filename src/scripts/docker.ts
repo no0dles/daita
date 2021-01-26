@@ -6,7 +6,7 @@ import { shell } from '../packages/node/command';
 const rootPackageJson = require(path.join(__dirname, '../../package.json'));
 
 export function getDockerFiles() {
-  const containersDir = path.join(__dirname, '../containers');
+  const containersDir = path.join(__dirname, '../containers/iwent');
   return getRecursiveDockerFiles(containersDir);
 }
 
