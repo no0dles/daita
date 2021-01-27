@@ -89,4 +89,15 @@ describe('pg-adapter/util', () => {
       database: 'dbname',
     });
   });
+  it('should parse postgres:///postgres?host=/cloudsql/proj:regio:dbname?user=user1&password=123', () => {
+    const parsed = parseConnectionString(
+      `postgres:///postgres?host=/cloudsql/proj:regio:dbname&user=user1&password=123`,
+    );
+    expect(parsed).toEqual({
+      host: '/cloudsql/proj:regio:dbname',
+      database: 'postgres',
+      user: 'user1',
+      password: '123',
+    });
+  });
 });

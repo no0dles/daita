@@ -79,7 +79,7 @@ export function parseConnectionString(connectionString: string): ParsedConnectio
       ? parsed.auth.indexOf(':') > 0
         ? parsed.auth.substr(parsed.auth.indexOf(':') + 1)
         : undefined
-      : undefined,
+      : undefined || getQueryString('password'),
   };
 }
 
