@@ -94,7 +94,7 @@
     "jest-extended": "^0.11.5",
     "karma-firefox-launcher": "^2.1.0",
     "ng-packagr": "^11.0.3",
-    "postcss": "^8.1.14",
+    "postcss": "^8.2.10",
     "postcss-loader": "^4.1.0",
     "postcss-scss": "^3.0.4",
     "prettier": "^2.1.1",
