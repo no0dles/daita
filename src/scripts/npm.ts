@@ -129,7 +129,10 @@ export function createPackageJson(pkg: PackageInfo, packages: Set<string>, optio
       if (!fs.existsSync(path.join(pkg.path, '..', packageName))) {
         throw new Error(`invalid daita dependency ${packageName}`);
       }
-      content.dependencies[`@daita/${packageName}`] = `^${options.version || rootPackageJson.version}`;
+      if (!/^[a-zA-Z0-9\-]+$/.test(packageName)) {
+        throw new Error('package ' + pkg.name + ' has invalid package name' + packageName);
+      }
+      content.dependencies[`@daita/${packageName}`] = `^${options.version || rootPackageJson.version}`; // `file:///home/pascal/Repos/daita/dist/packages/${packageName}`; //
     } else if (blacklist.indexOf(dep) === -1) {
       if (!rootPackageJson.dependencies[dep]) {
         throw new Error(`could not find ${dep} in ${pkg.name}`);

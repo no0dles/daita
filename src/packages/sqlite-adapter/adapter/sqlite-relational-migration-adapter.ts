@@ -23,9 +23,9 @@ import { dropTableFieldAction } from '../orm/drop-table-field.action';
 import { dropTableForeignKeyAction } from '../orm/drop-table-foreign-key.action';
 import { RelationalTransactionClient } from '../../relational/client/relational-transaction-client';
 import { IwentAdapter } from '../../iwent/iwent-adapter';
-import { Iwent } from 'packages/iwent/iwent';
-import { IwentContract } from 'packages/iwent/iwent-contract';
 import { ContractStorage } from '../../iwent/schema/contract-storage';
+import { Iwent } from '../../iwent/iwent';
+import { IwentContract } from '../../iwent/iwent-contract';
 
 export class SqliteRelationalMigrationAdapter
   extends SqliteRelationalTransactionAdapter

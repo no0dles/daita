@@ -2,7 +2,7 @@ import { UserPool } from '../packages/auth-server/models/user-pool';
 import { User } from '../packages/auth-server/models/user';
 import { ExcludeNonPrimitive } from '../packages/common/types/exclude-non-primitive';
 import { hashPassword } from '../packages/auth-server/modules/hash';
-import { httpPost, HttpServerApp } from './http-server';
+import { httpPost, HttpServerApp } from '../packages/node/testing/http-server';
 import { table } from '../packages/relational/sql/keyword/table/table';
 import { UserPoolUser } from '../packages/auth-server/models/user-pool-user';
 import { Client } from '../packages/relational/client/client';
