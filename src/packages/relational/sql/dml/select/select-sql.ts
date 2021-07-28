@@ -18,6 +18,7 @@ import { isSumDescription } from '../../function/aggregation/sum/sum-description
 import { isCountDescription } from '../../function/aggregation/count/count-description';
 import { isConcatDescription } from '../../function/string/concat/concat-description';
 import { isNowDescription } from '../../function/date/now/now-description';
+import { isJsonFieldDescription } from '../../keyword/field/json-field-description';
 
 export interface SelectSql<T> {
   select: T;
@@ -47,4 +48,5 @@ export const isSingleFieldSelect = (fields: any) =>
   isSumDescription(fields) ||
   isCountDescription(fields) ||
   isConcatDescription(fields) ||
-  isNowDescription(fields);
+  isNowDescription(fields) ||
+  isJsonFieldDescription(fields);

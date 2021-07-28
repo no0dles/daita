@@ -6,8 +6,8 @@ import { TableAliasDescription } from '../../dml/select/table-alias-description'
 import { KeysOfType } from '../../../../common/types/pick-by-value';
 import { Constructable } from '../../../../common/types/constructable';
 import { Json } from '../../../types/json/json';
-import { DeepRequired } from 'utility-types';
 import { JsonFieldDescription } from './json-field-description';
+import { DeepRequired } from '../../../../common/types/deep-required';
 
 export type JsonField<T> = { [P in keyof T]: T[P] extends Json<any> ? Required<T[P]['json']['value']> : never };
 export type JsonFieldSelector<T, K> = (t: JsonField<T>) => K;
