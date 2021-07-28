@@ -36,8 +36,20 @@ export function generateRelationalTableMigrationSteps(
       fieldName: removedField.item.name,
     });
   }
+
   if (mergedFields.merge.length > 0) {
-    // TODO throw new Error('merge not supported yet');
+    for (const merged of mergedFields.merge) {
+      if (merged.target.required !== merged.current.required) {
+        steps.push({
+          kind: 'update_table_field_required',
+          table: currentTable.name,
+          schema: currentTable.schema,
+          name: merged.current.name,
+          required: merged.target.required,
+        });
+      }
+    }
+    // TODO compare default, type and other props
   }
 
   const mergedPrimaryKeys = mergeArray(currentTable.primaryKeys, newTable.primaryKeys);

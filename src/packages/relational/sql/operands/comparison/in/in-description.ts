@@ -1,9 +1,10 @@
 import { isExactKind } from '../../../../../common/utils/is-exact-kind';
+import { SelectSql } from '../../../dml/select/select-sql';
 
 export interface InDescription<T> {
   in: {
     field: T;
-    values: T[];
+    values: T[] | SelectSql<T>;
   };
 }
 

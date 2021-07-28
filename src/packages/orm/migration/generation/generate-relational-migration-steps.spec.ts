@@ -30,6 +30,42 @@ describe('get-migration-steps', () => {
     ]);
   });
 
+  it('should update table field if required changed', () => {
+    const currentSchema = createSchema('test', {
+      tables: {
+        User: {
+          fields: {
+            id: { type: 'string', name: 'id', required: true },
+            name: { type: 'number', name: 'seq', required: true },
+          },
+          primaryKeys: ['id'],
+          name: 'User',
+        },
+      },
+    });
+    const newSchema = createSchema('test', {
+      tables: {
+        User: {
+          fields: {
+            id: { type: 'string', name: 'id', required: true },
+            name: { type: 'number', name: 'seq', required: false },
+          },
+          primaryKeys: ['id'],
+          name: 'User',
+        },
+      },
+    });
+    const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
+    expect(steps).toEqual([
+      {
+        kind: 'update_table_field_required',
+        table: 'User',
+        name: 'seq',
+        required: false,
+      },
+    ]);
+  });
+
   it('should do nothing', () => {
     const currentSchema = createSchema('test', {});
     const newSchema = createSchema('test', {});

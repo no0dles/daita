@@ -11,6 +11,7 @@ import { DropViewSql } from '../../relational/sql/ddl/drop-view/drop-view-sql';
 import { CreateTableSql } from '../../relational/sql/ddl/create-table/create-table-sql';
 import { LockTableSql } from '../../relational/sql/ddl/lock-table/lock-table-sql';
 import { CreateSchemaSql } from '../../relational/sql/ddl/create-schema/create-schema-sql';
+import { PostgresAlterTableSql } from './alter-table-sql';
 
 export type PostgresSql =
   | PostgresListenSql
@@ -20,6 +21,7 @@ export type PostgresSql =
   | LockTableSql
   | DropTableSql
   | AlterTableSql
+  | PostgresAlterTableSql
   | CreateTableSql
   | CreateSchemaSql
   | DropIndexSql

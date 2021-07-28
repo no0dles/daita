@@ -1,7 +1,6 @@
 import { SimpleFormatContext } from '../../relational/formatter/simple-format-context';
 import { ValueType } from '../../relational/sql/operands/value-type';
 import { FormatDataType } from '../../relational/formatter/format-context';
-import { isJsonDescription } from '../../relational/types/json/json-description';
 
 export class SqliteFormatContext extends SimpleFormatContext {
   constructor() {

@@ -86,7 +86,10 @@ export async function createMountain(client: Client<InsertSql<any>>, mountain: P
       extra:
         mountain.extra ||
         json({
-          foo: 'bar',
+          value: 10,
+          bool: true,
+          date: new Date(),
+          text: 'bar',
         }),
     },
   });

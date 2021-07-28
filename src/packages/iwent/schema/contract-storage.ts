@@ -151,7 +151,7 @@ export class ContractStorage extends RelationalStorage {
         if (!contracts[step.id]) {
           contracts[step.id] = { id: step.id, after: step.after, changes: [] };
         }
-        contracts[step.id].changes.push(JSON.parse(step.change));
+        contracts[step.id].changes.push(JSON.parse(step.change as any));
         return contracts;
       }, {});
 

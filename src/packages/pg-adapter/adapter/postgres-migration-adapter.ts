@@ -32,6 +32,7 @@ import { IwentContract } from 'packages/iwent/iwent-contract';
 import { ContractStorage } from '../../iwent/schema/contract-storage';
 import { DaitaContract } from '../../iwent/schema/contract';
 import { RelationalTransactionClient } from '../../relational/client/relational-transaction-client';
+import { updateTableFieldRequiredAction } from './actions/update-table-field-required';
 
 export class PostgresMigrationAdapter
   extends PostgresTransactionAdapter
@@ -110,6 +111,8 @@ export class PostgresMigrationAdapter
         await updateSeedAction(client, step);
       } else if (step.kind === 'delete_seed') {
         await deleteSeedAction(client, step);
+      } else if (step.kind === 'update_table_field_required') {
+        await updateTableFieldRequiredAction(client, step);
       } else {
         failNever(step, 'unknown migration step');
       }

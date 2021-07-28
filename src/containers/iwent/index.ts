@@ -7,6 +7,7 @@ import { getContext } from '../../packages/orm';
 import { createLogger } from '../../packages/common/utils/logger';
 import { IwentPollProcessor } from '../../packages/iwent/iwent-poll-processor';
 import { IwentApplication } from '../../packages/iwent/iwent-application';
+import { createIwentServer } from '../../packages/iwent-server/server';
 
 const DATABASE_URL = getEnvironmentVariable('DATABASE_URL', './daita.db');
 const PORT = getNumberEnvironmentVariable('PORT', 3000);
@@ -39,11 +40,14 @@ try {
     schemaName: SCHEMA_NAME,
   });
 
-  console.log('process app');
-  const processor = new IwentPollProcessor(app);
-
   application.attach(context);
-  application.attach(processor.run(context));
+  application.attach(
+    createIwentServer({
+      port: PORT,
+      application: app,
+      context,
+    }),
+  );
 } catch (e) {
   logger.error(e);
   process.exit(1);

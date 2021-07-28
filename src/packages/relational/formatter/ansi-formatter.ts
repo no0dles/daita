@@ -34,6 +34,8 @@ import { AddFormatter } from '../sql/operands/arithmetic/add/add-formatter';
 import { SubtractFormatter } from '../sql/operands/arithmetic/substract/subtract-formatter';
 import { MultiplyFormatter } from '../sql/operands/arithmetic/multiply/multiply-formatter';
 import { DivideFormatter } from '../sql/operands/arithmetic/divide/divide-formatter';
+import { IsTrueFormatter } from '../sql/operands/comparison/is-true/is-true-formatter';
+import { IsFalseFormatter } from '../sql/operands/comparison/is-false/is-false-formatter';
 
 export const ansiFormatter = new Formatter();
 
@@ -54,6 +56,8 @@ ansiFormatter.add(new JoinFormatter());
 ansiFormatter.add(new AvgFormatter());
 ansiFormatter.add(new MinFormatter());
 ansiFormatter.add(new IsNullFormatter());
+ansiFormatter.add(new IsTrueFormatter());
+ansiFormatter.add(new IsFalseFormatter());
 ansiFormatter.add(new FieldFormatter());
 ansiFormatter.add(new BetweenFormatter());
 ansiFormatter.add(new CountFormatter());

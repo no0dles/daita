@@ -22,7 +22,7 @@ export class User extends BaseTable {
   userType = UserType.Local;
   userStatus!: UserStatus;
   admin = false;
-  extra: Json;
+  extra!: Json<any>;
   extraTyped!: Json<{ name: string }>;
 }
 

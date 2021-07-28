@@ -14,6 +14,7 @@ import {
   dropTableIndex,
   dropTableReference,
   dropViewFromSchema,
+  getFieldFromSchemaTable,
   getTableFromSchema,
   getViewFromSchema,
   removeSeed,
@@ -105,6 +106,10 @@ export function getSchemaDescription(
       } else if (step.kind === 'delete_seed') {
         const { table, key } = getTableFromSchema(schema, { schema: step.schema, table: step.table });
         removeSeed(key, table, step.keys);
+      } else if (step.kind === 'update_table_field_required') {
+        const { table } = getTableFromSchema(schema, { schema: step.schema, table: step.table });
+        const field = getFieldFromSchemaTable(table, step.name);
+        field.required = step.required;
       } else {
         failNever(step, 'unknown migration step');
       }

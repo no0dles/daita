@@ -107,6 +107,8 @@ export class SqliteRelationalMigrationAdapter
         await updateSeedAction(client, step);
       } else if (step.kind === 'delete_seed') {
         await deleteSeedAction(client, step);
+      } else if (step.kind === 'update_table_field_required') {
+        throw new Error('update_table_field_required currently unsupported');
       } else {
         failNever(step, 'unknown migration step');
       }

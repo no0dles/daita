@@ -5,6 +5,6 @@ export class DaitaContractChange {
   static schema = 'daita';
 
   contractId!: string;
-  change!: Json;
+  change!: Json<any>;
   index!: string;
 }

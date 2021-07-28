@@ -21,6 +21,7 @@ import { ConcatPipeFormatter } from '../../relational/sql/function/string/concat
 import { CreateViewFormatter } from '../../relational/sql/ddl/create-view/create-view';
 import { GreatestFormatter } from './greatest-formatter';
 import { LeastFormatter } from './least-formatter';
+import { JsonFieldFormatter } from './json-field-formatter';
 
 export const postgresFormatter = new Formatter();
 postgresFormatter.extend(ansiFormatter);
@@ -43,3 +44,4 @@ postgresFormatter.add(new NowFormatter());
 postgresFormatter.add(new CreateViewFormatter());
 postgresFormatter.add(new TableFormatter());
 postgresFormatter.add(new ConcatPipeFormatter());
+postgresFormatter.add(new JsonFieldFormatter());
