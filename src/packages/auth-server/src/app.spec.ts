@@ -3,17 +3,17 @@ import { UserRefreshToken } from './models/user-refresh-token';
 import { createAuthApp } from './app';
 import { authSchema } from './schema';
 import { createDefaultUserPool } from '../../testing/auth-test';
-import { field } from '@daita/relational/sql/keyword/field/field';
-import { all } from '@daita/relational/sql/keyword/all/all';
-import { table } from '@daita/relational/sql/keyword/table/table';
-import { notEqual } from '@daita/relational/sql/operands/comparison/not-equal/not-equal';
+import { field } from '@daita/relational';
+import { all } from '@daita/relational';
+import { table } from '@daita/relational';
+import { notEqual } from '@daita/relational';
 import { adapter } from '../sqlite-adapter';
-import { MigrationContext } from '@daita/orm/context/get-migration-context';
+import { MigrationContext } from '@daita/orm';
 import { getServer, HttpServerApp } from '../node/testing/http-server';
 import { User } from './models/user';
-import { getContext } from '@daita/orm/context/get-context';
+import { getContext } from '@daita/orm';
 import { NodeHttp } from '../http-client-common/node-http';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
+import { equal } from '@daita/relational';
 
 describe('app', () => {
   let app: HttpServerApp;

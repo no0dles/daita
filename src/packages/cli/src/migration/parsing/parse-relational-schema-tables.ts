@@ -12,7 +12,7 @@ import {
   containsTableInSchema,
   SchemaDescription,
   SchemaTableDescription,
-} from '@daita/orm/schema/description/relational-schema-description';
+} from '@daita/orm';
 
 export function parseRelationalSchemaTables(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
   const calls = schemaVariable.callsByName('table');

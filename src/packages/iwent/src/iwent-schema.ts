@@ -1,4 +1,4 @@
-import { ObjectType } from '@daita/common/validation/object-type';
+import { ObjectType } from '@daita/common';
 import { IwentContract } from './iwent-contract';
 
 export interface IwentSchema {

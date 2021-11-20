@@ -1,21 +1,21 @@
 import { getGlobalConfig, getProjectConfig } from './config';
-import { HttpAdapterOptions } from '@daita/http-adapter/adapter-implementation';
-import { SqliteAdapterOptions } from '@daita/sqlite-adapter/adapter/sqlite-adapter-implementation';
-import { PostgresAdapterOptions } from '@daita/pg-adapter/adapter/adapter';
+import { HttpAdapterOptions } from '@daita/http-adapter';
+import { SqliteAdapterOptions } from '@daita/sqlite-adapter';
+import { PostgresAdapterOptions } from '@daita/pg-adapter';
 import path from 'path';
-import { MigrationContext } from '@daita/orm/context/get-migration-context';
+import { MigrationContext } from '@daita/orm';
 import {
   RelationalDataAdapterImplementation,
   RelationalTransactionAdapterImplementation,
-} from '@daita/relational/adapter/relational-adapter-implementation';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm/adapter/relational-migration-adapter-implementation';
-import { MigrationTree } from '@daita/orm/migration/migration-tree';
-import { getContext } from '@daita/orm/context/get-context';
+} from '@daita/relational';
+import { RelationalMigrationAdapterImplementation } from '@daita/orm';
+import { MigrationTree } from '@daita/orm';
+import { getContext } from '@daita/orm';
 import {
   HttpServerAuthorizationProvider,
   HttpServerAuthorizationTokenEndpoint,
-} from '@daita/http-server-common/http-server-authorization';
-import { UserPoolAlgorithm } from '@daita/auth-server/models/user-pool';
+} from '@daita/http-server-common';
+import { UserPoolAlgorithm } from '@daita/auth-server';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;
 

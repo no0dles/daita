@@ -1,16 +1,16 @@
-import { getRandomTestPort } from '@daita/node/random-port';
+import { getRandomTestPort } from '@daita/node';
 import { Server } from 'http';
-import { createHttpServerApp } from '@daita/http-server/app';
-import { Http } from '@daita/http-client-common/http';
-import { RelationalMigrationAdapter } from '@daita/orm/adapter/relational-migration-adapter';
-import { MigrationContext } from '@daita/orm/context/get-migration-context';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm/adapter/relational-migration-adapter-implementation';
+import { createHttpServerApp } from '@daita/http-server';
+import { Http } from '@daita/http-client-common';
+import { RelationalMigrationAdapter } from '@daita/orm';
+import { MigrationContext } from '@daita/orm';
+import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { HttpAdapter } from './http-adapter';
-import { authSchema } from '@daita/auth-server/schema';
-import { Resolvable } from '@daita/common/utils/resolvable';
-import { createToken, seedPoolUser, seedRoles, seedUserPool, seedUserRole } from '@daita/auth-server/seed';
-import { createAuthAdminApp } from '@daita/auth-server/admin-app';
-import { getHttpFactory } from '@daita/http-client-common/http-factory';
+import { authSchema } from '@daita/auth-server';
+import { Resolvable } from '@daita/common';
+import { createToken, seedPoolUser, seedRoles, seedUserPool, seedUserRole } from '@daita/auth-server';
+import { createAuthAdminApp } from '@daita/auth-server';
+import { getHttpFactory } from '@daita/http-client-common';
 
 export interface HttpTestAdapterOptions {
   context: MigrationContext<any>;

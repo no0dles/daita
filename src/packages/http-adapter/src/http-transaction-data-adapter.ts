@@ -1,10 +1,10 @@
 import { Countdown } from './countdown';
-import { Http, HttpSendResult } from '@daita/http-client-common/http';
-import { RelationalRawResult } from '@daita/relational/adapter/relational-raw-result';
-import { RelationalDataAdapter } from '@daita/relational/adapter/relational-data-adapter';
-import { Defer } from '@daita/common/utils/defer';
+import { Http, HttpSendResult } from '@daita/http-client-common';
+import { RelationalRawResult } from '@daita/relational';
+import { RelationalDataAdapter } from '@daita/relational';
+import { Defer } from '@daita/common';
 import { handleErrorResponse } from './error-handling';
-import { TimeoutError } from '@daita/relational/error/timeout-error';
+import { TimeoutError } from '@daita/relational';
 
 export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   private resultDefer = new Defer<any>();

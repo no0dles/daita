@@ -5,7 +5,7 @@ import { AstLiteralValue } from '../../ast/ast-literal-value';
 import {
   SchemaTableDescription,
   setTablePrimaryKey,
-} from '@daita/orm/schema/description/relational-schema-description';
+} from '@daita/orm';
 
 export function parseRelationalSchemaTablePrimaryKeys(
   table: SchemaTableDescription,

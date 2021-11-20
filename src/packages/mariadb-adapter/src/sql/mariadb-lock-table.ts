@@ -1,4 +1,4 @@
-import { LockTableSql } from '@daita/relational/sql/ddl/lock-table/lock-table-sql';
+import { LockTableSql } from '@daita/relational';
 
 export interface MariadbLockTableSql extends LockTableSql {
   mode?: 'write' | 'read';

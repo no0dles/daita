@@ -1,4 +1,4 @@
-import { setupEnv } from '@daita/testing/cli/utils.test';
+import { setupEnv } from '@daita/testing';
 import { undoMigration } from './undo-migration';
 import { addMigration } from '../add-migration/add-migration';
 

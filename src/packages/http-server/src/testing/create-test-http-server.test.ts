@@ -1,9 +1,9 @@
-import { getServer, HttpServerApp } from '@daita/node/testing/http-server';
+import { getServer, HttpServerApp } from '@daita/node';
 import { getContext } from '@daita/orm';
-import { MigrationTree } from '@daita/orm/migration/migration-tree';
+import { MigrationTree } from '@daita/orm';
 import { createHttpServerApp } from '../app';
-import { AuthServerTestDisposable } from '@daita/auth-server/testing/admin-server.test';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm/adapter/relational-migration-adapter-implementation';
+import { AuthServerTestDisposable } from '@daita/auth-server';
+import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 
 export async function createTestHttpServer<TOps>(options: {
   authServer?: AuthServerTestDisposable;

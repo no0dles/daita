@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { Defer } from '@daita/common/utils/defer';
+import { Defer } from '@daita/common';
 
 export function getSha1(text: string) {
   const sha = crypto.createHash('sha1');

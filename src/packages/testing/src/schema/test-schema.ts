@@ -1,5 +1,5 @@
-// import { table } from '@daita/relational/sql/keyword/table/table';
-// import { CreateTableColumn, CreateTableSql } from '@daita/relational/sql/ddl/create-table/create-table-sql';
+// import { table } from '@daita/relational';
+// import { CreateTableColumn, CreateTableSql } from '@daita/relational';
 // import { Client } from '../../packages/relational/client/client';
 // import { InsertSql } from '../../packages/relational/sql/dml/insert/insert-sql';
 // import { Person } from '../../examples/mowntain/models/person';

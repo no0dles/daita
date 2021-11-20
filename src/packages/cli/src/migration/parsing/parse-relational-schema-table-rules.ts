@@ -2,8 +2,8 @@ import { AstArrayValue } from '../../ast/ast-array-value';
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { AstError } from '../../ast/utils';
 import { convertValue } from './convert-value';
-import { getRuleId } from '@daita/relational/permission/rule-id';
-import { addRuleToSchema, SchemaDescription } from '@daita/orm/schema/description/relational-schema-description';
+import { getRuleId } from '@daita/relational';
+import { addRuleToSchema, SchemaDescription } from '@daita/orm';
 
 export function parseRelationalSchemaTableRules(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
   const rules = schemaVariable.callsByName('rules');

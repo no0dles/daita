@@ -1,5 +1,5 @@
 import { HttpServerAuthorization } from './http-server-authorization';
-import { MigrationContext } from '@daita/orm/context/get-migration-context';
+import { MigrationContext } from '@daita/orm';
 
 export interface HttpServerOptions {
   relational?: HttpServerRelationalOptions;

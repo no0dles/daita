@@ -4,7 +4,7 @@
   "scripts": {
     "test": "jest",
     "test:browser": "karma start",
-    "build": "tsc -b tsconfig-all.json",
+    "build": "tsc -b",
     "lint": "eslint src --ext .ts",
     "build:npm": "node -r ts-node/register src/scripts/build-npm-package.ts",
     "publish:npm": "node -r ts-node/register src/scripts/publish-npm-package.ts",

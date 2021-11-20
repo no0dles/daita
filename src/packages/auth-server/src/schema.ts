@@ -7,9 +7,9 @@ import { UserEmailVerify } from './models/user-email-verify';
 import { Role } from './models/role';
 import { UserRole } from './models/user-role';
 import { UserToken } from './models/user-token';
-import { RelationalSchema } from '@daita/orm/schema/relational-schema';
+import { RelationalSchema } from '@daita/orm';
 import { UserPoolUser } from './models/user-pool-user';
-import {InitMigration} from './migrations/2020-11-05-102155-init';
+import { InitMigration } from './migrations/2020-11-05-102155-init';
 
 export const authSchema = new RelationalSchema('auth');
 

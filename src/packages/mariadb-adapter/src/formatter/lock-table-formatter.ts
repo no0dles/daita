@@ -1,6 +1,6 @@
-import { isLockTableSql, LockTableSql } from '@daita/relational/sql/ddl/lock-table/lock-table-sql';
-import { FormatContext } from '@daita/relational/formatter/format-context';
-import { FormatHandle, Formatter, FormatType } from '@daita/relational/formatter/formatter';
+import { isLockTableSql, LockTableSql } from '@daita/relational';
+import { FormatContext } from '@daita/relational';
+import { FormatHandle, Formatter, FormatType } from '@daita/relational';
 import { MariadbLockTableSql } from '../sql/mariadb-lock-table';
 
 export class LockTableFormatter implements FormatHandle<MariadbLockTableSql> {

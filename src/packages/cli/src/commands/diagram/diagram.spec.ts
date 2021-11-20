@@ -1,4 +1,4 @@
-import { setupEnv } from '@daita/testing/cli/utils.test';
+import { setupEnv } from '@daita/testing';
 import { diagram } from './diagram';
 
 describe('cli/commands/diagram', () => {

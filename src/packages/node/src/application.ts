@@ -1,4 +1,4 @@
-import { createLogger } from '@daita/common/utils/logger';
+import { createLogger } from '@daita/common';
 
 export interface Closable {
   close(callback?: (...args: any[]) => void): Promise<any> | any;

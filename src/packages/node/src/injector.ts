@@ -1,5 +1,5 @@
-import { Constructable } from '@daita/common/types/constructable';
-import { Defer } from '@daita/common/utils/defer';
+import { Constructable } from '@daita/common';
+import { Defer } from '@daita/common';
 import { createServer } from 'http';
 
 export interface OnStartup {

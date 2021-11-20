@@ -1,5 +1,5 @@
 import { IwentContractChange, IwentContractChangeType } from './iwent-contract-change';
-import { Type } from '@daita/common/validation/type';
+import { Type } from '@daita/common';
 
 export interface IwentContract {
   id: string;

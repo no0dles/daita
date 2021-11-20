@@ -4,7 +4,7 @@ import { request as httpRequest } from 'http';
 import { parse } from 'url';
 import { AuthProvider, TokenIssuer } from './auth-provider';
 import { getTokenIssuer } from './shared-http';
-import { parseJson } from '@daita/common/utils/json';
+import { parseJson } from '@daita/common';
 
 export class NodeHttp implements Http {
   private readonly tokenProvider: TokenIssuer;

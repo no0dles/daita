@@ -7,18 +7,18 @@ import {
   AlterTableAddForeignKeyFormatter,
   AlterTableDropColumnFormatter,
   AlterTableDropConstraintFormatter,
-} from '@daita/relational/sql/ddl/alter-table/alter-table';
-import { Formatter } from '@daita/relational/formatter/formatter';
-import { CreateTableFormatter } from '@daita/relational/sql/ddl/create-table/create-table-formatter';
-import { CreateSchemaFormatter } from '@daita/relational/sql/ddl/create-schema/create-schema';
-import { LockTableFormatter } from '@daita/relational/sql/ddl/lock-table/lock-table';
-import { DropTableFormatter } from '@daita/relational/sql/ddl/drop-table/drop-table';
-import { DropViewFormatter } from '@daita/relational/sql/ddl/drop-view/drop-view';
-import { ansiFormatter } from '@daita/relational/formatter/ansi-formatter';
+} from '@daita/relational';
+import { Formatter } from '@daita/relational';
+import { CreateTableFormatter } from '@daita/relational';
+import { CreateSchemaFormatter } from '@daita/relational';
+import { LockTableFormatter } from '@daita/relational';
+import { DropTableFormatter } from '@daita/relational';
+import { DropViewFormatter } from '@daita/relational';
+import { ansiFormatter } from '@daita/relational';
 import { NowFormatter } from './now';
-import { TableFormatter } from '@daita/relational/sql/keyword/table/table-formatter';
-import { ConcatPipeFormatter } from '@daita/relational/sql/function/string/concat/concat-pipe-formatter';
-import { CreateViewFormatter } from '@daita/relational/sql/ddl/create-view/create-view';
+import { TableFormatter } from '@daita/relational';
+import { ConcatPipeFormatter } from '@daita/relational';
+import { CreateViewFormatter } from '@daita/relational';
 import { GreatestFormatter } from './greatest-formatter';
 import { LeastFormatter } from './least-formatter';
 

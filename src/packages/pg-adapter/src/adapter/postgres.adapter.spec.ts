@@ -1,6 +1,6 @@
 import { PostgresTransactionAdapter } from './postgres-transaction-adapter';
 import { getPostgresDb, PostgresDb } from '../testing/postgres-test-adapter';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { Resolvable } from '@daita/common';
 
 describe('pg-adapter/adapter/postgres-adapter', () => {
   let adapter: PostgresTransactionAdapter;

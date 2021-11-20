@@ -1,11 +1,11 @@
-import { RelationalTransactionAdapterImplementation } from '@daita/relational/adapter/relational-adapter-implementation';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm/adapter/relational-migration-adapter-implementation';
+import { RelationalTransactionAdapterImplementation } from '@daita/relational';
+import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { PostgresSql } from '../sql/postgres-sql';
-import { RelationalMigrationAdapter } from '@daita/orm/adapter/relational-migration-adapter';
+import { RelationalMigrationAdapter } from '@daita/orm';
 import { PostgresMigrationAdapter } from '../adapter/postgres-migration-adapter';
-import { execCommand, getDynamicPort, runContainer } from '@daita/node/docker';
-import { sleep } from '@daita/common/utils/sleep';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { execCommand, getDynamicPort, runContainer } from '@daita/node';
+import { sleep } from '@daita/common';
+import { Resolvable } from '@daita/common';
 
 export interface PostgresDb {
   connectionString: string;

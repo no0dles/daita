@@ -1,4 +1,4 @@
-import { UUID } from '@daita/relational/types/uuid/uuid';
+import { UUID } from '@daita/relational';
 
 export class User {
   static table = 'user';

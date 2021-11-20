@@ -1,4 +1,4 @@
-import { setupEnv } from '@daita/testing/cli/utils.test';
+import { setupEnv } from '@daita/testing';
 import { addMigration } from './add-migration';
 
 describe('cli/commands/migration:add', () => {

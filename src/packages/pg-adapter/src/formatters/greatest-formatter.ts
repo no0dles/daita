@@ -1,9 +1,9 @@
 import {
   GreatestDescription,
   isGreatestDescription,
-} from '@daita/relational/sql/function/conditional/greatest/greatest-description';
-import { FormatContext } from '@daita/relational/formatter/format-context';
-import { FormatHandle, Formatter, FormatType } from '@daita/relational/formatter/formatter';
+} from '@daita/relational';
+import { FormatContext } from '@daita/relational';
+import { FormatHandle, Formatter, FormatType } from '@daita/relational';
 
 export class GreatestFormatter implements FormatHandle<GreatestDescription> {
   type = FormatType.Value;

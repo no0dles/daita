@@ -1,7 +1,7 @@
 import { HttpTransactionAdapter } from './http-transaction-adapter';
-import { RelationalMigrationAdapter } from '@daita/orm/adapter/relational-migration-adapter';
-import { MigrationPlan } from '@daita/orm/context/relational-migration-context';
-import { MigrationDescription } from '@daita/orm/migration/migration-description';
+import { RelationalMigrationAdapter } from '@daita/orm';
+import { MigrationPlan } from '@daita/orm';
+import { MigrationDescription } from '@daita/orm';
 
 export class HttpAdapter extends HttpTransactionAdapter implements RelationalMigrationAdapter<any> {
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {

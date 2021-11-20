@@ -3,11 +3,11 @@ import * as path from 'path';
 import * as bodyParser from 'body-parser';
 import { authMiddleware } from './middlewares/auth-middleware';
 import cors from 'cors';
-import { relationalRoute } from '@daita/http-server/routes/relational';
+import { relationalRoute } from '@daita/http-server';
 import { adminTokenRoute } from './routes/admin-token';
 import { Server } from 'http';
-import { createLogger } from '@daita/common/utils/logger';
-import { MigrationContext } from '@daita/orm/context/get-migration-context';
+import { createLogger } from '@daita/common';
+import { MigrationContext } from '@daita/orm';
 import { responseTimeMetricMiddleware } from './middlewares/response-time-middleware';
 
 export function createAuthAdminApp(context: MigrationContext<any>, port: number) {

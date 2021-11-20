@@ -4,7 +4,7 @@ import { AstReferenceType } from '../../ast/ast-reference-type';
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { AstObjectPropertyAssignmentValue } from '../../ast/ast-object-property-value';
 import { AstNumericLiteralValue } from '../../ast/ast-literal-value';
-import { addTableField, SchemaTableDescription } from '@daita/orm/schema/description/relational-schema-description';
+import { addTableField, SchemaTableDescription } from '@daita/orm';
 
 export function parseRelationalSchemaTableFields(
   table: SchemaTableDescription,

@@ -1,7 +1,7 @@
 import { AstContext } from '../../ast/ast-context';
 import { getSchemaInformation, getSchemaLocation } from '../../utils/path';
 import { getContextFromConfig } from '../../utils/data-adapter';
-import { isMigrationContext } from '@daita/orm/context/get-migration-context';
+import { isMigrationContext } from '@daita/orm';
 
 export async function applyMigration(options: { cwd?: string; schema?: string; context?: string; migration?: string }) {
   const astContext = new AstContext();

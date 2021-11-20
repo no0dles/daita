@@ -1,13 +1,13 @@
 import * as express from 'express';
 import { UserToken } from '../models/user-token';
 import { authMiddleware } from '../middlewares/auth-middleware';
-import { field } from '@daita/relational/sql/keyword/field/field';
-import { and } from '@daita/relational/sql/keyword/and/and';
-import { table } from '@daita/relational/sql/keyword/table/table';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
-import { TransactionContext } from '@daita/orm/context/transaction-context';
+import { field } from '@daita/relational';
+import { and } from '@daita/relational';
+import { table } from '@daita/relational';
+import { equal } from '@daita/relational';
+import { TransactionContext } from '@daita/orm';
 import { createToken } from '../seed';
-import { getRequiredRequestUserProp } from '@daita/http-server-common/get-request-user';
+import { getRequiredRequestUserProp } from '@daita/http-server-common';
 
 export function tokenRoute(ctx: TransactionContext<any>) {
   const router = express.Router({ mergeParams: true });

@@ -1,7 +1,7 @@
 import { IwentApplication } from './iwent-application';
-import { Closable } from '@daita/node/application';
-import { MigrationContext } from '@daita/orm/context/get-migration-context';
-import { createLogger } from '@daita/common/utils/logger';
+import { Closable } from '@daita/node';
+import { MigrationContext } from '@daita/orm';
+import { createLogger } from '@daita/common';
 import { isIwentAdapter, IwentAdapter } from './iwent-adapter';
 
 const logger = createLogger({ package: 'iwent' });

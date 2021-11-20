@@ -1,6 +1,6 @@
 import express from 'express';
 import * as bodyParser from 'body-parser';
-import wellKnownRoute from './routes/well-known';
+import wellKnownRoute from './routes/well-known/jwks';
 import helmet from 'helmet';
 import { userPoolCors } from './middlewares/user-pool-cors';
 import { resendRoute } from './routes/resend';
@@ -10,8 +10,8 @@ import { registerRoute } from './routes/register';
 import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
 import { Server } from 'http';
-import { createLogger } from '@daita/common/utils/logger';
-import { TransactionContext } from '@daita/orm/context/transaction-context';
+import { createLogger } from '@daita/common';
+import { TransactionContext } from '@daita/orm';
 import { responseTimeMetricMiddleware } from './middlewares/response-time-middleware';
 
 export function createAuthApp(ctx: TransactionContext<any>, port: number) {

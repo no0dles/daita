@@ -1,5 +1,5 @@
 import { Mountain } from './mountain';
-import { UUID } from '@daita/relational/types/uuid/uuid';
+import { UUID } from '@daita/relational';
 
 export class Ascent {
   id!: UUID;

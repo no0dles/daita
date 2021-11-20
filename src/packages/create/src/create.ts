@@ -1,13 +1,13 @@
 import * as inquirer from 'inquirer';
 import * as fs from 'fs';
 import * as path from 'path';
-import { randomString } from '@daita/common/utils/random-string';
-import { getOwnPackageJson, PackageJson } from '@daita/node/node';
-import { readJsonFile, readYamlFile, writeFileIfNotExists, writePrettyJsonFile, writeYamlFile } from '@daita/node/file';
-import { DockerCompose } from '@daita/node/docker';
-import { ensurePathExists } from '@daita/node/path';
-import { failNever } from '@daita/common/utils/fail-never';
-import { shell } from '@daita/node/command';
+import { randomString } from '@daita/common';
+import { getOwnPackageJson, PackageJson } from '@daita/node';
+import { readJsonFile, readYamlFile, writeFileIfNotExists, writePrettyJsonFile, writeYamlFile } from '@daita/node';
+import { DockerCompose } from '@daita/node';
+import { ensurePathExists } from '@daita/node';
+import { failNever } from '@daita/common';
+import { shell } from '@daita/node';
 
 export interface CreateOptions {
   cwd?: string;

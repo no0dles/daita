@@ -1,5 +1,5 @@
-import { ObjectType, ObjectTypeType } from '@daita/common/validation/object-type';
-import { Type } from '@daita/common/validation/type';
+import { ObjectType, ObjectTypeType } from '@daita/common';
+import { Type } from '@daita/common';
 
 export interface IwentContractAddEventChange {
   type: 'add_event';

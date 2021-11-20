@@ -2,14 +2,14 @@ import * as express from 'express';
 import { UserToken } from '../models/user-token';
 import { User } from '../models/user';
 import { getSha1 } from '../modules/hash';
-import { field } from '@daita/relational/sql/keyword/field/field';
-import { and } from '@daita/relational/sql/keyword/and/and';
-import { table } from '@daita/relational/sql/keyword/table/table';
-import { join } from '@daita/relational/sql/dml/select/join/join';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
+import { field } from '@daita/relational';
+import { and } from '@daita/relational';
+import { table } from '@daita/relational';
+import { join } from '@daita/relational';
+import { equal } from '@daita/relational';
 import { UserPoolUser } from '../models/user-pool-user';
 import { getRoles } from '../modules/roles';
-import { Context } from '@daita/orm/context/context';
+import { Context } from '@daita/orm';
 
 export function adminTokenRoute(client: Context<any>) {
   const router = express.Router({ mergeParams: true });

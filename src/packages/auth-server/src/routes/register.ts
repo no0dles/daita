@@ -5,11 +5,11 @@ import { UserEmailVerify } from '../models/user-email-verify';
 import { hashPassword } from '../modules/hash';
 import { getRandomCode } from '../modules/random';
 import { getLeakedCount } from '../modules/password';
-import { field } from '@daita/relational/sql/keyword/field/field';
-import { table } from '@daita/relational/sql/keyword/table/table';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
+import { field } from '@daita/relational';
+import { table } from '@daita/relational';
+import { equal } from '@daita/relational';
 import { UserPoolUser } from '../models/user-pool-user';
-import { TransactionContext } from '@daita/orm/context/transaction-context';
+import { TransactionContext } from '@daita/orm';
 import { Counter } from 'prom-client';
 import { metricRegister } from '../metric';
 

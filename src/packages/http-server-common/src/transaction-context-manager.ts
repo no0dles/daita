@@ -1,7 +1,7 @@
 import { TransactionManager } from './transaction-manager';
 import { HttpServerRelationalOptions } from './http-server-options';
-import { TransactionClient } from '@daita/relational/client/transaction-client';
-import { TimeoutError } from '@daita/relational/error/timeout-error';
+import { TransactionClient } from '@daita/relational';
+import { TimeoutError } from '@daita/relational';
 
 export class TransactionContextManager {
   private readonly transactionTimeout: number;

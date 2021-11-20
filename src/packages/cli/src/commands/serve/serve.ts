@@ -4,16 +4,16 @@ import { getAuthorization } from '../../utils/authorization';
 import { watch, FSWatcher } from 'chokidar';
 import { applyMigration } from '../apply-migration/apply-migration';
 import { getProjectConfig } from '../../utils/config';
-import { createAuthApp } from '@daita/auth-server/app';
-import { createHttpServerApp } from '@daita/http-server/app';
-import { seedPoolUser, seedRoles, seedUserPool, seedUserPoolCors, seedUserRole } from '@daita/auth-server/seed';
-import { Debouncer } from '@daita/common/utils/debouncer';
+import { createAuthApp } from '@daita/auth-server';
+import { createHttpServerApp } from '@daita/http-server';
+import { seedPoolUser, seedRoles, seedUserPool, seedUserPoolCors, seedUserRole } from '@daita/auth-server';
+import { Debouncer } from '@daita/common';
 import { AstContext } from '../../ast/ast-context';
-import { Defer } from '@daita/common/utils/defer';
-import { isTransactionContext } from '@daita/orm/context/transaction-context';
-import { createLogger } from '@daita/common/utils/logger';
-import { HttpServerOptions } from '@daita/http-server-common/http-server-options';
-import { authSchema } from '@daita/auth-server/schema';
+import { Defer } from '@daita/common';
+import { isTransactionContext } from '@daita/orm';
+import { createLogger } from '@daita/common';
+import { HttpServerOptions } from '@daita/http-server-common';
+import { authSchema } from '@daita/auth-server';
 
 const logger = createLogger({ package: 'cli', command: 'serve' });
 export async function serve(opts: {

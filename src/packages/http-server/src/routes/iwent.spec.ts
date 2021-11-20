@@ -1,9 +1,9 @@
-import { getServer, httpPost, HttpServerApp } from '@daita/node/testing/http-server';
+import { getServer, httpPost, HttpServerApp } from '@daita/node';
 import { createHttpServerApp } from '../app';
 import { SqliteRelationalMigrationAdapter } from '../../sqlite-adapter/adapter/sqlite-relational-migration-adapter';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { Resolvable } from '@daita/common';
 import { IwentAdapter } from '../../iwent/iwent-adapter';
-import { randomUuid } from '@daita/common/utils/random-string';
+import { randomUuid } from '@daita/common';
 
 describe('http-server/routes/iwent', () => {
   let adapter: IwentAdapter;

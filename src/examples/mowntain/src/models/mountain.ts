@@ -1,6 +1,6 @@
 import { Canton } from './canton';
-import { UUID } from '@daita/relational/types/uuid/uuid';
-import { Json } from '@daita/relational/types/json/json';
+import { UUID } from '@daita/relational';
+import { Json } from '@daita/relational';
 
 export class Mountain {
   id!: UUID;

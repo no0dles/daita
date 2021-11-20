@@ -3,7 +3,7 @@ import { getMigrationRelativePath, getSchemaInformation, getSchemaLocation } fro
 import { removeMigrationImport, removeMigrationRegistration } from '../../migration/writing/write-migration';
 import * as fs from 'fs';
 import { AstObjectValue } from '../../ast/ast-object-value';
-import { createLogger } from '@daita/common/utils/logger';
+import { createLogger } from '@daita/common';
 
 const logger = createLogger({ package: 'cli', command: 'migration:undo' });
 

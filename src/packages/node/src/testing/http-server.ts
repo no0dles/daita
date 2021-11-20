@@ -1,6 +1,6 @@
 import { Server } from 'http';
-import { Defer } from '@daita/common/utils/defer';
-import { NodeHttp } from '@daita/http-client-common/node-http';
+import { Defer } from '@daita/common';
+import { NodeHttp } from '@daita/http-client-common';
 
 export interface HttpServerApp {
   start(): Promise<void>;

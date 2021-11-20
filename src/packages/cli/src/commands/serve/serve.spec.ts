@@ -1,13 +1,13 @@
-import { setupEnv } from '@daita/testing/cli/utils.test';
+import { setupEnv } from '@daita/testing';
 import { NodeHttp } from '../../../http-client-common/node-http';
 import { serve } from './serve';
-import { getPostgresDb, PostgresDb } from '@daita/pg-adapter/testing/postgres-test-adapter';
-import { HttpTransactionAdapter } from '@daita/http-adapter/http-transaction-adapter';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { getPostgresDb, PostgresDb } from '@daita/pg-adapter';
+import { HttpTransactionAdapter } from '@daita/http-adapter';
+import { Resolvable } from '@daita/common';
 import { Http } from '../../../http-client-common/http';
 import { field, table } from '@daita/relational';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
-import { User } from '@daita/testing/cli/schemas/auth-schema-migrated/src/models/user';
+import { equal } from '@daita/relational';
+import { User } from '@daita/testing';
 
 describe('cli/commands/serve', () => {
   let postgresDb: PostgresDb;

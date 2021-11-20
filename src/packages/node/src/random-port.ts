@@ -1,4 +1,4 @@
-import { randomNumber } from '@daita/common/utils/random-string';
+import { randomNumber } from '@daita/common';
 
 const minPort = 49152;
 const maxPort = 65535;

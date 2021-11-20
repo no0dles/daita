@@ -1,4 +1,4 @@
-import { Json } from '@daita/relational/types/json/json';
+import { Json } from '@daita/relational';
 
 export class DaitaEvent {
   static table = 'event';

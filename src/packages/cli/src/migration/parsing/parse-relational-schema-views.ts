@@ -3,7 +3,7 @@ import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { convertValue } from './convert-value';
 import { AstError } from '../../ast/utils';
 import { parseTableDescription } from './parse-table-description';
-import { addViewToSchema, SchemaDescription } from '@daita/orm/schema/description/relational-schema-description';
+import { addViewToSchema, SchemaDescription } from '@daita/orm';
 
 export function parseRelationalSchemaViews(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
   const calls = schemaVariable.callsByName('view');

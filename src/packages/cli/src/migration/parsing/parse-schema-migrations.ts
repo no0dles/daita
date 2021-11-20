@@ -2,7 +2,7 @@ import { parseSchemaMigration } from './parse-schema-migration';
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { getObjectValue } from '../../ast/utils';
 import { parseRelationalSchemaName } from './parse-relational-schema';
-import { MigrationTree } from '@daita/orm/migration/migration-tree';
+import { MigrationTree } from '@daita/orm';
 
 export function parseSchemaMigrations(schemaVariable: AstVariableDeclaration): MigrationTree {
   const nameValue = parseRelationalSchemaName(schemaVariable);

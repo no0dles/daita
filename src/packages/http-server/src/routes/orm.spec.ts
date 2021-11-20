@@ -1,5 +1,5 @@
 import { testContext } from '../../../testing/relational/adapters';
-import { MigrationTree } from '@daita/orm/migration/migration-tree';
+import { MigrationTree } from '@daita/orm';
 
 describe('http-server/routes/orm', () => {
   it('should apply migrations', async () => {

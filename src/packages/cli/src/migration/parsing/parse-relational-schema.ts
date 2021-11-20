@@ -6,7 +6,7 @@ import { parseRelationalSchemaTableSeed } from './parse-relational-schema-table-
 import { AstNewExpression } from '../../ast/ast-new-expression';
 import { AstError } from '../../ast/utils';
 import { convertValue } from './convert-value';
-import { SchemaDescription } from '@daita/orm/schema/description/relational-schema-description';
+import { SchemaDescription } from '@daita/orm';
 
 export function parseRelationalSchemaName(schemaVariable: AstVariableDeclaration) {
   const initializer = schemaVariable.value;

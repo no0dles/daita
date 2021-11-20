@@ -1,16 +1,16 @@
-import { Client } from '@daita/relational/client/client';
-import { CreateSchemaSql } from '@daita/relational/sql/ddl/create-schema/create-schema-sql';
+import { Client } from '@daita/relational';
+import { CreateSchemaSql } from '@daita/relational';
 import { field, table } from '@daita/relational';
-import { join } from '@daita/relational/sql/dml/select/join/join';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
-import { asc } from '@daita/relational/sql/keyword/asc/asc';
+import { join } from '@daita/relational';
+import { equal } from '@daita/relational';
+import { asc } from '@daita/relational';
 import { IwentContract } from '../iwent-contract';
 import { DaitaEvent } from './event';
 import { DaitaContract } from './contract';
 import { DaitaContractChange } from './contract-change';
 import { Iwent } from '../iwent';
-import { json } from '@daita/relational/types/json/json';
-import { RelationalStorage } from '@daita/relational/storage/storage';
+import { json } from '@daita/relational';
+import { RelationalStorage } from '@daita/relational';
 
 export class ContractStorage extends RelationalStorage {
   async initialize(client: Client<any>) {

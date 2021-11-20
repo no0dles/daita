@@ -1,13 +1,13 @@
-import { allow } from '@daita/relational/permission/function/allow';
-import { field } from '@daita/relational/sql/keyword/field/field';
-import { authorized } from '@daita/relational/permission/function/authorized';
-import { UUID } from '@daita/relational/types/uuid/uuid';
-import { RelationalSchema } from '@daita/orm/schema/relational-schema';
-import { table } from '@daita/relational/sql/keyword/table/table';
-import { join } from '@daita/relational/sql/dml/select/join/join';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
-import { all } from '@daita/relational/sql/keyword/all/all';
-import { Json } from '@daita/relational/types/json/json';
+import { allow } from '@daita/relational';
+import { field } from '@daita/relational';
+import { authorized } from '@daita/relational';
+import { UUID } from '@daita/relational';
+import { RelationalSchema } from '@daita/orm';
+import { table } from '@daita/relational';
+import { join } from '@daita/relational';
+import { equal } from '@daita/relational';
+import { all } from '@daita/relational';
+import { Json } from '@daita/relational';
 
 export class BaseTable {
   createdDate!: Date;

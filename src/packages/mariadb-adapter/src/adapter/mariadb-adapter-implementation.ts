@@ -1,14 +1,14 @@
 import {
   RelationalDataAdapterImplementation,
   RelationalTransactionAdapterImplementation,
-} from '@daita/relational/adapter/relational-adapter-implementation';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm/adapter/relational-migration-adapter-implementation';
-import { RelationalTransactionAdapter } from '@daita/relational/adapter/relational-transaction-adapter';
-import { RelationalMigrationAdapter } from '@daita/orm/adapter/relational-migration-adapter';
+} from '@daita/relational';
+import { RelationalMigrationAdapterImplementation } from '@daita/orm';
+import { RelationalTransactionAdapter } from '@daita/relational';
+import { RelationalMigrationAdapter } from '@daita/orm';
 import { MariadbSql } from '../sql/mariadb-sql';
 import { createPool } from 'mariadb';
 import { isConnectionStringOptions, MariadbAdapterOptions } from './mariadb-adapter-options';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { Resolvable } from '@daita/common';
 import { MariadbRelationalMigrationAdapter } from './mariadb-relational-migration-adapter';
 
 class MariadbAdapterImplementation

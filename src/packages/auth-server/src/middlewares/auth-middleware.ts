@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { verifyToken } from '../modules/token';
-import { createLogger } from '@daita/common/utils/logger';
-import { setRequestUser } from '@daita/http-server-common/get-request-user';
+import { createLogger } from '@daita/common';
+import { setRequestUser } from '@daita/http-server-common';
 
 const logger = createLogger({ package: 'auth-server', middleware: 'auth' });
 export const authMiddleware = async (req: express.Request, res: express.Response, next: express.NextFunction) => {

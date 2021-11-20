@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { Defer } from '@daita/common/utils/defer';
+import { Defer } from '@daita/common';
 
 export function getRandomCode() {
   const defer = new Defer<string>();

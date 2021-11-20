@@ -1,6 +1,6 @@
-import { DropIndexSql, isDropIndexSql } from '@daita/relational/sql/ddl/drop-index/drop-index-sql';
-import { FormatContext } from '@daita/relational/formatter/format-context';
-import { FormatHandle, Formatter, FormatType } from '@daita/relational/formatter/formatter';
+import { DropIndexSql, isDropIndexSql } from '@daita/relational';
+import { FormatContext } from '@daita/relational';
+import { FormatHandle, Formatter, FormatType } from '@daita/relational';
 
 export class DropIndexFormatter implements FormatHandle<DropIndexSql> {
   type = [FormatType.Sql];

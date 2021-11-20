@@ -1,10 +1,10 @@
-import { execCommand, getDynamicPort, runContainer } from '@daita/node/docker';
-import { sleep } from '@daita/common/utils/sleep';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm/adapter/relational-migration-adapter-implementation';
+import { execCommand, getDynamicPort, runContainer } from '@daita/node';
+import { sleep } from '@daita/common';
+import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { MariadbSql } from '../sql/mariadb-sql';
-import { RelationalMigrationAdapter } from '@daita/orm/adapter/relational-migration-adapter';
+import { RelationalMigrationAdapter } from '@daita/orm';
 import { createPool } from 'mariadb';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { Resolvable } from '@daita/common';
 import { MariadbRelationalMigrationAdapter } from '../adapter/mariadb-relational-migration-adapter';
 
 export interface MariaDb {

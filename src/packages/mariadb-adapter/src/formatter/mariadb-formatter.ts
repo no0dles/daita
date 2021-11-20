@@ -3,18 +3,18 @@ import {
   AlterTableAddForeignKeyFormatter,
   AlterTableDropColumnFormatter,
   AlterTableDropConstraintFormatter,
-} from '@daita/relational/sql/ddl/alter-table/alter-table';
-import { Formatter } from '@daita/relational/formatter/formatter';
-import { CreateTableFormatter } from '@daita/relational/sql/ddl/create-table/create-table-formatter';
-import { DropTableFormatter } from '@daita/relational/sql/ddl/drop-table/drop-table';
-import { ansiFormatter } from '@daita/relational/formatter/ansi-formatter';
-import { TableFormatter } from '@daita/relational/sql/keyword/table/table-formatter';
-import { CreateSchemaFormatter } from '@daita/relational/sql/ddl/create-schema/create-schema';
+} from '@daita/relational';
+import { Formatter } from '@daita/relational';
+import { CreateTableFormatter } from '@daita/relational';
+import { DropTableFormatter } from '@daita/relational';
+import { ansiFormatter } from '@daita/relational';
+import { TableFormatter } from '@daita/relational';
+import { CreateSchemaFormatter } from '@daita/relational';
 import { NowFormatter } from './now-formatter';
-import { ConcatFunctionFormatter } from '@daita/relational/sql/function/string/concat/concat-fn-formatter';
+import { ConcatFunctionFormatter } from '@daita/relational';
 import { LockTableFormatter } from './lock-table-formatter';
-import { LeastFormatter } from '@daita/relational/sql/function/conditional/least/least-formatter';
-import { GreatestFormatter } from '@daita/relational/sql/function/conditional/greatest/greatest-formatter';
+import { LeastFormatter } from '@daita/relational';
+import { GreatestFormatter } from '@daita/relational';
 
 export const mariadbFormatter = new Formatter();
 mariadbFormatter.extend(ansiFormatter);

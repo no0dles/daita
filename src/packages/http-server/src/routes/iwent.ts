@@ -1,10 +1,10 @@
-// import { Resolvable } from '@daita/common/utils/resolvable';
+// import { Resolvable } from '@daita/common';
 // import { getSchema, IwentSchema } from '../../iwent/iwent-schema';
-// import { randomUuid } from '@daita/common/utils/random-string';
-// import { validate } from '@daita/common/validation/validate';
-// import { HttpServerOptions } from '@daita/http-server-common/http-server-options';
+// import { randomUuid } from '@daita/common';
+// import { validate } from '@daita/common';
+// import { HttpServerOptions } from '@daita/http-server-common';
 // import { Router } from 'express';
-// import { getRequestUser } from '@daita/http-server-common/get-request-user';
+// import { getRequestUser } from '@daita/http-server-common';
 // import { IwentContractType } from '../../iwent/iwent-contract';
 
 // export function iwentRoute(options: HttpServerOptions) {

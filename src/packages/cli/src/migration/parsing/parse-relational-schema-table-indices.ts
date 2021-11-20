@@ -2,7 +2,7 @@ import { AstObjectValue } from '../../ast/ast-object-value';
 import { AstArrayValue } from '../../ast/ast-array-value';
 import { AstError, getArrayValue, getStringValue } from '../../ast/utils';
 import { AstLiteralValue, AstStringLiteralValue } from '../../ast/ast-literal-value';
-import { addIndexToTable, SchemaTableDescription } from '@daita/orm/schema/description/relational-schema-description';
+import { addIndexToTable, SchemaTableDescription } from '@daita/orm';
 
 export function parseRelationalSchemaTableIndices(table: SchemaTableDescription, optionsArgument: AstObjectValue) {
   const index = optionsArgument.prop('indices');

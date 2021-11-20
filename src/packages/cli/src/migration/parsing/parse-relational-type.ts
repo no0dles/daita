@@ -12,7 +12,7 @@ import { AstLiteralValue } from '../../ast/ast-literal-value';
 import { AstKeywordValue } from '../../ast/ast-keyword-value';
 import { AstPropertyAccessExpression } from '../../ast/ast-property-access-expression';
 import { AstError } from '../../ast/utils';
-import { SchemaTableFieldTypeDescription } from '@daita/orm/schema/schema-table-field-type-description';
+import { SchemaTableFieldTypeDescription } from '@daita/orm';
 import { AstTypeDeclaration } from '../../ast/ast-type-declaration';
 
 export function parseRelationalType(type: AstType): SchemaTableFieldTypeDescription {

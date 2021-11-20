@@ -8,7 +8,7 @@ import {
   addSeed,
   getTableFromSchema,
   SchemaDescription,
-} from '@daita/orm/schema/description/relational-schema-description';
+} from '@daita/orm';
 
 export function parseRelationalSchemaTableSeed(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
   const seeds = schemaVariable.callsByName('seed');

@@ -2,7 +2,7 @@
 
 import { program } from 'commander';
 import { create } from './create';
-import { getOwnPackageJson } from '@daita/node/node';
+import { getOwnPackageJson } from '@daita/node';
 
 program
   .name('create-data')

@@ -1,9 +1,9 @@
 import { ContextManager } from './context-manager';
-import { TransactionClient } from '@daita/relational/client/transaction-client';
-import { Debouncer } from '@daita/common/utils/debouncer';
-import { Defer } from '@daita/common/utils/defer';
-import { Client } from '@daita/relational/client/client';
-import { TimeoutError } from '@daita/relational/error/timeout-error';
+import { TransactionClient } from '@daita/relational';
+import { Debouncer } from '@daita/common';
+import { Defer } from '@daita/common';
+import { Client } from '@daita/relational';
+import { TimeoutError } from '@daita/relational';
 
 export type TransactionResult = 'committed' | 'timeout' | 'rollback' | 'canceled';
 

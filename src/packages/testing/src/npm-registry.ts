@@ -1,7 +1,7 @@
-import { sleep } from '@daita/common/utils/sleep';
-import { getDynamicPort, runContainer } from '@daita/node/docker';
-import { waitForPort } from '@daita/node/network';
-import { shell } from '@daita/node/command';
+import { sleep } from '@daita/common';
+import { getDynamicPort, runContainer } from '@daita/node';
+import { waitForPort } from '@daita/node';
+import { shell } from '@daita/node';
 
 export interface NpmRegistry {
   uri: string;

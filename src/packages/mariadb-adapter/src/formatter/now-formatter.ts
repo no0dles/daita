@@ -1,6 +1,6 @@
-import { isNowDescription, NowDescription } from '@daita/relational/sql/function/date/now/now-description';
-import { FormatContext } from '@daita/relational/formatter/format-context';
-import { FormatHandle, Formatter, FormatType } from '@daita/relational/formatter/formatter';
+import { isNowDescription, NowDescription } from '@daita/relational';
+import { FormatContext } from '@daita/relational';
+import { FormatHandle, Formatter, FormatType } from '@daita/relational';
 
 export class NowFormatter implements FormatHandle<NowDescription> {
   type = FormatType.Value;

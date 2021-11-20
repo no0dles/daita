@@ -5,8 +5,8 @@ import { SchemaDeclaration } from '../migration/parsing/schema-declaration';
 import { parseSchemaMigrations, parseSchemaMigrationVariables } from '../migration/parsing/parse-schema-migrations';
 import { parseRelationalSchema } from '../migration/parsing/parse-relational-schema';
 import { getProjectConfig } from './config';
-import { createLogger } from '@daita/common/utils/logger';
-import { SchemaDescription } from '@daita/orm/schema/description/relational-schema-description';
+import { createLogger } from '@daita/common';
+import { SchemaDescription } from '@daita/orm';
 
 export function getMigrationRelativePath(schemaFilePath: string, migrationFilePath: string) {
   const relativePath = path.relative(schemaFilePath, migrationFilePath);

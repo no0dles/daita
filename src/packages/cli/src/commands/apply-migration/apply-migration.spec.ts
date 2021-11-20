@@ -1,7 +1,7 @@
-import { setupEnv } from '@daita/testing/cli/utils.test';
+import { setupEnv } from '@daita/testing';
 import { addMigration } from '../add-migration/add-migration';
 import { applyMigration } from './apply-migration';
-import { getPostgresDb, PostgresDb } from '@daita/pg-adapter/testing/postgres-test-adapter';
+import { getPostgresDb, PostgresDb } from '@daita/pg-adapter';
 
 describe('cli/commands/migration:apply', () => {
   let postgresDb: PostgresDb;

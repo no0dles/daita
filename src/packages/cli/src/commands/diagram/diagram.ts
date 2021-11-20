@@ -2,14 +2,14 @@ import { getSchemaInformation, getSchemaLocation } from '../../utils/path';
 import { AstContext } from '../../ast/ast-context';
 import * as path from 'path';
 import * as fs from 'fs';
-import { createLogger } from '@daita/common/utils/logger';
+import { createLogger } from '@daita/common';
 import {
   getFieldsFromSchemaTable,
   getReferencesFromSchemaTable,
   getReferenceTableFromKey,
   getTablesFromSchema,
-} from '@daita/orm/schema/description/relational-schema-description';
-import { isTableReferenceRequiredInTable } from '@daita/orm/schema/description/relational-table-reference-description';
+} from '@daita/orm';
+import { isTableReferenceRequiredInTable } from '@daita/orm';
 
 export async function diagram(options: { cwd?: string; schema?: string; filename?: string }) {
   const logger = createLogger({ command: 'diagram', package: 'cli', options });

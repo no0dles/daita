@@ -1,5 +1,5 @@
 import { getKeyForId } from './key';
-import { parseJwtHeader, parseJwtPayload } from '@daita/common/utils/jwt';
+import { parseJwtHeader, parseJwtPayload } from '@daita/common';
 import { JWT } from 'jose';
 
 export async function verifyToken(token: string): Promise<any> {

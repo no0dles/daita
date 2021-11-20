@@ -1,6 +1,6 @@
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { getStringValue } from '../../ast/utils';
-import { table } from '@daita/relational/sql/keyword/table/table';
+import { table } from '@daita/relational';
 
 export function parseTableDescription(classDeclaration: AstClassDeclaration) {
   if (!classDeclaration.name) {

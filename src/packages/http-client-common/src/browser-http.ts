@@ -1,7 +1,7 @@
 import { encodeFormData, getQueryString, getUri, Http, HttpRequestOptions, HttpSendResult } from './http';
 import { AuthProvider, TokenIssuer } from './auth-provider';
 import { getTokenIssuer } from './shared-http';
-import { parseJson } from '@daita/common/utils/json';
+import { parseJson } from '@daita/common';
 
 export class BrowserHttp implements Http {
   private readonly tokenProvider: TokenIssuer;

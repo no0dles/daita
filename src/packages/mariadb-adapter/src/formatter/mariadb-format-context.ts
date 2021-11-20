@@ -1,6 +1,6 @@
-import { SimpleFormatContext } from '@daita/relational/formatter/simple-format-context';
-import { ValueType } from '@daita/relational/sql/operands/value-type';
-import { FormatDataType } from '@daita/relational/formatter/format-context';
+import { SimpleFormatContext } from '@daita/relational';
+import { ValueType } from '@daita/relational';
+import { FormatDataType } from '@daita/relational';
 
 export class MariadbFormatContext extends SimpleFormatContext {
   constructor() {

@@ -1,6 +1,6 @@
 import { getSha1 } from './hash';
 import * as https from 'https';
-import { Defer } from '@daita/common/utils/defer';
+import { Defer } from '@daita/common';
 
 export function getLeakedCount(password: string) {
   const shaHash = getSha1(password);

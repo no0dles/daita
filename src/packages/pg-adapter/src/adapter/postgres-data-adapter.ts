@@ -1,13 +1,13 @@
 import { Pool, PoolClient, QueryResult, types } from 'pg';
 import { postgresFormatter } from '../formatters/postgres-formatter';
 import { PostgresFormatContext } from './postgres-format-context';
-import { DuplicateKeyError, RelationDoesNotExistsError, UnknownError } from '@daita/relational/error/relational-error';
-import { RelationalRawResult } from '@daita/relational/adapter/relational-raw-result';
-import { RelationalDataAdapter } from '@daita/relational/adapter/relational-data-adapter';
-import { createLogger } from '@daita/common/utils/logger';
-import { Resolvable } from '@daita/common/utils/resolvable';
-import { ConnectionError } from '@daita/relational/error/connection-error';
-import { parseJson } from '@daita/common/utils/json';
+import { DuplicateKeyError, RelationDoesNotExistsError, UnknownError } from '@daita/relational';
+import { RelationalRawResult } from '@daita/relational';
+import { RelationalDataAdapter } from '@daita/relational';
+import { createLogger } from '@daita/common';
+import { Resolvable } from '@daita/common';
+import { ConnectionError } from '@daita/relational';
+import { parseJson } from '@daita/common';
 
 export class PostgresDataAdapter<TClient extends PoolClient | Pool> implements RelationalDataAdapter {
   protected readonly logger = createLogger({ package: 'pg-adapter' });

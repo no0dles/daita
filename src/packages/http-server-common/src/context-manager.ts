@@ -1,4 +1,4 @@
-import { Client } from '@daita/relational/client/client';
+import { Client } from '@daita/relational';
 
 export class ContextManager {
   constructor(private client: Client<any>) {}

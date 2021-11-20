@@ -1,6 +1,6 @@
 import { Person } from './person';
 import { Ascent } from './ascent';
-import { UUID } from '@daita/relational/types/uuid/uuid';
+import { UUID } from '@daita/relational';
 
 export class AscentPerson {
   ascent!: Ascent;

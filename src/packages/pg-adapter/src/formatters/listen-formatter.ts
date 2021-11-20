@@ -1,6 +1,6 @@
 import { isListenSql, PostgresListenSql } from '../sql/listen-sql';
-import { FormatContext } from '@daita/relational/formatter/format-context';
-import { FormatHandle, Formatter, FormatType } from '@daita/relational/formatter/formatter';
+import { FormatContext } from '@daita/relational';
+import { FormatHandle, Formatter, FormatType } from '@daita/relational';
 
 export class ListenFormatter implements FormatHandle<PostgresListenSql> {
   type = FormatType.Sql;

@@ -1,7 +1,7 @@
-import { Constructable } from '@daita/common/types/constructable';
+import { Constructable } from '@daita/common';
 import { IwentHandler } from './iwent-handler';
 import { Iwent } from './iwent';
-import { Client } from '@daita/relational/client/client';
+import { Client } from '@daita/relational';
 
 export class IwentModule {
   private readonly events: { [key: string]: Constructable<IwentHandler<any>>[] } = {};

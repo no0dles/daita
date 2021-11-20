@@ -1,6 +1,6 @@
 import express from 'express';
 import { Server } from 'http';
-import { createLogger } from '@daita/common/utils/logger';
+import { createLogger } from '@daita/common';
 import { metricRegister } from './metric';
 
 export function createMetricsApp(port: number) {

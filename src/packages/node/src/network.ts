@@ -1,6 +1,6 @@
 import net from 'net';
 import { getRandomTestPort } from './random-port';
-import { Defer } from '@daita/common/utils/defer';
+import { Defer } from '@daita/common';
 
 export function waitForPort(port: number) {
   const defer = new Defer<void>();

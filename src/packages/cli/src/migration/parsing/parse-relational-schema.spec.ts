@@ -2,8 +2,8 @@ import { AstContext } from '../../ast/ast-context';
 import * as path from 'path';
 import { parseRelationalSchema } from './parse-relational-schema';
 import 'jest-extended';
-import { allow } from '@daita/relational/permission/function/allow';
-import { authorized } from '@daita/relational/permission/function/authorized';
+import { allow } from '@daita/relational';
+import { authorized } from '@daita/relational';
 import {
   getFieldsFromSchemaTable,
   getIndicesFromSchemaTable,
@@ -14,9 +14,9 @@ import {
   SchemaDescription,
   SchemaTableDescription,
   SchemaTableFieldDescription,
-} from '@daita/orm/schema/description/relational-schema-description';
-import { all } from '@daita/relational/sql/keyword/all/all';
-import { table } from '@daita/relational/sql/keyword/table/table';
+} from '@daita/orm';
+import { all } from '@daita/relational';
+import { table } from '@daita/relational';
 
 describe('parse-relational-schema', () => {
   const context = new AstContext();

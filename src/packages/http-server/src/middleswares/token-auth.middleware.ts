@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { HttpServerAuthorizationTokenEndpoint } from '@daita/http-server-common/http-server-authorization';
+import { HttpServerAuthorizationTokenEndpoint } from '@daita/http-server-common';
 import { request as httpsRequest, RequestOptions } from 'https';
 import { request as httpRequest } from 'http';
 import { parse } from 'url';
-import { hasRequestUser, setRequestUser } from '@daita/http-server-common/get-request-user';
+import { hasRequestUser, setRequestUser } from '@daita/http-server-common';
 
 class TokenCache {
   private cache: { [key: string]: TokenUser } = {};

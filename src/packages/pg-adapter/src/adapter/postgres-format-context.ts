@@ -1,6 +1,6 @@
-import { CounterFormatContext } from '@daita/relational/formatter/counter-format-context';
-import { FormatDataType } from '@daita/relational/formatter/format-context';
-import { ValueType } from '@daita/relational/sql/operands/value-type';
+import { CounterFormatContext } from '@daita/relational';
+import { FormatDataType } from '@daita/relational';
+import { ValueType } from '@daita/relational';
 
 export class PostgresFormatContext extends CounterFormatContext {
   constructor() {

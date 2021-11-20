@@ -1,4 +1,4 @@
-import { capitalize } from '@daita/common/utils/capitalize';
+import { capitalize } from '@daita/common';
 
 export function splitByIrregularCharacters(text: string, regularCharacters: string): string[] {
   const result: string[] = [];

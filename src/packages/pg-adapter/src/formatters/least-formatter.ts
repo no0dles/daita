@@ -1,9 +1,9 @@
 import {
   isLeastDescription,
   LeastDescription,
-} from '@daita/relational/sql/function/conditional/least/least-description';
-import { FormatHandle, Formatter, FormatType } from '@daita/relational/formatter/formatter';
-import { FormatContext } from '@daita/relational/formatter/format-context';
+} from '@daita/relational';
+import { FormatHandle, Formatter, FormatType } from '@daita/relational';
+import { FormatContext } from '@daita/relational';
 
 export class LeastFormatter implements FormatHandle<LeastDescription> {
   type = FormatType.Value;

@@ -1,4 +1,4 @@
-import { Client } from '@daita/relational/client/client';
+import { Client } from '@daita/relational';
 
 export interface IwentHandlerContext {
   state: Client<any>;

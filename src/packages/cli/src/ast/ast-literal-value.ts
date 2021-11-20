@@ -9,7 +9,7 @@ import {
 } from 'typescript';
 import { AstKeywordType } from './ast-keyword-type';
 import { AstNode } from './ast-node';
-import { failNever } from '@daita/common/utils/fail-never';
+import { failNever } from '@daita/common';
 
 export abstract class AstLiteralValue<T> implements AstNode {
   abstract get type(): AstKeywordType;

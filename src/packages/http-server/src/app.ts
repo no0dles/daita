@@ -5,9 +5,9 @@ import * as bodyParser from 'body-parser';
 import { jwtAuth } from './middleswares/jwt-auth.middleware';
 import { errorMiddleware } from './middleswares/error.middleware';
 import { tokenAuth } from './middleswares/token-auth.middleware';
-import { HttpServerOptions } from '@daita/http-server-common/http-server-options';
+import { HttpServerOptions } from '@daita/http-server-common';
 import { Server } from 'http';
-import { createLogger } from '@daita/common/utils/logger';
+import { createLogger } from '@daita/common';
 import { ormRoute } from './routes/orm';
 
 export function createHttpServerApp(options: HttpServerOptions, port: number) {

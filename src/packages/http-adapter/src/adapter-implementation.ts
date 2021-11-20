@@ -1,10 +1,10 @@
-import { AuthProvider } from '@daita/http-client-common/auth-provider';
-import { Http } from '@daita/http-client-common/http';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm/adapter/relational-migration-adapter-implementation';
-import { RelationalMigrationAdapter } from '@daita/orm/adapter/relational-migration-adapter';
+import { AuthProvider } from '@daita/http-client-common';
+import { Http } from '@daita/http-client-common';
+import { RelationalMigrationAdapterImplementation } from '@daita/orm';
+import { RelationalMigrationAdapter } from '@daita/orm';
 import { HttpAdapter } from './http-adapter';
-import { Resolvable } from '@daita/common/utils/resolvable';
-import { getHttpFactory } from '@daita/http-client-common/http-factory';
+import { Resolvable } from '@daita/common';
+import { getHttpFactory } from '@daita/http-client-common';
 
 export interface HttpAdapterOptions {
   baseUrl: string;

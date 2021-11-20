@@ -1,5 +1,5 @@
-import { RuleError } from '@daita/orm/error/rule-error';
-import { HttpSendResult } from '@daita/http-client-common/http';
+import { RuleError } from '@daita/orm';
+import { HttpSendResult } from '@daita/http-client-common';
 
 export function handleErrorResponse(response: HttpSendResult) {
   if (response.statusCode === 403 && response.data?.error === 'RuleError') {

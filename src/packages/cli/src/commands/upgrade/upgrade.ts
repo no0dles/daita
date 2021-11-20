@@ -1,9 +1,9 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as https from 'https';
-import { Defer } from '@daita/common/utils/defer';
-import { createLogger } from '@daita/common/utils/logger';
-import { shell } from '@daita/node/command';
+import { Defer } from '@daita/common';
+import { createLogger } from '@daita/common';
+import { shell } from '@daita/node';
 
 const logger = createLogger({ package: 'cli', command: 'upgrade' });
 

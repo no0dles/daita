@@ -1,11 +1,11 @@
 import { Pool, PoolClient } from 'pg';
 import { PostgresDataAdapter } from './postgres-data-adapter';
 import { PostgresSql } from '../sql/postgres-sql';
-import { RelationalTransactionAdapter } from '@daita/relational/adapter/relational-transaction-adapter';
-import { RelationalDataAdapter } from '@daita/relational/adapter/relational-data-adapter';
-import { ConnectionError } from '@daita/relational/error/connection-error';
-import { Resolvable } from '@daita/common/utils/resolvable';
-import { createLogger } from '@daita/common/utils/logger';
+import { RelationalTransactionAdapter } from '@daita/relational';
+import { RelationalDataAdapter } from '@daita/relational';
+import { ConnectionError } from '@daita/relational';
+import { Resolvable } from '@daita/common';
+import { createLogger } from '@daita/common';
 
 export interface PostgresNotificationSubscriber {
   (msg: string | undefined): void;

@@ -1,7 +1,7 @@
 import { getContext } from '@daita/orm';
 import { authSchema } from '../schema';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm/adapter/relational-migration-adapter-implementation';
-import { getServer, HttpServerApp } from '@daita/node/testing/http-server';
+import { RelationalMigrationAdapterImplementation } from '@daita/orm';
+import { getServer, HttpServerApp } from '@daita/node';
 import { createAuthApp } from '../app';
 import { createAuthAdminApp } from '../admin-app';
 import { createDefaultUser, createDefaultUserPool } from '../../../testing/auth-test';

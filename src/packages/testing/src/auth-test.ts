@@ -1,11 +1,11 @@
-import { UserPool } from '@daita/auth-server/models/user-pool';
-import { User } from '@daita/auth-server/models/user';
-import { ExcludeNonPrimitive } from '@daita/common/types/exclude-non-primitive';
-import { hashPassword } from '@daita/auth-server/modules/hash';
-import { httpPost, HttpServerApp } from '@daita/node/testing/http-server';
-import { table } from '@daita/relational/sql/keyword/table/table';
-import { UserPoolUser } from '@daita/auth-server/models/user-pool-user';
-import { Client } from '@daita/relational/client/client';
+import { UserPool } from '@daita/auth-server';
+import { User } from '@daita/auth-server';
+import { ExcludeNonPrimitive } from '@daita/common';
+import { hashPassword } from '@daita/auth-server';
+import { httpPost, HttpServerApp } from '@daita/node';
+import { table } from '@daita/relational';
+import { UserPoolUser } from '@daita/auth-server';
+import { Client } from '@daita/relational';
 
 export async function createUserPool(client: Client<any>, userPool: UserPool) {
   await client.insert({

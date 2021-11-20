@@ -1,11 +1,11 @@
-import { field } from '@daita/relational/sql/keyword/field/field';
+import { field } from '@daita/relational';
 import { Role } from '../models/role';
-import { table } from '@daita/relational/sql/keyword/table/table';
-import { join } from '@daita/relational/sql/dml/select/join/join';
+import { table } from '@daita/relational';
+import { join } from '@daita/relational';
 import { UserRole } from '../models/user-role';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
-import { and } from '@daita/relational/sql/keyword/and/and';
-import { Client } from '@daita/relational/client/client';
+import { equal } from '@daita/relational';
+import { and } from '@daita/relational';
+import { Client } from '@daita/relational';
 
 export function getRoles(client: Client<any>, userPoolId: string, username: string) {
   return client.select({

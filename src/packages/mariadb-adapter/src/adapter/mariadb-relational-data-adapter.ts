@@ -1,13 +1,13 @@
-import { RelationalDataAdapter } from '@daita/relational/adapter/relational-data-adapter';
-import { RelationalRawResult } from '@daita/relational/adapter/relational-raw-result';
-import { Sql } from '@daita/relational/sql/sql';
+import { RelationalDataAdapter } from '@daita/relational';
+import { RelationalRawResult } from '@daita/relational';
+import { Sql } from '@daita/relational';
 import { Pool, PoolConnection } from 'mariadb';
 import { MariadbSql } from '../sql/mariadb-sql';
 import { mariadbFormatter } from '../formatter/mariadb-formatter';
 import { MariadbFormatContext } from '../formatter/mariadb-format-context';
-import { Resolvable } from '@daita/common/utils/resolvable';
-import { RelationDoesNotExistsError } from '@daita/relational/error/relational-error';
-import { parseJson } from '@daita/common/utils/json';
+import { Resolvable } from '@daita/common';
+import { RelationDoesNotExistsError } from '@daita/relational';
+import { parseJson } from '@daita/common';
 
 export class MariadbRelationalDataAdapter implements RelationalDataAdapter<MariadbSql> {
   constructor(protected pool: Resolvable<Pool> | Resolvable<PoolConnection>) {}

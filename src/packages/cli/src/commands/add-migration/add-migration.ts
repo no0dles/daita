@@ -3,8 +3,8 @@ import { AstContext } from '../../ast/ast-context';
 import { addMigrationImport, addMigrationRegistration, writeMigration } from '../../migration/writing/write-migration';
 import * as fs from 'fs';
 import { getMigrationName } from '../../migration/utils';
-import { generateRelationalMigrationSteps } from '@daita/orm/migration/generation/generate-relational-migration-steps';
-import { createLogger } from '@daita/common/utils/logger';
+import { generateRelationalMigrationSteps } from '@daita/orm';
+import { createLogger } from '@daita/common';
 
 const logger = createLogger({ package: 'cli', command: 'migration:add' });
 export async function addMigration(name: string, options: { cwd?: string; schema?: string }) {

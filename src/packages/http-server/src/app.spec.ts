@@ -1,11 +1,11 @@
 import { loginWithDefaultUser } from '../../testing/auth-test';
-import { httpGet, httpPost, HttpServerApp } from '@daita/node/testing/http-server';
+import { httpGet, httpPost, HttpServerApp } from '@daita/node';
 import { now } from '../relational/sql/function/date/now/now';
 import { adapter } from '../pg-adapter';
 import { getPostgresDb, PostgresDb } from '../pg-adapter/testing/postgres-test-adapter';
 import { createTestAdminServer, AuthServerTestDisposable } from '../auth-server/testing/admin-server.test';
 import { createTestHttpServer, HttpTestServerDisposable } from './testing/create-test-http-server.test';
-import { MigrationTree } from '@daita/orm/migration/migration-tree';
+import { MigrationTree } from '@daita/orm';
 import { allow, authorized } from '../relational';
 import { getRuleId } from '../relational/permission/rule-id';
 

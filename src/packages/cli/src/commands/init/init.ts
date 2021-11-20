@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { createLogger } from '@daita/common/utils/logger';
+import { createLogger } from '@daita/common';
 import { create } from '@daita/create/create';
-import { popPath } from '@daita/node/path';
+import { popPath } from '@daita/node';
 
 const logger = createLogger({ package: 'cli', command: 'init' });
 

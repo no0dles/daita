@@ -1,8 +1,8 @@
 import { PostgresTransactionAdapter } from '../postgres-transaction-adapter';
 import { getPostgresDb } from '../../testing/postgres-test-adapter';
-import { ConnectionError } from '@daita/relational/error/connection-error';
-import { RelationalDataAdapter } from '@daita/relational/adapter/relational-data-adapter';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { ConnectionError } from '@daita/relational';
+import { RelationalDataAdapter } from '@daita/relational';
+import { Resolvable } from '@daita/common';
 
 describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
   it('should handle disconnect after initial connection', async () => {

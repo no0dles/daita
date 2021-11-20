@@ -1,5 +1,5 @@
 import Docker, { Container } from 'dockerode';
-import { Defer } from '@daita/common/utils/defer';
+import { Defer } from '@daita/common';
 
 export interface DockerCompose {
   version: string;

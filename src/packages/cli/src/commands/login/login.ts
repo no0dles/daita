@@ -1,7 +1,7 @@
 import { cli } from 'cli-ux';
 import { sendPost } from '../../utils/https';
 import { saveGlobalConfig } from '../../utils/config';
-import { createLogger } from '@daita/common/utils/logger';
+import { createLogger } from '@daita/common';
 
 const logger = createLogger({ package: 'cli', command: 'login' });
 export async function login() {

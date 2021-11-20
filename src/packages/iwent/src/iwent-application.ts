@@ -1,7 +1,7 @@
 import { IwentModule } from './iwent-module';
 import { RelationalSchema } from '@daita/orm';
 import { Iwent } from './iwent';
-import { Client } from '@daita/relational/client/client';
+import { Client } from '@daita/relational';
 
 export class IwentApplication {
   private readonly modules: IwentModule[] = [];

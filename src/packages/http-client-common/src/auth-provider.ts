@@ -1,8 +1,7 @@
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
-import { isKind } from '@daita/common/utils/is-kind';
+import { isExactKind } from '@daita/common';
 import { Http } from './http';
-import { JwtPayload, parseJwtHeader, parseJwtPayload } from '@daita/common/utils/jwt';
-import { createLogger } from '@daita/common/utils/logger';
+import { JwtPayload, parseJwtPayload } from '@daita/common';
+import { createLogger } from '@daita/common';
 
 export type AuthProvider = TokenProvider | AccessTokenProvider | TokenIssuer;
 

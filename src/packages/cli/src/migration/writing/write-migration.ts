@@ -4,7 +4,7 @@ import { getIdentifierName, isKind, parseSourceFile } from '../../ast/utils';
 import * as fs from 'fs';
 import { getMigrationName } from '../utils';
 import { createExpressionFromValue } from './write-migration-step';
-import { MigrationStep } from '@daita/orm/migration/migration-step';
+import { MigrationStep } from '@daita/orm';
 
 export function addMigrationImport(schemaFilePath: string, migrationFilePath: string, migrationName: string) {
   const sourceFile = parseSourceFile(schemaFilePath);

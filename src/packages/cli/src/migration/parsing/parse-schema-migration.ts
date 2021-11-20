@@ -1,7 +1,7 @@
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { getObjectValue, getStringOrNull } from '../../ast/utils';
 import { convertValue } from './convert-value';
-import { MigrationDescription } from '@daita/orm/migration/migration-description';
+import { MigrationDescription } from '@daita/orm';
 
 export function parseSchemaMigration(migrationObject: AstObjectValue): MigrationDescription {
   const id = migrationObject.stringProp('id');

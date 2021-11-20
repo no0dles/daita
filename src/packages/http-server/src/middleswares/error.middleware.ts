@@ -1,8 +1,8 @@
 import * as express from 'express';
 import { HttpError } from '../http-error';
-import { RuleError } from '@daita/orm/error/rule-error';
-import { TimeoutError } from '@daita/relational/error/timeout-error';
-import { Logger } from '@daita/common/utils/logger';
+import { RuleError } from '@daita/orm';
+import { TimeoutError } from '@daita/relational';
+import { Logger } from '@daita/common';
 
 export function errorMiddleware(logger: Logger) {
   const isProduction = process.env.NODE_ENV === 'production';

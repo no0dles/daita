@@ -1,8 +1,8 @@
-import { RelationalTransactionAdapter } from '@daita/relational/adapter/relational-transaction-adapter';
+import { RelationalTransactionAdapter } from '@daita/relational';
 import { MariadbSql } from '../sql/mariadb-sql';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { Resolvable } from '@daita/common';
 import { Pool } from 'mariadb';
-import { RelationalDataAdapter } from '@daita/relational/adapter/relational-data-adapter';
+import { RelationalDataAdapter } from '@daita/relational';
 import { MariadbRelationalDataAdapter } from './mariadb-relational-data-adapter';
 
 export class MariadbRelationalTransactionAdapter

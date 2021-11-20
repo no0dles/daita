@@ -1,10 +1,10 @@
 import { Request, Response, Router } from 'express';
 import { validateExecBody } from '../middleswares/validate-body.middleware';
-import { ContextManager } from '@daita/http-server-common/context-manager';
-import { HttpServerOptions, HttpServerRelationalOptions } from '@daita/http-server-common/http-server-options';
-import { TransactionManager } from '@daita/http-server-common/transaction-manager';
+import { ContextManager } from '@daita/http-server-common';
+import { HttpServerOptions, HttpServerRelationalOptions } from '@daita/http-server-common';
+import { TransactionManager } from '@daita/http-server-common';
 import { getRequestContext } from '../get-request-context';
-import { TransactionContextManager } from '@daita/http-server-common/transaction-context-manager';
+import { TransactionContextManager } from '@daita/http-server-common';
 
 export function relationalRoute(options: HttpServerOptions) {
   const router = Router();
