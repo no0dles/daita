@@ -1,5 +1,5 @@
 import { isSelectSql, SelectSql } from '../select-sql';
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 
 export interface ExistsDescription {
   exists: SelectSql<any>;

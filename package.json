@@ -77,7 +77,7 @@
     "@types/express": "^4.17.2",
     "@types/helmet": "^0.0.47",
     "@types/inquirer": "^6.5.0",
-    "@types/jest": "^26.0.10",
+    "@types/jest": "^27.0.3",
     "@types/json5": "^0.0.30",
     "@types/node": "^12.19.9",
     "@types/pg": "^7.14.4",
@@ -90,17 +90,18 @@
     "eslint": "^7.12.1",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",
-    "jest": "^26.6.3",
-    "jest-extended": "^0.11.5",
+    "jest": "^27.3.1",
+    "jest-extended": "^1.1.0",
     "karma-firefox-launcher": "^2.1.0",
     "ng-packagr": "^11.0.3",
+    "create-ts-index": "^1.13.6",
     "postcss": "^8.1.14",
     "postcss-loader": "^4.1.0",
     "postcss-scss": "^3.0.4",
     "prettier": "^2.1.1",
     "socket.io-client": "^3.0.3",
-    "ts-jest": "^26.4.4",
-    "ts-node": "^9.0.0"
+    "ts-jest": "^27.0.7",
+    "ts-node": "^10.4.0"
   },
   "resolutions": {
     "webpack": "^5.0.0"

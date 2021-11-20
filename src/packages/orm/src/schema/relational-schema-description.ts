@@ -9,7 +9,7 @@ import {
   addTableToSchema,
   addViewToSchema,
   dropRuleFromSchema,
-  dropTableField,
+  doDropTableField,
   dropTableFromSchema,
   dropTableIndex,
   dropTableReference,
@@ -21,9 +21,9 @@ import {
   setTablePrimaryKey,
   updateSeed,
 } from './description/relational-schema-description';
-import { failNever } from '@daita/common/utils/fail-never';
+import { failNever } from '@daita/common';
 import { MigrationDescription } from '../migration/migration-description';
-import { table } from '@daita/relational/sql/keyword/table/table';
+import { table } from '@daita/relational';
 
 export function getSchemaDescription(
   name: string,
@@ -65,7 +65,7 @@ export function getSchemaDescription(
         });
       } else if (step.kind === 'drop_table_field') {
         const { table } = getTableFromSchema(schema, { schema: step.schema, table: step.table });
-        dropTableField(table, step.fieldName);
+        doDropTableField(table, step.fieldName);
       } else if (step.kind === 'drop_table') {
         dropTableFromSchema(schema, table(step.table, step.schema));
       } else if (step.kind === 'create_index') {

@@ -10,7 +10,7 @@ import {
 } from '../../schema/description/relational-schema-description';
 import { MigrationStep } from '../migration-step';
 import { generateRelationalTableMigrationSteps } from './generate-relational-table-migration-steps';
-import { merge } from '@daita/common/utils/merge';
+import { merge } from '@daita/common';
 import { table } from '@daita/relational';
 import { isTableReferenceRequiredInTable } from '../../schema/description/relational-table-reference-description';
 

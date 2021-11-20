@@ -1,0 +1,13 @@
+{
+  "name": "todo",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@daita/iwent": "file:../../packages/iwent"
+  },
+  "devDependencies": {
+    "typescript": "~4.0.5"
+  }
+}

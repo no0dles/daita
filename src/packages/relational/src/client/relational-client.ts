@@ -18,7 +18,7 @@ import { isConcatDescription } from '../sql/function/string/concat/concat-descri
 import { InsertSql } from '../sql/dml/insert/insert-sql';
 import { DeleteSql } from '../sql/dml/delete/delete-sql';
 import { isSingleFieldSelect, SelectSql } from '../sql/dml/select/select-sql';
-import { deepClone } from '@daita/common/utils/deep-clone';
+import { deepClone } from '@daita/common';
 import { isMinDescription } from '../sql/function/aggregation/min/min-description';
 import { isFieldDescription } from '../sql/keyword/field/field-description';
 import { RelationalDataAdapter } from '../adapter/relational-data-adapter';

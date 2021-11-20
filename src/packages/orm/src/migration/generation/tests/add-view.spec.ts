@@ -1,9 +1,9 @@
 import { getMigrationSteps } from '../../../../../testing/cli/utils.test';
 import { User } from './add-view.test';
-import { field } from '@daita/relational/sql/keyword/field/field';
+import { field } from '@daita/relational';
 import { MigrationStep } from '../../migration-step';
-import { table } from '@daita/relational/sql/keyword/table/table';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
+import { table } from '@daita/relational';
+import { equal } from '@daita/relational';
 
 describe('cli/cmds/add/add-view', () => {
   let steps: MigrationStep[] = [];

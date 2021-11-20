@@ -1,8 +1,8 @@
 import { table } from '../table/table';
 import { TableAliasDescription } from '../../dml/select/table-alias-description';
 import { TableDescription } from '../table/table-description';
-import { ExcludeNonPrimitive } from '@daita/common/types/exclude-non-primitive';
-import { Constructable } from '@daita/common/types/constructable';
+import { ExcludeNonPrimitive } from '@daita/common';
+import { Constructable } from '@daita/common';
 
 export function all(): any;
 export function all<T>(tbl: TableDescription<T> | TableAliasDescription<T> | Constructable<T>): ExcludeNonPrimitive<T>;

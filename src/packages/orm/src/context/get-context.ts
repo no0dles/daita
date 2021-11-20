@@ -1,6 +1,6 @@
 import { TransactionContext } from './transaction-context';
 import { RelationalTransactionContext } from './relational-transaction-context';
-import { isRelationalTransactionAdapter } from '@daita/relational/adapter/relational-transaction-adapter';
+import { isRelationalTransactionAdapter } from '@daita/relational';
 import { OrmRelationalSchema } from '../schema/orm-relational-schema';
 import { MigrationContext } from './get-migration-context';
 import { RelationalMigrationContext } from './relational-migration-context';
@@ -9,13 +9,13 @@ import { RelationalMigrationAdapterImplementation } from '../adapter/relational-
 import {
   RelationalDataAdapterImplementation,
   RelationalTransactionAdapterImplementation,
-} from '@daita/relational/adapter/relational-adapter-implementation';
+} from '@daita/relational';
 import { Context } from './context';
 import { RelationalContext } from './relational-context';
 import { MigrationTree } from '../migration/migration-tree';
-import { RuleContext } from '@daita/relational/permission/description/rule-context';
-import { isKind } from '@daita/common/utils/is-kind';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { RuleContext } from '@daita/relational';
+import { isKind } from '@daita/common';
+import { Resolvable } from '@daita/common';
 
 export interface ContextSchemaOptions {
   schema: OrmRelationalSchema;

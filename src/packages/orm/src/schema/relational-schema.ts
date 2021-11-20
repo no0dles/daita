@@ -3,11 +3,11 @@ import { RelationalSchemaOptions } from './relational-schema-options';
 import { RelationalMapper } from '../context/relational-mapper';
 import { RelationalBackwardCompatibleMapper, RelationalNormalMapper } from '../context/orm-mapper';
 import { OrmRelationalSchema } from './orm-relational-schema';
-import { SelectSql } from '@daita/relational/sql/dml/select/select-sql';
+import { SelectSql } from '@daita/relational';
 import { MigrationDescription } from '../migration/migration-description';
 import { MigrationTree } from '../migration/migration-tree';
-import { Rule } from '@daita/relational/permission/description/rule';
-import { Constructable, DefaultConstructable } from '@daita/common/types/constructable';
+import { Rule } from '@daita/relational';
+import { Constructable, DefaultConstructable } from '@daita/common';
 import { SchemaDescription } from './description/relational-schema-description';
 
 export class RelationalSchema implements OrmRelationalSchema {

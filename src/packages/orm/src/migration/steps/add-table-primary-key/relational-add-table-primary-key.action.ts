@@ -1,6 +1,6 @@
 import { RelationalAddTablePrimaryKey } from './relational-add-table-primary-key.migration-step';
 import { hasAddTableStep, MigrationDescription } from '../../migration-description';
-import { Client } from '@daita/relational/client/client';
+import { Client } from '@daita/relational';
 import { table } from '@daita/relational';
 
 export async function addTablePrimaryKeyAction(

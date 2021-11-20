@@ -1,5 +1,5 @@
 import { ForbidCharactersDescription } from './forbid-characters-description';
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 
 export interface ForbidRegexDescription {
   forbidRegex: { regExp: RegExp };

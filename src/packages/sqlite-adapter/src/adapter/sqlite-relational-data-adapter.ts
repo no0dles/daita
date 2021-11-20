@@ -1,15 +1,15 @@
-import { RelationalDataAdapter } from '@daita/relational/adapter/relational-data-adapter';
+import { RelationalDataAdapter } from '@daita/relational';
 import * as sqlite from 'sqlite3';
-import { Defer } from '@daita/common/utils/defer';
-import { RelationalRawResult } from '@daita/relational/adapter/relational-raw-result';
+import { Defer } from '@daita/common';
+import { RelationalRawResult } from '@daita/relational';
 import { SqliteFormatContext } from '../formatter/sqlite-format-context';
 import { sqliteFormatter } from '../formatter/sqlite-formatter';
 import { Serializable } from './serializable';
 import { SqliteSql } from '../sql/sqlite-sql';
-import { createLogger } from '@daita/common/utils/logger';
-import { RelationDoesNotExistsError } from '@daita/relational/error/relational-error';
-import { Resolvable } from '@daita/common/utils/resolvable';
-import { parseJson } from '@daita/common/utils/json';
+import { createLogger } from '@daita/common';
+import { RelationDoesNotExistsError } from '@daita/relational';
+import { Resolvable } from '@daita/common';
+import { parseJson } from '@daita/common';
 
 export class SqliteRelationalDataAdapter implements RelationalDataAdapter<SqliteSql> {
   protected readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });

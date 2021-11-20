@@ -1,5 +1,5 @@
 import { ValueType } from '../../../operands/value-type';
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 
 export interface OrderByDescription {
   value: ValueType;

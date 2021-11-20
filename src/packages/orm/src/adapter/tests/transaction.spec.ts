@@ -1,9 +1,9 @@
 import { createPerson, createPersonTable } from '../../../../testing/schema/test-schema';
-import { table } from '@daita/relational/sql/keyword/table/table';
+import { table } from '@daita/relational';
 import { Person } from '../../../../examples/mowntain/models/person';
-import { field } from '@daita/relational/sql/keyword/field/field';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
-import { testClient } from '@daita/relational/adapters';
+import { field } from '@daita/relational';
+import { equal } from '@daita/relational';
+import { testClient } from '@daita/relational';
 
 describe('relational/adapter/relational-transaction-adapter/transaction', () => {
   const clients = testClient('pg', 'sqlite', 'mariadb');

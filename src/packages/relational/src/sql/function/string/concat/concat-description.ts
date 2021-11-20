@@ -1,5 +1,5 @@
 import { FieldDescription } from '../../../keyword/field/field-description';
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 
 export interface ConcatDescription {
   concat: (FieldDescription | string)[];

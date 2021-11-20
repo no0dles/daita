@@ -1,13 +1,13 @@
 import { RelationalMapper } from './relational-mapper';
-import { failNever } from '@daita/common/utils/fail-never';
+import { failNever } from '@daita/common';
 import {
   isTableAliasDescription,
   TableAliasDescription,
-} from '@daita/relational/sql/dml/select/table-alias-description';
-import { isSelectSql, SelectSql } from '@daita/relational/sql/dml/select/select-sql';
-import { FieldDescription, isFieldDescription } from '@daita/relational/sql/keyword/field/field-description';
-import { isTableDescription, TableDescription } from '@daita/relational/sql/keyword/table/table-description';
-import { SourceTableDescription } from '@daita/relational/sql/dml/select/source-table';
+} from '@daita/relational';
+import { isSelectSql, SelectSql } from '@daita/relational';
+import { FieldDescription, isFieldDescription } from '@daita/relational';
+import { isTableDescription, TableDescription } from '@daita/relational';
+import { SourceTableDescription } from '@daita/relational';
 import {
   getFieldFromSchemaTable,
   getFieldsFromSchemaTable,

@@ -1,6 +1,6 @@
 import { TableAliasDescription } from '../../dml/select/table-alias-description';
 import { TableDescription } from '../table/table-description';
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 
 export interface AllDescription<T> {
   all: { table?: TableAliasDescription<T> | TableDescription<T> };

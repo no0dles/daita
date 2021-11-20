@@ -1,7 +1,7 @@
 import { MaxDescription } from './max-description';
 import { field } from '../../../keyword/field/field';
-import { KeysOfType, PickByValue } from '@daita/common/types/pick-by-value';
-import { Constructable } from '@daita/common/types/constructable';
+import { KeysOfType, PickByValue } from '@daita/common';
+import { Constructable } from '@daita/common';
 import { TableAliasDescription } from '../../../dml/select/table-alias-description';
 import { TableDescription } from '../../../keyword/table/table-description';
 

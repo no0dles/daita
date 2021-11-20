@@ -1,4 +1,4 @@
-import { RuleResult } from '@daita/relational/permission/validate';
+import { RuleResult } from '@daita/relational';
 
 export class RuleError extends Error {
   constructor(message: string, public result?: RuleResult) {

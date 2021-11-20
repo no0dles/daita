@@ -1,9 +1,9 @@
-import { RelationalTransactionAdapter } from '@daita/relational/adapter/relational-transaction-adapter';
-import { RelationalDataAdapter } from '@daita/relational/adapter/relational-data-adapter';
+import { RelationalTransactionAdapter } from '@daita/relational';
+import { RelationalDataAdapter } from '@daita/relational';
 import { SqliteRelationalDataAdapter } from './sqlite-relational-data-adapter';
 import { SqliteSql } from '../sql/sqlite-sql';
-import { Resolvable } from '@daita/common/utils/resolvable';
-import { Defer } from '@daita/common/utils/defer';
+import { Resolvable } from '@daita/common';
+import { Defer } from '@daita/common';
 import { Database } from 'sqlite3';
 
 export class SqliteRelationalTransactionAdapter

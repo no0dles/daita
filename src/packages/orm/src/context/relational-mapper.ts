@@ -1,4 +1,4 @@
-import { TableDescription } from '@daita/relational/sql/keyword/table/table-description';
+import { TableDescription } from '@daita/relational';
 
 export interface RelationalMapper {
   normalizeData<T>(table: TableDescription<T>, data: T[]): T[];

@@ -1,6 +1,6 @@
 import { ConditionDescription } from '../../operands/condition-description';
 import { TableDescription } from '../../keyword/table/table-description';
-import { isKind } from '@daita/common/utils/is-kind';
+import { isKind } from '@daita/common';
 
 export interface DeleteSql {
   delete: TableDescription<any>;

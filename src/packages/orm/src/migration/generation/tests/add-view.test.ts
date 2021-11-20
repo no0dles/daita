@@ -1,7 +1,7 @@
-import { field } from '@daita/relational/sql/keyword/field/field';
+import { field } from '@daita/relational';
 import { RelationalSchema } from '../../../schema/relational-schema';
-import { table } from '@daita/relational/sql/keyword/table/table';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
+import { table } from '@daita/relational';
+import { equal } from '@daita/relational';
 
 export class User {
   id!: string;

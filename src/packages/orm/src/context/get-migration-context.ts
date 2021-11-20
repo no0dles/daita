@@ -2,7 +2,7 @@ import { TransactionContext } from './transaction-context';
 import { Context } from './context';
 import { RelationalMigrationAdapter } from '../adapter/relational-migration-adapter';
 import { MigrationTree } from '../migration/migration-tree';
-import { RuleContext } from '@daita/relational/permission/description/rule-context';
+import { RuleContext } from '@daita/relational';
 import { OrmRelationalSchema } from '../schema/orm-relational-schema';
 
 export interface MigrationContextUpdateOptions {

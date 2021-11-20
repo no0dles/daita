@@ -1,6 +1,6 @@
-import { FormatContext } from '@daita/relational/formatter/format-context';
-import { isTableDescription, TableDescription } from '@daita/relational/sql/keyword/table/table-description';
-import { FormatHandle, Formatter, FormatType } from '@daita/relational/formatter/formatter';
+import { FormatContext } from '@daita/relational';
+import { isTableDescription, TableDescription } from '@daita/relational';
+import { FormatHandle, Formatter, FormatType } from '@daita/relational';
 
 export class SqliteTableFormatter implements FormatHandle<TableDescription<any>> {
   type = FormatType.Table;

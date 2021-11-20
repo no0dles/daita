@@ -1,7 +1,7 @@
 import { RelationalInsertSeedMigrationStep } from './relational-insert-seed.migration-step';
 import { table } from '@daita/relational';
-import { InsertSql } from '@daita/relational/sql/dml/insert/insert-sql';
-import { Client } from '@daita/relational/client/client';
+import { InsertSql } from '@daita/relational';
+import { Client } from '@daita/relational';
 
 export async function insertSeedAction(client: Client<InsertSql<any>>, step: RelationalInsertSeedMigrationStep) {
   await client.exec({

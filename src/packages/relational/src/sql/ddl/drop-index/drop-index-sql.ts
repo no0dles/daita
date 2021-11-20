@@ -1,4 +1,4 @@
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 import { TableDescription } from '../../keyword/table/table-description';
 
 export interface DropIndexSql {

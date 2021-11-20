@@ -3,13 +3,13 @@ import { MigrationDirection, RelationalMigrationAdapter } from '../adapter/relat
 import { MigrationTree } from '../migration/migration-tree';
 import { MigrationContext, MigrationContextUpdateOptions } from './get-migration-context';
 import { MigrationDescription } from '../migration/migration-description';
-import { RuleContext } from '@daita/relational/permission/description/rule-context';
-import { RelationalTransactionAdapter } from '@daita/relational/adapter/relational-transaction-adapter';
+import { RuleContext } from '@daita/relational';
+import { RelationalTransactionAdapter } from '@daita/relational';
 import { SchemaDescription } from '../schema/description/relational-schema-description';
 import { getSchemaDescription } from '../schema/relational-schema-description';
 import { SchemaMapper } from '../schema/description/schema-mapper';
 import { NormalMapper } from '../schema/description/normal-mapper';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { Resolvable } from '@daita/common';
 import { OrmRelationalSchema } from '../schema/orm-relational-schema';
 
 export interface MigrationPlan {

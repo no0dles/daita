@@ -1,4 +1,4 @@
-import { Rule } from '@daita/relational/permission/description/rule';
+import { Rule } from '@daita/relational';
 
 export interface RelationalAddRuleMigrationStep {
   kind: 'add_rule';

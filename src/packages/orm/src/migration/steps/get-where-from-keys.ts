@@ -1,8 +1,8 @@
-import { TableDescription } from '@daita/relational/sql/keyword/table/table-description';
-import { ConditionDescription } from '@daita/relational/sql/operands/condition-description';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
+import { TableDescription } from '@daita/relational';
+import { ConditionDescription } from '@daita/relational';
+import { equal } from '@daita/relational';
 import { field } from '@daita/relational';
-import { and } from '@daita/relational/sql/keyword/and/and';
+import { and } from '@daita/relational';
 
 export function getWhereFromKeys(tableDescription: TableDescription<any>, keys: any): ConditionDescription {
   const conditions = Object.keys(keys).map((key) => equal(field(tableDescription, key), keys[key]));

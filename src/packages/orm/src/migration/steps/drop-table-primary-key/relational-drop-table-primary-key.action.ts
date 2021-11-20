@@ -1,7 +1,7 @@
 import { RelationalDropTablePrimaryKeyMigrationStep } from './relational-drop-table-primary-key.migration-step';
-import { Client } from '@daita/relational/client/client';
+import { Client } from '@daita/relational';
 import { table } from '@daita/relational';
-import { AlterTableDropConstraintSql } from '@daita/relational/sql/ddl/alter-table/alter-table-sql';
+import { AlterTableDropConstraintSql } from '@daita/relational';
 
 export async function dropTablePrimaryKeyAction(
   client: Client<AlterTableDropConstraintSql>,

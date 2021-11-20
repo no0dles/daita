@@ -1,7 +1,7 @@
 import { TableDescription } from '../../keyword/table/table-description';
 import { SelectSql } from '../select/select-sql';
-import { ExcludeNonPrimitive } from '@daita/common/types/exclude-non-primitive';
-import { isKind } from '@daita/common/utils/is-kind';
+import { ExcludeNonPrimitive } from '@daita/common';
+import { isKind } from '@daita/common';
 
 export interface InsertSql<T> {
   insert: ExcludeNonPrimitive<T> | ExcludeNonPrimitive<T>[] | SelectSql<ExcludeNonPrimitive<T>>;

@@ -1,7 +1,7 @@
 import { getMigrationSteps } from '../../../../../testing/cli/utils.test';
 import { userRule } from './change-rule-id.test';
 import { MigrationStep } from '../../migration-step';
-import { getRuleId } from '@daita/relational/permission/rule-id';
+import { getRuleId } from '@daita/relational';
 
 describe('cli/cmds/add/change-rule-id', () => {
   let steps: MigrationStep[] = [];

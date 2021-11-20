@@ -1,27 +1,27 @@
-import { RelationalMigrationAdapter } from '@daita/orm/adapter/relational-migration-adapter';
+import { RelationalMigrationAdapter } from '@daita/orm';
 import { SqliteSql } from '../sql/sqlite-sql';
-import { MigrationStorage } from '@daita/orm/migration/schema/migration-storage';
-import { MigrationPlan } from '@daita/orm/context/relational-migration-context';
-import { failNever } from '@daita/common/utils/fail-never';
-import { MigrationDescription } from '@daita/orm/migration/migration-description';
-import { RelationalClient } from '@daita/relational/client/relational-client';
+import { MigrationStorage } from '@daita/orm';
+import { MigrationPlan } from '@daita/orm';
+import { failNever } from '@daita/common';
+import { MigrationDescription } from '@daita/orm';
+import { RelationalClient } from '@daita/relational';
 import { SqliteRelationalTransactionAdapter } from './sqlite-relational-transaction-adapter';
-import { addTableAction } from '@daita/orm/migration/steps/add-table/relational-add-table.action';
-import { addTableFieldAction } from '@daita/orm/migration/steps/add-table-field/relational-add-table-field.action';
-import { addTablePrimaryKeyAction } from '@daita/orm/migration/steps/add-table-primary-key/relational-add-table-primary-key.action';
-import { dropTableAction } from '@daita/orm/migration/steps/drop-table/relational-drop-table.action';
-import { createIndexAction } from '@daita/orm/migration/steps/create-index/relational-create-index.action';
-import { dropIndexAction } from '@daita/orm/migration/steps/drop-index/relational-drop-index.action';
-import { addViewAction } from '@daita/orm/migration/steps/add-view/relational-add-view.action';
-import { alterViewAction } from '@daita/orm/migration/steps/alter-view/relational-alter-view.action';
-import { dropViewAction } from '@daita/orm/migration/steps/drop-view/relational-drop-view.action';
-import { insertSeedAction } from '@daita/orm/migration/steps/insert-seed/relational-insert-seed.action';
-import { updateSeedAction } from '@daita/orm/migration/steps/update-seed/relational-update-seed.action';
-import { deleteSeedAction } from '@daita/orm/migration/steps/delete-seed/relational-delete-seed.action';
-import { Client } from '@daita/relational/client/client';
+import { addTableAction } from '@daita/orm';
+import { addTableFieldAction } from '@daita/orm';
+import { addTablePrimaryKeyAction } from '@daita/orm';
+import { dropTableAction } from '@daita/orm';
+import { createIndexAction } from '@daita/orm';
+import { dropIndexAction } from '@daita/orm';
+import { addViewAction } from '@daita/orm';
+import { alterViewAction } from '@daita/orm';
+import { dropViewAction } from '@daita/orm';
+import { insertSeedAction } from '@daita/orm';
+import { updateSeedAction } from '@daita/orm';
+import { deleteSeedAction } from '@daita/orm';
+import { Client } from '@daita/relational';
 import { dropTableFieldAction } from '../orm/drop-table-field.action';
 import { dropTableForeignKeyAction } from '../orm/drop-table-foreign-key.action';
-import { RelationalTransactionClient } from '@daita/relational/client/relational-transaction-client';
+import { RelationalTransactionClient } from '@daita/relational';
 
 export class SqliteRelationalMigrationAdapter
   extends SqliteRelationalTransactionAdapter

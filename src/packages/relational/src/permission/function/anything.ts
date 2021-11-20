@@ -1,4 +1,4 @@
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 
 export function anything(): number & string & Date & boolean & undefined & null {
   return { anything: {} } as never;

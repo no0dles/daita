@@ -1,6 +1,6 @@
 import { TableAliasDescription } from '../../dml/select/table-alias-description';
 import { table } from '../table/table';
-import { Constructable } from '@daita/common/types/constructable';
+import { Constructable } from '@daita/common';
 import { TableDescription } from '../table/table-description';
 
 export function alias<T>(

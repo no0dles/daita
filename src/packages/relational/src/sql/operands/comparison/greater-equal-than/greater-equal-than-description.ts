@@ -1,5 +1,5 @@
 import { ExpressionDescription } from '../../expression-description';
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 
 export interface GreaterEqualThanDescription<T> {
   greaterEqualThan: ExpressionDescription<T>;

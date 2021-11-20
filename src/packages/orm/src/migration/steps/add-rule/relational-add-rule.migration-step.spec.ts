@@ -1,8 +1,8 @@
-import { testContext } from '@daita/relational/adapters';
+import { testContext } from '@daita/relational';
 import { createMigrationTree } from '../../create-migration-tree';
 import { allow, authorized } from '@daita/relational';
-import { now } from '@daita/relational/sql/function/date/now/now';
-import { getRuleId } from '@daita/relational/permission/rule-id';
+import { now } from '@daita/relational';
+import { getRuleId } from '@daita/relational';
 
 describe('packages/orm/migration/steps/relational-add-rule', () => {
   const testRule = allow(authorized(), { select: now() });

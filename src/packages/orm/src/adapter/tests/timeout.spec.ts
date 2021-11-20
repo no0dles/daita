@@ -1,16 +1,16 @@
-import { testContext } from '@daita/relational/adapters';
+import { testContext } from '@daita/relational';
 import { createPerson, createPersonTable } from '../../../../testing/schema/test-schema';
 import { Person } from '../../../../examples/mowntain/models/person';
 import { MigrationTree } from '../../migration/migration-tree';
-import { TimeoutError } from '@daita/relational/error/timeout-error';
-import { allow } from '@daita/relational/permission/function/allow';
-import { sleep } from '@daita/common/utils/sleep';
-import { field } from '@daita/relational/sql/keyword/field/field';
-import { anonymous } from '@daita/relational/permission/function/anonymous';
-import { anything } from '@daita/relational/permission/function/anything';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
-import { table } from '@daita/relational/sql/keyword/table/table';
-import { getRuleId } from '@daita/relational/permission/rule-id';
+import { TimeoutError } from '@daita/relational';
+import { allow } from '@daita/relational';
+import { sleep } from '@daita/common';
+import { field } from '@daita/relational';
+import { anonymous } from '@daita/relational';
+import { anything } from '@daita/relational';
+import { equal } from '@daita/relational';
+import { table } from '@daita/relational';
+import { getRuleId } from '@daita/relational';
 
 describe('relational/adapter/relational-transaction-adapter/timeout', () => {
   const remoteClients = testContext(

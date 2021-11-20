@@ -1,4 +1,4 @@
-import { failNever } from '@daita/common/utils/fail-never';
+import { failNever } from '@daita/common';
 import { SchemaTableDescription, SchemaTableFieldDescription } from './relational-schema-description';
 
 export function validateValueForTableField(key: string, field: SchemaTableFieldDescription, value: any) {

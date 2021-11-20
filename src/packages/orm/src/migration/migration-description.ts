@@ -1,7 +1,7 @@
 import { MigrationStep } from './migration-step';
 import { getTableDescriptionIdentifier } from '../schema/description/relational-schema-description';
 import { table } from '@daita/relational';
-import { TableDescription } from '@daita/relational/sql/keyword/table/table-description';
+import { TableDescription } from '@daita/relational';
 
 export interface MigrationDescription {
   id: string;

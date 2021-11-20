@@ -1,7 +1,6 @@
-import {isTableDescription, TableDescription} from '../../keyword/table/table-description';
-import {SelectSql} from './select-sql';
-import {isExactKind} from '@daita/common/utils/is-exact-kind';
-import {failNever} from '@daita/common/utils/fail-never';
+import { isTableDescription, TableDescription } from '../../keyword/table/table-description';
+import { isExactKind } from '@daita/common';
+import { failNever } from '@daita/common';
 
 export interface TableAliasDescription<T> {
   alias: { name: string; table: TableDescription<T> };

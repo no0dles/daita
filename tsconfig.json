@@ -1,34 +1,26 @@
 {
-  "compilerOptions": {
-    "baseUrl": "src",
-    "rootDir": "src",
-    "module": "CommonJS",
-    "target": "ES2015",
-    "outDir": "dist",
-    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
-    "lib": [
-      "es2016",
-      "es2019",
-      "ES2020",
-      "dom"
-    ],
-    "moduleResolution": "node",
-    "declaration": true,
-    "declarationMap": false,
-    "esModuleInterop": true,
-    "incremental": true,
-    "sourceMap": false,
-    "composite": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true
-  },
-  "exclude": [
-    "node_modules",
-    "jest.config.ts",
-    "jest.teardown.ts",
-    "dist",
-    "src/tests",
-    "src/frontends"
-  ]
+  "references": [{
+    "path": "src/packages/auth-server"
+  }, {
+    "path": "src/packages/common"
+  }, {
+    "path": "src/packages/cli"
+  }, {
+    "path": "src/packages/create"
+  }, {
+    "path": "src/packages/eslint-config"
+  }, {
+    "path": "src/packages/mariadb-adapter"
+  }, {
+    "path": "src/packages/node"
+  }, {
+    "path": "src/packages/orm"
+  }, {
+    "path": "src/packages/pg-adapter"
+  }, {
+    "path": "src/packages/relational"
+  }, {
+    "path": "src/packages/sqlite-adapter"
+  }],
+  "files": []
 }

@@ -1,9 +1,9 @@
-import { TableDescription } from '@daita/relational/sql/keyword/table/table-description';
-import { Rule } from '@daita/relational/permission/description/rule';
-import { SelectSql } from '@daita/relational/sql/dml/select/select-sql';
+import { TableDescription } from '@daita/relational';
+import { Rule } from '@daita/relational';
+import { SelectSql } from '@daita/relational';
 import { SchemaTableFieldTypeDescription } from '../schema-table-field-type-description';
 import { table } from '@daita/relational';
-import { capitalize } from '@daita/common/utils/capitalize';
+import { capitalize } from '@daita/common';
 
 export function getTableDescriptionIdentifier(table: TableDescription<any>): string {
   if (table.schema) {
@@ -175,7 +175,7 @@ export function addTableField(
   };
 }
 
-export function dropTableField(table: SchemaTableDescription, key: string): void {
+export function doDropTableField(table: SchemaTableDescription, key: string): void {
   if (table.fields) {
     delete table.fields[key];
   }

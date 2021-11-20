@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "rootDir": "src",
+    "module": "CommonJS",
+    "target": "ES2015",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "lib": [
+      "es2016",
+      "es2019",
+      "ES2020",
+      "dom"
+    ],
+    "moduleResolution": "node",
+    "declaration": true,
+    "declarationMap": false,
+    "esModuleInterop": true,
+    "incremental": true,
+    "sourceMap": false,
+    "composite": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "paths": {
+      "@daita/common": ["../../../packages/common/src/index.ts"],
+      "@daita/common/*": ["../../../packages/common/src/*"],
+      "@daita/iwent": ["../../../packages/iwent/src/index.ts"],
+      "@daita/iwent/*": ["../../../packages/iwent/src/*"],
+      "@daita/relational": ["../../../packages/relational/src/index.ts"],
+      "@daita/relational/*": ["../../../packages/relational/src/*"],
+      "@daita/orm": ["../../../packages/orm/src/index.ts"],
+      "@daita/orm/*": ["../../../packages/orm/src/*"]
+    }
+  },
+  "references": [{
+    "path": "../../packages/iwent"
+  }, {
+    "path": "../../packages/relational"
+  }, {
+    "path": "../../packages/orm"
+  }],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}

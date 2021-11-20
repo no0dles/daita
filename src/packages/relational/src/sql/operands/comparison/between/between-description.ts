@@ -1,4 +1,4 @@
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 
 export interface BetweenDescription<T> {
   between: { value: T; min: T; max: T };

@@ -1,6 +1,6 @@
 import { TableDescription } from '../table/table-description';
 import { getTableDescription, TableAliasDescription } from '../../dml/select/table-alias-description';
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 
 export interface FieldDescription {
   field: {

@@ -1,5 +1,5 @@
 import { MigrationStep } from '../migration-step';
-import { merge, mergeArray } from '@daita/common/utils/merge';
+import { merge, mergeArray } from '@daita/common';
 import {
   getFieldNamesFromSchemaTable,
   getTableFromSchema,

@@ -1,4 +1,4 @@
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 import { FieldDescription, isFieldDescription } from '../../../keyword/field/field-description';
 
 export interface SubtractDescription {

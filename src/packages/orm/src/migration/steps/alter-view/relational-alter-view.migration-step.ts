@@ -1,4 +1,4 @@
-import { SelectSql } from '@daita/relational/sql/dml/select/select-sql';
+import { SelectSql } from '@daita/relational';
 
 export interface RelationalAlterViewMigrationStep {
   kind: 'alter_view';

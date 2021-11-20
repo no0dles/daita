@@ -1,14 +1,14 @@
 import { field, table } from '@daita/relational';
-import { Client } from '@daita/relational/client/client';
-import { CreateSchemaSql } from '@daita/relational/sql/ddl/create-schema/create-schema-sql';
+import { Client } from '@daita/relational';
+import { CreateSchemaSql } from '@daita/relational';
 import { MigrationDescription } from '../migration-description';
-import { join } from '@daita/relational/sql/dml/select/join/join';
-import { and } from '@daita/relational/sql/keyword/and/and';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
-import { asc } from '@daita/relational/sql/keyword/asc/asc';
+import { join } from '@daita/relational';
+import { and } from '@daita/relational';
+import { equal } from '@daita/relational';
+import { asc } from '@daita/relational';
 import { Migrations } from './migrations';
 import { MigrationSteps } from './migration-steps';
-import { RelationalStorage } from '@daita/relational/storage/storage';
+import { RelationalStorage } from '@daita/relational';
 
 export class MigrationStorage extends RelationalStorage {
   async initialize(client: Client<any>) {

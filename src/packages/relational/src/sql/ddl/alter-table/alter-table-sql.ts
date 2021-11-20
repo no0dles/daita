@@ -1,6 +1,6 @@
 import { TableDescription } from '../../keyword/table/table-description';
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
-import { isKind } from '@daita/common/utils/is-kind';
+import { isExactKind } from '@daita/common';
+import { isKind } from '@daita/common';
 
 export type AlterTableSql =
   | AlterTableAddColumnSql

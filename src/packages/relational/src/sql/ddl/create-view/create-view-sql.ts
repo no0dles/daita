@@ -1,6 +1,6 @@
 import { SelectSql } from '../../dml/select/select-sql';
 import { TableDescription } from '../../keyword/table/table-description';
-import { isKind } from '@daita/common/utils/is-kind';
+import { isKind } from '@daita/common';
 
 export interface CreateViewSql<T> {
   createView: TableDescription<T>;

@@ -1,6 +1,6 @@
 import { Client } from '@daita/relational/client/client';
 import { CreateSchemaSql } from '@daita/relational/sql/ddl/create-schema/create-schema-sql';
-import { field, table } from '../../relational';
+import { field, table } from '@daita/relational';
 import { join } from '@daita/relational/sql/dml/select/join/join';
 import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
 import { asc } from '@daita/relational/sql/keyword/asc/asc';

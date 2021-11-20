@@ -3,7 +3,7 @@ import { JoinDescription } from './join/join-description';
 import { OrderByDescription } from './order-by/order-by-description';
 import { ValueType } from '../../operands/value-type';
 import { SourceTableDescription } from './source-table';
-import { isKind } from '@daita/common/utils/is-kind';
+import { isKind } from '@daita/common';
 import { isFieldDescription } from '../../keyword/field/field-description';
 import { isAddDescription } from '../../operands/arithmetic/add/add-description';
 import { isSubtractDescription } from '../../operands/arithmetic/substract/subtract-description';

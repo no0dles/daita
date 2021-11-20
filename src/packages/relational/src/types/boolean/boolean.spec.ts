@@ -3,7 +3,7 @@ import { testClient } from '../../../../testing/relational/adapters';
 import { createPerson, createPersonTable } from '../../../../testing/schema/test-schema';
 import { table } from '../../sql/keyword/table/table';
 import { Person } from '../../../../examples/mowntain/models/person';
-import { randomUuid } from '@daita/common/utils/random-string';
+import { randomUuid } from '@daita/common';
 import { equal } from '../../sql/operands/comparison/equal/equal';
 
 describe('relational/types/booean', () => {

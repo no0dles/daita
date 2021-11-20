@@ -1,4 +1,4 @@
-import { Defer } from '@daita/common/utils/defer';
+import { Defer } from '@daita/common';
 
 interface SerializableAction<T> {
   (): Promise<T> | T;

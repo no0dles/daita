@@ -1,10 +1,10 @@
-import { RelationalClient } from '@daita/relational/client/relational-client';
+import { RelationalClient } from '@daita/relational';
 import { OrmRelationalSchema } from '../schema/orm-relational-schema';
-import { RelationalRawResult } from '@daita/relational/adapter/relational-raw-result';
-import { RelationalDataAdapter } from '@daita/relational/adapter/relational-data-adapter';
+import { RelationalRawResult } from '@daita/relational';
+import { RelationalDataAdapter } from '@daita/relational';
 import { MigrationTree } from '../migration/migration-tree';
 import { RelationalNormalMapper } from './orm-mapper';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { Resolvable } from '@daita/common';
 
 export class RelationalBaseContext extends RelationalClient {
   constructor(adapter: RelationalDataAdapter, protected migrationTree: Resolvable<MigrationTree>) {

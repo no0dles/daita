@@ -1,4 +1,4 @@
-import { testContext } from '@daita/relational/adapters';
+import { testContext } from '@daita/relational';
 import { createMigrationTree } from '../../create-migration-tree';
 import { field, table } from '@daita/relational';
 

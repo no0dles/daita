@@ -1,5 +1,5 @@
-import { DeleteSql } from '@daita/relational/sql/dml/delete/delete-sql';
-import { Client } from '@daita/relational/client/client';
+import { DeleteSql } from '@daita/relational';
+import { Client } from '@daita/relational';
 import { RelationalDeleteSeedMigrationStep } from './relational-delete-seed.migration-step';
 import { table } from '@daita/relational';
 import { getWhereFromKeys } from '../get-where-from-keys';

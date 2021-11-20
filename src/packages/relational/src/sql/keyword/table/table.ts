@@ -1,5 +1,5 @@
 import { TableDescription } from './table-description';
-import { Constructable } from '@daita/common/types/constructable';
+import { Constructable } from '@daita/common';
 
 export function table(table: string, schema?: string): TableDescription<any>;
 export function table<T>(type: Constructable<T>): TableDescription<T>;

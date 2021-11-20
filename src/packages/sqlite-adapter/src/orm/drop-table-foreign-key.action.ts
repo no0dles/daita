@@ -1,10 +1,10 @@
-import { RelationalDropTableForeignKeyMigrationStep } from '@daita/orm/migration/steps/drop-table-foreign-key/relational-drop-table-foreign-key.migration-step';
-import { Client } from '@daita/relational/client/client';
-import { InsertSql } from '@daita/relational/sql/dml/insert/insert-sql';
-import { CreateTableSql } from '@daita/relational/sql/ddl/create-table/create-table-sql';
-import { DropTableSql } from '@daita/relational/sql/ddl/drop-table/drop-table-sql';
+import { RelationalDropTableForeignKeyMigrationStep } from '@daita/orm';
+import { Client } from '@daita/relational';
+import { InsertSql } from '@daita/relational';
+import { CreateTableSql } from '@daita/relational';
+import { DropTableSql } from '@daita/relational';
 import { migrateTableAction } from './migrate-table.action';
-import { SchemaDescription } from '@daita/orm/schema/description/relational-schema-description';
+import { SchemaDescription } from '@daita/orm';
 
 export async function dropTableForeignKeyAction(
   client: Client<InsertSql<any> | CreateTableSql | DropTableSql>,

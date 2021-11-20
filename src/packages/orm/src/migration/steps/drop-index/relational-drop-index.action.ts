@@ -1,7 +1,7 @@
 import { RelationalDropIndexMigrationStep } from './relational-drop-index.migration-step';
-import { Client } from '@daita/relational/client/client';
+import { Client } from '@daita/relational';
 import { table } from '@daita/relational';
-import { DropIndexSql } from '@daita/relational/sql/ddl/drop-index/drop-index-sql';
+import { DropIndexSql } from '@daita/relational';
 
 export async function dropIndexAction(client: Client<DropIndexSql>, step: RelationalDropIndexMigrationStep) {
   await client.exec({

@@ -1,8 +1,8 @@
 import { RelationalAddTableMigrationStep } from './relational-add-table.migration-step';
-import { CreateTableSql } from '@daita/relational/sql/ddl/create-table/create-table-sql';
-import { Client } from '@daita/relational/client/client';
+import { CreateTableSql } from '@daita/relational';
+import { Client } from '@daita/relational';
 import { table } from '@daita/relational';
-import { CreateSchemaSql } from '@daita/relational/sql/ddl/create-schema/create-schema-sql';
+import { CreateSchemaSql } from '@daita/relational';
 import { isAddTableFieldStep } from '../add-table-field/relational-add-table-field.migration-step';
 import { MigrationDescription } from '../../migration-description';
 

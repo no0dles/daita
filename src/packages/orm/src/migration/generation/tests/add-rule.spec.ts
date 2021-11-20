@@ -1,11 +1,11 @@
 import { getMigrationSteps } from '../../../../../testing/cli/utils.test';
 import { User } from './add-view.test';
-import { allow } from '@daita/relational/permission/function/allow';
-import { field } from '@daita/relational/sql/keyword/field/field';
-import { authorized } from '@daita/relational/permission/function/authorized';
+import { allow } from '@daita/relational';
+import { field } from '@daita/relational';
+import { authorized } from '@daita/relational';
 import { MigrationStep } from '../../migration-step';
-import { table } from '@daita/relational/sql/keyword/table/table';
-import { getRuleId } from '@daita/relational/permission/rule-id';
+import { table } from '@daita/relational';
+import { getRuleId } from '@daita/relational';
 
 describe('cli/cmds/add/add-rule', () => {
   let steps: MigrationStep[] = [];

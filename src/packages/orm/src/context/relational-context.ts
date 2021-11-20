@@ -1,12 +1,12 @@
 import { Context } from './context';
 import { RelationalBaseContext } from './relational-base-context';
-import { RelationalRawResult } from '@daita/relational/adapter/relational-raw-result';
-import { RelationalDataAdapter } from '@daita/relational/adapter/relational-data-adapter';
-import { RuleContext } from '@daita/relational/permission/description/rule-context';
+import { RelationalRawResult } from '@daita/relational';
+import { RelationalDataAdapter } from '@daita/relational';
+import { RuleContext } from '@daita/relational';
 import { MigrationTree } from '../migration/migration-tree';
 import { RuleError } from '../error/rule-error';
-import { Resolvable } from '@daita/common/utils/resolvable';
-import { RulesEvaluator } from '@daita/relational/permission/validate';
+import { Resolvable } from '@daita/common';
+import { RulesEvaluator } from '@daita/relational';
 
 export class RelationalContext extends RelationalBaseContext implements Context<any> {
   private readonly rulesEvaluator: Resolvable<RulesEvaluator>;

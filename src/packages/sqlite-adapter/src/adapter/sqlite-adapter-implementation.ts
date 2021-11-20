@@ -1,11 +1,11 @@
 import * as fs from 'fs';
-import { RelationalTransactionAdapterImplementation } from '@daita/relational/adapter/relational-adapter-implementation';
-import { isKind } from '@daita/common/utils/is-kind';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm/adapter/relational-migration-adapter-implementation';
-import { RelationalMigrationAdapter } from '@daita/orm/adapter/relational-migration-adapter';
+import { RelationalTransactionAdapterImplementation } from '@daita/relational';
+import { isKind } from '@daita/common';
+import { RelationalMigrationAdapterImplementation } from '@daita/orm';
+import { RelationalMigrationAdapter } from '@daita/orm';
 import { SqliteSql } from '../sql/sqlite-sql';
 import { SqliteRelationalMigrationAdapter } from './sqlite-relational-migration-adapter';
-import { Resolvable } from '@daita/common/utils/resolvable';
+import { Resolvable } from '@daita/common';
 
 export type SqliteAdapterOptions = SqliteAdapterFileOptions | SqliteAdapterMemoryOptions;
 
@@ -32,9 +32,8 @@ const isMemoryOptions = (val?: SqliteAdapterOptions): val is SqliteAdapterMemory
   isKind<SqliteAdapterMemoryOptions>(val, ['memory']);
 
 export class SqliteAdapterImplementation
-  implements
-    RelationalTransactionAdapterImplementation<SqliteSql, SqliteAdapterOptions>,
-    RelationalMigrationAdapterImplementation<SqliteSql, SqliteAdapterOptions> {
+  implements RelationalMigrationAdapterImplementation<SqliteSql, SqliteAdapterOptions>,
+    RelationalTransactionAdapterImplementation<SqliteSql, SqliteAdapterOptions> {
   getRelationalAdapter(options: SqliteAdapterOptions): RelationalMigrationAdapter<SqliteSql> {
     if (isFileOptions(options)) {
       const fileName = getSqliteFilename(options.file);

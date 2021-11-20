@@ -1,7 +1,7 @@
-import { testContext } from '@daita/relational/adapters';
+import { testContext } from '@daita/relational';
 import { MigrationTree } from '../../migration-tree';
 import { table } from '@daita/relational';
-import { all } from '@daita/relational/sql/keyword/all/all';
+import { all } from '@daita/relational';
 
 describe('packages/orm/migration/steps/add-table-field', () => {
   const migrationTree = new MigrationTree('', [

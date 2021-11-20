@@ -1,6 +1,6 @@
 import { FieldDescription } from '../../../keyword/field/field-description';
 import { ValueType } from '../../../operands/value-type';
-import { isExactKind } from '@daita/common/utils/is-exact-kind';
+import { isExactKind } from '@daita/common';
 
 export interface CountDescription {
   count: { field: ValueType | FieldDescription; distinct?: boolean };

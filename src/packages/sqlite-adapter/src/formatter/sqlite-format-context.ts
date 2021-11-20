@@ -1,7 +1,7 @@
-import { SimpleFormatContext } from '@daita/relational/formatter/simple-format-context';
-import { ValueType } from '@daita/relational/sql/operands/value-type';
-import { FormatDataType } from '@daita/relational/formatter/format-context';
-import { isJsonDescription } from '@daita/relational/types/json/json-description';
+import { SimpleFormatContext } from '@daita/relational';
+import { ValueType } from '@daita/relational';
+import { FormatDataType } from '@daita/relational';
+import { isJsonDescription } from '@daita/relational';
 
 export class SqliteFormatContext extends SimpleFormatContext {
   constructor() {

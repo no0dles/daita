@@ -1,0 +1,13 @@
+{
+  "name": "mowntain",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@daita/orm": "file:../../packages/orm",
+    "@daita/sqlite-adapter": "file:../../packages/sqlite-adapter",
+    "@daita/relational": "file:../../packages/relational"
+  }
+}

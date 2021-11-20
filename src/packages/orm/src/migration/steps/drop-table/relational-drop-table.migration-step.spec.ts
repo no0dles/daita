@@ -1,8 +1,8 @@
-import { testContext } from '@daita/relational/adapters';
+import { testContext } from '@daita/relational';
 import { MigrationTree } from '../../migration-tree';
-import { all } from '@daita/relational/sql/keyword/all/all';
+import { all } from '@daita/relational';
 import { table } from '@daita/relational';
-import { RelationDoesNotExistsError } from '@daita/relational/error/relational-error';
+import { RelationDoesNotExistsError } from '@daita/relational';
 
 describe('packages/orm/migration/steps/drop-table', () => {
   const schema = new MigrationTree('', [
