@@ -1,0 +1,10 @@
+{
+  "name": "@daita/eslint-config",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "typescript": "~4.0.5"
+  }
+}

@@ -1,0 +1,21 @@
+import { AlterTableAddColumnFormatter } from '@daita/relational/sql/ddl/alter-table/alter-table';
+import { Formatter } from '@daita/relational/formatter/formatter';
+import { CreateTableFormatter } from '@daita/relational/sql/ddl/create-table/create-table-formatter';
+import { DropTableFormatter } from '@daita/relational/sql/ddl/drop-table/drop-table';
+import { NowFormatter } from '../sql/function/date/now-formatter';
+import { SqliteTableFormatter } from './sqlite-table-formatter';
+import { ConcatPipeFormatter } from '@daita/relational/sql/function/string/concat/concat-pipe-formatter';
+import { ansiFormatter } from '@daita/relational/formatter/ansi-formatter';
+import { LeastFormatter } from '@daita/relational/sql/function/conditional/least/least-formatter';
+import { GreatestFormatter } from '@daita/relational/sql/function/conditional/greatest/greatest-formatter';
+
+export const sqliteFormatter = new Formatter();
+sqliteFormatter.extend(ansiFormatter);
+sqliteFormatter.add(new NowFormatter());
+sqliteFormatter.add(new DropTableFormatter());
+sqliteFormatter.add(new CreateTableFormatter());
+sqliteFormatter.add(new AlterTableAddColumnFormatter());
+sqliteFormatter.add(new SqliteTableFormatter());
+sqliteFormatter.add(new ConcatPipeFormatter());
+sqliteFormatter.add(new LeastFormatter());
+sqliteFormatter.add(new GreatestFormatter());

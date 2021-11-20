@@ -1,0 +1,13 @@
+{
+  "name": "@daita/http-server-common",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "typescript": "~4.0.5",
+    "@daita/common": "file:../common",
+    "@daita/orm": "file:../orm",
+    "@daita/relational": "file:../relational"
+  }
+}

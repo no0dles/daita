@@ -1,0 +1,14 @@
+{
+  "name": "@daita/mariadb-adapter",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@daita/common": "file:../common",
+    "@daita/relational": "file:../relational"
+  },
+  "devDependencies": {
+    "typescript": "~4.0.5"
+  }
+}

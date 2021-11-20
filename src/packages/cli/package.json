@@ -1,8 +1,13 @@
 {
+  "name": "@daita/cli",
+  "version": "1.0.0",
   "bin": {
-    "daita": "index.js"
+    "daita": "dist/index.js"
   },
-  "exports": {
-
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "typescript": "~4.0.5"
   }
 }

@@ -1,0 +1,26 @@
+{
+    "references": [{
+        "path": "src/packages/auth-server"
+    }, {
+        "path": "src/packages/common"
+    }, {
+        "path": "src/packages/cli"
+    }, {
+        "path": "src/packages/create"
+    }, {
+        "path": "src/packages/eslint-config"
+    }, {
+        "path": "src/packages/mariadb-adapter"
+    }, {
+        "path": "src/packages/node"
+    }, {
+        "path": "src/packages/orm"
+    }, {
+        "path": "src/packages/pg-adapter"
+    }, {
+        "path": "src/packages/relational"
+    }, {
+        "path": "src/packages/sqlite-adapter"
+    }],
+    "files": []
+}
