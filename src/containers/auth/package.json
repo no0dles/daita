@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "name": "@daita/auth",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "package": "pkg -t \"node16-linux-x64,node16-linux-arm64\" ."
+  },
+  "dependencies": {
+    "@daita/common": "file:../../packages/common",
+    "@daita/relational": "file:../../packages/relational",
+    "@daita/auth-server": "file:../../packages/auth-server",
+    "@daita/orm": "file:../../packages/orm",
+    "@daita/node": "file:../../packages/node",
+    "@daita/pg-adapter": "file:../../packages/pg-adapter",
+    "@daita/sqlite-adapter": "file:../../packages/sqlite-adapter",
+    "@daita/mariadb-adapter": "file:../../packages/mariadb-adapter"
+  },
+  "devDependencies": {
+    "pkg": "^5.4.1"
+  }
+}

@@ -1,35 +1,20 @@
 import { RelationalUpdateResult } from './relational-update-result';
-import { SelectClient } from './select-client';
-import { Client } from './client';
-import { UpdateClient } from './update-client';
+import { AuthorizableClient, Client } from './client';
 import { RelationalDeleteResult } from './relational-delete-result';
 import { RelationalInsertResult } from './relational-insert-result';
-import { DeleteClient } from './delete-client';
-import { InsertClient } from './insert-client';
 import { isAllDescription } from '../sql/keyword/all/all-description';
 import { UpdateSql } from '../sql/dml/update/update-sql';
-import { isMaxDescription } from '../sql/function/aggregation/max/max-description';
-import { isAvgDescription } from '../sql/function/aggregation/avg/avg-description';
-import { isSumDescription } from '../sql/function/aggregation/sum/sum-description';
-import { isCountDescription } from '../sql/function/aggregation/count/count-description';
-import { isNowDescription } from '../sql/function/date/now/now-description';
 import { RelationalRawResult } from '../adapter/relational-raw-result';
-import { isConcatDescription } from '../sql/function/string/concat/concat-description';
 import { InsertSql } from '../sql/dml/insert/insert-sql';
 import { DeleteSql } from '../sql/dml/delete/delete-sql';
 import { isSingleFieldSelect, SelectSql } from '../sql/dml/select/select-sql';
 import { deepClone } from '@daita/common';
-import { isMinDescription } from '../sql/function/aggregation/min/min-description';
-import { isFieldDescription } from '../sql/keyword/field/field-description';
 import { RelationalDataAdapter } from '../adapter/relational-data-adapter';
-import { isAddDescription } from '../sql/operands/arithmetic/add/add-description';
-import { isSubtractDescription } from '../sql/operands/arithmetic/substract/subtract-description';
-import { isMultiplyDescription } from '../sql/operands/arithmetic/multiply/multiply-description';
-import { isDivideDescription } from '../sql/operands/arithmetic/divide/divide-description';
-import { isLeastDescription } from '../sql/function/conditional/least/least-description';
-import { isGreatestDescription } from '../sql/function/conditional/greatest/greatest-description';
+import { Rule } from '../permission';
+import { SqlClient } from './sql-client';
+import { RelationalAuthorizableClient } from './relational-authorizable-client';
 
-export class RelationalClient implements SelectClient, UpdateClient, DeleteClient, InsertClient, Client<any> {
+export class RelationalClient implements SqlClient, Client<any> {
   constructor(public dataAdapter: RelationalDataAdapter<any>) {}
 
   close() {
@@ -115,5 +100,9 @@ export class RelationalClient implements SelectClient, UpdateClient, DeleteClien
 
   toString() {
     return this.dataAdapter.toString();
+  }
+
+  authorizable(rules: { id: string; rule: Rule }[]): AuthorizableClient<any> {
+    return new RelationalAuthorizableClient(this.dataAdapter, rules);
   }
 }

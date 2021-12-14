@@ -11,7 +11,6 @@ export * from './object-prop';
 export * from './object-type';
 export * from './string-type';
 export * from './boolean-type';
-export * from './validate.test';
 export * from './undefined-type';
 export * from './backward-compatible';
 export * from './type-validation-error';

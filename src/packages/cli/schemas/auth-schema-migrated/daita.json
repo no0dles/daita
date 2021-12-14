@@ -1,0 +1,27 @@
+{
+  "$schema": "@daita/cli/schema.json",
+  "context": {
+    "default": {
+      "schemaLocation": "src/schema.ts",
+      "connectionString": "postgres://localhost/postgres",
+      "authorization": {
+        "providers": [
+          {
+            "uri": "http://localhost:8766",
+            "issuer": "cli"
+          }
+        ],
+        "userPools": {
+          "cli": {
+            "cors": ["http://localhost:4200"],
+            "users": {
+              "test": {
+                "password": "123456"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

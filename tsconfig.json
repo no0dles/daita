@@ -1,14 +1,22 @@
 {
   "references": [{
+    "path": "src/containers/auth"
+  }, {
     "path": "src/packages/auth-server"
   }, {
-    "path": "src/packages/common"
-  }, {
     "path": "src/packages/cli"
+  }, {
+    "path": "src/packages/common"
   }, {
     "path": "src/packages/create"
   }, {
     "path": "src/packages/eslint-config"
+  }, {
+    "path": "src/packages/http-adapter"
+  }, {
+    "path": "src/packages/http-server-common"
+  }, {
+    "path": "src/packages/iwent"
   }, {
     "path": "src/packages/mariadb-adapter"
   }, {
@@ -21,6 +29,12 @@
     "path": "src/packages/relational"
   }, {
     "path": "src/packages/sqlite-adapter"
+  }, {
+    "path": "src/examples/mowntain"
+  }, {
+    "path": "src/tooling/npm"
+  }, {
+    "path": "src/tooling/testing"
   }],
   "files": []
 }

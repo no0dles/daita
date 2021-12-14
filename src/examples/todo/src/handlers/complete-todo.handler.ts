@@ -3,7 +3,7 @@ import { CompleteTodoEvent } from '../events/complete-todo.event';
 import { IwentHandlerContext } from '@daita/iwent/iwent-handler-context';
 import { field, table } from '@daita/relational';
 import { Todo } from '../models/todo.model';
-import { equal } from '@daita/relational/sql/operands/comparison/equal/equal';
+import { equal } from '@daita/relational';
 
 export class CompleteTodoHandler implements IwentHandler<CompleteTodoEvent> {
   async handle(event: CompleteTodoEvent, context: IwentHandlerContext): Promise<void> {

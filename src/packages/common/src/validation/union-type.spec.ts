@@ -8,17 +8,7 @@ describe('type/union-type', () => {
       unionTypes: [{ type: 'string' }, { type: 'number' }],
     },
     validValues: [1, 'test'],
-    invalidValues: [
-      true,
-      false,
-      null,
-      undefined,
-      new Date(),
-      new RegExp('foo'),
-      new Map<string, any>(),
-      [],
-      {},
-    ],
+    invalidValues: [true, false, null, undefined, new Date(), new RegExp('foo'), new Map<string, any>(), [], {}],
     errorMessage: ValidateUnionErrorMessage,
   });
 });

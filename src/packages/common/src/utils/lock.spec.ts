@@ -1,5 +1,5 @@
-import {Lock} from './lock';
-import {sleep} from './sleep';
+import { Lock } from './lock';
+import { sleep } from './sleep';
 
 describe('common/utils/lock', () => {
   it('should hold lock', async () => {

@@ -8,7 +8,6 @@ tmp
 keys
 
 src/tests
-src/containers/**/package.json
 src/docs/build
 
 .docusaurus

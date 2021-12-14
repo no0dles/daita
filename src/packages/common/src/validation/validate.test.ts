@@ -3,11 +3,7 @@ import { ValidationError } from './type-validation-error';
 import { validate } from './validate';
 import { isBackwardCompatible } from './backward-compatible';
 
-export function validateType(
-  type: Type,
-  value: any,
-  expectedErrors: ValidationError[]
-) {
+export function validateType(type: Type, value: any, expectedErrors: ValidationError[]) {
   const errors = Array.from(validate(type, value));
   expect(errors).toEqual(expectedErrors);
 }
@@ -31,29 +27,18 @@ export function typeTest(test: TypeTest) {
 
   if (test.invalidValues && test.invalidValues.length > 0) {
     it.each(test.invalidValues)('should not allow value %s', (val) => {
-      validateType(test.type, val, [
-        { message: test.errorMessage, path: test.errorPath ?? [] },
-      ]);
+      validateType(test.type, val, [{ message: test.errorMessage, path: test.errorPath ?? [] }]);
     });
   }
 
   if (test.backwardCompatibleTypes && test.backwardCompatibleTypes.length > 0) {
-    it.each(test.backwardCompatibleTypes)(
-      'should be backward compatible %s',
-      (val) => {
-        expect(isBackwardCompatible(test.type, val)).toBeTruthy();
-      }
-    );
+    it.each(test.backwardCompatibleTypes)('should be backward compatible %s', (val) => {
+      expect(isBackwardCompatible(test.type, val)).toBeTruthy();
+    });
   }
-  if (
-    test.notBackwardCompatibleTypes &&
-    test.notBackwardCompatibleTypes.length > 0
-  ) {
-    it.each(test.notBackwardCompatibleTypes)(
-      'should be not backward compatible %s',
-      (val) => {
-        expect(isBackwardCompatible(test.type, val)).toBeFalsy();
-      }
-    );
+  if (test.notBackwardCompatibleTypes && test.notBackwardCompatibleTypes.length > 0) {
+    it.each(test.notBackwardCompatibleTypes)('should be not backward compatible %s', (val) => {
+      expect(isBackwardCompatible(test.type, val)).toBeFalsy();
+    });
   }
 }

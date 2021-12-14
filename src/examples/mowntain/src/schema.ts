@@ -5,6 +5,7 @@ import { Canton } from './models/canton';
 import { Mountain } from './models/mountain';
 import { Person } from './models/person';
 import { InitialMigration } from './migrations/2020-10-01-165516-initial';
+import { allow, authorized, now } from '@daita/relational';
 
 export const schema = new RelationalSchema('test-schema');
 schema.table(Ascent);
@@ -17,4 +18,5 @@ schema.table(Canton, {
 });
 schema.table(Mountain);
 schema.table(Person);
+schema.rules([allow(authorized(), { select: now() })]);
 schema.migration(InitialMigration);

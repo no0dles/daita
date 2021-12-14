@@ -1,4 +1,4 @@
-import {Defer} from './defer';
+import { Defer } from './defer';
 
 interface LockEntry {
   fn: () => Promise<any> | any;
@@ -11,7 +11,7 @@ export class Lock {
 
   acquire<T = void>(fn: () => Promise<T> | T): Promise<T> {
     const defer = new Defer<T>();
-    const entry: LockEntry = {fn, defer};
+    const entry: LockEntry = { fn, defer };
     if (this.current) {
       this.queue.push(entry);
     } else {

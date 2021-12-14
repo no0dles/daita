@@ -1,5 +1,5 @@
 module.exports = {
-  extends: [
-    "./dist/packages/eslint-config/index.js"
-  ]
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint'],
+  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
 };

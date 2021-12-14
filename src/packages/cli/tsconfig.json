@@ -17,7 +17,7 @@
     "declarationMap": false,
     "esModuleInterop": true,
     "incremental": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "composite": true,
     "strict": true,
     "noImplicitAny": true,
@@ -45,6 +45,10 @@
       "@daita/orm/*": ["../../orm/src/*"],
       "@daita/http-server-common": ["../../http-server-common/src/index.ts"],
       "@daita/http-server-common/*": ["../../http-server-common/src/*"],
+      "@daita/http-client-common": ["../../http-client-common/src/index.ts"],
+      "@daita/http-client-common/*": ["../../http-client-common/src/*"],
+      "@daita/testing": ["../../../tooling/testing/src/index.ts"],
+      "@daita/testing/*": ["../../../tooling/testing/orm/src/*"]
     }
   },
   "references": [{
@@ -69,10 +73,14 @@
     "path": "../http-server"
   }, {
     "path": "../http-server-common"
+  }, {
+    "path": "../http-client-common"
+  }, {
+    "path": "../../tooling/testing"
   }],
   "exclude": [
     "node_modules",
     "dist",
-    "src/**/*.spec.ts"
+    "schemas"
   ]
 }

@@ -40,6 +40,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
   async exec(sql: any): Promise<RelationalRawResult> {
     const ctx = new SqliteFormatContext();
     const query = sqliteFormatter.format(sql, ctx);
+    console.log(query, ctx.getValues());
     this.logger.debug('execute sql', { sql, query, queryValues: ctx.getValues() });
     return await this.execRaw(query, ctx.getValues());
   }
@@ -49,62 +50,85 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
       const defer = new Defer<RelationalRawResult>();
       this.logger.trace(`execute statement ${sql}`, { sql, values });
       const db = await this.db.get();
-      const stmt = db.prepare(sql, values, (err) => {
-        if (err) {
-          const regex = /SQLITE_ERROR\: no such table\: (?<table>.*)/g;
-          const groups = regex.exec(err.message)?.groups || {};
-          if (groups.table) {
-            return defer.reject(new RelationDoesNotExistsError(err, sql, values, undefined, groups.table));
-          }
-          return defer.reject(err);
-        }
+      const logger = this.logger;
 
-        stmt.bind((err) => {
+      if (!sql.toLowerCase().startsWith('select')) {
+        db.run(sql, values, function (err) {
           if (err) {
-            this.logger.error(err, { query: sql, queryValues: values });
-            defer.reject(err);
-          }
-        });
-        stmt.all(values, (err, rows) => {
-          if (err) {
-            this.logger.error(err, { query: sql, queryValues: values });
-            defer.reject(err);
+            const regex = /SQLITE_ERROR\: no such table\: (?<table>.*)/g;
+            const groups = regex.exec(err.message)?.groups || {};
+            if (groups.table) {
+              return defer.reject(new RelationDoesNotExistsError(err, sql, values, undefined, groups.table));
+            }
+            return defer.reject(err);
           } else {
-            this.logger.trace(`all statement ${sql}`, { sql, values, rows });
             defer.resolve({
-              rows: rows.map((row) => {
-                const columnKeys = Object.keys(row);
-                for (const columnKey of columnKeys) {
-                  const columnValue = row[columnKey];
-                  if (typeof columnValue === 'string' && columnValue.startsWith('JSON-')) {
-                    row[columnKey] = parseJson(columnValue.substr('JSON-'.length));
-                  } else if (typeof columnValue === 'string' && columnValue.startsWith('DATE-')) {
-                    row[columnKey] = new Date(columnValue.substr('DATE-'.length));
-                  } else if (typeof columnValue === 'string' && columnValue.startsWith('BOOL-')) {
-                    row[columnKey] = columnValue.substr('BOOL-'.length) === 'true';
-                  }
-                  //TODO improve and document, make tests with text values BOOL-, JSON-, DATE- and wrong formats
-                }
-                return row;
-              }),
-              rowCount: rows.length,
+              rows: [],
+              rowCount: this.changes,
             });
           }
         });
-        stmt.finalize((err) => {
+      } else {
+        const stmt = db.prepare(sql, values, function (err) {
           if (err) {
-            this.logger.error(err, { query: sql, queryValues: values });
-            defer.reject(err);
-          } else {
-            this.logger.trace(`finalize statement ${sql}`, { sql, values });
+            const regex = /SQLITE_ERROR\: no such table\: (?<table>.*)/g;
+            const groups = regex.exec(err.message)?.groups || {};
+            if (groups.table) {
+              return defer.reject(new RelationDoesNotExistsError(err, sql, values, undefined, groups.table));
+            }
+            return defer.reject(err);
           }
+
+          stmt.bind((err) => {
+            if (err) {
+              logger.error(err, { query: sql, queryValues: values });
+              defer.reject(err);
+            }
+          });
+          stmt.all(values, function (err, rows) {
+            if (err) {
+              logger.error(err, { query: sql, queryValues: values });
+              defer.reject(err);
+            } else {
+              logger.trace(`all statement ${sql}`, { sql, values, rows });
+              defer.resolve({
+                rows: rows.map((row) => {
+                  const columnKeys = Object.keys(row);
+                  for (const columnKey of columnKeys) {
+                    const columnValue = row[columnKey];
+                    if (typeof columnValue === 'string' && columnValue.startsWith('JSON-')) {
+                      row[columnKey] = parseJson(columnValue.substr('JSON-'.length));
+                    } else if (
+                      typeof columnValue === 'string' &&
+                      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}(Z){0,1}$/.test(columnValue)
+                    ) {
+                      row[columnKey] = new Date(columnValue);
+                    } else if (typeof columnValue === 'string' && columnValue.startsWith('BOOL-')) {
+                      row[columnKey] = columnValue.substr('BOOL-'.length) === 'true';
+                    }
+                    //TODO improve and document, make tests with text values BOOL-, JSON-, DATE- and wrong formats
+                  }
+                  return row;
+                }),
+                rowCount: rows.length,
+              });
+            }
+          });
+          stmt.finalize(function (err) {
+            if (err) {
+              logger.error(err, { query: sql, queryValues: values });
+              defer.reject(err);
+            } else {
+              logger.trace(`finalize statement ${sql}`, { sql, values });
+            }
+          });
+          setTimeout(() => {
+            if (!defer.isRejected && !defer.isResolved) {
+              logger.warn(`sql ${sql} took more than 10s`, { sql, values });
+            }
+          }, 10000);
         });
-        setTimeout(() => {
-          if (!defer.isRejected && !defer.isResolved) {
-            this.logger.warn(`sql ${sql} took more than 10s`, { sql, values });
-          }
-        }, 10000);
-      });
+      }
       return defer.promise;
     });
   }

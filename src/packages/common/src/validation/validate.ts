@@ -91,10 +91,13 @@ export function* validate(type: Type, value: any, path: string[] = []): Generato
         for (const key of keys) {
           const prop = type.props[key];
           const valueKeyIndex = valueKeys.indexOf(key);
-          if (valueKeyIndex >= 0 && value[key] !== undefined) {
+          if (valueKeyIndex >= 0) {
             const propValue = value[key];
-            for (const error of validate(prop.type, propValue, [...path, key])) {
-              yield error;
+            const isEmpty = propValue === null || propValue === undefined;
+            if (prop.required || !isEmpty) {
+              for (const error of validate(prop.type, propValue, [...path, key])) {
+                yield error;
+              }
             }
             valueKeys.splice(valueKeyIndex, 1);
           } else if (prop.required) {

@@ -1,18 +1,35 @@
 {
   "name": "@daita/create",
   "version": "1.0.0",
+  "license": "MIT",
+  "homepage": "https://daita.ch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
+    ".": "./dist/index.js",
     "./create": "./dist/create.js"
   },
   "scripts": {
-    "build": "tsc"
-  },
-  "dependencies": {
-    "typescript": "~4.0.5"
+    "build": "tsc -b",
+    "lint": "eslint src"
   },
   "bin": {
-    "create-daita": "index.js"
+    "create-daita": "dist/cmd.js"
+  },
+  "dependencies": {
+    "inquirer": "^8.2.0",
+    "commander": "^8.3.0",
+    "@daita/common": "file:../common",
+    "@daita/node": "file:../node"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^8.1.3"
   }
 }

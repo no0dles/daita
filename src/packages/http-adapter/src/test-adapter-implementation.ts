@@ -20,7 +20,8 @@ export interface HttpTestAdapterOptions {
 }
 
 export class HttpTestAdapterImplementation
-  implements RelationalMigrationAdapterImplementation<any, HttpTestAdapterOptions> {
+  implements RelationalMigrationAdapterImplementation<any, HttpTestAdapterOptions>
+{
   getRelationalAdapter(options: HttpTestAdapterOptions): RelationalMigrationAdapter<any> {
     let server: Server;
     let authAdminServer: Server;

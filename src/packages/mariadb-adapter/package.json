@@ -1,16 +1,29 @@
 {
   "name": "@daita/mariadb-adapter",
   "version": "1.0.0",
+  "license": "MIT",
+  "homepage": "https://daita.ch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc -b",
+    "lint": "eslint src"
   },
   "dependencies": {
+    "mariadb": "^2.5.1",
     "@daita/common": "file:../common",
+    "@daita/orm": "file:../orm",
+    "@daita/node": "file:../node",
     "@daita/relational": "file:../relational"
   },
   "devDependencies": {
-    "typescript": "~4.0.5"
+
   }
 }

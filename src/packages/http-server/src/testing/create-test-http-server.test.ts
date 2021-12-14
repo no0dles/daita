@@ -2,11 +2,10 @@ import { getServer, HttpServerApp } from '@daita/node';
 import { getContext } from '@daita/orm';
 import { MigrationTree } from '@daita/orm';
 import { createHttpServerApp } from '../app';
-import { AuthServerTestDisposable } from '@daita/auth-server';
 import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 
 export async function createTestHttpServer<TOps>(options: {
-  authServer?: AuthServerTestDisposable;
+  authServer?: { adminPort: number; authPort: number };
   adapter: RelationalMigrationAdapterImplementation<any, TOps>;
   options: TOps;
   migrationTree: MigrationTree;
@@ -28,14 +27,14 @@ export async function createTestHttpServer<TOps>(options: {
             ? [
                 {
                   issuer: 'default',
-                  uri: `http://localhost:${options.authServer.authHttp.port}`,
+                  uri: `http://localhost:${options.authServer.authPort}`,
                 },
               ]
             : [],
           tokenEndpoints: options.authServer
             ? [
                 {
-                  uri: `http://localhost:${options.authServer.adminHttp.port}`,
+                  uri: `http://localhost:${options.authServer.adminPort}`,
                   issuer: 'default',
                 },
               ]

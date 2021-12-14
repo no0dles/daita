@@ -4,6 +4,7 @@ export * from './greater-equal-than';
 export * from './greater-than';
 export * from './in';
 export * from './is-null';
+export * from './is-not-null';
 export * from './like';
 export * from './lower-equal-than';
 export * from './lower-than';

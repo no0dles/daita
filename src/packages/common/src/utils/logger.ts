@@ -1,4 +1,4 @@
-import {getBoolEnvironmentVariable, getEnvironmentVariable, getOptionEnvironmentVariable} from './environment';
+import { getBoolEnvironmentVariable, getEnvironmentVariable, getOptionEnvironmentVariable } from './environment';
 import { failNever } from './fail-never';
 
 export interface Logger {
@@ -82,7 +82,7 @@ class LoggerImpl implements Logger {
   private readonly formatter: LogFormatter;
 
   constructor(private props: { [key: string]: any }) {
-    this.enabled = getBoolEnvironmentVariable('LOGGER_ENABLED',   getEnvironmentVariable('JEST_WORKER_ID') === null);
+    this.enabled = getBoolEnvironmentVariable('LOGGER_ENABLED', getEnvironmentVariable('JEST_WORKER_ID') === null);
     this.format = getOptionEnvironmentVariable('LOGGER_FORMAT', ['plain', 'json', 'pretty'], 'pretty');
     this.level = getOptionEnvironmentVariable('LOGGER_LEVEL', ['trace', 'debug', 'info', 'warn', 'error'], 'info');
     switch (this.format) {

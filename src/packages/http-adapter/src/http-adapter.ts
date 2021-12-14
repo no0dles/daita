@@ -30,4 +30,8 @@ export class HttpAdapter extends HttpTransactionAdapter implements RelationalMig
     }
     return result.data.migrations;
   }
+
+  async remove(): Promise<void> {
+    // TODO
+  }
 }

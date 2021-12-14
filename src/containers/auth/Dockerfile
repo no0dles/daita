@@ -3,14 +3,36 @@ FROM node:13-alpine AS api
 RUN apk update && apk add curl bash
 RUN curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | bash -s -- -b /usr/local/bin
 
-WORKDIR /app
-COPY package-lock.json .
+WORKDIR /build
+
 COPY package.json .
+COPY package-lock.json .
+COPY src src
 RUN npm ci
 
-COPY tsconfig.json .
-COPY src/containers src/containers
-COPY src/packages src/packages
+WORKDIR /build/src/packages/common
+RUN npm ci
+
+WORKDIR /build/src/packages/relational
+RUN npm ci
+
+WORKDIR /build/src/packages/orm
+RUN npm ci
+
+WORKDIR /build/src/packages/auth-server
+RUN npm ci
+
+WORKDIR /build/src/packages/mariadb-adapter
+RUN npm ci
+
+WORKDIR /build/src/packages/pg-adapter
+RUN npm ci
+
+WORKDIR /build/src/packages/sqlite-adapter
+RUN npm ci
+
+WORKDIR /build/src/containers/auth
+RUN npm ci
 RUN npm run build
 
 COPY src/frontends src/frontends

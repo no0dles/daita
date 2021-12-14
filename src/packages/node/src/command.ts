@@ -31,7 +31,7 @@ export function shell(
         }
       });
     }
-    ps.on('error', (err) => {
+    ps.once('error', (err) => {
       reject(err);
     });
     ps.once('exit', (code) => {

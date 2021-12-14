@@ -1,18 +1,15 @@
 import { TransactionContext } from './transaction-context';
 import { RelationalTransactionContext } from './relational-transaction-context';
 import { isRelationalTransactionAdapter } from '@daita/relational';
-import { OrmRelationalSchema } from '../schema/orm-relational-schema';
+import { OrmRelationalSchema } from '../schema';
 import { MigrationContext } from './get-migration-context';
 import { RelationalMigrationContext } from './relational-migration-context';
-import { isRelationalMigrationAdapter } from '../adapter/relational-migration-adapter';
-import { RelationalMigrationAdapterImplementation } from '../adapter/relational-migration-adapter-implementation';
-import {
-  RelationalDataAdapterImplementation,
-  RelationalTransactionAdapterImplementation,
-} from '@daita/relational';
+import { isRelationalMigrationAdapter } from '../adapter';
+import { RelationalMigrationAdapterImplementation } from '../adapter';
+import { RelationalDataAdapterImplementation, RelationalTransactionAdapterImplementation } from '@daita/relational';
 import { Context } from './context';
 import { RelationalContext } from './relational-context';
-import { MigrationTree } from '../migration/migration-tree';
+import { MigrationTree } from '../migration';
 import { RuleContext } from '@daita/relational';
 import { isKind } from '@daita/common';
 import { Resolvable } from '@daita/common';
@@ -21,17 +18,21 @@ export interface ContextSchemaOptions {
   schema: OrmRelationalSchema;
   auth?: RuleContext;
 }
+
 export const isContextSchemaOptions = (val: ContextOptions): val is ContextSchemaOptions => isKind(val, ['schema']);
+
 export interface ContextMigrationTreeOptions {
   migrationTree: MigrationTree;
-  auth?: RuleContext;
 }
+
 export const isContextMigrationTreeOptions = (val: ContextOptions): val is ContextMigrationTreeOptions =>
   isKind(val, ['migrationTree']);
 export type ContextOptions = ContextSchemaOptions | ContextMigrationTreeOptions;
+
 export interface ContextSchemaNameOptions {
   schemaName: string;
 }
+
 export type MigrationContextOptions = ContextOptions | ContextSchemaNameOptions;
 export const isContextSchemaNameOptions = (val: MigrationContextOptions): val is ContextSchemaNameOptions =>
   isKind(val, ['schemaName']);
@@ -57,7 +58,6 @@ export function getContext<TQuery, TOptions>(
 ): MigrationContext<TQuery> | TransactionContext<TQuery> | Context<TQuery> {
   const dataAdapter = adapterImplementation.getRelationalAdapter(options);
   const migrationTree = isContextSchemaOptions(options) ? options.schema.getMigrations() : options.migrationTree;
-  const auth: RuleContext | null = options.auth || null;
   if (isRelationalMigrationAdapter(dataAdapter)) {
     if (!migrationTree) {
       if (isContextSchemaNameOptions(options)) {
@@ -65,16 +65,16 @@ export function getContext<TQuery, TOptions>(
           const migrations = await dataAdapter.getAppliedMigrations(options.schemaName);
           return new MigrationTree(options.schemaName, migrations);
         });
-        return new RelationalMigrationContext(dataAdapter, migrationResolvable, auth);
+        return new RelationalMigrationContext(dataAdapter, migrationResolvable);
       } else {
         throw new Error('unsupported options'); // TODO improve typing to remove this
       }
     } else {
-      return new RelationalMigrationContext(dataAdapter, new Resolvable<MigrationTree>(migrationTree), auth);
+      return new RelationalMigrationContext(dataAdapter, new Resolvable<MigrationTree>(migrationTree));
     }
   } else if (isRelationalTransactionAdapter(dataAdapter)) {
-    return new RelationalTransactionContext(dataAdapter, new Resolvable<MigrationTree>(migrationTree), auth);
+    return new RelationalTransactionContext(dataAdapter, new Resolvable<MigrationTree>(migrationTree));
   } else {
-    return new RelationalContext(dataAdapter, new Resolvable<MigrationTree>(migrationTree), auth);
+    return new RelationalContext(dataAdapter, new Resolvable<MigrationTree>(migrationTree));
   }
 }

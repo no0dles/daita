@@ -46,26 +46,32 @@ export class AstSourceFile {
 
   getModulePath(moduleSpecifier: string) {
     if (moduleSpecifier.startsWith('.')) {
-      const importPath = path.join(
-        path.dirname(this.fileName),
-        moduleSpecifier,
-      );
+      const importPath = path.join(path.dirname(this.fileName), moduleSpecifier);
       return this.getPath(importPath);
     } else {
-      let pathParts = path.dirname(this.fileName).split(path.sep);
+      const pathParts = path.dirname(this.fileName).split(path.sep);
       for (let i = pathParts.length - 1; i >= 0; i--) {
-        const nodeModulePath = path.join(
-          pathParts.slice(0, i).join(path.sep),
-          'node_modules',
-          moduleSpecifier,
-        );
-        const importPath = this.getPath(nodeModulePath);
+        const nodeModulePath = path.join(pathParts.slice(0, i).join(path.sep), 'node_modules', moduleSpecifier);
+        const importPath = this.getPackagePath(nodeModulePath);
         if (importPath) {
           return importPath;
         }
       }
     }
     return null;
+  }
+
+  private getPackagePath(importPath: string) {
+    const pkg = path.join(importPath, 'package.json');
+    if (fs.existsSync(pkg)) {
+      const pkgContent = JSON.parse(fs.readFileSync(fs.realpathSync(pkg)).toString());
+      if (pkgContent.types) {
+        const typesPath = path.join(importPath, pkgContent.types);
+        return typesPath;
+      }
+    } else {
+      return this.getPath(importPath);
+    }
   }
 
   private getPath(importPath: string) {

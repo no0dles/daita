@@ -1,4 +1,4 @@
-import { IwentApplication } from '@daita/iwent/iwent-application';
+import { IwentApplication } from '@daita/iwent';
 import { todoModule } from './todo.module';
 import { todoSchema } from './todo.schema';
 

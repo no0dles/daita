@@ -10,6 +10,6 @@ export class NowFormatter implements FormatHandle<NowDescription> {
   }
 
   handle(param: NowDescription, ctx: FormatContext, formatter: Formatter): string {
-    return `'DATE-' || strftime('%Y-%m-%dT%H:%M:%fZ')`;
+    return `strftime('%Y-%m-%dT%H:%M:%f')`;
   }
 }

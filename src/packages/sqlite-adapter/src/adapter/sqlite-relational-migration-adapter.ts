@@ -22,11 +22,12 @@ import { Client } from '@daita/relational';
 import { dropTableFieldAction } from '../orm/drop-table-field.action';
 import { dropTableForeignKeyAction } from '../orm/drop-table-foreign-key.action';
 import { RelationalTransactionClient } from '@daita/relational';
+import { unlinkSync } from 'fs';
 
 export class SqliteRelationalMigrationAdapter
   extends SqliteRelationalTransactionAdapter
-  implements RelationalMigrationAdapter<SqliteSql> {
-
+  implements RelationalMigrationAdapter<SqliteSql>
+{
   private storage = new MigrationStorage({
     idType: { type: 'string' },
     transactionClient: new RelationalTransactionClient(this),
@@ -46,6 +47,15 @@ export class SqliteRelationalMigrationAdapter
 
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
     return this.storage.get(schema);
+  }
+
+  async remove(): Promise<void> {
+    const connectionString = await this.connectionString.get();
+    await this.db.close();
+    if (connectionString !== ':memory:') {
+      unlinkSync(connectionString);
+    }
+    this.db.reset();
   }
 
   private async applyMigrationPlan(client: Client<SqliteSql>, migrationPlan: MigrationPlan) {

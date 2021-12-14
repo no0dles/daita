@@ -28,6 +28,10 @@ export class Resolvable<T> {
     return this.value;
   }
 
+  reset() {
+    this.value = null;
+  }
+
   async close(): Promise<void> {
     await this.closeFn(this.value);
   }

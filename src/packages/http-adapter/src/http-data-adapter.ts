@@ -9,7 +9,7 @@ export class HttpDataAdapter implements RelationalDataAdapter {
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
     const http = await this.http.get();
     const result = await http.json<RelationalRawResult>({
-      path: '@daita/relational',
+      path: 'api/relational/execRaw',
       data: { sql, values },
       authorized: true,
     });
@@ -20,7 +20,7 @@ export class HttpDataAdapter implements RelationalDataAdapter {
   async exec(sql: any): Promise<RelationalRawResult> {
     const http = await this.http.get();
     const result = await http.json<RelationalRawResult>({
-      path: '@daita/relational',
+      path: 'api/relational/exec',
       data: { sql },
       authorized: true,
     });

@@ -1,4 +1,4 @@
-import { IwentModule } from '@daita/iwent/iwent-module';
+import { IwentModule } from '@daita/iwent';
 import { CreateTodoEvent } from './events/create-todo.event';
 import { CreateTodoHandler } from './handlers/create-todo.handler';
 import { CompleteTodoEvent } from './events/complete-todo.event';

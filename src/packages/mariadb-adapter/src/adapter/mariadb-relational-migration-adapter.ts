@@ -27,7 +27,8 @@ import { RelationalTransactionClient } from '@daita/relational';
 
 export class MariadbRelationalMigrationAdapter
   extends MariadbRelationalTransactionAdapter
-  implements RelationalMigrationAdapter<MariadbSql> {
+  implements RelationalMigrationAdapter<MariadbSql>
+{
   private storage = new MigrationStorage({
     idType: { type: 'string', size: 255 },
     transactionClient: new RelationalTransactionClient(this),
@@ -39,6 +40,12 @@ export class MariadbRelationalMigrationAdapter
       await this.applyMigrationPlan(client, migrationPlan);
       await this.storage.add(client, schema, migrationPlan.migration);
     });
+  }
+
+  async remove(): Promise<void> {
+    await this.pool.close();
+    // TODO
+    await this.pool.reset();
   }
 
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {

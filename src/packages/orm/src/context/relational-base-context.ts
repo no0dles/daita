@@ -1,5 +1,4 @@
 import { RelationalClient } from '@daita/relational';
-import { OrmRelationalSchema } from '../schema/orm-relational-schema';
 import { RelationalRawResult } from '@daita/relational';
 import { RelationalDataAdapter } from '@daita/relational';
 import { MigrationTree } from '../migration/migration-tree';

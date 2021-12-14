@@ -1,9 +1,6 @@
 import { isKind } from './is-kind';
 
-export function isExactKind<T>(
-  val: any,
-  props: (keyof Required<T>)[],
-): val is T {
+export function isExactKind<T>(val: any, props: (keyof Required<T>)[]): val is T {
   if (!val) {
     return false;
   }

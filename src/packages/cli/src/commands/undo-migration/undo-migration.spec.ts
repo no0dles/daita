@@ -1,6 +1,6 @@
-import { setupEnv } from '@daita/testing';
 import { undoMigration } from './undo-migration';
 import { addMigration } from '../add-migration/add-migration';
+import { setupEnv } from '@daita/testing';
 
 describe('cli/commands/migration-undo', () => {
   it(
@@ -8,6 +8,7 @@ describe('cli/commands/migration-undo', () => {
     setupEnv(
       'undo-migration',
       async (ctx) => {
+        await ctx.linkNodeModules();
         await undoMigration({ cwd: ctx.cwd });
         await ctx.exists('src/migrations');
         await ctx.contains('src/migrations', ['202016152817-init.ts']);
@@ -21,6 +22,7 @@ describe('cli/commands/migration-undo', () => {
     setupEnv(
       'add-undo-migration',
       async (ctx) => {
+        await ctx.linkNodeModules();
         await addMigration('init', { cwd: ctx.cwd });
         await undoMigration({ cwd: ctx.cwd });
         await ctx.exists('src/migrations');

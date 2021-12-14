@@ -1,5 +1,5 @@
-import { setupEnv } from '@daita/testing';
 import { addMigration } from './add-migration';
+import { setupEnv } from '@daita/testing';
 
 describe('cli/commands/migration:add', () => {
   it(
@@ -7,6 +7,7 @@ describe('cli/commands/migration:add', () => {
     setupEnv(
       'add-migration',
       async (ctx) => {
+        await ctx.linkNodeModules();
         await addMigration('init', { cwd: ctx.cwd });
         await ctx.exists('src/migrations');
         await ctx.exists('src/migrations', /[0-9]+\-init.ts/);
@@ -20,6 +21,7 @@ describe('cli/commands/migration:add', () => {
     setupEnv(
       'add-inline-migration',
       async (ctx) => {
+        await ctx.linkNodeModules();
         await addMigration('second', { cwd: ctx.cwd });
         await ctx.exists('src/migrations');
         await ctx.exists('src/migrations', /[0-9]+\-second.ts/);
@@ -33,6 +35,7 @@ describe('cli/commands/migration:add', () => {
     setupEnv(
       'add-empty-migration',
       async (ctx) => {
+        await ctx.linkNodeModules();
         await addMigration('second', { cwd: ctx.cwd });
         await ctx.exists('src/migrations');
         await ctx.notExists('src/migrations', /[0-9]+\-second.ts/);
@@ -46,6 +49,7 @@ describe('cli/commands/migration:add', () => {
     setupEnv(
       'add-second-migration',
       async (ctx) => {
+        await ctx.linkNodeModules();
         await addMigration('second', { cwd: ctx.cwd });
         await ctx.exists('src/migrations');
         await ctx.exists('src/migrations', /[0-9]+\-second.ts/);

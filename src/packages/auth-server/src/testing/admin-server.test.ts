@@ -4,7 +4,7 @@ import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { getServer, HttpServerApp } from '@daita/node';
 import { createAuthApp } from '../app';
 import { createAuthAdminApp } from '../admin-app';
-import { createDefaultUser, createDefaultUserPool } from '../../../testing/auth-test';
+import { createDefaultUser, createDefaultUserPool } from './auth-test';
 
 export async function createTestAdminServer<TOptions>(options: {
   adapter: RelationalMigrationAdapterImplementation<any, TOptions>;

@@ -10,3 +10,4 @@ export * from './node';
 export * from './path.spec';
 export * from './path';
 export * from './random-port';
+export * from './file/index';

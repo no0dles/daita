@@ -1,0 +1,31 @@
+tasks:
+  install:
+    image: node:16-alpine
+    cmds:
+      - npm install
+    generates:
+      - node_modules
+    src:
+      - package.json
+      - package-lock.json
+
+  build:
+    image: node:16-alpine
+    deps: [install, daita:install, node:build, common:build, orm:build, relational:build, http-server:build, http-server-common:build]
+    cmds:
+      - npm run build
+    src:
+      - package.json
+      - tsconfig.json
+      - src
+    generates:
+      - dist
+
+references:
+  daita: ../../../build.yaml
+  node: ../node/build.yaml
+  common: ../common/build.yaml
+  orm: ../orm/build.yaml
+  relational: ../relational/build.yaml
+  http-server: ../http-server/build.yaml
+  http-server-common: ../http-server-common/build.yaml

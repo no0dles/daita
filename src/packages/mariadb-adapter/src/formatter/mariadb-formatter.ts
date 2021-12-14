@@ -3,6 +3,7 @@ import {
   AlterTableAddForeignKeyFormatter,
   AlterTableDropColumnFormatter,
   AlterTableDropConstraintFormatter,
+  CeilFormatter,
 } from '@daita/relational';
 import { Formatter } from '@daita/relational';
 import { CreateTableFormatter } from '@daita/relational';
@@ -15,6 +16,7 @@ import { ConcatFunctionFormatter } from '@daita/relational';
 import { LockTableFormatter } from './lock-table-formatter';
 import { LeastFormatter } from '@daita/relational';
 import { GreatestFormatter } from '@daita/relational';
+import { FloorFormatter } from '@daita/relational';
 
 export const mariadbFormatter = new Formatter();
 mariadbFormatter.extend(ansiFormatter);
@@ -31,3 +33,5 @@ mariadbFormatter.add(new ConcatFunctionFormatter());
 mariadbFormatter.add(new LockTableFormatter());
 mariadbFormatter.add(new LeastFormatter());
 mariadbFormatter.add(new GreatestFormatter());
+mariadbFormatter.add(new CeilFormatter());
+mariadbFormatter.add(new FloorFormatter());

@@ -1,0 +1,14 @@
+{
+  "version": "0.3.0-alpha.23",
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "body-parser": "^1.19.0",
+    "jose": "^2.0.3",
+    "jwt-decode": "^3.0.0",
+    "pg": "^8.4.2",
+    "mariadb": "^2.5.1",
+    "pg-connection-string": "^2.4.0",
+    "sqlite3": "^5.0.0"
+  }
+}

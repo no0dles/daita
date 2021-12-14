@@ -18,6 +18,18 @@ import { isSumDescription } from '../../function/aggregation/sum/sum-description
 import { isCountDescription } from '../../function/aggregation/count/count-description';
 import { isConcatDescription } from '../../function/string/concat/concat-description';
 import { isNowDescription } from '../../function/date/now/now-description';
+import {
+  isCeilDescription,
+  isDayOfMonthDescription,
+  isDayOfWeekDescription,
+  isDayOfYearDescription,
+  isHourDescription,
+  isMinuteDescription,
+  isMonthDescription,
+  isSecondDescription,
+  isWeekOfYearDescription,
+  isYearDescription,
+} from '../../function';
 
 export interface SelectSql<T> {
   select: T;
@@ -41,10 +53,20 @@ export const isSingleFieldSelect = (fields: any) =>
   isDivideDescription(fields) ||
   isLeastDescription(fields) ||
   isGreatestDescription(fields) ||
+  isCeilDescription(fields) ||
   isMinDescription(fields) ||
   isMaxDescription(fields) ||
   isAvgDescription(fields) ||
   isSumDescription(fields) ||
   isCountDescription(fields) ||
   isConcatDescription(fields) ||
-  isNowDescription(fields);
+  isNowDescription(fields) ||
+  isMonthDescription(fields) ||
+  isYearDescription(fields) ||
+  isWeekOfYearDescription(fields) ||
+  isDayOfMonthDescription(fields) ||
+  isDayOfWeekDescription(fields) ||
+  isDayOfYearDescription(fields) ||
+  isHourDescription(fields) ||
+  isMinuteDescription(fields) ||
+  isSecondDescription(fields);

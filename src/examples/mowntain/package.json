@@ -7,7 +7,13 @@
   },
   "dependencies": {
     "@daita/orm": "file:../../packages/orm",
+    "@daita/common": "file:../../packages/common",
     "@daita/sqlite-adapter": "file:../../packages/sqlite-adapter",
+    "@daita/mariadb-adapter": "file:../../packages/mariadb-adapter",
+    "@daita/pg-adapter": "file:../../packages/pg-adapter",
     "@daita/relational": "file:../../packages/relational"
+  },
+  "devDependencies": {
+    "@daita/testing": "file:../../tooling/testing"
   }
 }

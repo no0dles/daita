@@ -27,10 +27,12 @@ import { addTableForeignKeyAction } from '@daita/orm';
 import { dropTablePrimaryKeyAction } from '@daita/orm';
 import { Client } from '@daita/relational';
 import { RelationalTransactionClient } from '@daita/relational';
+import { dropDatabase, ensureDatabaseExists } from '../postgres.util';
 
 export class PostgresMigrationAdapter
   extends PostgresTransactionAdapter
-  implements RelationalMigrationAdapter<PostgresSql> {
+  implements RelationalMigrationAdapter<PostgresSql>
+{
   private readonly migrationStorage = new MigrationStorage({
     idType: { type: 'string' },
     transactionClient: new RelationalTransactionClient(this),
@@ -42,6 +44,14 @@ export class PostgresMigrationAdapter
 
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
     return this.migrationStorage.get(schema);
+  }
+
+  async remove(): Promise<void> {
+    const connectionString = await this.connectionString.get();
+    await this.client.close();
+    await dropDatabase(connectionString);
+    await ensureDatabaseExists(connectionString);
+    await this.client.reset();
   }
 
   private async applyMigrationPlan(client: Client<PostgresSql>, migrationPlan: MigrationPlan) {

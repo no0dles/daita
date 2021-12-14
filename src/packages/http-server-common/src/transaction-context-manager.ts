@@ -2,6 +2,7 @@ import { TransactionManager } from './transaction-manager';
 import { HttpServerRelationalOptions } from './http-server-options';
 import { TransactionClient } from '@daita/relational';
 import { TimeoutError } from '@daita/relational';
+import { AuthorizedTransactionContext, TransactionContext } from '@daita/orm';
 
 export class TransactionContextManager {
   private readonly transactionTimeout: number;
@@ -17,7 +18,7 @@ export class TransactionContextManager {
     }
   }
 
-  create(client: TransactionClient<any>, transactionId: string) {
+  create(client: TransactionContext<any> | AuthorizedTransactionContext<any>, transactionId: string) {
     if (this.transactions[transactionId]) {
       throw new Error('transaction already exists');
     }

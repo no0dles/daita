@@ -17,7 +17,7 @@
     "declarationMap": false,
     "esModuleInterop": true,
     "incremental": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "composite": true,
     "strict": true,
     "noImplicitAny": true,
@@ -27,8 +27,14 @@
       "@daita/common/*": ["../../../packages/common/src/*"],
       "@daita/sqlite-adapter": ["../../../packages/sqlite-adapter/src/index.ts"],
       "@daita/sqlite-adapter/*": ["../../../packages/sqlite-adapter/src/*"],
+      "@daita/mariadb-adapter": ["../../../packages/mariadb-adapter/src/index.ts"],
+      "@daita/mariadb-adapter/*": ["../../../packages/mariadb-adapter/src/*"],
+      "@daita/pg-adapter": ["../../../packages/pg-adapter/src/index.ts"],
+      "@daita/pg-adapter/*": ["../../../packages/pg-adapter/src/*"],
       "@daita/relational": ["../../../packages/relational/src/index.ts"],
       "@daita/relational/*": ["../../../packages/relational/src/*"],
+      "@daita/testing": ["../../../tooling/testing/src/index.ts"],
+      "@daita/testing/*": ["../../../tooling/testing/src/*"],
       "@daita/orm": ["../../../packages/orm/src/index.ts"],
       "@daita/orm/*": ["../../../packages/orm/src/*"]
     }
@@ -40,7 +46,15 @@
   },  {
     "path": "../../packages/sqlite-adapter"
   }, {
+    "path": "../../packages/pg-adapter"
+  }, {
+    "path": "../../packages/mariadb-adapter"
+  }, {
+    "path": "../../tooling/testing"
+  }, {
     "path": "../../packages/orm"
+  }, {
+    "path": "../../packages/common"
   }],
   "exclude": [
     "node_modules",

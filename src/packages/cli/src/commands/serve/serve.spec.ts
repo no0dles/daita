@@ -1,13 +1,11 @@
-import { setupEnv } from '@daita/testing';
-import { NodeHttp } from '../../../http-client-common/node-http';
 import { serve } from './serve';
 import { getPostgresDb, PostgresDb } from '@daita/pg-adapter';
 import { HttpTransactionAdapter } from '@daita/http-adapter';
 import { Resolvable } from '@daita/common';
-import { Http } from '../../../http-client-common/http';
 import { field, table } from '@daita/relational';
 import { equal } from '@daita/relational';
-import { User } from '@daita/testing';
+import { setupEnv } from '@daita/testing';
+import { NodeHttp, Http } from '@daita/http-client-common';
 
 describe('cli/commands/serve', () => {
   let postgresDb: PostgresDb;
@@ -21,6 +19,7 @@ describe('cli/commands/serve', () => {
     setupEnv(
       'serve',
       async (ctx) => {
+        await ctx.linkNodeModules();
         await ctx.replaceContent('daita.json', /postgres:\/\/localhost\/postgres/g, postgresDb.connectionString);
 
         const task = await serve({
@@ -48,11 +47,11 @@ describe('cli/commands/serve', () => {
             ),
           );
           const result = await client.exec({
-            update: table(User),
+            update: table('User'),
             set: {
               password: '1234',
             },
-            where: equal(field(User, 'username'), 'cli|test'),
+            where: equal(field(table('User'), 'username'), 'cli|test'),
           });
           expect(result.rowCount).toEqual(0);
         } finally {

@@ -5,11 +5,11 @@ const config: Config.InitialOptions = {
   transform: {
     '^.+\\.ts$': 'ts-jest',
   },
-  globals: {
-    'ts-jest': './tsconfig.json',
-  },
   testRegex: 'src/.*.spec.ts',
   testEnvironment: 'node',
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
+  coverageReporters: ['json', 'html', 'lcov'],
 };
 
 export default config;

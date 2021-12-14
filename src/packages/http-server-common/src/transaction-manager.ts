@@ -1,15 +1,14 @@
 import { ContextManager } from './context-manager';
-import { TransactionClient } from '@daita/relational';
 import { Debouncer } from '@daita/common';
 import { Defer } from '@daita/common';
-import { Client } from '@daita/relational';
 import { TimeoutError } from '@daita/relational';
+import { SqlClient, SqlTransactionClient } from '@daita/relational';
 
 export type TransactionResult = 'committed' | 'timeout' | 'rollback' | 'canceled';
 
 export class TransactionManager {
   private readonly commitDefer = new Defer<void>();
-  private readonly adapterDefer = new Defer<Client<any>>();
+  private readonly adapterDefer = new Defer<SqlClient>();
   private readonly resultDefer = new Defer<TransactionResult>();
   private readonly debouncer: Debouncer;
 
@@ -21,7 +20,7 @@ export class TransactionManager {
     return this.adapterDefer.promise.then(() => {});
   }
 
-  constructor(private client: TransactionClient<any>, private transactionTimeout: number) {
+  constructor(private client: SqlTransactionClient, private transactionTimeout: number) {
     this.debouncer = new Debouncer(() => this.timeout(), this.transactionTimeout);
     this.client
       .transaction(async (adapter) => {

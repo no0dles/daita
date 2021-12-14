@@ -17,22 +17,29 @@
     "declarationMap": false,
     "esModuleInterop": true,
     "incremental": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "composite": true,
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
+    "isolatedModules": true,
     "paths": {
       "@daita/common": ["../../common/src/index.ts"],
       "@daita/common/*": ["../../common/src/*"],
       "@daita/relational": ["../../relational/src/index.ts"],
       "@daita/relational/*": ["../../relational/src/*"],
+      "@daita/node": ["../../node/src/index.ts"],
+      "@daita/node/*": ["../../node/src/*"],
       "@daita/orm": ["../../orm/src/index.ts"],
       "@daita/orm/*": ["../../orm/src/*"],
+      "@daita/sqlite-adapter": ["../../sqlite-adapter/src/index.ts"],
+      "@daita/sqlite-adapter/*": ["../../sqlite-adapter/src/*"],
       "@daita/http-server": ["../../http-server/src/index.ts"],
       "@daita/http-server/*": ["../../http-server/src/*"],
       "@daita/http-server-common": ["../../http-server-common/src/index.ts"],
-      "@daita/http-server-common/*": ["../../http-server-common/src/*"]
+      "@daita/http-server-common/*": ["../../http-server-common/src/*"],
+      "@daita/http-client-common": ["../../http-client-common/src/index.ts"],
+      "@daita/http-client-common/*": ["../../http-client-common/src/*"]
     }
   },
   "references": [{
@@ -42,14 +49,18 @@
   }, {
     "path": "../orm"
   }, {
+    "path": "../node"
+  },{
     "path": "../http-server-common"
   }, {
+    "path": "../http-client-common"
+  }, {
     "path": "../http-server"
+  }, {
+    "path": "../sqlite-adapter"
   }],
   "exclude": [
     "node_modules",
-    "dist",
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts"
+    "dist"
   ]
 }

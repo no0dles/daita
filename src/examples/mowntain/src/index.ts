@@ -4,7 +4,6 @@ import { schema } from './schema';
 import { field, table } from '@daita/relational';
 import { Mountain } from './models/mountain';
 
-
 async function main() {
   const ctx = getContext(sqliteAdapter, { schema, memory: true });
 
@@ -12,7 +11,7 @@ async function main() {
 
   await ctx.insert({
     into: table(Mountain),
-    insert: { name: 'Zermat', id: 'zermat', prominence: 1000, cantonShortname: 'VS', elevation: 10 },
+    insert: { name: 'Zermatt', id: 'zermatt', prominence: 1000, cantonShortname: 'VS', elevation: 10 },
   });
 
   const result = await ctx.select({

@@ -1,6 +1,8 @@
 import { RelationalClient } from './relational-client';
-import { TransactionClient } from './transaction-client';
+import { AuthorizableTransactionClient, TransactionClient } from './transaction-client';
 import { RelationalTransactionAdapter } from '../adapter/relational-transaction-adapter';
+import { Rule } from '../permission';
+import { RelationalAuthorizableTransactionClient } from './relational-authorizable-transaction-client';
 
 export class RelationalTransactionClient extends RelationalClient implements TransactionClient<RelationalClient> {
   constructor(private transactionAdapter: RelationalTransactionAdapter<any>) {
@@ -15,5 +17,9 @@ export class RelationalTransactionClient extends RelationalClient implements Tra
 
   async close() {
     await this.transactionAdapter.close();
+  }
+
+  authorizable(rules: { id: string; rule: Rule }[]): AuthorizableTransactionClient<any> {
+    return new RelationalAuthorizableTransactionClient(this.transactionAdapter, rules);
   }
 }

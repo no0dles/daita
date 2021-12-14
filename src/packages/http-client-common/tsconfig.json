@@ -17,15 +17,16 @@
     "declarationMap": false,
     "esModuleInterop": true,
     "incremental": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "composite": true,
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
+    "isolatedModules": true,
     "paths": {
       "@daita/common": ["../../common/src/index.ts"],
-      "@daita/common/*": ["../../common/src/*"],
-    },
+      "@daita/common/*": ["../../common/src/*"]
+    }
   },
   "references": [{
     "path": "../common"

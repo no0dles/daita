@@ -9,7 +9,7 @@ import { AstError } from '../../ast/utils';
 import { AstKeywordValue } from '../../ast/ast-keyword-value';
 import { AstRegularExpressionLiteral } from '../../ast/ast-regular-expression-literal';
 import { AstPropertyAccessExpression } from '../../ast/ast-property-access-expression';
-import path from 'path';
+import { relative } from 'path';
 import { AstFunctionDeclaration } from '../../ast/ast-function-declaration';
 
 function convertFn(value: AstCallExpression) {
@@ -17,7 +17,7 @@ function convertFn(value: AstCallExpression) {
   if (!(type instanceof AstFunctionDeclaration)) {
     throw new AstError(value.node, 'expected function type');
   }
-  const requirePath = path.relative(__dirname, getJavascriptFilename(type.block.sourceFile.fileName));
+  const requirePath = relative(__dirname, getJavascriptFilename(type.block.sourceFile.fileName));
   const fn = require(requirePath)[value.methodName];
   const args: any[] = [];
   for (const arg of value.arguments) {

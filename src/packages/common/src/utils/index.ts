@@ -4,7 +4,6 @@ export * from './lock';
 export * from './defer';
 export * from './merge';
 export * from './sleep';
-export * from './base64';
 export * from './logger';
 export * from './defer';
 export * from './is-kind';

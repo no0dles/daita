@@ -1,0 +1,9 @@
+{
+  "name": "package-json",
+  "version": "1.0.0",
+  "dependencies": {
+    "@daita/orm": "0.0.0",
+    "@daita/cli": "0.0.0",
+    "@daita/pg-adapter": "0.0.0"
+  }
+}

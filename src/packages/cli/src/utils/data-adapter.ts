@@ -2,19 +2,13 @@ import { getGlobalConfig, getProjectConfig } from './config';
 import { HttpAdapterOptions } from '@daita/http-adapter';
 import { SqliteAdapterOptions } from '@daita/sqlite-adapter';
 import { PostgresAdapterOptions } from '@daita/pg-adapter';
-import path from 'path';
+import { join, relative } from 'path';
 import { MigrationContext } from '@daita/orm';
-import {
-  RelationalDataAdapterImplementation,
-  RelationalTransactionAdapterImplementation,
-} from '@daita/relational';
+import { RelationalDataAdapterImplementation, RelationalTransactionAdapterImplementation } from '@daita/relational';
 import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { MigrationTree } from '@daita/orm';
 import { getContext } from '@daita/orm';
-import {
-  HttpServerAuthorizationProvider,
-  HttpServerAuthorizationTokenEndpoint,
-} from '@daita/http-server-common';
+import { HttpServerAuthorizationProvider, HttpServerAuthorizationTokenEndpoint } from '@daita/http-server-common';
 import { UserPoolAlgorithm } from '@daita/auth-server';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;
@@ -80,9 +74,9 @@ function getAdapterImpl<T>(
 ): RelationalTransactionAdapterImplementation<any, any> &
   RelationalMigrationAdapterImplementation<any, any> &
   RelationalDataAdapterImplementation<any, any> {
-  const cwd = path.join(options?.cwd || process.cwd());
+  const cwd = join(options?.cwd || process.cwd());
   if (contextConfig.module) {
-    return require(path.relative(__dirname, path.join(cwd, contextConfig.module))).adapter;
+    return require(relative(__dirname, join(cwd, contextConfig.module))).adapter;
   } else {
     return require(defaultModule).adapter;
   }

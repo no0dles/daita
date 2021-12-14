@@ -30,12 +30,12 @@ describe('parse-relational-schema', () => {
   });
 
   it('should parse schema table names', () => {
-    expect(getTablesFromSchema(parsedSchema).map((t) => t.name)).toIncludeAllMembers([
-      'UserRole',
-      'Role',
-      'RolePermission',
+    expect(getTablesFromSchema(parsedSchema).map((t) => t.name)).toEqual([
       'User',
+      'Role',
       'Permission',
+      'UserRole',
+      'RolePermission',
     ]);
   });
 

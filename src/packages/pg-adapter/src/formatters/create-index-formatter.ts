@@ -10,7 +10,7 @@ export class CreateIndexFormatter implements FormatHandle<CreateIndexSql<any>> {
   }
 
   handle(param: CreateIndexSql<any>, ctx: FormatContext, formatter: Formatter): string {
-    return `CREATE INDEX${param.unique ? ' UNIQUE' : ''} ${ctx.escape(param.createIndex)} ON ${formatter.format(
+    return `CREATE${param.unique ? ' UNIQUE' : ''} INDEX ${ctx.escape(param.createIndex)} ON ${formatter.format(
       param.on,
       ctx,
     )} (${param.columns.map((col) => ctx.escape(col as string)).join(', ')})`;

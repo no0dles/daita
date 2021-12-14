@@ -2,18 +2,19 @@ import { UserEmailVerify } from './models/user-email-verify';
 import { UserRefreshToken } from './models/user-refresh-token';
 import { createAuthApp } from './app';
 import { authSchema } from './schema';
-import { createDefaultUserPool } from '../../testing/auth-test';
 import { field } from '@daita/relational';
 import { all } from '@daita/relational';
 import { table } from '@daita/relational';
 import { notEqual } from '@daita/relational';
-import { adapter } from '../sqlite-adapter';
 import { MigrationContext } from '@daita/orm';
-import { getServer, HttpServerApp } from '../node/testing/http-server';
 import { User } from './models/user';
 import { getContext } from '@daita/orm';
-import { NodeHttp } from '../http-client-common/node-http';
 import { equal } from '@daita/relational';
+import { getServer, HttpServerApp } from '@daita/node';
+import { NodeHttp } from '@daita/http-client-common';
+import 'jest-extended';
+import { adapter } from '@daita/sqlite-adapter';
+import { createDefaultUserPool } from './testing/auth-test';
 
 describe('app', () => {
   let app: HttpServerApp;
@@ -169,6 +170,6 @@ describe('app', () => {
       select: all(User),
       from: table(User),
     });
-    expect(user!.emailVerified).toBeTrue();
+    expect(user!.emailVerified).toBeTruthy();
   });
 });

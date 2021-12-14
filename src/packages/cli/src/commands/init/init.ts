@@ -1,12 +1,17 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { createLogger } from '@daita/common';
-import { create } from '@daita/create/create';
+import { create } from '@daita/create';
 import { popPath } from '@daita/node';
 
 const logger = createLogger({ package: 'cli', command: 'init' });
 
-export async function init(options: { cwd?: string; adapter?: string; skipInstall?: boolean; npmClient?: string }) {
+export async function init(options: {
+  cwd?: string;
+  adapter?: 'pg' | 'sqlite';
+  skipInstall?: boolean;
+  npmClient?: 'npm' | 'yarn' | 'none';
+}) {
   const projectDir = options.cwd || process.cwd();
   const { start, end } = popPath(projectDir);
 

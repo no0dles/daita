@@ -1,16 +1,29 @@
 {
   "name": "@daita/node",
   "version": "1.0.0",
+  "license": "MIT",
+  "homepage": "https://daita.ch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc -b",
+    "lint": "eslint src"
   },
   "dependencies": {
-    "@daita/common": "file:../common"
+    "@daita/common": "file:../common",
+    "dockerode": "^3.2.1",
+    "yaml": "^1.10.0"
   },
   "devDependencies": {
-    "typescript": "~4.0.5",
+    "@types/node": "^16.11.9",
+    "@types/dockerode": "^3.2.0",
     "@daita/http-client-common": "file:../http-client-common"
   }
 }

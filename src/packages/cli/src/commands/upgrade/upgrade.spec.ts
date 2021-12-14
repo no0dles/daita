@@ -1,5 +1,5 @@
-import { setupEnv } from '@daita/testing';
 import { upgrade } from './upgrade';
+import { setupEnv } from '@daita/testing';
 
 describe('cli/commands/upgrade', () => {
   it(

@@ -1,7 +1,6 @@
 import { SimpleFormatContext } from '@daita/relational';
 import { ValueType } from '@daita/relational';
 import { FormatDataType } from '@daita/relational';
-import { isJsonDescription } from '@daita/relational';
 
 export class SqliteFormatContext extends SimpleFormatContext {
   constructor() {
@@ -26,7 +25,8 @@ export class SqliteFormatContext extends SimpleFormatContext {
 
   appendValue(value: ValueType): string {
     if (value instanceof Date) {
-      this.values.push('DATE-' + value.toISOString());
+      const dateValue = value.toISOString();
+      this.values.push(dateValue);
     } else if (typeof value === 'object') {
       this.values.push('JSON-' + JSON.stringify(value));
     } else if (typeof value === 'boolean') {

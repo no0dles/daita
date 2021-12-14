@@ -1,15 +1,30 @@
 {
   "name": "@daita/http-adapter",
   "version": "1.0.0",
+  "license": "MIT",
+  "homepage": "https://daita.ch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc -b",
+    "lint": "eslint src"
   },
   "dependencies": {
-    "@daita/common": "file:../common"
+    "@daita/common": "file:../common",
+    "@daita/orm": "file:../orm",
+    "@daita/relational": "file:../relational",
+    "@daita/http-client-common": "file:../http-client-common"
   },
   "devDependencies": {
-    "typescript": "~4.0.5"
+    "@daita/auth-server": "file:../auth-server",
+    "@daita/http-server": "file:../http-server",
+    "@daita/node": "file:../node"
   }
 }

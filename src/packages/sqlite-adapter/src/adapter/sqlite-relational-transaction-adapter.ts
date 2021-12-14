@@ -8,7 +8,8 @@ import { Database } from 'sqlite3';
 
 export class SqliteRelationalTransactionAdapter
   extends SqliteRelationalDataAdapter
-  implements RelationalTransactionAdapter<SqliteSql> {
+  implements RelationalTransactionAdapter<SqliteSql>
+{
   constructor(protected connectionString: Resolvable<string>) {
     super(
       new Resolvable(

@@ -15,9 +15,10 @@ import { getRandomCode } from './modules/random';
 import { UserToken } from './models/user-token';
 import { UserRole } from './models/user-role';
 import { Role } from './models/role';
+import { TransactionContext } from '@daita/orm';
 
 export async function createToken(
-  client: TransactionClient<any>,
+  client: TransactionClient<any> | TransactionContext<any>,
   options: { userPoolId: string; username: string; name: string; expiresAt?: Date },
 ) {
   const token = await getRandomCode();
@@ -50,7 +51,10 @@ export async function createToken(
   return `${options.userPoolId}:${token}`;
 }
 
-export async function seedRoles(client: TransactionClient<any>, role: ExcludeNonPrimitive<Role>) {
+export async function seedRoles(
+  client: TransactionClient<any> | TransactionContext<any>,
+  role: ExcludeNonPrimitive<Role>,
+) {
   const existingRole = await client.selectFirst({
     select: all(Role),
     from: table(Role),
@@ -66,7 +70,10 @@ export async function seedRoles(client: TransactionClient<any>, role: ExcludeNon
   return true;
 }
 
-export async function seedUserRole(client: TransactionClient<any>, userRole: ExcludeNonPrimitive<UserRole>) {
+export async function seedUserRole(
+  client: TransactionClient<any> | TransactionContext<any>,
+  userRole: ExcludeNonPrimitive<UserRole>,
+) {
   const existingUserRole = await client.selectFirst({
     select: all(UserRole),
     from: table(UserRole),
@@ -87,7 +94,7 @@ export async function seedUserRole(client: TransactionClient<any>, userRole: Exc
 }
 
 export async function seedUserPool(
-  client: TransactionClient<any>,
+  client: TransactionClient<any> | TransactionContext<any>,
   userPool: ExcludeNonPrimitive<UserPool>,
 ): Promise<boolean> {
   const existingUserPool = await client.selectFirst({
@@ -106,7 +113,10 @@ export async function seedUserPool(
   return true;
 }
 
-export async function seedPoolUser(client: TransactionClient<any>, user: ExcludeNonPrimitive<User>): Promise<boolean> {
+export async function seedPoolUser(
+  client: TransactionClient<any> | TransactionContext<any>,
+  user: ExcludeNonPrimitive<User>,
+): Promise<boolean> {
   const existingUser = await client.selectFirst({
     select: all(User),
     from: table(User),
@@ -139,7 +149,11 @@ export async function seedPoolUser(client: TransactionClient<any>, user: Exclude
   return true;
 }
 
-export async function seedUserPoolCors(client: TransactionClient<any>, userPoolId: string, cors: string[]) {
+export async function seedUserPoolCors(
+  client: TransactionClient<any> | TransactionContext<any>,
+  userPoolId: string,
+  cors: string[],
+) {
   const existingCors = await client.select({
     select: all(UserPoolCors),
     from: table(UserPoolCors),

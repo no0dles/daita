@@ -11,9 +11,9 @@ import { shell } from '@daita/node';
 
 export interface CreateOptions {
   cwd?: string;
-  npmClient?: string;
+  npmClient?: 'npm' | 'yarn' | 'none';
   skipInstall?: boolean;
-  adapter?: string;
+  adapter?: 'pg' | 'sqlite';
   projectName?: string;
 }
 
@@ -36,7 +36,11 @@ export interface SetupSqliteOptions {
 }
 
 export async function create(options: CreateOptions) {
-  const prompts = inquirer.prompt([
+  const prompts = inquirer.prompt<{
+    projectName: string;
+    adapter: 'pg' | 'sqlite';
+    npmClient: 'npm' | 'yarn' | 'none';
+  }>([
     {
       type: 'input',
       name: 'projectName',
@@ -55,6 +59,13 @@ export async function create(options: CreateOptions) {
       name: 'adapter',
       choices: ['pg', 'sqlite'],
       when: !options.adapter,
+    },
+    {
+      type: 'list',
+      message: 'Which package manager do you want?',
+      name: 'npmClient',
+      choices: ['npm', 'yarn', 'none'],
+      when: !options.npmClient,
     },
   ]);
 

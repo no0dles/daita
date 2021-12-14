@@ -1,17 +1,28 @@
 {
   "name": "@daita/sqlite-adapter",
   "version": "1.0.0",
+  "license": "MIT",
+  "homepage": "https://daita.ch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc -b",
+    "lint": "eslint src"
   },
   "dependencies": {
+    "sqlite3": "^5.0.2",
     "@daita/common": "file:../common",
     "@daita/orm": "file:../orm",
     "@daita/relational": "file:../relational"
   },
   "devDependencies": {
-    "typescript": "~4.0.5"
+    "@types/sqlite3": "^3.1.7"
   }
 }
