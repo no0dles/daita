@@ -1,8 +1,8 @@
-import express from 'express';
+import express = require('express');
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
 import { authMiddleware } from './middlewares/auth-middleware';
-import cors from 'cors';
+import cors = require('cors');
 import { relationalRoute } from '@daita/http-server';
 import { adminTokenRoute } from './routes/admin-token';
 import { Server } from 'http';

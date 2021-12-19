@@ -6,6 +6,7 @@ import { RelationalDataAdapter } from '@daita/relational';
 import { ConnectionError } from '@daita/relational';
 import { Resolvable } from '@daita/common';
 import { createLogger } from '@daita/common';
+import { handleTimeout } from '@daita/common';
 
 export interface PostgresNotificationSubscriber {
   (msg: string | undefined): void;
@@ -14,10 +15,32 @@ export interface PostgresNotificationSubscriber {
 const logger = createLogger({ package: 'pg-adapter' });
 
 export class PostgresTransactionAdapter
-  extends PostgresDataAdapter<Pool>
-  implements RelationalTransactionAdapter<PostgresSql> {
+  extends PostgresDataAdapter
+  implements RelationalTransactionAdapter<PostgresSql>
+{
   private closed = false;
-  private pool: Pool | null = null;
+  //private pool: Pool | null = null;
+  private poolResolvable = new Resolvable<Pool>(
+    async () => {
+      const connectionString = await this.connectionString.get();
+      const pool = new Pool({
+        connectionString,
+        connectionTimeoutMillis: 10000,
+        keepAlive: true,
+        max: 20,
+        idleTimeoutMillis: 10000,
+        application_name: 'daita',
+      });
+      pool.on('error', (e) => {
+        logger.error(e, { client: 'pool' });
+      });
+      return pool;
+    },
+    (pool) => {
+      pool?.end();
+      return this.connectionString.close();
+    },
+  );
 
   private notificationPoolClient: PoolClient | undefined = undefined;
   private notificationPoolClientAdapter: RelationalDataAdapter<PostgresSql> | undefined = undefined;
@@ -25,26 +48,12 @@ export class PostgresTransactionAdapter
 
   constructor(protected connectionString: Resolvable<string>) {
     super(
-      new Resolvable(
+      new Resolvable<PoolClient>(
         async () => {
-          const connectionString = await this.connectionString.get();
-          this.pool = new Pool({
-            connectionString,
-            connectionTimeoutMillis: 10000,
-            keepAlive: true,
-            max: 20,
-            idleTimeoutMillis: 10000,
-            application_name: 'daita',
-          });
-          this.pool.on('error', (e) => {
-            logger.error(e, { client: 'pool' });
-          });
-          return this.pool;
+          const pool = await this.poolResolvable.get();
+          return pool.connect();
         },
-        () => {
-          this.pool?.end();
-          return this.connectionString.close();
-        },
+        (client) => client?.release(),
       ),
     );
   }
@@ -61,12 +70,14 @@ export class PostgresTransactionAdapter
         this.notificationPoolClientAdapter = undefined;
       }
 
-      const pool = await this.client.get();
+      const pool = await this.poolResolvable.get();
       this.notificationPoolClient = await pool.connect();
       this.notificationPoolClient.on('error', (e) => {
         logger.error(e, { client: 'notification' });
       });
-      this.notificationPoolClientAdapter = new PostgresDataAdapter(new Resolvable(this.notificationPoolClient));
+      this.notificationPoolClientAdapter = new PostgresDataAdapter(
+        new Resolvable<PoolClient>(this.notificationPoolClient),
+      );
       this.notificationPoolClient.on('notification', (msg) => {
         const subscribers = this.notificationSubscribers[msg.channel] ?? [];
         for (const subscriber of subscribers) {
@@ -127,13 +138,13 @@ export class PostgresTransactionAdapter
     await this.client.close();
   }
 
-  async transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
-    const pool = await this.client.get();
+  async transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>, timeout?: number): Promise<T> {
+    const pool = await this.poolResolvable.get();
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
       const adapter = new PostgresDataAdapter(new Resolvable(client, () => client.release()));
-      const result = await action(adapter);
+      const result = await handleTimeout(() => action(adapter), timeout);
       await client.query('COMMIT');
       return result;
     } catch (e) {

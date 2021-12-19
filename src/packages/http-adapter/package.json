@@ -1,6 +1,6 @@
 {
   "name": "@daita/http-adapter",
-  "version": "1.0.0",
+  "version": "0.3.0-alpha.45",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -17,14 +17,9 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@daita/common": "file:../common",
-    "@daita/orm": "file:../orm",
-    "@daita/relational": "file:../relational",
-    "@daita/http-client-common": "file:../http-client-common"
-  },
-  "devDependencies": {
-    "@daita/auth-server": "file:../auth-server",
-    "@daita/http-server": "file:../http-server",
-    "@daita/node": "file:../node"
+    "@daita/common": "0.3.0-alpha.45",
+    "@daita/orm": "0.3.0-alpha.45",
+    "@daita/relational": "0.3.0-alpha.45",
+    "@daita/http": "0.3.0-alpha.45"
   }
 }

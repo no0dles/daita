@@ -1,7 +1,9 @@
 import { testContext } from '../../../testing';
 
 describe('relational/sql/ddl/create-schema', () => {
-  const ctxs = testContext.contexts();
+  const ctxs = testContext.contexts({
+    createSchema: 'test',
+  });
 
   describe.each(ctxs)('%s', (ctx) => {
     beforeAll(async () => {

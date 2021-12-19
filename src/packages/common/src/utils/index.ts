@@ -23,3 +23,6 @@ export * from './environment';
 export * from './is-exact-kind';
 export * from './random-string';
 export * from './traverse-object';
+export * from './timeout';
+export * from './timeout-error';
+export * from './countdown';

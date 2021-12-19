@@ -33,7 +33,7 @@ export class RelationalMigrationContext extends RelationalTransactionContext imp
   }
 
   migrate(options?: MigrationContextUpdateOptions): Promise<void> {
-    return migrate(this.migrationAdapter, this.migrationTree);
+    return migrate(this.migrationAdapter, this.migrationTree, options);
   }
 
   needsMigration(options?: MigrationContextUpdateOptions): Promise<boolean> {

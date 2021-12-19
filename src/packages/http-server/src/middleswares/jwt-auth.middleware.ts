@@ -1,12 +1,12 @@
-import { HttpServerAuthorizationProvider } from '@daita/http-server-common';
 import { HttpError } from '../http-error';
 import { NextFunction, Request, Response } from 'express';
 import { createLogger } from '@daita/common';
 import jose from 'jose';
 import { Resolvable } from '@daita/common';
-import { NodeHttp } from '@daita/http-client-common';
 import { parseJwtPayload } from '@daita/common';
-import { hasRequestUser, setRequestUser } from '@daita/http-server-common';
+import { HttpServerAuthorizationProvider } from '../http-server-authorization';
+import { hasRequestUser, setRequestUser } from '../get-request-user';
+import { NodeHttp } from '@daita/node';
 
 const logger = createLogger({ package: 'http-server', middleware: 'jwt-auth' });
 export function jwtAuth(providers: HttpServerAuthorizationProvider[]) {

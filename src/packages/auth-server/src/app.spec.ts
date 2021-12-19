@@ -10,9 +10,8 @@ import { MigrationContext } from '@daita/orm';
 import { User } from './models/user';
 import { getContext } from '@daita/orm';
 import { equal } from '@daita/relational';
-import { getServer, HttpServerApp } from '@daita/node';
-import { NodeHttp } from '@daita/http-client-common';
-import 'jest-extended';
+import { getServer, HttpServerApp } from '@daita/testing';
+import { NodeHttp } from '@daita/node';
 import { adapter } from '@daita/sqlite-adapter';
 import { createDefaultUserPool } from './testing/auth-test';
 
@@ -140,7 +139,7 @@ describe('app', () => {
       expect(res.statusCode).toEqual(200);
       expect(res.data.token).not.toBeNull();
       expect(res.data.token).not.toBeUndefined();
-      expect(res.data.token).toStartWith('default:');
+      expect(res.data.token).toContain('default:');
     });
   });
 

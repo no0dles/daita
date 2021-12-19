@@ -17,15 +17,15 @@ describe('relational/sql/function/number/least', () => {
         select: ceil(field(Mountain, 'prominence')),
         from: table(Mountain),
       });
-      expect(result).toEqual(10);
+      expect(result).toEqual(1043);
     });
 
-    it('should get value and null', async () => {
+    it('should get null if value is null', async () => {
       const result = await ctx.selectFirst({
         select: ceil(field(Mountain, 'ascents')),
         from: table(Mountain),
       });
-      expect(result).toEqual(20);
+      expect(result).toEqual(null);
     });
   });
 });

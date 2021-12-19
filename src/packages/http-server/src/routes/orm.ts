@@ -1,6 +1,6 @@
-import { HttpServerOptions } from '@daita/http-server-common';
 import { Router } from 'express';
-import { getRequestUser } from '@daita/http-server-common';
+import { HttpServerOptions } from '../http-server-options';
+import { getRequestUser } from '../get-request-user';
 
 export function ormRoute(options: HttpServerOptions) {
   const router = Router();

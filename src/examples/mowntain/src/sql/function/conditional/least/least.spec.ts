@@ -17,7 +17,7 @@ describe('relational/sql/function/number/least', () => {
         select: least(field(Mountain, 'prominence'), 20),
         from: table(Mountain),
       });
-      expect(result).toEqual(10);
+      expect(result).toEqual(20);
     });
 
     it('should get null and value', async () => {

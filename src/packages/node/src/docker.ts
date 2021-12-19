@@ -1,4 +1,5 @@
-import Docker, { Container } from 'dockerode';
+import { Container } from 'dockerode';
+import Docker = require('dockerode');
 import { Defer } from '@daita/common';
 
 export interface DockerCompose {

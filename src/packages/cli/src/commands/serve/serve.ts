@@ -12,7 +12,7 @@ import { AstContext } from '../../ast/ast-context';
 import { Defer } from '@daita/common';
 import { isTransactionContext } from '@daita/orm';
 import { createLogger } from '@daita/common';
-import { HttpServerOptions } from '@daita/http-server-common';
+import { HttpServerOptions } from '@daita/http-server';
 import { authSchema } from '@daita/auth-server';
 
 const logger = createLogger({ package: 'cli', command: 'serve' });

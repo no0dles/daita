@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { UserPoolCors } from '../models/user-pool-cors';
-import cors from 'cors';
+import cors = require('cors');
 import { field } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';

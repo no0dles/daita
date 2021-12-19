@@ -1,6 +1,6 @@
 import { addMigration } from '../add-migration/add-migration';
 import { applyMigration } from './apply-migration';
-import { getPostgresDb, PostgresDb } from '@daita/pg-adapter';
+import { getPostgresDb, PostgresDb } from '@daita/testing';
 import { setupEnv } from '@daita/testing';
 
 describe('cli/commands/migration:apply', () => {

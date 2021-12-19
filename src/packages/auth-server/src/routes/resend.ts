@@ -1,4 +1,4 @@
-import * as express from 'express';
+import { Router } from 'express';
 import { User } from '../models/user';
 import { UserEmailVerify } from '../models/user-email-verify';
 import { getRandomCode } from '../modules/random';
@@ -8,10 +8,10 @@ import { and } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { TransactionContext } from '@daita/orm';
-import { getRequiredRequestUserProp } from '@daita/http-server-common';
+import { getRequiredRequestUserProp } from '@daita/http-server';
 
 export function resendRoute(ctx: TransactionContext<any>) {
-  const router = express.Router({ mergeParams: true });
+  const router = Router({ mergeParams: true });
 
   router.use(authMiddleware);
   router.post('/', async (req, res, next) => {

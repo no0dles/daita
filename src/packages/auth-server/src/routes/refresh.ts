@@ -1,4 +1,4 @@
-import * as express from 'express';
+import { Router } from 'express';
 import { UserRefreshToken } from '../models/user-refresh-token';
 import { getRandomCode } from '../modules/random';
 import { User } from '../models/user';
@@ -26,7 +26,7 @@ const invalidRefreshTokenCounter = new Counter({
 });
 
 export function refreshRoute(ctx: TransactionContext<any>) {
-  const router = express.Router({ mergeParams: true });
+  const router = Router({ mergeParams: true });
 
   router.post('/', async (req, res, next) => {
     try {

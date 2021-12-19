@@ -15,11 +15,17 @@ export interface TestContext {
     options: MigrationContextOptions & TOptions,
   ): TestContext;
 
-  contexts(): TextContext<any>[];
+  contexts(sql?: any): TextContext<any>[];
+}
+
+export interface TestContextSetup {
+  remove: boolean;
+  migrate: boolean;
+  seed: boolean;
 }
 
 export interface TextContext<T> extends MigrationContext<T> {
-  setup(): Promise<void>;
+  setup(options?: Partial<TestContextSetup>): Promise<void>;
 }
 
 export function getTestContext(): TestContext {
@@ -33,21 +39,35 @@ export function getTestContext(): TestContext {
       seeds.push({ table, value });
       return this;
     },
-    contexts(): TextContext<any>[] {
-      return adapterConfigs.map((config) => {
-        const ctx = getContext(config.adapterImplementation, config.options) as TextContext<any>;
-        ctx.setup = async () => {
-          await ctx.remove();
-          await ctx.migrate();
-          for (const seed of seeds) {
-            await ctx.insert({
-              insert: seed.value,
-              into: table(seed.table),
-            });
+    contexts(sql?: any): TextContext<any>[] {
+      return adapterConfigs
+        .map((config) => {
+          const ctx = getContext(config.adapterImplementation, config.options) as TextContext<any>;
+          ctx.setup = async (options?: Partial<TestContextSetup>) => {
+            if (!options || options.remove === undefined || options.remove) {
+              await ctx.remove();
+            }
+            if (!options || options.migrate === undefined || options.migrate) {
+              await ctx.migrate();
+            }
+            if (!options || options.seed === undefined || options.seed) {
+              for (const seed of seeds) {
+                await ctx.insert({
+                  insert: seed.value,
+                  into: table(seed.table),
+                });
+              }
+            }
+          };
+          return ctx;
+        })
+        .filter((ctx) => {
+          if (sql) {
+            return ctx.supportsQuery(sql);
+          } else {
+            return true;
           }
-        };
-        return ctx;
-      });
+        });
     },
     addAdapter<TQuery, TOptions>(
       adapterImplementation: RelationalMigrationAdapterImplementation<TQuery, TOptions>,

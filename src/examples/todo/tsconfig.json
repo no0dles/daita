@@ -21,17 +21,7 @@
     "composite": true,
     "strict": true,
     "noImplicitAny": true,
-    "noImplicitThis": true,
-    "paths": {
-      "@daita/common": ["../../../packages/common/src/index.ts"],
-      "@daita/common/*": ["../../../packages/common/src/*"],
-      "@daita/iwent": ["../../../packages/iwent/src/index.ts"],
-      "@daita/iwent/*": ["../../../packages/iwent/src/*"],
-      "@daita/relational": ["../../../packages/relational/src/index.ts"],
-      "@daita/relational/*": ["../../../packages/relational/src/*"],
-      "@daita/orm": ["../../../packages/orm/src/index.ts"],
-      "@daita/orm/*": ["../../../packages/orm/src/*"]
-    }
+    "noImplicitThis": true
   },
   "references": [{
     "path": "../../packages/iwent"

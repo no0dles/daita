@@ -22,17 +22,18 @@
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "paths": {
-      "@daita/common": ["../../common/src/index.ts"],
-      "@daita/common/*": ["../../common/src/*"],
-      "@daita/http-client-common": ["../../http-client-common/src/index.ts"],
-      "@daita/http-client-common/*": ["../../http-client-common/src/*"],
-    },
+    "isolatedModules": true
   },
   "references": [{
     "path": "../common"
   }, {
-    "path": "../http-client-common"
+    "path": "../http"
+  }, {
+    "path": "../http-adapter"
+  }, {
+    "path": "../orm"
+  }, {
+    "path": "../relational"
   }],
   "exclude": [
     "node_modules",

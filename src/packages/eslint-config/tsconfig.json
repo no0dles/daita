@@ -22,8 +22,7 @@
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "paths": {
-    }
+    "isolatedModules": true
   },
   "references": [],
   "exclude": [

@@ -1,4 +1,4 @@
-import * as express from 'express';
+import { Router } from 'express';
 import { User } from '../models/user';
 import { UserPool, UserPoolAlgorithm } from '../models/user-pool';
 import { UserRefreshToken } from '../models/user-refresh-token';
@@ -30,7 +30,7 @@ const successfullLoginCounter = new Counter({
 });
 
 export function loginRoute(ctx: TransactionContext<any>) {
-  const router = express.Router({ mergeParams: true });
+  const router = Router({ mergeParams: true });
 
   router.post('/', async (req, res, next) => {
     try {

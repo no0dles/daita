@@ -22,17 +22,7 @@
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "isolatedModules": true,
-    "paths": {
-      "@daita/common": ["../../common/src/index.ts"],
-      "@daita/common/*": ["../../common/src/*"],
-      "@daita/node": ["../../node/src/index.ts"],
-      "@daita/node/*": ["../../node/src/*"],
-      "@daita/orm": ["../../orm/src/index.ts"],
-      "@daita/orm/*": ["../../orm/src/*"],
-      "@daita/relational": ["../../relational/src/index.ts"],
-      "@daita/relational/*": ["../../relational/src/*"]
-    }
+    "isolatedModules": true
   },
   "references": [{
     "path": "../common"

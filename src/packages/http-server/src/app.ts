@@ -5,10 +5,10 @@ import * as bodyParser from 'body-parser';
 import { jwtAuth } from './middleswares/jwt-auth.middleware';
 import { errorMiddleware } from './middleswares/error.middleware';
 import { tokenAuth } from './middleswares/token-auth.middleware';
-import { HttpServerOptions } from '@daita/http-server-common';
 import { Server } from 'http';
 import { createLogger } from '@daita/common';
 import { ormRoute } from './routes/orm';
+import { HttpServerOptions } from './http-server-options';
 
 export function createHttpServerApp(options: HttpServerOptions, port: number) {
   const app = express();

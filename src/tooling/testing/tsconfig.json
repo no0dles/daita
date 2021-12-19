@@ -21,16 +21,7 @@
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "paths": {
-      "@daita/common": ["../../../packages/common/src/index.ts"],
-      "@daita/common/*": ["../../../packages/common/src/*"],
-      "@daita/relational": ["../../../packages/relational/src/index.ts"],
-      "@daita/relational/*": ["../../../packages/relational/src/*"],
-      "@daita/orm": ["../../../packages/orm/src/index.ts"],
-      "@daita/orm/*": ["../../../packages/orm/src/*"],
-      "@daita/node": ["../../../packages/node/src/index.ts"],
-      "@daita/node/*": ["../../../packages/node/src/*"]
-    }
+    "isolatedModules": true
   },
   "references": [{
     "path": "../../packages/common"
@@ -40,6 +31,18 @@
     "path": "../../packages/orm"
   }, {
     "path": "../../packages/node"
+  }, {
+    "path": "../../packages/http"
+  }, {
+    "path": "../../packages/http-server"
+  }, {
+    "path": "../../packages/http-adapter"
+  }, {
+    "path": "../../packages/sqlite-adapter"
+  }, {
+    "path": "../../packages/pg-adapter"
+  }, {
+    "path": "../../packages/mariadb-adapter"
   }],
   "exclude": [
     "node_modules",

@@ -1,6 +1,6 @@
 {
   "name": "@daita/relational",
-  "version": "1.0.0",
+  "version": "0.3.0-alpha.45",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -17,6 +17,6 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@daita/common": "file:../common"
+    "@daita/common": "0.3.0-alpha.45"
   }
 }

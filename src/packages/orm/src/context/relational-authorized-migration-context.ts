@@ -19,10 +19,6 @@ export class RelationalAuthorizedMigrationContext
     super(migrationAdapter, migrationTree, auth);
   }
 
-  isAuthorized(sql: any): Promise<boolean> {
-    return Promise.resolve(false);
-  }
-
   forSchema(migrationTree: MigrationTree | OrmRelationalSchema): AuthorizedMigrationContext<any> {
     if (migrationTree instanceof MigrationTree) {
       return new RelationalAuthorizedMigrationContext(
@@ -48,6 +44,6 @@ export class RelationalAuthorizedMigrationContext
   }
 
   async migrate(options?: MigrationContextUpdateOptions): Promise<void> {
-    return migrate(this.migrationAdapter, this.migrationTree);
+    return migrate(this.migrationAdapter, this.migrationTree, options);
   }
 }

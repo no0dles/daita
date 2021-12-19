@@ -1,7 +1,7 @@
 import * as express from 'express';
 import { HttpError } from '../http-error';
 import { RuleError } from '@daita/orm';
-import { TimeoutError } from '@daita/relational';
+import { TimeoutError } from '@daita/common';
 import { Logger } from '@daita/common';
 
 export function errorMiddleware(logger: Logger) {

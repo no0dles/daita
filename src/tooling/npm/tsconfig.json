@@ -22,14 +22,7 @@
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "paths": {
-      "@daita/common": ["../../../packages/common/src/index.ts"],
-      "@daita/common/*": ["../../../packages/common/src/*"],
-      "@daita/node": ["../../../packages/node/src/index.ts"],
-      "@daita/node/*": ["../../../packages/node/src/*"],
-      "@daita/testing": ["../../testing/src/index.ts"],
-      "@daita/testing/*": ["../../testing/src/*"]
-    }
+    "isolatedModules": true
   },
   "references": [{
     "path": "../../packages/common"

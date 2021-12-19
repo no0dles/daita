@@ -5,7 +5,7 @@ import { AuthorizedContext } from './authorized-context';
 
 export interface TransactionContext<T> extends Context<T> {
   authorize(auth: RuleContext): AuthorizedTransactionContext<T>;
-  transaction<R>(action: (trx: Context<T>) => Promise<R>): Promise<R>;
+  transaction<R>(action: (trx: Context<T>) => Promise<R>, timeout?: number): Promise<R>;
 }
 
 export const isTransactionContext = (val: Context<any> | TransactionContext<any>): val is MigrationContext<any> =>

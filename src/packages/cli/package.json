@@ -1,6 +1,6 @@
 {
   "name": "@daita/cli",
-  "version": "1.0.0",
+  "version": "0.3.0-alpha.45",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -26,24 +26,23 @@
     "chokidar": "^3.4.3",
     "cli-ux": "^5.5.0",
     "commander": "^6.2.0",
-    "@daita/relational": "file:../relational",
-    "@daita/orm": "file:../orm",
-    "@daita/node": "file:../node",
-    "@daita/common": "file:../common"
+    "@daita/relational": "0.3.0-alpha.45",
+    "@daita/http-server": "0.3.0-alpha.45",
+    "@daita/orm": "0.3.0-alpha.45",
+    "@daita/node": "0.3.0-alpha.45",
+    "@daita/common": "0.3.0-alpha.45",
+    "@daita/auth-server": "0.3.0-alpha.45",
+    "@daita/pg-adapter": "0.3.0-alpha.45",
+    "@daita/sqlite-adapter": "0.3.0-alpha.45",
+    "@daita/http-adapter": "0.3.0-alpha.45",
+    "@daita/create": "0.3.0-alpha.45",
+    "@daita/http": "0.3.0-alpha.45"
   },
   "devDependencies": {
     "@types/chokidar": "^2.1.3",
     "@types/inquirer": "^6.5.0",
     "@types/json5": "^0.0.30",
-    "@daita/create": "file:../create",
-    "@daita/testing": "file:../testing",
-    "@daita/auth-server": "file:../auth-server",
-    "@daita/pg-adapter": "file:../pg-adapter",
-    "@daita/sqlite-adapter": "file:../sqlite-adapter",
-    "@daita/http-adapter": "file:../http-adapter",
-    "@daita/http-server": "file:../http-server",
-    "@daita/http-server-common": "file:../http-server-common",
-    "@daita/http-client-common": "file:../http-client-common"
+    "@daita/testing": "0.3.0-alpha.45"
   },
   "peerDependencies": {
     "typescript": ">=4.0.0"

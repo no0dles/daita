@@ -1,4 +1,4 @@
-import * as express from 'express';
+import { Router } from 'express';
 import { UserToken } from '../models/user-token';
 import { User } from '../models/user';
 import { getSha1 } from '../modules/hash';
@@ -12,7 +12,7 @@ import { getRoles } from '../modules/roles';
 import { Context } from '@daita/orm';
 
 export function adminTokenRoute(client: Context<any>) {
-  const router = express.Router({ mergeParams: true });
+  const router = Router({ mergeParams: true });
 
   router.post('/:token', async (req, res, next) => {
     try {

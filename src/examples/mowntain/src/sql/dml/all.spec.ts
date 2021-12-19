@@ -19,7 +19,7 @@ describe('relational/sql/keyword/all', () => {
       });
       expect(result).toEqual({
         active: false,
-        birthday: new Date(Date.UTC(1840, 3, 27)),
+        birthday: new Date('1990-03-27T00:00:00.000Z'),
         firstName: 'Edward',
         id: '571cb303-bd0f-40a3-8404-9395471d03e3',
         lastName: 'Whymper',
@@ -33,7 +33,7 @@ describe('relational/sql/keyword/all', () => {
       });
       expect(result).toEqual({
         active: false,
-        birthday: new Date(Date.UTC(1840, 3, 27)),
+        birthday: new Date('1990-03-27T00:00:00.000Z'),
         firstName: 'Edward',
         id: '571cb303-bd0f-40a3-8404-9395471d03e3',
         lastName: 'Whymper',

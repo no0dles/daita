@@ -1,7 +1,7 @@
-import express from 'express';
+import express = require('express');
 import * as bodyParser from 'body-parser';
-import wellKnownRoute from './routes/well-known/jwks';
-import helmet from 'helmet';
+import { wellKnownRoute } from './routes/well-known/jwks';
+import helmet = require('helmet');
 import { userPoolCors } from './middlewares/user-pool-cors';
 import { resendRoute } from './routes/resend';
 import { tokenRoute } from './routes/token';

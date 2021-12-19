@@ -1,6 +1,6 @@
 {
   "name": "@daita/node",
-  "version": "1.0.0",
+  "version": "0.3.0-alpha.45",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -17,13 +17,16 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@daita/common": "file:../common",
+    "@daita/common": "0.3.0-alpha.45",
+    "@daita/relational": "0.3.0-alpha.45",
+    "@daita/orm": "0.3.0-alpha.45",
+    "@daita/http": "0.3.0-alpha.45",
+    "@daita/http-adapter": "0.3.0-alpha.45",
     "dockerode": "^3.2.1",
     "yaml": "^1.10.0"
   },
   "devDependencies": {
     "@types/node": "^16.11.9",
-    "@types/dockerode": "^3.2.0",
-    "@daita/http-client-common": "file:../http-client-common"
+    "@types/dockerode": "^3.2.0"
   }
 }

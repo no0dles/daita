@@ -4,6 +4,8 @@
   }, {
     "path": "src/packages/auth-server"
   }, {
+    "path": "src/packages/http-server"
+  },{
     "path": "src/packages/cli"
   }, {
     "path": "src/packages/common"
@@ -14,7 +16,7 @@
   }, {
     "path": "src/packages/http-adapter"
   }, {
-    "path": "src/packages/http-server-common"
+    "path": "src/packages/browser"
   }, {
     "path": "src/packages/iwent"
   }, {
@@ -23,6 +25,8 @@
     "path": "src/packages/node"
   }, {
     "path": "src/packages/orm"
+  }, {
+    "path": "src/packages/http"
   }, {
     "path": "src/packages/pg-adapter"
   }, {
@@ -35,6 +39,12 @@
     "path": "src/tooling/npm"
   }, {
     "path": "src/tooling/testing"
+  }, {
+    "path": "src/containers/auth"
+  }, {
+    "path": "src/containers/http"
+  }, {
+    "path": "src/containers/iwent"
   }],
   "files": []
 }

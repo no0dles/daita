@@ -27,7 +27,7 @@ export class SqliteFormatContext extends SimpleFormatContext {
     if (value instanceof Date) {
       const dateValue = value.toISOString();
       this.values.push(dateValue);
-    } else if (typeof value === 'object') {
+    } else if (typeof value === 'object' && value !== null && value !== undefined) {
       this.values.push('JSON-' + JSON.stringify(value));
     } else if (typeof value === 'boolean') {
       this.values.push(`BOOL-${value}`);

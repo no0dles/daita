@@ -21,7 +21,8 @@
     "composite": true,
     "strict": true,
     "noImplicitAny": true,
-    "noImplicitThis": true
+    "noImplicitThis": true,
+    "isolatedModules": true
   },
   "exclude": [
     "node_modules",

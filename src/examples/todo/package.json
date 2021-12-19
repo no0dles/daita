@@ -1,11 +1,13 @@
 {
   "name": "todo",
-  "version": "1.0.0",
+  "version": "0.3.0-alpha.45",
   "scripts": {
     "build": "tsc -b"
   },
   "dependencies": {
-    "@daita/iwent": "file:../../packages/iwent"
+    "@daita/iwent": "0.3.0-alpha.45",
+    "@daita/relational": "0.3.0-alpha.45",
+    "@daita/orm": "0.3.0-alpha.45"
   },
   "devDependencies": {
     "typescript": "~4.0.5"

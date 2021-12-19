@@ -19,9 +19,9 @@ export class RelationalTransactionContext extends RelationalContext implements T
     return new RelationalAuthorizedTransactionContext(this.transactionAdapter, this.migrationTree, auth);
   }
 
-  transaction<R>(action: (trx: Context<any>) => Promise<R>): Promise<R> {
+  transaction<R>(action: (trx: Context<any>) => Promise<R>, timeout?: number): Promise<R> {
     return this.transactionAdapter.transaction<R>(async (adapter) => {
       return await action(new RelationalContext(adapter, this.migrationTree));
-    });
+    }, timeout);
   }
 }

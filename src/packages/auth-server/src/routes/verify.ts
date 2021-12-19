@@ -1,4 +1,4 @@
-import * as express from 'express';
+import { Router } from 'express';
 import { UserEmailVerify } from '../models/user-email-verify';
 import { User } from '../models/user';
 import { UserPool } from '../models/user-pool';
@@ -24,7 +24,7 @@ const successVerifyCounter = new Counter({
 });
 
 export function verifyRoute(ctx: TransactionContext<any>) {
-  const router = express.Router({ mergeParams: true });
+  const router = Router({ mergeParams: true });
 
   router.get('/', async (req, res, next) => {
     try {

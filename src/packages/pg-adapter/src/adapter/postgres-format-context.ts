@@ -8,7 +8,12 @@ export class PostgresFormatContext extends CounterFormatContext {
   }
 
   appendValue(value: ValueType): string {
-    return super.appendValue(value ?? null);
+    const result = super.appendValue(value ?? null);
+    if (typeof value === 'number') {
+      return `${result}::NUMERIC(26,10)`;
+    } else {
+      return result;
+    }
   }
 
   getDataType(options: FormatDataType): string {

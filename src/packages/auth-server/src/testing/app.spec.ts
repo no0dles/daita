@@ -1,37 +1,31 @@
-export {};
-/*
 import { adapter } from '@daita/sqlite-adapter';
 import { MigrationTree } from '@daita/orm';
 import { allow, authorized, getRuleId, now } from '@daita/relational';
-import { httpGet, httpPost } from '@daita/node';
+import { httpGet, httpPost } from '@daita/testing';
 import { AuthServerTestDisposable, createTestAdminServer } from './admin-server.test';
 import { loginWithDefaultUser } from './auth-test';
-import {
-  createTestHttpServer,
-  HttpTestServerDisposable,
-} from '@daita/http-server/testing/create-test-http-server.test';
+import { createTestHttpServer, HttpTestServerDisposable } from '@daita/testing';
 
 describe('http-server/app', () => {
   let authServerTest: AuthServerTestDisposable;
   let httpServer: HttpTestServerDisposable;
-  let postgresDb: PostgresDb;
 
   beforeAll(async () => {
-    postgresDb = await getPostgresDb();
     authServerTest = await createTestAdminServer({
       adapter,
       options: {
-        createIfNotExists: true,
-        connectionString: postgresDb.connectionString,
+        memory: true,
       },
     });
     httpServer = await createTestHttpServer({
       adapter,
       options: {
-        createIfNotExists: true,
-        connectionString: postgresDb.connectionString,
+        memory: true,
       },
-      authServer: authServerTest,
+      authServer: {
+        authPort: authServerTest.authHttp.port,
+        adminPort: authServerTest.adminHttp.port,
+      },
       migrationTree: new MigrationTree('http', [
         {
           id: 'init',
@@ -56,7 +50,6 @@ describe('http-server/app', () => {
   afterAll(async () => {
     await httpServer.close();
     await authServerTest.close();
-    await postgresDb.close();
   });
 
   it('should login', async () => {
@@ -153,4 +146,3 @@ describe('http-server/app', () => {
     expect(res.statusCode).toEqual(403);
   });
 });
-*/

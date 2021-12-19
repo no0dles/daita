@@ -1,5 +1,5 @@
 import { RelationalDataAdapter } from '@daita/relational';
-import * as sqlite from 'sqlite3';
+import { Database } from 'sqlite3';
 import { Defer } from '@daita/common';
 import { RelationalRawResult } from '@daita/relational';
 import { SqliteFormatContext } from '../formatter/sqlite-format-context';
@@ -16,7 +16,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
   protected transactionSerializable = new Serializable();
   protected runSerializable = new Serializable();
 
-  constructor(protected db: Resolvable<sqlite.Database>) {}
+  constructor(protected db: Resolvable<Database>) {}
 
   async close(): Promise<void> {
     await this.db.close();

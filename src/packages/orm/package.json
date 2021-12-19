@@ -1,6 +1,6 @@
 {
   "name": "@daita/orm",
-  "version": "1.0.0",
+  "version": "0.3.0-alpha.45",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -16,7 +16,7 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@daita/common": "file:../common",
-    "@daita/relational": "file:../relational"
+    "@daita/common": "0.3.0-alpha.45",
+    "@daita/relational": "0.3.0-alpha.45"
   }
 }

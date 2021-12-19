@@ -27,7 +27,7 @@ describe('packages/orm/migration/steps/add-table-field', () => {
 
   describe.each(ctxs)('%s', (ctx) => {
     beforeAll(async () => {
-      await ctx.setup();
+      await ctx.setup({ seed: false });
     });
 
     afterAll(async () => ctx.close());

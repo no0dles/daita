@@ -17,7 +17,7 @@ describe('relational/sql/operands/multiply', () => {
         select: multiply(field(Mountain, 'prominence'), 5),
         from: table(Mountain),
       });
-      expect(result).toEqual(50);
+      expect(result).toEqual(5212.505);
     });
   });
 });

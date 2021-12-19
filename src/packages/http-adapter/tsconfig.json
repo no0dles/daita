@@ -22,23 +22,7 @@
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "isolatedModules": true,
-    "paths": {
-      "@daita/common": ["../../common/src/index.ts"],
-      "@daita/common/*": ["../../common/src/*"],
-      "@daita/auth-server": ["../../auth-server/src/index.ts"],
-      "@daita/auth-server/*": ["../../auth-server/src/*"],
-      "@daita/http-server": ["../../http-server/src/index.ts"],
-      "@daita/http-server/*": ["../../http-server/src/*"],
-      "@daita/node": ["../../node/src/index.ts"],
-      "@daita/node/*": ["../../node/src/*"],
-      "@daita/http-client-common": ["../../http-client-common/src/index.ts"],
-      "@daita/http-client-common/*": ["../../http-client-common/src/*"],
-      "@daita/orm": ["../../orm/src/index.ts"],
-      "@daita/orm/*": ["../../orm/src/*"],
-      "@daita/relational": ["../../relational/src/index.ts"],
-      "@daita/relational/*": ["../../relational/src/*"]
-    }
+    "isolatedModules": true
   },
   "exclude": [
     "node_modules",
@@ -49,13 +33,7 @@
   }, {
     "path": "../relational"
   }, {
-    "path": "../http-client-common"
-  }, {
-    "path": "../http-server"
-  }, {
-    "path": "../auth-server"
-  }, {
-    "path": "../node"
+    "path": "../http"
   }, {
     "path": "../orm"
   }]

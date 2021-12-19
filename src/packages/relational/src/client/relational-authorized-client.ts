@@ -107,9 +107,13 @@ export class RelationalAuthorizedClient implements AuthorizedClient<any> {
     if (!rule) {
       return false;
     }
+
     if (rule.type === 'forbid') {
       return false;
+    } else if (rule.type === 'allow') {
+      return rule.errors.length === 0;
     }
+
     return true;
   }
 }

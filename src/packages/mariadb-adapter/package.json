@@ -1,6 +1,6 @@
 {
   "name": "@daita/mariadb-adapter",
-  "version": "1.0.0",
+  "version": "0.3.0-alpha.45",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -18,12 +18,9 @@
   },
   "dependencies": {
     "mariadb": "^2.5.1",
-    "@daita/common": "file:../common",
-    "@daita/orm": "file:../orm",
-    "@daita/node": "file:../node",
-    "@daita/relational": "file:../relational"
-  },
-  "devDependencies": {
-
+    "@daita/common": "0.3.0-alpha.45",
+    "@daita/orm": "0.3.0-alpha.45",
+    "@daita/node": "0.3.0-alpha.45",
+    "@daita/relational": "0.3.0-alpha.45"
   }
 }

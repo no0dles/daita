@@ -39,7 +39,7 @@ testContext.seed(Mountain, {
 });
 testContext.seed(Ascent, {
   id: 'e2e6292c-551b-11ec-bf63-0242ac130002',
-  date: new Date(Date.UTC(2021, 0, 2, 12, 22, 33)),
+  date: new Date('2021-01-02T12:22:33.000Z'),
   mountainId: 'b65c271c-551b-11ec-bf63-0242ac130002',
 });
 testContext.seed(Person, {
@@ -47,14 +47,14 @@ testContext.seed(Person, {
   firstName: 'Edward',
   lastName: 'Whymper',
   active: false,
-  birthday: new Date(Date.UTC(1840, 3, 27)),
+  birthday: new Date('1990-03-27T00:00:00.000Z'), // TODO 1840 does not work
 });
 testContext.seed(Person, {
   id: 'dafd9228-b626-4557-abc0-068855201a31',
   firstName: 'Lucy',
   lastName: 'Walker',
   active: true,
-  birthday: new Date(Date.UTC(1836, 8, 10)),
+  birthday: new Date('1836-08-10T00:00:00.000Z'),
 });
 testContext.seed(AscentPerson, {
   personId: 'dafd9228-b626-4557-abc0-068855201a31',

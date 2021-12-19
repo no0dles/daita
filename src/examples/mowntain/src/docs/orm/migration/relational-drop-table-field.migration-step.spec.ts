@@ -4,7 +4,7 @@ import { MigrationTree } from '@daita/orm';
 import { getContexts } from '../../../testing';
 
 describe('packages/orm/migration/steps/add-table-field', () => {
-  const migrationTree = new MigrationTree('', [
+  const migrationTree = new MigrationTree('test', [
     {
       id: 'init',
       steps: [
@@ -24,7 +24,7 @@ describe('packages/orm/migration/steps/add-table-field', () => {
 
   describe.each(ctxs)('%s', (ctx) => {
     beforeAll(async () => {
-      await ctx.setup();
+      await ctx.setup({ migrate: false, seed: false });
     });
 
     afterAll(async () => ctx.close());

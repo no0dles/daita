@@ -1,0 +1,10 @@
+{
+  "packages": [
+    "src/tooling/*",
+    "src/packages/*",
+    "src/containers/*",
+    "src/examples/*"
+  ],
+  "npmClient": "npm",
+  "version": "0.3.0-alpha.45"
+}

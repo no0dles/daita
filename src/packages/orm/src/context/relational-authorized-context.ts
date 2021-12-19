@@ -1,5 +1,5 @@
 import { AuthorizedContext } from './authorized-context';
-import { Resolvable } from '@daita/common';
+import { failNever, Resolvable } from '@daita/common';
 import { RelationalDataAdapter, RelationalRawResult, RuleContext, RulesEvaluator } from '@daita/relational';
 import { MigrationTree } from '../migration';
 import { RuleError } from '../error';
@@ -44,9 +44,13 @@ export class RelationalAuthorizedContext extends RelationalBaseContext implement
     if (!rule) {
       return false;
     }
+
     if (rule.type === 'forbid') {
       return false;
+    } else if (rule.type === 'allow') {
+      return rule.errors.length === 0;
     }
-    return true;
+
+    return false;
   }
 }

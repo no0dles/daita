@@ -1,11 +1,12 @@
 import { serve } from './serve';
-import { getPostgresDb, PostgresDb } from '@daita/pg-adapter';
+import { getPostgresDb, PostgresDb } from '@daita/testing';
 import { HttpTransactionAdapter } from '@daita/http-adapter';
 import { Resolvable } from '@daita/common';
 import { field, table } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { setupEnv } from '@daita/testing';
-import { NodeHttp, Http } from '@daita/http-client-common';
+import { Http } from '@daita/http';
+import { NodeHttp } from '@daita/node';
 
 describe('cli/commands/serve', () => {
   let postgresDb: PostgresDb;

@@ -1,6 +1,6 @@
-import { IwentHandler } from '@daita/iwent/iwent-handler';
+import { IwentHandler } from '@daita/iwent';
 import { CreateTodoEvent } from '../events/create-todo.event';
-import { IwentHandlerContext } from '@daita/iwent/iwent-handler-context';
+import { IwentHandlerContext } from '@daita/iwent';
 import { Todo } from '../models/todo.model';
 import { table } from '@daita/relational';
 

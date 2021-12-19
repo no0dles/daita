@@ -1,10 +1,10 @@
-import { Countdown } from './countdown';
-import { Http, HttpSendResult } from '@daita/http-client-common';
+import { Countdown } from '@daita/common';
+import { Http, HttpSendResult } from '@daita/http';
 import { RelationalRawResult } from '@daita/relational';
 import { RelationalDataAdapter } from '@daita/relational';
 import { Defer } from '@daita/common';
 import { handleErrorResponse } from './error-handling';
-import { TimeoutError } from '@daita/relational';
+import { TimeoutError } from '@daita/common';
 
 export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   private resultDefer = new Defer<any>();
@@ -14,7 +14,7 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
 
   private handleErrorResponse(response: HttpSendResult) {
     if (response.statusCode === 400 && response.data?.error === 'TimeoutError') {
-      this.resultDefer.reject(new TimeoutError('timeout'));
+      this.resultDefer.reject(new TimeoutError());
       throw new Error('transaction already closed');
     }
 

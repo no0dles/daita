@@ -2,7 +2,7 @@ import { RelationalTransactionAdapter } from '@daita/relational';
 import { RelationalDataAdapter } from '@daita/relational';
 import { SqliteRelationalDataAdapter } from './sqlite-relational-data-adapter';
 import { SqliteSql } from '../sql/sqlite-sql';
-import { Resolvable } from '@daita/common';
+import { handleTimeout, Resolvable } from '@daita/common';
 import { Defer } from '@daita/common';
 import { Database } from 'sqlite3';
 
@@ -46,12 +46,15 @@ export class SqliteRelationalTransactionAdapter
     );
   }
 
-  transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
+  transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>, timeout?: number): Promise<T> {
     return this.transactionSerializable.run(async () => {
       const db = await this.db.get();
       await db.run('BEGIN');
       try {
-        const result = await action(new SqliteRelationalDataAdapter(new Resolvable<Database>(db)));
+        const result = await handleTimeout(
+          () => action(new SqliteRelationalDataAdapter(new Resolvable<Database>(db))),
+          timeout,
+        );
         await this.run('COMMIT');
         return result;
       } catch (e) {

@@ -8,7 +8,7 @@ import { RelationalDataAdapterImplementation, RelationalTransactionAdapterImplem
 import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { MigrationTree } from '@daita/orm';
 import { getContext } from '@daita/orm';
-import { HttpServerAuthorizationProvider, HttpServerAuthorizationTokenEndpoint } from '@daita/http-server-common';
+import { HttpServerAuthorizationProvider, HttpServerAuthorizationTokenEndpoint } from '@daita/http-server';
 import { UserPoolAlgorithm } from '@daita/auth-server';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;

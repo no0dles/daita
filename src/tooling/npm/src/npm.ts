@@ -49,7 +49,33 @@ export async function publishNpmPackage(packageName: string, options: PublishCon
   }
   fs.writeFileSync(npmrcFile, `registry=${options.registry}`);
 
-  await shell('npm', ['publish', '--tag', options.version], destinationPath);
+  const packageJsonFile = path.join(destinationPath, 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonFile).toString());
+  fs.writeFileSync(
+    packageJsonFile,
+    JSON.stringify(
+      {
+        ...packageJson,
+        version: options.version,
+        dependencies: overrideDaitaDependencies(packageJson.dependencies, options.version),
+        devDependencies: overrideDaitaDependencies(packageJson.devDependencies, options.version),
+      },
+      null,
+      2,
+    ),
+  );
+
+  await shell('npm', ['publish'], destinationPath);
+}
+
+function overrideDaitaDependencies(dependencies: { [key: string]: string }, version: string) {
+  if (!dependencies) {
+    return dependencies;
+  }
+  return Object.keys(dependencies).reduce<{ [key: string]: string }>((deps, key) => {
+    deps[key] = key.startsWith('@daita/') ? version : dependencies[key];
+    return deps;
+  }, {});
 }
 
 export async function buildNpmPackages() {

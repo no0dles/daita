@@ -4,7 +4,7 @@ import { Rule, RuleContext, RulesEvaluator } from '../permission';
 
 export interface TransactionClient<T> extends Client<T> {
   dataAdapter: RelationalDataAdapter<T>;
-  transaction<R>(action: (trx: Client<T>) => Promise<R>): Promise<R>;
+  transaction<R>(action: (trx: Client<T>) => Promise<R>, timeout?: number): Promise<R>;
   close(): Promise<void>;
   authorizable(auth: { id: string; rule: Rule }[]): AuthorizableTransactionClient<T>;
 }
@@ -18,7 +18,7 @@ export interface AuthorizableTransactionClient<T> {
 
 export interface AuthorizedTransactionClient<T> extends AuthorizedClient<T> {
   dataAdapter: RelationalDataAdapter<T>;
-  transaction<R>(action: (trx: AuthorizedClient<T>) => Promise<R>): Promise<R>;
+  transaction<R>(action: (trx: AuthorizedClient<T>) => Promise<R>, timeout?: number): Promise<R>;
   close(): Promise<void>;
   isAuthorized(sql: T): boolean;
 }

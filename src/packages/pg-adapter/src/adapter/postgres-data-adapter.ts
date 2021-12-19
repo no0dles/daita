@@ -9,9 +9,9 @@ import { Resolvable } from '@daita/common';
 import { ConnectionError } from '@daita/relational';
 import { parseJson } from '@daita/common';
 
-export class PostgresDataAdapter<TClient extends PoolClient | Pool> implements RelationalDataAdapter {
+export class PostgresDataAdapter implements RelationalDataAdapter {
   protected readonly logger = createLogger({ package: 'pg-adapter' });
-  constructor(protected client: Resolvable<TClient>) {
+  constructor(protected client: Resolvable<PoolClient>) {
     types.setTypeParser(types.builtins.NUMERIC, (val) => parseFloat(val));
     types.setTypeParser(types.builtins.FLOAT4, (val) => parseFloat(val));
     types.setTypeParser(types.builtins.FLOAT8, (val) => parseFloat(val));

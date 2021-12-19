@@ -23,6 +23,7 @@ import {
   isDayOfMonthDescription,
   isDayOfWeekDescription,
   isDayOfYearDescription,
+  isFloorDescription,
   isHourDescription,
   isMinuteDescription,
   isMonthDescription,
@@ -54,6 +55,7 @@ export const isSingleFieldSelect = (fields: any) =>
   isLeastDescription(fields) ||
   isGreatestDescription(fields) ||
   isCeilDescription(fields) ||
+  isFloorDescription(fields) ||
   isMinDescription(fields) ||
   isMaxDescription(fields) ||
   isAvgDescription(fields) ||

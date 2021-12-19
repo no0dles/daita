@@ -1,7 +1,7 @@
 import { Request } from 'express';
-import { HttpServerOptions, HttpServerRelationalOptions } from '@daita/http-server-common';
 import { AuthorizedTransactionContext, TransactionContext } from '@daita/orm';
-import { getRequestUser, hasRequestUser, getRequiredRequestUserProp } from '@daita/http-server-common';
+import { HttpServerOptions, HttpServerRelationalOptions } from './http-server-options';
+import { getRequestUser, getRequiredRequestUserProp, hasRequestUser } from './get-request-user';
 
 export function getRequestContext(
   req: Request,

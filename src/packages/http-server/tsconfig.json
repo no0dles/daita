@@ -22,28 +22,12 @@
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "isolatedModules": true,
-    "paths": {
-      "@daita/common": ["../../common/src/index.ts"],
-      "@daita/common/*": ["../../common/src/*"],
-      "@daita/orm": ["../../orm/src/index.ts"],
-      "@daita/orm/*": ["../../orm/src/*"],
-      "@daita/node": ["../../node/src/index.ts"],
-      "@daita/node/*": ["../../node/src/*"],
-      "@daita/relational": ["../../relational/src/index.ts"],
-      "@daita/relational/*": ["../../relational/src/*"],
-      "@daita/http-client-common": ["../../http-client-common/src/index.ts"],
-      "@daita/http-client-common/*": ["../../http-client-common/src/*"],
-      "@daita/http-server-common": ["../../http-server-common/src/index.ts"],
-      "@daita/http-server-common/*": ["../../http-server-common/src/*"]
-    }
+    "isolatedModules": true
   },
   "references": [{
     "path": "../common"
   }, {
-    "path": "../http-client-common"
-  }, {
-    "path": "../http-server-common"
+    "path": "../http"
   }, {
     "path": "../orm"
   }, {

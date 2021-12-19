@@ -5,7 +5,17 @@ import { testContext } from '../../../testing';
 import { Person } from '../../../models/person';
 
 describe('relational/sql/ddl/alter-table', () => {
-  const ctxs = testContext.contexts();
+  const ctxs = testContext.contexts({
+    alterTable: table(AscentPerson),
+    add: {
+      foreignKey: 'ascentId',
+      constraint: 'ascent2',
+      references: {
+        table: table(Ascent),
+        primaryKeys: 'id',
+      },
+    },
+  });
 
   describe.each(ctxs)('%s', (ctx) => {
     beforeAll(async () => {

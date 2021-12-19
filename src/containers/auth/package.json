@@ -1,6 +1,7 @@
 {
-  "version": "1.0.0",
-  "name": "@daita/auth",
+  "version": "0.3.0-alpha.45",
+  "private": true,
+  "name": "@daita/auth-container",
   "main": "dist/index.js",
   "bin": "dist/index.js",
   "scripts": {
@@ -8,14 +9,14 @@
     "package": "pkg -t \"node16-linux-x64,node16-linux-arm64\" ."
   },
   "dependencies": {
-    "@daita/common": "file:../../packages/common",
-    "@daita/relational": "file:../../packages/relational",
-    "@daita/auth-server": "file:../../packages/auth-server",
-    "@daita/orm": "file:../../packages/orm",
-    "@daita/node": "file:../../packages/node",
-    "@daita/pg-adapter": "file:../../packages/pg-adapter",
-    "@daita/sqlite-adapter": "file:../../packages/sqlite-adapter",
-    "@daita/mariadb-adapter": "file:../../packages/mariadb-adapter"
+    "@daita/common": "0.3.0-alpha.45",
+    "@daita/relational": "0.3.0-alpha.45",
+    "@daita/auth-server": "0.3.0-alpha.45",
+    "@daita/orm": "0.3.0-alpha.45",
+    "@daita/node": "0.3.0-alpha.45",
+    "@daita/pg-adapter": "0.3.0-alpha.45",
+    "@daita/sqlite-adapter": "0.3.0-alpha.45",
+    "@daita/mariadb-adapter": "0.3.0-alpha.45"
   },
   "devDependencies": {
     "pkg": "^5.4.1"

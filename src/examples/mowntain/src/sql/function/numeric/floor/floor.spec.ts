@@ -17,7 +17,7 @@ describe('relational/sql/function/number/floor', () => {
         select: floor(field(Mountain, 'prominence')),
         from: table(Mountain),
       });
-      expect(result).toEqual(10);
+      expect(result).toEqual(1042);
     });
 
     it('should get null and value', async () => {
@@ -25,7 +25,7 @@ describe('relational/sql/function/number/floor', () => {
         select: floor(field(Mountain, 'ascents')),
         from: table(Mountain),
       });
-      expect(result).toEqual(20);
+      expect(result).toEqual(null);
     });
   });
 });

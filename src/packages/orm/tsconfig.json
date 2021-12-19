@@ -22,13 +22,7 @@
     "strict": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
-    "isolatedModules": true,
-    "paths": {
-      "@daita/common": ["../../common/src/index.ts"],
-      "@daita/common/*": ["../../common/src/*"],
-      "@daita/relational": ["../../relational/src/index.ts"],
-      "@daita/relational/*": ["../../relational/src/*"]
-    }
+    "isolatedModules": true
   },
   "exclude": [
     "node_modules",

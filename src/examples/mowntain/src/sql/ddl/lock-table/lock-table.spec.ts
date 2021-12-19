@@ -3,7 +3,7 @@ import { testContext } from '../../../testing';
 import { Person } from '../../../models/person';
 
 describe('relational/sql/ddl/lock-table', () => {
-  const ctxs = testContext.contexts();
+  const ctxs = testContext.contexts({ lockTable: table(Person) });
 
   describe.each(ctxs)('%s', (ctx) => {
     beforeAll(async () => {

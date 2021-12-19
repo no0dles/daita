@@ -9,10 +9,10 @@ export class RelationalTransactionClient extends RelationalClient implements Tra
     super(transactionAdapter);
   }
 
-  async transaction<T>(action: (trx: RelationalClient) => Promise<T>): Promise<T> {
+  async transaction<T>(action: (trx: RelationalClient) => Promise<T>, timeout?: number): Promise<T> {
     return this.transactionAdapter.transaction<T>(async (adapter) => {
       return action(new RelationalClient(adapter));
-    });
+    }, timeout);
   }
 
   async close() {
