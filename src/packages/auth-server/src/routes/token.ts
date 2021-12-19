@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { UserToken } from '../models/user-token';
 import { authMiddleware } from '../middlewares/auth-middleware';
 import { field } from '@daita/relational';
 import { and } from '@daita/relational';
@@ -8,6 +7,7 @@ import { equal } from '@daita/relational';
 import { TransactionContext } from '@daita/orm';
 import { createToken } from '../seed';
 import { getRequiredRequestUserProp } from '@daita/http-server';
+import { UserToken } from '@daita/auth';
 
 export function tokenRoute(ctx: TransactionContext<any>) {
   const router = Router({ mergeParams: true });

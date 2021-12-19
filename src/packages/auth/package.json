@@ -1,0 +1,23 @@
+{
+  "name": "@daita/auth",
+  "version": "0.3.0-alpha.45",
+  "license": "MIT",
+  "homepage": "https://daita.ch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@daita/common": "0.3.0-alpha.45",
+    "@daita/relational": "0.3.0-alpha.45",
+    "@daita/orm": "0.3.0-alpha.45"
+  }
+}

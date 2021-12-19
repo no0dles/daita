@@ -20,7 +20,11 @@
     "tailwindcss": "^2.0.2",
     "tslib": "^2.0.3",
     "@microsoft/tsdoc": "^0.12.21",
-    "zone.js": "~0.10.3"
+    "zone.js": "~0.10.3",
+    "@daita/common": "0.3.0-alpha.45",
+    "@daita/browser": "0.3.0-alpha.45",
+    "@daita/relational": "0.3.0-alpha.45",
+    "@daita/auth": "0.3.0-alpha.45"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1100.4",

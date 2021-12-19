@@ -1,11 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
-import { adapter } from '../../../../packages/http-adapter/browser';
-import { InsertSql } from '../../../../packages/relational/sql/dml/insert/insert-sql';
-import { RelationalClient } from '../../../../packages/relational/client/relational-client';
-import { RelationalTransactionAdapter } from '../../../../packages/relational/adapter/relational-transaction-adapter';
-import { SelectSql } from '../../../../packages/relational/sql/dml/select/select-sql';
+import { InsertSql, RelationalClient, RelationalTransactionAdapter, SelectSql } from '@daita/relational';
+import { adapter } from '@daita/browser';
 
 @Injectable({
   providedIn: 'root',

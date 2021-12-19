@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { Defer } from '../../../../packages/common/utils/defer';
-import { parseJwtPayload } from '../../../../packages/common/utils/jwt';
+import { Defer, parseJwtPayload } from '@daita/common';
 
 @Injectable({
   providedIn: 'root',
@@ -46,7 +45,7 @@ export class AuthService {
     return localStorage.getItem('access_token');
   }
 
-  private hasAccessToken() {
+  get hasAccessToken() {
     return !!this.accessToken;
   }
 
@@ -96,7 +95,7 @@ export class AuthService {
     try {
       const response = await this.http
         .post<{ refresh_token: string; access_token: string }>(
-          `${environment.authUrl}/${this.accessToken!.iss}/refresh`,
+          `${environment.apiUrl}/${this.accessToken!.iss}/refresh`,
           {
             refreshToken: this.refreshToken,
           },
@@ -132,7 +131,7 @@ export class AuthService {
         id_token: string;
         expires_in: number;
         token_type: string;
-      }>(`${environment.authUrl}/${options.userPoolId}/login`, {
+      }>(`${environment.apiUrl}/${options.userPoolId}/login`, {
         username: options.username,
         password: options.password,
       })
@@ -143,7 +142,7 @@ export class AuthService {
 
   async register(options: { userPoolId: string; username: string; password: string; email: string; phone?: string }) {
     await this.http
-      .post(`${environment.authUrl}/${options.userPoolId}/register`, {
+      .post(`${environment.apiUrl}/${options.userPoolId}/register`, {
         username: options.username,
         password: options.password,
         email: options.email,
@@ -161,6 +160,6 @@ export class AuthService {
     if (!this.identityToken) {
       throw new Error(`requires authorization`);
     }
-    await this.http.post(`${environment.authUrl}/${this.identityToken.iss}/resend`, {}).toPromise();
+    await this.http.post(`${environment.apiUrl}/${this.identityToken.iss}/resend`, {}).toPromise();
   }
 }

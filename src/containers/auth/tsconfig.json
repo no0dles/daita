@@ -27,6 +27,8 @@
   "references": [{
     "path": "../../packages/common"
   }, {
+    "path": "../../packages/auth"
+  }, {
     "path": "../../packages/relational"
   }, {
     "path": "../../packages/node"

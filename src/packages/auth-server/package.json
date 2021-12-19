@@ -16,6 +16,7 @@
     "build": "tsc -b"
   },
   "dependencies": {
+    "@daita/auth": "0.3.0-alpha.45",
     "@daita/common": "0.3.0-alpha.45",
     "@daita/relational": "0.3.0-alpha.45",
     "@daita/orm": "0.3.0-alpha.45",

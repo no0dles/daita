@@ -27,21 +27,9 @@
   "references": [{
     "path": "../common"
   }, {
-    "path": "../auth"
-  }, {
     "path": "../relational"
   }, {
     "path": "../orm"
-  }, {
-    "path": "../node"
-  }, {
-    "path": "../../tooling/testing"
-  }, {
-    "path": "../http"
-  }, {
-    "path": "../http-server"
-  }, {
-    "path": "../sqlite-adapter"
   }],
   "exclude": [
     "node_modules",

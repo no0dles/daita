@@ -3,7 +3,8 @@
     "src/tooling/*",
     "src/packages/*",
     "src/containers/*",
-    "src/examples/*"
+    "src/examples/*",
+    "src/frontends"
   ],
   "npmClient": "npm",
   "version": "0.3.0-alpha.45"

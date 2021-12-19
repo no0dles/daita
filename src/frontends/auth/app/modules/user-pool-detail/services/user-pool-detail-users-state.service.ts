@@ -2,10 +2,8 @@ import { Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { ApiService } from '../../../services/api.service';
 import { UserPoolDetailLoad } from '../actions/user-pool-detail-load';
-import { field } from '../../../../../../packages/relational/sql/keyword/field/field';
-import { table } from '../../../../../../packages/relational/sql/keyword/table/table';
-import { equal } from '../../../../../../packages/relational/sql/operands/comparison/equal/equal';
-import { User } from '../../../../../../packages/auth-server/models/user';
+import { equal, field, table } from '@daita/relational';
+import { User } from '@daita/auth';
 
 export interface UserPoolDetailUsersStateModel {
   loading: boolean;

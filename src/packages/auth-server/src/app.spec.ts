@@ -1,19 +1,16 @@
-import { UserEmailVerify } from './models/user-email-verify';
-import { UserRefreshToken } from './models/user-refresh-token';
 import { createAuthApp } from './app';
-import { authSchema } from './schema';
 import { field } from '@daita/relational';
 import { all } from '@daita/relational';
 import { table } from '@daita/relational';
 import { notEqual } from '@daita/relational';
 import { MigrationContext } from '@daita/orm';
-import { User } from './models/user';
 import { getContext } from '@daita/orm';
 import { equal } from '@daita/relational';
 import { getServer, HttpServerApp } from '@daita/testing';
 import { NodeHttp } from '@daita/node';
 import { adapter } from '@daita/sqlite-adapter';
 import { createDefaultUserPool } from './testing/auth-test';
+import { authSchema, User, UserEmailVerify, UserRefreshToken } from '@daita/auth';
 
 describe('app', () => {
   let app: HttpServerApp;

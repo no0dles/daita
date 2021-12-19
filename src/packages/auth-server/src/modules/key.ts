@@ -1,8 +1,8 @@
-import { UserPoolAlgorithm } from '../models/user-pool';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as jose from 'jose';
+import { UserPoolAlgorithm } from '@daita/auth';
 
 const keyStores: { [key: string]: Promise<jose.JWKS.KeyStore> } = {};
 
