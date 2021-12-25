@@ -1,6 +1,6 @@
 {
   "name": "@daita/sqlite-adapter",
-  "version": "0.3.0-alpha.45",
+  "version": "0.3.1-alpha.0",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -17,10 +17,10 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "sqlite3": "^5.0.2",
-    "@daita/common": "0.3.0-alpha.45",
-    "@daita/orm": "0.3.0-alpha.45",
-    "@daita/relational": "0.3.0-alpha.45"
+    "@daita/common": "^0.3.1-alpha.0",
+    "@daita/orm": "^0.3.1-alpha.0",
+    "@daita/relational": "^0.3.1-alpha.0",
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {
     "@types/sqlite3": "^3.1.8"

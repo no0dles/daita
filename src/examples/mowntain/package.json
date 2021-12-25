@@ -1,19 +1,19 @@
 {
   "name": "mowntain",
-  "version": "0.3.0-alpha.45",
+  "version": "0.3.1-alpha.0",
   "scripts": {
     "build": "tsc -b",
     "test": "jest"
   },
   "dependencies": {
-    "@daita/orm": "0.3.0-alpha.45",
-    "@daita/common": "0.3.0-alpha.45",
-    "@daita/sqlite-adapter": "0.3.0-alpha.45",
-    "@daita/mariadb-adapter": "0.3.0-alpha.45",
-    "@daita/pg-adapter": "0.3.0-alpha.45",
-    "@daita/relational": "0.3.0-alpha.45"
+    "@daita/common": "^0.3.1-alpha.0",
+    "@daita/mariadb-adapter": "^0.3.1-alpha.0",
+    "@daita/orm": "^0.3.1-alpha.0",
+    "@daita/pg-adapter": "^0.3.1-alpha.0",
+    "@daita/relational": "^0.3.1-alpha.0",
+    "@daita/sqlite-adapter": "^0.3.1-alpha.0"
   },
   "devDependencies": {
-    "@daita/testing": "0.3.0-alpha.45"
+    "@daita/testing": "^0.3.1-alpha.0"
   }
 }
