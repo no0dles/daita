@@ -2,10 +2,7 @@ import { AstObjectValue } from '../../ast/ast-object-value';
 import { getArrayValue, getStringValue } from '../../ast/utils';
 import { AstArrayValue } from '../../ast/ast-array-value';
 import { AstLiteralValue } from '../../ast/ast-literal-value';
-import {
-  SchemaTableDescription,
-  setTablePrimaryKey,
-} from '@daita/orm';
+import { SchemaTableDescription, setTablePrimaryKey } from '@daita/orm';
 
 export function parseRelationalSchemaTablePrimaryKeys(
   table: SchemaTableDescription,

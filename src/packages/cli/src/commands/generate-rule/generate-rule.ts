@@ -1,4 +1,1 @@
-export async function generateRule(options: {
-  cwd?: string;
-  schema?: string;
-}) {}
+export async function generateRule(options: { cwd?: string; schema?: string }) {}

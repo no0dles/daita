@@ -1,4 +1,4 @@
-import {isKind} from '@daita/common';
+import { isKind } from '@daita/common';
 
 export interface TableDescription<T> {
   name?: undefined;

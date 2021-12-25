@@ -1,8 +1,5 @@
 import { dropDatabase, ensureDatabaseExists } from '../postgres.util';
-import {
-  RelationalDataAdapterImplementation,
-  RelationalTransactionAdapterImplementation,
-} from '@daita/relational';
+import { RelationalDataAdapterImplementation, RelationalTransactionAdapterImplementation } from '@daita/relational';
 import { PostgresSql } from '../sql/postgres-sql';
 import { isKind } from '@daita/common';
 import { RelationalTransactionAdapter } from '@daita/relational';
@@ -83,7 +80,8 @@ class PostgresAdapterImplementation
   implements
     RelationalDataAdapterImplementation<PostgresSql, PostgresAdapterOptions>,
     RelationalTransactionAdapterImplementation<PostgresSql, PostgresAdapterOptions>,
-    RelationalMigrationAdapterImplementation<PostgresSql, PostgresAdapterOptions> {
+    RelationalMigrationAdapterImplementation<PostgresSql, PostgresAdapterOptions>
+{
   getRelationalAdapter(
     options: PostgresAdapterOptions,
   ): RelationalTransactionAdapter<PostgresSql> & RelationalMigrationAdapter<PostgresSql> {

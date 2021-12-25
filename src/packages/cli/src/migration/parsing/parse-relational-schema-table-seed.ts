@@ -4,11 +4,7 @@ import { convertValue } from './convert-value';
 import { AstError } from '../../ast/utils';
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { parseTableDescription } from './parse-table-description';
-import {
-  addSeed,
-  getTableFromSchema,
-  SchemaDescription,
-} from '@daita/orm';
+import { addSeed, getTableFromSchema, SchemaDescription } from '@daita/orm';
 
 export function parseRelationalSchemaTableSeed(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
   const seeds = schemaVariable.callsByName('seed');

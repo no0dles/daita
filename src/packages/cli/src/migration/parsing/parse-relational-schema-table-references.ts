@@ -2,12 +2,7 @@ import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { parseTableDescription } from './parse-table-description';
 import { AstReferenceType } from '../../ast/ast-reference-type';
 import { isRequiredProperty } from './parse-relational-type';
-import {
-  addTableReference,
-  getTableFromSchema,
-  SchemaDescription,
-  SchemaTableDescription,
-} from '@daita/orm';
+import { addTableReference, getTableFromSchema, SchemaDescription, SchemaTableDescription } from '@daita/orm';
 
 export function parseRelationalSchemaTableReferences(
   schema: SchemaDescription,

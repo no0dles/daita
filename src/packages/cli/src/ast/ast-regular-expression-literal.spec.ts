@@ -4,9 +4,7 @@ import { AstRegularExpressionLiteral } from './ast-regular-expression-literal';
 
 describe('cli/ast-regular-expression-literal', () => {
   const context = new AstContext();
-  const sourceFile = context.get(
-    path.join(__dirname, './ast-regular-expression-literal.test.ts'),
-  );
+  const sourceFile = context.get(path.join(__dirname, './ast-regular-expression-literal.test.ts'));
 
   it('should parse regex value', () => {
     const variable = sourceFile!.block.variable('varRegex');

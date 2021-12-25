@@ -1,9 +1,6 @@
 import { RelationalMapper } from './relational-mapper';
 import { failNever } from '@daita/common';
-import {
-  isTableAliasDescription,
-  TableAliasDescription,
-} from '@daita/relational';
+import { isTableAliasDescription, TableAliasDescription } from '@daita/relational';
 import { isSelectSql, SelectSql } from '@daita/relational';
 import { FieldDescription, isFieldDescription } from '@daita/relational';
 import { isTableDescription, TableDescription } from '@daita/relational';

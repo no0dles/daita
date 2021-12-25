@@ -1,9 +1,4 @@
-import {
-  getName,
-  getTypeFromTypeOrExpression,
-  getValueFromExpression,
-  hasModifier,
-} from './utils';
+import { getName, getTypeFromTypeOrExpression, getValueFromExpression, hasModifier } from './utils';
 import { AstBlock } from './ast-block';
 import { AstValue } from './ast-value';
 import { PropertyDeclaration, SyntaxKind } from 'typescript';
@@ -13,11 +8,7 @@ export class AstClassDeclarationProp {
   constructor(private block: AstBlock, private node: PropertyDeclaration) {}
 
   get type(): AstType | null {
-    return getTypeFromTypeOrExpression(
-      this.block,
-      this.node.type,
-      this.node.initializer,
-    );
+    return getTypeFromTypeOrExpression(this.block, this.node.type, this.node.initializer);
   }
 
   get value(): AstValue | null {

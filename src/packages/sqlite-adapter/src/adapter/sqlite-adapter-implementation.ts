@@ -32,8 +32,10 @@ const isMemoryOptions = (val?: SqliteAdapterOptions): val is SqliteAdapterMemory
   isKind<SqliteAdapterMemoryOptions>(val, ['memory']);
 
 export class SqliteAdapterImplementation
-  implements RelationalMigrationAdapterImplementation<SqliteSql, SqliteAdapterOptions>,
-    RelationalTransactionAdapterImplementation<SqliteSql, SqliteAdapterOptions> {
+  implements
+    RelationalMigrationAdapterImplementation<SqliteSql, SqliteAdapterOptions>,
+    RelationalTransactionAdapterImplementation<SqliteSql, SqliteAdapterOptions>
+{
   getRelationalAdapter(options: SqliteAdapterOptions): RelationalMigrationAdapter<SqliteSql> {
     if (isFileOptions(options)) {
       const fileName = getSqliteFilename(options.file);

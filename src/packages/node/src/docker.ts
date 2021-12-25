@@ -35,7 +35,7 @@ export async function runContainer(options: {
   await pullImage(options.image);
 
   const hostConfig: Docker.HostConfig = { PortBindings: {} };
-  const exposedPorts: { [key: string]: {} } = {};
+  const exposedPorts: { [key: string]: any } = {};
   if (options.portBinding) {
     for (const containerPort of Object.keys(options.portBinding)) {
       hostConfig.PortBindings[`${containerPort}/tcp`] = [{ HostPort: `${options.portBinding[containerPort]}` }];

@@ -54,13 +54,13 @@ export class MariadbRelationalDataAdapter implements RelationalDataAdapter<Maria
       };
     } catch (e) {
       if (e.errno === 1146) {
-        const regex1 = /Table \'(?<schema>[^.]+)\.(?<relation>[^']*?)\' doesn't exist/g;
+        const regex1 = /Table '(?<schema>[^.]+)\.(?<relation>[^']*?)' doesn't exist/g;
         const match1 = regex1.exec(e.message);
         const groups1 = match1?.groups || {};
         if (groups1.schema && groups1.relation) {
           throw new RelationDoesNotExistsError(e, sql, values, groups1.schema, groups1.relation);
         } else {
-          const regex2 = /Table \'(?<relation>[^']*?)\' doesn't exist/g;
+          const regex2 = /Table '(?<relation>[^']*?)' doesn't exist/g;
           const match2 = regex2.exec(e.message);
           const groups2 = match2?.groups || {};
           if (groups2.relation) {

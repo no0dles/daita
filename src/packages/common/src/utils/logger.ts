@@ -88,10 +88,13 @@ class LoggerImpl implements Logger {
     switch (this.format) {
       case 'json':
         this.formatter = jsonFormatter;
+        break;
       case 'plain':
         this.formatter = plainFormatter;
+        break;
       case 'pretty':
         this.formatter = prettyFormatter;
+        break;
     }
   }
 

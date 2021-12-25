@@ -46,7 +46,7 @@ export async function create(options: CreateOptions) {
       name: 'projectName',
       message: "What's your project name?",
       validate(input: any, answers?: any) {
-        if (!/^[a-zA-Z0-9_\-]+$/.test(input)) {
+        if (!/^[a-zA-Z0-9_-]+$/.test(input)) {
           return 'project name only supports alphanumeric characters including dash und underscore';
         }
         return true;

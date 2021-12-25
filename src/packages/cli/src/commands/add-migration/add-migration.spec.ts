@@ -12,7 +12,7 @@ describe('cli/commands/migration:add', () => {
         await ctx.linkNodeModules();
         await addMigration('init', { cwd: ctx.cwd });
         await ctx.exists('src/migrations');
-        await ctx.exists('src/migrations', /[0-9]+\-init.ts/);
+        await ctx.exists('src/migrations', /[0-9]+-init.ts/);
       },
       { schema: 'auth-schema' },
     ),
@@ -27,7 +27,7 @@ describe('cli/commands/migration:add', () => {
         await ctx.linkNodeModules();
         await addMigration('second', { cwd: ctx.cwd });
         await ctx.exists('src/migrations');
-        await ctx.exists('src/migrations', /[0-9]+\-second.ts/);
+        await ctx.exists('src/migrations', /[0-9]+-second.ts/);
       },
       { schema: 'inline-migration' },
     ),
@@ -42,7 +42,7 @@ describe('cli/commands/migration:add', () => {
         await ctx.linkNodeModules();
         await addMigration('second', { cwd: ctx.cwd });
         await ctx.exists('src/migrations');
-        await ctx.notExists('src/migrations', /[0-9]+\-second.ts/);
+        await ctx.notExists('src/migrations', /[0-9]+-second.ts/);
       },
       { schema: 'auth-schema-migrated' },
     ),
@@ -57,7 +57,7 @@ describe('cli/commands/migration:add', () => {
         await ctx.linkNodeModules();
         await addMigration('second', { cwd: ctx.cwd });
         await ctx.exists('src/migrations');
-        await ctx.exists('src/migrations', /[0-9]+\-second.ts/);
+        await ctx.exists('src/migrations', /[0-9]+-second.ts/);
       },
       { schema: 'auth-schema-partial-migrated' },
     ),

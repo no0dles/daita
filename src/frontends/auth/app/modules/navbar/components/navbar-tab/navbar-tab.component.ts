@@ -8,7 +8,7 @@ import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 })
 export class NavbarTabComponent implements OnInit, OnChanges {
   @Input()
-  name: string = '';
+  name = '';
 
   @Input()
   link: string[] = [];

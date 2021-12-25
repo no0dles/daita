@@ -10,10 +10,17 @@ import { FormLayoutSelectComponent } from './components/form-layout-select/form-
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormLayoutInputBtnComponent } from './components/form-layout-input-btn/form-layout-input-btn.component';
 
-
-
 @NgModule({
-  declarations: [FormLayoutFooterComponent, FormLayoutInputComponent, FormLayoutTextareaComponent, FormLayoutRadioComponent, FormLayoutCheckboxComponent, FormLayoutSectionComponent, FormLayoutSelectComponent, FormLayoutInputBtnComponent],
+  declarations: [
+    FormLayoutFooterComponent,
+    FormLayoutInputComponent,
+    FormLayoutTextareaComponent,
+    FormLayoutRadioComponent,
+    FormLayoutCheckboxComponent,
+    FormLayoutSectionComponent,
+    FormLayoutSelectComponent,
+    FormLayoutInputBtnComponent,
+  ],
   exports: [
     FormLayoutFooterComponent,
     FormLayoutInputComponent,
@@ -24,9 +31,6 @@ import { FormLayoutInputBtnComponent } from './components/form-layout-input-btn/
     FormLayoutSelectComponent,
     FormLayoutInputBtnComponent,
   ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-  ],
+  imports: [CommonModule, ReactiveFormsModule],
 })
-export class FormLayoutModule { }
+export class FormLayoutModule {}

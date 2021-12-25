@@ -1,11 +1,4 @@
-import {
-  AstError,
-  getArrayValue,
-  getBooleanValue,
-  getName,
-  getStringValue,
-  isKind,
-} from '../ast/utils';
+import { AstError, getArrayValue, getBooleanValue, getName, getStringValue, isKind } from '../ast/utils';
 import {
   AstObjectPropertyAssignmentValue,
   AstObjectPropertyShorthandValue,
@@ -75,32 +68,17 @@ export class AstObjectValue implements AstNode {
 
   private *getProps(): Generator<AstObjectPropertyValue> {
     for (const property of this.node.properties) {
-      const propertyAssignment = isKind(
-        property,
-        SyntaxKind.PropertyAssignment,
-      );
+      const propertyAssignment = isKind(property, SyntaxKind.PropertyAssignment);
       if (propertyAssignment) {
-        yield new AstObjectPropertyAssignmentValue(
-          this.block,
-          propertyAssignment,
-        );
+        yield new AstObjectPropertyAssignmentValue(this.block, propertyAssignment);
       }
-      const shorthandPropertyAssignment = isKind(
-        property,
-        SyntaxKind.ShorthandPropertyAssignment,
-      );
+      const shorthandPropertyAssignment = isKind(property, SyntaxKind.ShorthandPropertyAssignment);
       if (shorthandPropertyAssignment) {
-        yield new AstObjectPropertyShorthandValue(
-          this.block,
-          shorthandPropertyAssignment,
-        );
+        yield new AstObjectPropertyShorthandValue(this.block, shorthandPropertyAssignment);
       }
       const spreadAssignment = isKind(property, SyntaxKind.SpreadAssignment);
       if (spreadAssignment) {
-        const variableName = getName(
-          spreadAssignment.expression,
-          'spread assignment',
-        );
+        const variableName = getName(spreadAssignment.expression, 'spread assignment');
         const variable = this.block.variable(variableName);
         if (!variable) {
           throw new AstError(this.node, 'unable to find variable');

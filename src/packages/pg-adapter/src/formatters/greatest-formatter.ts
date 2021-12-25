@@ -1,7 +1,4 @@
-import {
-  GreatestDescription,
-  isGreatestDescription,
-} from '@daita/relational';
+import { GreatestDescription, isGreatestDescription } from '@daita/relational';
 import { FormatContext } from '@daita/relational';
 import { FormatHandle, Formatter, FormatType } from '@daita/relational';
 

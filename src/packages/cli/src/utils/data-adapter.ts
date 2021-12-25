@@ -22,7 +22,7 @@ export interface BaseContextConfig {
 }
 
 export interface DaitaHttpContextConfig extends BaseContextConfig {
-  options: {};
+  options: unknown;
   authorization: undefined;
 }
 export interface DaitaSqliteContextConfig extends BaseContextConfig {
@@ -76,8 +76,10 @@ function getAdapterImpl<T>(
   RelationalDataAdapterImplementation<any, any> {
   const cwd = join(options?.cwd || process.cwd());
   if (contextConfig.module) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return require(relative(__dirname, join(cwd, contextConfig.module))).adapter;
   } else {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return require(defaultModule).adapter;
   }
 }

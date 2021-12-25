@@ -21,27 +21,27 @@ if (!APP_PATH) {
   process.exit(1);
 }
 
-const application = new Application();
+console.log('load app');
+import(APP_PATH)
+  .then((app: IwentApplication) => {
+    const application = new Application();
 
-try {
-  console.log('load app');
-  const app = require(APP_PATH) as IwentApplication;
+    const adapter: RelationalMigrationAdapterImplementation<any, any> = DATABASE_URL.startsWith('postgres')
+      ? pgAdapter
+      : sqliteAdapter;
 
-  const adapter: RelationalMigrationAdapterImplementation<any, any> = DATABASE_URL.startsWith('postgres')
-    ? pgAdapter
-    : sqliteAdapter;
+    const context = getContext(adapter, {
+      connectionString: DATABASE_URL,
+      schemaName: SCHEMA_NAME,
+    });
 
-  const context = getContext(adapter, {
-    connectionString: DATABASE_URL,
-    schemaName: SCHEMA_NAME,
+    console.log('process app');
+    const processor = new IwentPollProcessor(app);
+
+    application.attach(context);
+    application.attach(processor.run(context));
+  })
+  .catch((err) => {
+    console.error(`unable to load app path ${APP_PATH}: ` + err.message);
+    process.exit(1);
   });
-
-  console.log('process app');
-  const processor = new IwentPollProcessor(app);
-
-  application.attach(context);
-  application.attach(processor.run(context));
-} catch (e) {
-  logger.error(e);
-  process.exit(1);
-}

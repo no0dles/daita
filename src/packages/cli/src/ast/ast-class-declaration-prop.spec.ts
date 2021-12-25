@@ -7,9 +7,7 @@ import * as path from 'path';
 
 describe('ast-class-declaration-prop', () => {
   const context = new AstContext();
-  const sourceFile = context.get(
-    path.join(__dirname, './ast-class-declaration-prop.test.ts'),
-  );
+  const sourceFile = context.get(path.join(__dirname, './ast-class-declaration-prop.test.ts'));
   const testClassDecl = sourceFile!.block.class('TestClassDecl');
 
   it('should parse TestClassDecl.prop1', () => {

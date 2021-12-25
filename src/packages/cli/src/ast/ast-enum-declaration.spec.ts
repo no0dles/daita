@@ -3,9 +3,7 @@ import * as path from 'path';
 
 describe('ast-enum-declaration', () => {
   const context = new AstContext();
-  const sourceFile = context.get(
-    path.join(__dirname, './ast-enum-declaration.test.ts'),
-  );
+  const sourceFile = context.get(path.join(__dirname, './ast-enum-declaration.test.ts'));
 
   it('should parse exported enum', () => {
     const enumValue = sourceFile!.block.enum('NormalEnum');

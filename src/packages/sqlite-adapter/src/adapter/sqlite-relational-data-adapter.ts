@@ -54,7 +54,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
       if (!sql.toLowerCase().startsWith('select')) {
         db.run(sql, values, function (err) {
           if (err) {
-            const regex = /SQLITE_ERROR\: no such table\: (?<table>.*)/g;
+            const regex = /SQLITE_ERROR: no such table: (?<table>.*)/g;
             const groups = regex.exec(err.message)?.groups || {};
             if (groups.table) {
               return defer.reject(new RelationDoesNotExistsError(err, sql, values, undefined, groups.table));
@@ -70,7 +70,7 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
       } else {
         const stmt = db.prepare(sql, values, function (err) {
           if (err) {
-            const regex = /SQLITE_ERROR\: no such table\: (?<table>.*)/g;
+            const regex = /SQLITE_ERROR: no such table: (?<table>.*)/g;
             const groups = regex.exec(err.message)?.groups || {};
             if (groups.table) {
               return defer.reject(new RelationDoesNotExistsError(err, sql, values, undefined, groups.table));

@@ -39,7 +39,8 @@ export class RelationalAdapterMock<T = any> implements RelationalTransactionAdap
 export class RelationalAdapterMockImplementation
   implements
     RelationalDataAdapterImplementation<any, MockAdapterOptions<any>>,
-    RelationalTransactionAdapterImplementation<any, MockAdapterOptions<any>> {
+    RelationalTransactionAdapterImplementation<any, MockAdapterOptions<any>>
+{
   getRelationalAdapter(options: MockAdapterOptions<any>): RelationalTransactionAdapter<any> {
     return new RelationalAdapterMock(options);
   }

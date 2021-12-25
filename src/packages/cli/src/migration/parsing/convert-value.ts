@@ -18,6 +18,7 @@ function convertFn(value: AstCallExpression) {
     throw new AstError(value.node, 'expected function type');
   }
   const requirePath = relative(__dirname, getJavascriptFilename(type.block.sourceFile.fileName));
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const fn = require(requirePath)[value.methodName];
   const args: any[] = [];
   for (const arg of value.arguments) {

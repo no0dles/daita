@@ -1,7 +1,4 @@
-import {
-  RelationalDataAdapterImplementation,
-  RelationalTransactionAdapterImplementation,
-} from '@daita/relational';
+import { RelationalDataAdapterImplementation, RelationalTransactionAdapterImplementation } from '@daita/relational';
 import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { RelationalTransactionAdapter } from '@daita/relational';
 import { RelationalMigrationAdapter } from '@daita/orm';
@@ -15,7 +12,8 @@ class MariadbAdapterImplementation
   implements
     RelationalDataAdapterImplementation<MariadbSql, MariadbAdapterOptions>,
     RelationalTransactionAdapterImplementation<MariadbSql, MariadbAdapterOptions>,
-    RelationalMigrationAdapterImplementation<MariadbSql, MariadbAdapterOptions> {
+    RelationalMigrationAdapterImplementation<MariadbSql, MariadbAdapterOptions>
+{
   getRelationalAdapter(
     options: MariadbAdapterOptions,
   ): RelationalTransactionAdapter<MariadbSql> & RelationalMigrationAdapter<MariadbSql> {

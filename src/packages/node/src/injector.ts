@@ -59,7 +59,7 @@ class InjectorRootContext {
   }
 }
 
-class ServiceInstance implements ProxyHandler<() => {}> {
+class ServiceInstance implements ProxyHandler<any> {
   private instance: any | null = null;
 
   constructor(private type: ServiceType<any>, private ctx: InjectContext) {}

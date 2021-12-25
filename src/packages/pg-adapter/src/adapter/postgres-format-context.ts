@@ -33,7 +33,7 @@ export class PostgresFormatContext extends CounterFormatContext {
         return 'NUMERIC(26,10)[]';
       case 'string[]':
         return 'VARCHAR[]';
-      case 'boolean':
+      case 'boolean[]':
         return 'BOOLEAN[]';
       case 'uuid':
         return 'uuid';

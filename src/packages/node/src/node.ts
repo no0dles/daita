@@ -21,6 +21,7 @@ export function getOwnPackageJson<T>(selector: (pkg: PackageJson) => T, dir?: st
   const packagePath = path.join(currentDir, 'package.json');
 
   if (fs.existsSync(packagePath)) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const packageContent = require(packagePath);
     const value = selector(packageContent);
     if (value !== null && value !== undefined) {

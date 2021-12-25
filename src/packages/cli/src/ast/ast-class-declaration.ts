@@ -33,10 +33,7 @@ export class AstClassDeclaration implements AstNode {
           return null;
         }
 
-        const extendName = getName(
-          heritageType.expression,
-          'expression with type arguments',
-        );
+        const extendName = getName(heritageType.expression, 'expression with type arguments');
         return this.block.class(extendName);
       }
     }
@@ -129,10 +126,7 @@ export class AstClassDeclaration implements AstNode {
 
   private *getProps() {
     for (const member of this.node.members) {
-      const propertyDeclaration = isKind(
-        member,
-        SyntaxKind.PropertyDeclaration,
-      );
+      const propertyDeclaration = isKind(member, SyntaxKind.PropertyDeclaration);
       if (propertyDeclaration) {
         yield new AstClassDeclarationProp(this.block, propertyDeclaration);
       }

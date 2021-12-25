@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 @Component({
@@ -6,7 +6,7 @@ import { FormGroup } from '@angular/forms';
   templateUrl: './form-layout-textarea.component.html',
   styleUrls: ['./form-layout-textarea.component.scss'],
 })
-export class FormLayoutTextareaComponent implements OnInit {
+export class FormLayoutTextareaComponent {
   @Input()
   id!: string;
 
@@ -15,8 +15,4 @@ export class FormLayoutTextareaComponent implements OnInit {
 
   @Input()
   form!: FormGroup;
-
-  constructor() {}
-
-  ngOnInit(): void {}
 }

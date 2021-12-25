@@ -5,9 +5,7 @@ import { AstKeywordType } from './ast-keyword-type';
 
 describe('ast-type-literal-type', () => {
   const context = new AstContext();
-  const sourceFile = context.get(
-    path.join(__dirname, './ast-type-literal-type.test.ts'),
-  );
+  const sourceFile = context.get(path.join(__dirname, './ast-type-literal-type.test.ts'));
 
   it('should parse from variable', () => {
     const variable = sourceFile!.block.variable('variable');

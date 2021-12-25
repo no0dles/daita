@@ -1,7 +1,4 @@
-import {
-  isLeastDescription,
-  LeastDescription,
-} from '@daita/relational';
+import { isLeastDescription, LeastDescription } from '@daita/relational';
 import { FormatHandle, Formatter, FormatType } from '@daita/relational';
 import { FormatContext } from '@daita/relational';
 

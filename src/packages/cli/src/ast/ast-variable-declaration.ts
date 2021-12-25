@@ -1,9 +1,4 @@
-import {
-  getName,
-  getTypeFromTypeOrExpression,
-  getValueFromExpression,
-  hasModifier,
-} from './utils';
+import { getName, getTypeFromTypeOrExpression, getValueFromExpression, hasModifier } from './utils';
 import { AstBlock } from './ast-block';
 import { SyntaxKind, VariableDeclaration, VariableStatement } from 'typescript';
 import { AstType } from './ast-type';
@@ -23,10 +18,7 @@ export class AstVariableDeclaration implements AstNode {
   }
 
   get exported(): boolean {
-    return hasModifier(
-      this.variableStatement.modifiers,
-      SyntaxKind.ExportKeyword,
-    );
+    return hasModifier(this.variableStatement.modifiers, SyntaxKind.ExportKeyword);
   }
 
   get name(): string {
@@ -34,11 +26,7 @@ export class AstVariableDeclaration implements AstNode {
   }
 
   get type(): AstType | null {
-    return getTypeFromTypeOrExpression(
-      this.block,
-      this.node.type,
-      this.node.initializer,
-    );
+    return getTypeFromTypeOrExpression(this.block, this.node.type, this.node.initializer);
   }
 
   get value(): AstValue | null {

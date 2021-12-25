@@ -1,6 +1,7 @@
 import { getSchemaInformation, getSchemaLocation } from '../../utils/path';
 import { AstContext } from '../../ast/ast-context';
 import * as path from 'path';
+import { renderSvg } from 'nomnoml';
 import * as fs from 'fs';
 import { createLogger } from '@daita/common';
 import {
@@ -19,8 +20,6 @@ export async function diagram(options: { cwd?: string; schema?: string; filename
   if (!schemaInfo) {
     throw new Error('could not load schema');
   }
-
-  const nomnoml = require('nomnoml');
 
   let content =
     '#direction: right\n' +
@@ -44,7 +43,7 @@ export async function diagram(options: { cwd?: string; schema?: string; filename
     }
   }
 
-  const svg = nomnoml.renderSvg(content);
+  const svg = renderSvg(content);
   const cwd = options.cwd ? path.resolve(options.cwd) : process.cwd();
   const svgFile = path.join(cwd, options.filename || 'docs/schema.svg');
   const svgDirectory = path.dirname(svgFile);

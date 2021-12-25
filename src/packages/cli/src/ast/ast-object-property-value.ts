@@ -1,8 +1,4 @@
-import {
-  PropertyAssignment,
-  ShorthandPropertyAssignment,
-  Node,
-} from 'typescript';
+import { PropertyAssignment, ShorthandPropertyAssignment, Node } from 'typescript';
 import { AstValue } from './ast-value';
 import { AstBlock } from './ast-block';
 import { AstError, getName, getValueFromExpression } from './utils';
@@ -15,13 +11,8 @@ export abstract class AstObjectPropertyValue implements AstNode {
   abstract node: Node;
 }
 
-export class AstObjectPropertyShorthandValue
-  extends AstObjectPropertyValue
-  implements AstNode {
-  constructor(
-    private block: AstBlock,
-    public node: ShorthandPropertyAssignment,
-  ) {
+export class AstObjectPropertyShorthandValue extends AstObjectPropertyValue implements AstNode {
+  constructor(private block: AstBlock, public node: ShorthandPropertyAssignment) {
     super();
   }
 
@@ -38,9 +29,7 @@ export class AstObjectPropertyShorthandValue
   }
 }
 
-export class AstObjectPropertyAssignmentValue
-  extends AstObjectPropertyValue
-  implements AstNode {
+export class AstObjectPropertyAssignmentValue extends AstObjectPropertyValue implements AstNode {
   constructor(private block: AstBlock, public node: PropertyAssignment) {
     super();
   }

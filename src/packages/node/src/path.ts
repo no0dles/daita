@@ -10,5 +10,4 @@ export function ensurePathExists(directory: string) {
   if (!existsSync(directory)) {
     mkdirSync(directory, { recursive: true });
   }
-
 }

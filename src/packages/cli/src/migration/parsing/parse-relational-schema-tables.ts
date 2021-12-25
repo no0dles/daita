@@ -7,12 +7,7 @@ import { parseRelationalSchemaTableIndices } from './parse-relational-schema-tab
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { AstError } from '../../ast/utils';
-import {
-  addTableToSchema,
-  containsTableInSchema,
-  SchemaDescription,
-  SchemaTableDescription,
-} from '@daita/orm';
+import { addTableToSchema, containsTableInSchema, SchemaDescription, SchemaTableDescription } from '@daita/orm';
 
 export function parseRelationalSchemaTables(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
   const calls = schemaVariable.callsByName('table');

@@ -6,11 +6,7 @@ export class RelationDoesNotExistsError extends Error {
     public schema: string | undefined,
     public relation: string,
   ) {
-    super(
-      `Relation "${
-        schema ? `${schema}.${relation}` : relation
-      }" does not exists`,
-    );
+    super(`Relation "${schema ? `${schema}.${relation}` : relation}" does not exists`);
   }
 }
 
@@ -29,16 +25,9 @@ export class DuplicateKeyError extends Error {
 }
 
 export class UnknownError extends Error {
-  constructor(
-    public sourceError: Error,
-    public sourceSql: string,
-    public sourceSqlValues: any[],
-  ) {
+  constructor(public sourceError: Error, public sourceSql: string, public sourceSqlValues: any[]) {
     super(sourceError.message);
   }
 }
 
-export type RelationalError =
-  | RelationDoesNotExistsError
-  | DuplicateKeyError
-  | UnknownError;
+export type RelationalError = RelationDoesNotExistsError | DuplicateKeyError | UnknownError;
