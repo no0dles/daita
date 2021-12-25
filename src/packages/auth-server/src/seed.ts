@@ -1,21 +1,15 @@
-import { UserPool } from './models/user-pool';
 import { ExcludeNonPrimitive } from '@daita/common';
-import { UserPoolCors } from './models/user-pool-cors';
 import { randomString } from '@daita/common';
 import { field } from '@daita/relational';
 import { TransactionClient } from '@daita/relational';
 import { all } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
-import { User } from './models/user';
 import { getSha1, hashPassword } from './modules/hash';
-import { UserPoolUser } from './models/user-pool-user';
 import { and } from '@daita/relational';
 import { getRandomCode } from './modules/random';
-import { UserToken } from './models/user-token';
-import { UserRole } from './models/user-role';
-import { Role } from './models/role';
 import { TransactionContext } from '@daita/orm';
+import { Role, User, UserPool, UserPoolCors, UserPoolUser, UserRole, UserToken } from '@daita/auth';
 
 export async function createToken(
   client: TransactionClient<any> | TransactionContext<any>,

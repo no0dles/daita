@@ -3,10 +3,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from '../../../../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { uuid } from '../../../../utils/uuid';
-import { UserPool } from '../../../../../../../packages/auth-server/models/user-pool';
-import { User } from '../../../../../../../packages/auth-server/models/user';
-import { field } from '../../../../../../../packages/relational/sql/keyword/field/field';
-import { table } from '../../../../../../../packages/relational/sql/keyword/table/table';
+import { User, UserPool } from '@daita/auth';
+import { field, table } from '@daita/relational';
 
 @Component({
   selector: 'app-user-create',

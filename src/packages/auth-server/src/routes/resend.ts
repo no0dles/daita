@@ -1,6 +1,4 @@
 import { Router } from 'express';
-import { User } from '../models/user';
-import { UserEmailVerify } from '../models/user-email-verify';
 import { getRandomCode } from '../modules/random';
 import { authMiddleware } from '../middlewares/auth-middleware';
 import { field } from '@daita/relational';
@@ -9,6 +7,7 @@ import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { TransactionContext } from '@daita/orm';
 import { getRequiredRequestUserProp } from '@daita/http-server';
+import { User, UserEmailVerify } from '@daita/auth';
 
 export function resendRoute(ctx: TransactionContext<any>) {
   const router = Router({ mergeParams: true });

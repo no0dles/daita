@@ -19,9 +19,13 @@ function parse(token: string, partIndex: number) {
   const tokenPart = token.split('.')[partIndex];
   let content = '';
   try {
-    content = Buffer.from(tokenPart, 'base64').toString();
+    if (typeof window !== 'undefined') {
+      content = atob(tokenPart);
+    } else {
+      content = Buffer.from(tokenPart, 'base64').toString();
+    }
   } catch (e) {
-    throw new Error('invalid format');
+    throw new Error('invalid format: ' + e.message);
   }
   return JSON.parse(content);
 }

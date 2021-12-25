@@ -1,7 +1,4 @@
 import { Router } from 'express';
-import { User } from '../models/user';
-import { UserPool, UserPoolAlgorithm } from '../models/user-pool';
-import { UserRefreshToken } from '../models/user-refresh-token';
 import { compareHash } from '../modules/hash';
 import { getAccessToken } from '../modules/key';
 import { getRandomCode } from '../modules/random';
@@ -11,11 +8,11 @@ import { and } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { join } from '@daita/relational';
-import { UserPoolUser } from '../models/user-pool-user';
 import { getRoles } from '../modules/roles';
 import { TransactionContext } from '@daita/orm';
 import { Counter } from 'prom-client';
 import { metricRegister } from '../metric';
+import { User, UserPool, UserPoolAlgorithm, UserPoolUser, UserRefreshToken } from '@daita/auth';
 
 const invalidLoginCounter = new Counter({
   name: 'auth_invalid_login',

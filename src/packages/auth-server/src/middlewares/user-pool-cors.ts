@@ -1,10 +1,10 @@
 import * as express from 'express';
-import { UserPoolCors } from '../models/user-pool-cors';
 import cors = require('cors');
 import { field } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { Context } from '@daita/orm';
+import { UserPoolCors } from '@daita/auth';
 
 export function userPoolCors(client: Context<any>, fn: (req: express.Request) => string): express.RequestHandler<any> {
   return cors(async (req, callback) => {

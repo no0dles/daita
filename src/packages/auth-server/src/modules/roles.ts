@@ -1,10 +1,9 @@
 import { field, SqlClient } from '@daita/relational';
-import { Role } from '../models/role';
 import { table } from '@daita/relational';
 import { join } from '@daita/relational';
-import { UserRole } from '../models/user-role';
 import { equal } from '@daita/relational';
 import { and } from '@daita/relational';
+import { Role, UserRole } from '@daita/auth';
 
 export function getRoles(client: SqlClient, userPoolId: string, username: string) {
   return client.select({

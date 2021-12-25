@@ -4,28 +4,31 @@ import { seedAuthDefaults } from './client';
 import { adapter as sqliteAdapter } from '@daita/sqlite-adapter';
 import { adapter as mariadbAdapter } from '@daita/mariadb-adapter';
 import { adapter as pgAdapter } from '@daita/pg-adapter';
-import { authSchema } from '@daita/auth-server';
+import { authSchema } from '@daita/auth';
 import { Application } from '@daita/node';
 import { createLogger } from '@daita/common';
 import { getContext } from '@daita/orm';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { createMetricsApp } from '@daita/auth-server';
 
 const logger = createLogger({ container: 'auth' });
 const application = new Application();
 
 const dbUrl = process.env.DATABASE_URL || './auth.db';
-const adapter: RelationalMigrationAdapterImplementation<any, any> = dbUrl.startsWith('postgres')
-  ? pgAdapter
+const ctx = dbUrl.startsWith('postgres')
+  ? getContext(pgAdapter, {
+      schema: authSchema,
+      connectionString: dbUrl,
+    })
   : dbUrl.startsWith('mariadb')
-  ? mariadbAdapter
-  : sqliteAdapter;
-logger.info(`use ${adapter} adapter with connectionString ${dbUrl}`); // TODO redact pw
-
-const ctx = getContext(adapter, {
-  schema: authSchema,
-  connectionString: dbUrl,
-});
+  ? getContext(mariadbAdapter, {
+      schema: authSchema,
+      connectionString: dbUrl,
+    })
+  : getContext(sqliteAdapter, {
+      schema: authSchema,
+      file: dbUrl,
+    });
+logger.info(`use adapter with connectionString ${dbUrl}`); // TODO redact pw
 
 application.attach(ctx);
 

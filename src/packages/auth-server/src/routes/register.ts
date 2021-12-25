@@ -1,17 +1,14 @@
 import { Router } from 'express';
-import { UserPool } from '../models/user-pool';
-import { User } from '../models/user';
-import { UserEmailVerify } from '../models/user-email-verify';
 import { hashPassword } from '../modules/hash';
 import { getRandomCode } from '../modules/random';
 import { getLeakedCount } from '../modules/password';
 import { field } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
-import { UserPoolUser } from '../models/user-pool-user';
 import { TransactionContext } from '@daita/orm';
 import { Counter } from 'prom-client';
 import { metricRegister } from '../metric';
+import { User, UserEmailVerify, UserPool, UserPoolUser } from '@daita/auth';
 
 const successRegisterCounter = new Counter({
   name: 'auth_success_registrations',

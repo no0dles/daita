@@ -25,23 +25,11 @@
     "isolatedModules": true
   },
   "references": [{
-    "path": "../../packages/common"
+    "path": "../common"
   }, {
-    "path": "../../packages/auth"
+    "path": "../relational"
   }, {
-    "path": "../../packages/relational"
-  }, {
-    "path": "../../packages/node"
-  }, {
-    "path": "../../packages/orm"
-  }, {
-    "path": "../../packages/sqlite-adapter"
-  }, {
-    "path": "../../packages/mariadb-adapter"
-  }, {
-    "path": "../../packages/auth-server"
-  }, {
-    "path": "../../packages/pg-adapter"
+    "path": "../orm"
   }],
   "exclude": [
     "node_modules",

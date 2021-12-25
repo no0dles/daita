@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../node_modules/@angular/cli/lib/config/schema.json",
+  "$schema": "node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
@@ -13,26 +13,25 @@
           "strict": true
         }
       },
-      "root": "",
-      "sourceRoot": ".",
+      "root": "auth",
+      "sourceRoot": "auth/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "../../../dist/frontends/auth",
-            "index": "index.html",
-            "main": "main.ts",
-            "polyfills": "polyfills.ts",
-            "tsConfig": "tsconfig.json",
+            "outputPath": "dist/auth",
+            "index": "auth/index.html",
+            "main": "auth/main.ts",
+            "polyfills": "auth/polyfills.ts",
+            "tsConfig": "auth/tsconfig.json",
             "aot": true,
             "assets": [
-              "favicon.ico",
-              "assets",
-              "_redirects"
+              "auth/favicon.ico",
+              "auth/assets"
             ],
             "styles": [
-              "styles.scss"
+              "auth/styles.scss"
             ],
             "scripts": []
           },
@@ -40,8 +39,8 @@
             "production": {
               "fileReplacements": [
                 {
-                  "replace": "environments/environment.ts",
-                  "with": "environments/environment.prod.ts"
+                  "replace": "auth/environments/environment.ts",
+                  "with": "auth/environments/environment.prod.ts"
                 }
               ],
               "optimization": true,

@@ -1,8 +1,5 @@
 import { Router } from 'express';
-import { UserRefreshToken } from '../models/user-refresh-token';
 import { getRandomCode } from '../modules/random';
-import { User } from '../models/user';
-import { UserPool, UserPoolAlgorithm } from '../models/user-pool';
 import { getAccessToken } from '../modules/key';
 import { field } from '@daita/relational';
 import { and } from '@daita/relational';
@@ -13,6 +10,7 @@ import { getRoles } from '../modules/roles';
 import { TransactionContext } from '@daita/orm';
 import { Counter } from 'prom-client';
 import { metricRegister } from '../metric';
+import { User, UserPool, UserPoolAlgorithm, UserRefreshToken } from '@daita/auth';
 
 const successRefreshTokenCounter = new Counter({
   name: 'auth_success_refresh_token',

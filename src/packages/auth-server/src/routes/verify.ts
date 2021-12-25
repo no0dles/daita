@@ -1,7 +1,4 @@
 import { Router } from 'express';
-import { UserEmailVerify } from '../models/user-email-verify';
-import { User } from '../models/user';
-import { UserPool } from '../models/user-pool';
 import { field } from '@daita/relational';
 import { and } from '@daita/relational';
 import { table } from '@daita/relational';
@@ -11,6 +8,7 @@ import { isNull } from '@daita/relational';
 import { TransactionContext } from '@daita/orm';
 import { Counter } from 'prom-client';
 import { metricRegister } from '../metric';
+import { User, UserEmailVerify, UserPool } from '@daita/auth';
 
 const invalidVerifyCounter = new Counter({
   name: 'auth_invalid_verify',
