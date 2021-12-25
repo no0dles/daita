@@ -5,6 +5,7 @@ import { AuthorizedContext } from './authorized-context';
 
 export interface TransactionContext<T> extends Context<T> {
   authorize(auth: RuleContext): AuthorizedTransactionContext<T>;
+  close(): Promise<void>;
   transaction<R>(action: (trx: Context<T>) => Promise<R>, timeout?: number): Promise<R>;
 }
 

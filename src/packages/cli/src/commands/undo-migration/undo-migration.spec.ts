@@ -1,11 +1,13 @@
 import { undoMigration } from './undo-migration';
 import { addMigration } from '../add-migration/add-migration';
 import { setupEnv } from '@daita/testing';
+import { schemaRoot } from '../../testing';
 
 describe('cli/commands/migration-undo', () => {
   it(
     `should undo migration`,
     setupEnv(
+      schemaRoot,
       'undo-migration',
       async (ctx) => {
         await ctx.linkNodeModules();
@@ -20,6 +22,7 @@ describe('cli/commands/migration-undo', () => {
   it(
     `should add and undo migration`,
     setupEnv(
+      schemaRoot,
       'add-undo-migration',
       async (ctx) => {
         await ctx.linkNodeModules();

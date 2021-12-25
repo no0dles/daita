@@ -3,10 +3,10 @@ import { baseConfig } from '../../../jest.base.config';
 
 const config: Config.InitialOptions = {
   ...baseConfig,
-  name: '@daita/orm',
-  displayName: '@daita/orm',
-  roots: ['<rootDir>/src/packages/orm'],
-  modulePaths: ['src/packages/orm/src'],
+  name: '@daita/cli',
+  displayName: '@daita/cli',
+  roots: ['<rootDir>/src/packages/cli'],
+  modulePaths: ['src/packages/cli/src'],
 };
 
 export default config;

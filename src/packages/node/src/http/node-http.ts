@@ -1,5 +1,5 @@
 import { request as httpsRequest, RequestOptions } from 'https';
-import { request as httpRequest } from 'https';
+import { request as httpRequest } from 'http';
 import { parse } from 'url';
 import { parseJson } from '@daita/common';
 import {

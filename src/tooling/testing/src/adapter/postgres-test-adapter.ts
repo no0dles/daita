@@ -1,7 +1,7 @@
 import { RelationalTransactionAdapterImplementation } from '@daita/relational';
 import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { RelationalMigrationAdapter } from '@daita/orm';
-import { execCommand, getDynamicPort, runContainer } from '@daita/node';
+import { execCommand, getDynamicPort, getFreeTestPort, runContainer } from '@daita/node';
 import { sleep } from '@daita/common';
 import { Resolvable } from '@daita/common';
 import { PostgresMigrationAdapter, PostgresSql } from '@daita/pg-adapter';
@@ -38,16 +38,17 @@ class PostgresTestAdapterImplementation
 }
 
 export async function getPostgresDb(): Promise<PostgresDb> {
+  const freePort = await getFreeTestPort();
   const container = await runContainer({
     image: 'postgres:12',
     env: ['POSTGRES_PASSWORD=postgres'],
     labels: {
       'ch.daita.source': 'test',
     },
-    portBinding: { 5432: 0 },
+    portBinding: { 5432: freePort },
   });
 
-  const newPort = await getDynamicPort(container, 5432);
+  //const newPort = await getDynamicPort(container, 5432);
 
   async function awaitForReady() {
     let isReady = await execCommand(container, ['pg_isready']);
@@ -62,7 +63,7 @@ export async function getPostgresDb(): Promise<PostgresDb> {
   await awaitForReady();
 
   const db: PostgresDb = {
-    connectionString: `postgres://postgres:postgres@localhost:${newPort}/postgres`,
+    connectionString: `postgres://postgres:postgres@localhost:${freePort}/postgres`,
     close: async () => {
       await container.stop();
       await container.remove();

@@ -17,10 +17,6 @@ import { RelationalAuthorizableClient } from './relational-authorizable-client';
 export class RelationalClient implements SqlClient, Client<any> {
   constructor(public dataAdapter: RelationalDataAdapter<any>) {}
 
-  close() {
-    return this.dataAdapter.close();
-  }
-
   async selectFirst<T>(sql: SelectSql<T>): Promise<T | null> {
     const clonedSql = deepClone(sql);
     clonedSql.limit = 1;

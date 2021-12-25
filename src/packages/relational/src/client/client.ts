@@ -7,7 +7,6 @@ export interface Client<T> extends SqlClient {
   dataAdapter: RelationalDataAdapter<T>;
   exec(sql: T): Promise<RelationalRawResult>;
   supportsQuery<S = any>(sql: S): this is Client<T | S>;
-  close(): Promise<void>;
   authorizable(rules: { id: string; rule: Rule }[]): AuthorizableClient<T>;
 }
 
@@ -19,6 +18,5 @@ export interface AuthorizedClient<T> extends SqlClient {
   dataAdapter: RelationalDataAdapter<T>;
   exec(sql: T): Promise<RelationalRawResult>;
   supportsQuery<S = any>(sql: S): this is Client<T | S>;
-  close(): Promise<void>;
   isAuthorized(sql: T): boolean;
 }

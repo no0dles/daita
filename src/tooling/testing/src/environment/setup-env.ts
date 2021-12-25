@@ -18,7 +18,12 @@ export interface CliEnvironment {
 
 export type CliEnvironmentCallback = (ctx: CliEnvironment) => Promise<any>;
 
-export function setupEnv(testName: string, callback: CliEnvironmentCallback, options?: { schema?: string }) {
+export function setupEnv(
+  schemaRoot: string,
+  testName: string,
+  callback: CliEnvironmentCallback,
+  options?: { schema?: string },
+) {
   const scenarioResultRoot = path.join(process.cwd(), 'dist/tmp/scenario');
   const resultPath = path.join(scenarioResultRoot, testName);
 
@@ -60,7 +65,6 @@ export function setupEnv(testName: string, callback: CliEnvironmentCallback, opt
     fs.mkdirSync(resultPath, { recursive: true });
 
     if (options && options.schema) {
-      const schemaRoot = path.join(process.cwd(), './src/packages/cli/schemas');
       const schemaPath = path.join(schemaRoot, options.schema);
       copyDirectoryRecursive(schemaPath, resultPath, () => true);
     }

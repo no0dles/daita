@@ -1,10 +1,11 @@
-import * as express from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../modules/token';
 import { createLogger } from '@daita/common';
+//import * as httpServ from '@daita/http-server';
 import { setRequestUser } from '@daita/http-server';
 
 const logger = createLogger({ package: 'auth-server', middleware: 'auth' });
-export const authMiddleware = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.header('Authorization');
     if (!authHeader) {
@@ -21,6 +22,7 @@ export const authMiddleware = async (req: express.Request, res: express.Response
       if (!user) {
         return res.status(401).end();
       }
+      //console.log(httpServ);
       setRequestUser(req, user);
       next();
     } catch (e) {

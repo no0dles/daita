@@ -15,6 +15,10 @@ export class RelationalTransactionContext extends RelationalContext implements T
     super(transactionAdapter, migrationTree);
   }
 
+  close(): Promise<void> {
+    return this.transactionAdapter.close();
+  }
+
   authorize(auth: RuleContext<any>): AuthorizedTransactionContext<any> {
     return new RelationalAuthorizedTransactionContext(this.transactionAdapter, this.migrationTree, auth);
   }

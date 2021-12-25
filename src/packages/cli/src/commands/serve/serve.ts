@@ -133,14 +133,19 @@ export async function serve(opts: {
   }
 
   const closeDefer = new Defer<void>();
-
+  const closedDefer = new Defer<void>();
   closeDefer.promise.then(async () => {
-    logger.info('closing...');
-    reloadDebouncer.clear();
-    server?.close();
-    authServer?.close();
-    await watcher?.close();
-    await ctx?.close();
+    try {
+      logger.info('closing...');
+      reloadDebouncer.clear();
+      server?.close();
+      authServer?.close();
+      await watcher?.close();
+      await ctx?.close();
+      closedDefer.resolve();
+    } catch (e) {
+      closedDefer.reject(e);
+    }
   });
 
   process.on('SIGINT', async () => {
@@ -150,6 +155,7 @@ export async function serve(opts: {
   return {
     cancel: () => {
       closeDefer.resolve();
+      return closedDefer.promise;
     },
   };
 }

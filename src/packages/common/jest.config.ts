@@ -1,12 +1,12 @@
 import type { Config } from '@jest/types';
+import { baseConfig } from '../../../jest.base.config';
 
 const config: Config.InitialOptions = {
-  moduleFileExtensions: ['ts', 'js'],
-  transform: {
-    '^.+\\.ts$': 'ts-jest',
-  },
-  testRegex: 'src/.*.spec.ts',
-  testEnvironment: 'node',
+  ...baseConfig,
+  name: '@daita/common',
+  displayName: '@daita/common',
+  roots: ['<rootDir>/src/packages/common'],
+  modulePaths: ['src/packages/common/src'],
 };
 
 export default config;

@@ -13,4 +13,8 @@ export class RelationalAuthorizableTransactionClient implements AuthorizableTran
   authorize(auth: RuleContext): AuthorizedTransactionClient<any> {
     return new RelationalAuthorizedTransactionClient(this.dataAdapter, this.ruleEvaluator, auth);
   }
+
+  async close(): Promise<void> {
+    await this.dataAdapter.close();
+  }
 }

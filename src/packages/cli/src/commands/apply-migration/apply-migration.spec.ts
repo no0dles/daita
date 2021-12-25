@@ -2,6 +2,7 @@ import { addMigration } from '../add-migration/add-migration';
 import { applyMigration } from './apply-migration';
 import { getPostgresDb, PostgresDb } from '@daita/testing';
 import { setupEnv } from '@daita/testing';
+import { schemaRoot } from '../../testing';
 
 describe('cli/commands/migration:apply', () => {
   let postgresDb: PostgresDb;
@@ -13,6 +14,7 @@ describe('cli/commands/migration:apply', () => {
   it(
     `should apply migration`,
     setupEnv(
+      schemaRoot,
       'apply-migration',
       async (ctx) => {
         await ctx.linkNodeModules();

@@ -40,7 +40,6 @@ export class SqliteRelationalDataAdapter implements RelationalDataAdapter<Sqlite
   async exec(sql: any): Promise<RelationalRawResult> {
     const ctx = new SqliteFormatContext();
     const query = sqliteFormatter.format(sql, ctx);
-    console.log(query, ctx.getValues());
     this.logger.debug('execute sql', { sql, query, queryValues: ctx.getValues() });
     return await this.execRaw(query, ctx.getValues());
   }

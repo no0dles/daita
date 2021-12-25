@@ -1,15 +1,12 @@
 import type { Config } from '@jest/types';
+import { baseConfig } from '../../../jest.base.config';
 
 const config: Config.InitialOptions = {
-  moduleFileExtensions: ['ts', 'js'],
-  transform: {
-    '^.+\\.ts$': 'ts-jest',
-  },
-  testRegex: 'src/.*.spec.ts',
-  testEnvironment: 'node',
-  collectCoverage: true,
-  coverageDirectory: 'coverage',
-  coverageReporters: ['json', 'html', 'lcov'],
+  ...baseConfig,
+  name: '@daita/mowntain',
+  displayName: '@daita/mowntain',
+  roots: ['<rootDir>/src/examples/mowntain'],
+  modulePaths: ['src/examples/mowntain/src'],
 };
 
 export default config;

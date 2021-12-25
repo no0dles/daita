@@ -14,10 +14,6 @@ export class RelationalAuthorizedClient implements AuthorizedClient<any> {
     protected auth: RuleContext,
   ) {}
 
-  close() {
-    return this.dataAdapter.close();
-  }
-
   async selectFirst<T>(sql: SelectSql<T>): Promise<T | null> {
     const clonedSql = deepClone(sql);
     clonedSql.limit = 1;

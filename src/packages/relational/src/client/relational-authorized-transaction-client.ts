@@ -21,4 +21,8 @@ export class RelationalAuthorizedTransactionClient
       return action(new RelationalAuthorizedClient(adapter, this.ruleEvaluator, this.auth));
     });
   }
+
+  async close(): Promise<void> {
+    await this.transactionAdapter.close();
+  }
 }

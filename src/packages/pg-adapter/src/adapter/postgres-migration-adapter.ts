@@ -48,10 +48,10 @@ export class PostgresMigrationAdapter
 
   async remove(): Promise<void> {
     const connectionString = await this.connectionString.get();
-    await this.client.close();
+    await this.pool.close();
     await dropDatabase(connectionString);
     await ensureDatabaseExists(connectionString);
-    await this.client.reset();
+    await this.pool.reset();
   }
 
   private async applyMigrationPlan(client: Client<PostgresSql>, migrationPlan: MigrationPlan) {

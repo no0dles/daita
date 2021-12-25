@@ -19,11 +19,14 @@ describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
       await db.start();
       await testConnection(adapter);
       console.log('recovered');
+    } catch (e) {
+      console.log(e);
+      throw e;
     } finally {
       await adapter.close();
       await db.close();
     }
-  });
+  }, 25000);
 
   it('should handle disconnect before initial connection', async () => {
     const db = await getPostgresDb();

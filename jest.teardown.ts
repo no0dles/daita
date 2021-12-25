@@ -1,4 +1,4 @@
-import Docker from 'dockerode';
+import Docker = require('dockerode');
 
 async function tearDown() {
   const docker = new Docker();

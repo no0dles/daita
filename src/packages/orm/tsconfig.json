@@ -26,7 +26,8 @@
   },
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "jest.config.ts"
   ],
   "references": [{
     "path": "../common"

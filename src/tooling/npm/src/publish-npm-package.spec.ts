@@ -19,6 +19,7 @@ describe('scripts/publish-npm-package', () => {
   it(
     'should create empty daita project',
     setupEnv(
+      join(__dirname, ' ../schemas'),
       'daita-create',
       async (ctx) => {
         await fs.writeFile(join(ctx.cwd, '.npmrc'), `registry=${registry.uri}`);

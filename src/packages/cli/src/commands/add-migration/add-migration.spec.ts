@@ -1,10 +1,12 @@
 import { addMigration } from './add-migration';
 import { setupEnv } from '@daita/testing';
+import { schemaRoot } from '../../testing';
 
 describe('cli/commands/migration:add', () => {
   it(
     `should add migration`,
     setupEnv(
+      schemaRoot,
       'add-migration',
       async (ctx) => {
         await ctx.linkNodeModules();
@@ -19,6 +21,7 @@ describe('cli/commands/migration:add', () => {
   it(
     `should support inline migration`,
     setupEnv(
+      schemaRoot,
       'add-inline-migration',
       async (ctx) => {
         await ctx.linkNodeModules();
@@ -33,6 +36,7 @@ describe('cli/commands/migration:add', () => {
   it(
     `should add empty migration`,
     setupEnv(
+      schemaRoot,
       'add-empty-migration',
       async (ctx) => {
         await ctx.linkNodeModules();
@@ -47,6 +51,7 @@ describe('cli/commands/migration:add', () => {
   it(
     `should add second migration`,
     setupEnv(
+      schemaRoot,
       'add-second-migration',
       async (ctx) => {
         await ctx.linkNodeModules();

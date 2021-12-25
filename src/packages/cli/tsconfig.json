@@ -5,6 +5,7 @@
     "module": "CommonJS",
     "target": "ES2015",
     "outDir": "dist",
+    "resolveJsonModule": true,
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
     "lib": [
       "es2016",
@@ -52,6 +53,7 @@
   "exclude": [
     "node_modules",
     "dist",
-    "schemas"
+    "schemas",
+    "jest.config.ts"
   ]
 }
