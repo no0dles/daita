@@ -1,34 +1,30 @@
-import * as ts from 'typescript';
+import { Expression, factory, ObjectLiteralElementLike } from 'typescript';
 
 function createObject(object: any) {
   const keys = Object.keys(object);
-  const properties = new Array<ts.ObjectLiteralElementLike>();
+  const properties = new Array<ObjectLiteralElementLike>();
   for (const key of keys) {
-    properties.push(
-      ts.createPropertyAssignment(key, createExpressionFromValue(object[key])),
-    );
+    properties.push(factory.createPropertyAssignment(key, createExpressionFromValue(object[key])));
   }
-  return ts.createObjectLiteral(properties);
+  return factory.createObjectLiteralExpression(properties);
 }
 
-export function createExpressionFromValue(value: any): ts.Expression {
+export function createExpressionFromValue(value: any): Expression {
   if (value === undefined) {
-    return ts.createIdentifier('undefined');
+    return factory.createIdentifier('undefined');
   } else if (value === null) {
-    return ts.createNull();
+    return factory.createNull();
   } else if (typeof value === 'string') {
-    return ts.createStringLiteral(value);
+    return factory.createStringLiteral(value);
   } else if (typeof value === 'number') {
-    return ts.createNumericLiteral(value.toString());
+    return factory.createNumericLiteral(value.toString());
   } else if (typeof value === 'boolean') {
-    return value ? ts.createTrue() : ts.createFalse();
+    return value ? factory.createTrue() : factory.createFalse();
   } else if (typeof value === 'object') {
     if (Array.isArray(value)) {
-      return ts.createArrayLiteral(
-        value.map((item) => createExpressionFromValue(item)),
-      );
+      return factory.createArrayLiteralExpression(value.map((item) => createExpressionFromValue(item)));
     } else if (value instanceof RegExp) {
-      return ts.createRegularExpressionLiteral(value.toString());
+      return factory.createRegularExpressionLiteral(value.toString());
     } else {
       return createObject(value);
     }

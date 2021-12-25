@@ -13,7 +13,7 @@ import { Defer } from '@daita/common';
 import { isTransactionContext } from '@daita/orm';
 import { createLogger } from '@daita/common';
 import { HttpServerOptions } from '@daita/http-server';
-import { authSchema } from '@daita/auth-server';
+import { authSchema } from '@daita/auth';
 
 const logger = createLogger({ package: 'cli', command: 'serve' });
 export async function serve(opts: {

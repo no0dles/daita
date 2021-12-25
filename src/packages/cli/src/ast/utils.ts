@@ -1,4 +1,3 @@
-import * as ts from 'typescript';
 import * as path from 'path';
 import { readFileSync, existsSync } from 'fs';
 import { AstBlock } from './ast-block';
@@ -28,6 +27,46 @@ import {
   SyntaxKind,
   TypeNode,
   Node,
+  RegularExpressionLiteral,
+  TypeAliasDeclaration,
+  EnumDeclaration,
+  ExportDeclaration,
+  SpreadElement,
+  BooleanLiteral,
+  TypeLiteralNode,
+  NullLiteral,
+  SpreadAssignment,
+  KeywordTypeNode,
+  NamedImports,
+  NamespaceImport,
+  ClassDeclaration,
+  VariableStatement,
+  ShorthandPropertyAssignment,
+  MethodDeclaration,
+  PropertyAssignment,
+  NamedExports,
+  LiteralTypeNode,
+  StringLiteral,
+  NumericLiteral,
+  PropertySignature,
+  TypeReferenceNode,
+  ArrayTypeNode,
+  UnionTypeNode,
+  NewExpression,
+  FunctionDeclaration,
+  ExpressionStatement,
+  ImportDeclaration,
+  ObjectLiteralExpression,
+  ExportAssignment,
+  PropertyDeclaration,
+  CallExpression,
+  PropertyAccessExpression,
+  ArrayLiteralExpression,
+  PrivateIdentifier,
+  BindingName,
+  ComputedPropertyName,
+  createSourceFile,
+  ScriptTarget,
 } from 'typescript';
 import { AstArrayType } from './ast-array-type';
 import { AstVariableDeclaration } from './ast-variable-declaration';
@@ -38,80 +77,65 @@ import { AstPropertyAccessExpression } from './ast-property-access-expression';
 import { AstSpreadElement } from './ast-spread-element';
 import { AstRegularExpressionLiteral } from './ast-regular-expression-literal';
 
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.TypeLiteral): ts.TypeLiteralNode | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.SpreadElement): ts.SpreadElement | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.TypeLiteral): TypeLiteralNode | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.SpreadElement): SpreadElement | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.TypeAliasDeclaration): TypeAliasDeclaration | null;
 export function isKind(
-  node: ts.Node | undefined,
-  kind: ts.SyntaxKind.TypeAliasDeclaration,
-): ts.TypeAliasDeclaration | null;
+  node: Node | undefined,
+  kind: SyntaxKind.RegularExpressionLiteral,
+): RegularExpressionLiteral | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ExportDeclaration): ExportDeclaration | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.EnumDeclaration): EnumDeclaration | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.TrueKeyword): BooleanLiteral | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.FalseKeyword): BooleanLiteral | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NullKeyword): NullLiteral | null;
 export function isKind(
-  node: ts.Node | undefined,
-  kind: ts.SyntaxKind.RegularExpressionLiteral,
-): ts.RegularExpressionLiteral | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.ExportDeclaration): ts.ExportDeclaration | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.EnumDeclaration): ts.EnumDeclaration | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.TrueKeyword): ts.BooleanLiteral | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.FalseKeyword): ts.BooleanLiteral | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NullKeyword): ts.NullLiteral | null;
+  node: Node | undefined,
+  kind: SyntaxKind.UndefinedKeyword,
+): KeywordTypeNode<SyntaxKind.UndefinedKeyword> | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.SpreadAssignment): SpreadAssignment | null;
 export function isKind(
-  node: ts.Node | undefined,
-  kind: ts.SyntaxKind.UndefinedKeyword,
-): ts.KeywordTypeNode<SyntaxKind.UndefinedKeyword> | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.SpreadAssignment): ts.SpreadAssignment | null;
+  node: Node | undefined,
+  kind: SyntaxKind.ShorthandPropertyAssignment,
+): ShorthandPropertyAssignment | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NamedImports): NamedImports | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NamespaceImport): NamespaceImport | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ClassDeclaration): ClassDeclaration | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.VariableStatement): VariableStatement | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.FunctionDeclaration): FunctionDeclaration | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.MethodDeclaration): MethodDeclaration | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.PropertyAssignment): PropertyAssignment | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NamedExports): NamedExports | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.LiteralType): LiteralTypeNode | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.StringLiteral): StringLiteral | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NumericLiteral): NumericLiteral | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NumericLiteral): NumericLiteral | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.PropertySignature): PropertySignature | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.TypeReference): TypeReferenceNode | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ArrayType): ArrayTypeNode | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.UnionType): UnionTypeNode | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NewExpression): NewExpression | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NamespaceImport): NamespaceImport | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.PropertyDeclaration): PropertyDeclaration | null;
 export function isKind(
-  node: ts.Node | undefined,
-  kind: ts.SyntaxKind.ShorthandPropertyAssignment,
-): ts.ShorthandPropertyAssignment | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NamedImports): ts.NamedImports | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NamespaceImport): ts.NamespaceImport | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.ClassDeclaration): ts.ClassDeclaration | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.VariableStatement): ts.VariableStatement | null;
+  node: Node | undefined,
+  kind: SyntaxKind.ObjectLiteralExpression,
+): ObjectLiteralExpression | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ExpressionStatement): ExpressionStatement | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ImportDeclaration): ImportDeclaration | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ExportAssignment): ExportAssignment | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.Identifier): Identifier | null;
 export function isKind(
-  node: ts.Node | undefined,
-  kind: ts.SyntaxKind.FunctionDeclaration,
-): ts.FunctionDeclaration | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.MethodDeclaration): ts.MethodDeclaration | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.PropertyAssignment): ts.PropertyAssignment | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NamedExports): ts.NamedExports | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.LiteralType): ts.LiteralTypeNode | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.StringLiteral): ts.StringLiteral | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NumericLiteral): ts.NumericLiteral | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NumericLiteral): ts.NumericLiteral | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.PropertySignature): ts.PropertySignature | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.TypeReference): ts.TypeReferenceNode | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.ArrayType): ts.ArrayTypeNode | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.UnionType): ts.UnionTypeNode | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NewExpression): ts.NewExpression | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NamespaceImport): ts.NamespaceImport | null;
-export function isKind(
-  node: ts.Node | undefined,
-  kind: ts.SyntaxKind.PropertyDeclaration,
-): ts.PropertyDeclaration | null;
-export function isKind(
-  node: ts.Node | undefined,
-  kind: ts.SyntaxKind.ObjectLiteralExpression,
-): ts.ObjectLiteralExpression | null;
-export function isKind(
-  node: ts.Node | undefined,
-  kind: ts.SyntaxKind.ExpressionStatement,
-): ts.ExpressionStatement | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.ImportDeclaration): ts.ImportDeclaration | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.ExportAssignment): ts.ExportAssignment | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.Identifier): ts.Identifier | null;
-export function isKind(
-  node: ts.Node | undefined,
-  kind: ts.SyntaxKind.PropertyAccessExpression,
-): ts.PropertyAccessExpression | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.CallExpression): ts.CallExpression | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NamedImports): ts.NamedImports | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.NewExpression): ts.NewExpression | null;
-export function isKind(
-  node: ts.Node | undefined,
-  kind: ts.SyntaxKind.ArrayLiteralExpression,
-): ts.ArrayLiteralExpression | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.StringLiteral): ts.StringLiteral | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind.BooleanKeyword): ts.BooleanLiteral | null;
-export function isKind(node: ts.Node | undefined, kind: ts.SyntaxKind): ts.Node | null {
+  node: Node | undefined,
+  kind: SyntaxKind.PropertyAccessExpression,
+): PropertyAccessExpression | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.CallExpression): CallExpression | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NamedImports): NamedImports | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NewExpression): NewExpression | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ArrayLiteralExpression): ArrayLiteralExpression | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.StringLiteral): StringLiteral | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.BooleanKeyword): BooleanLiteral | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind): Node | null {
   if (!node) {
     return null;
   }
@@ -135,31 +159,31 @@ export function getBooleanValue(value: AstValue): boolean {
 
 export function getIdentifierName(
   identifier:
-    | ts.PrivateIdentifier
-    | ts.BindingName
-    | ts.StringLiteral
-    | ts.NumericLiteral
-    | ts.ComputedPropertyName
-    | ts.Expression
-    | ts.QualifiedName,
+    | PrivateIdentifier
+    | BindingName
+    | StringLiteral
+    | NumericLiteral
+    | ComputedPropertyName
+    | Expression
+    | QualifiedName,
 ) {
-  if (identifier.kind === ts.SyntaxKind.Identifier) {
-    const identfier = <ts.Identifier>identifier;
+  if (identifier.kind === SyntaxKind.Identifier) {
+    const identfier = <Identifier>identifier;
     return identfier.text;
   }
 
-  if (identifier.kind === ts.SyntaxKind.PrivateIdentifier) {
-    const identfier = <ts.PrivateIdentifier>identifier;
+  if (identifier.kind === SyntaxKind.PrivateIdentifier) {
+    const identfier = <PrivateIdentifier>identifier;
     return identfier.text;
   }
 
-  if (identifier.kind === ts.SyntaxKind.StringLiteral) {
-    const stringLiteral = <ts.StringLiteral>identifier;
+  if (identifier.kind === SyntaxKind.StringLiteral) {
+    const stringLiteral = <StringLiteral>identifier;
     return stringLiteral.text;
   }
 
-  if (identifier.kind === ts.SyntaxKind.NumericLiteral) {
-    const stringLiteral = <ts.NumericLiteral>identifier;
+  if (identifier.kind === SyntaxKind.NumericLiteral) {
+    const stringLiteral = <NumericLiteral>identifier;
     return stringLiteral.text;
   }
 
@@ -176,7 +200,7 @@ export function parseSourceFile(fileName: string) {
     }
   }
 
-  return ts.createSourceFile(filepath, readFileSync(filepath).toString(), ts.ScriptTarget.ES2015, true);
+  return createSourceFile(filepath, readFileSync(filepath).toString(), ScriptTarget.ES2015, true);
 }
 
 export function getName(
@@ -259,6 +283,7 @@ export function getTypeFromValue(value: AstValue): AstType | null {
   } else if (value instanceof AstLiteralValue) {
     return value.type;
   } else if (value instanceof AstObjectValue) {
+    // TODO?
   }
 
   return null;
@@ -359,8 +384,6 @@ export function getTypeFromTypeOrExpression(
     if (value) {
       if (value instanceof AstLiteralValue) {
         return value.type;
-      } else if (value instanceof AstPropertyAccessExpression) {
-        return getTypeFromValue(value.value);
       } else if (value instanceof AstPropertyAccessExpression) {
         return getTypeFromValue(value.value);
       } else if (value instanceof AstNewExpression) {

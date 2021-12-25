@@ -12,6 +12,7 @@ export const baseConfig: Config.InitialOptions = {
   coveragePathIgnorePatterns: ['/tmp/', '/coverage/', '/dist/', '/schemas/', '/node_modules/'],
   moduleNameMapper: {
     '@daita/auth-server': '<rootDir>/src/packages/auth-server/src/index.ts',
+    '@daita/auth': '<rootDir>/src/packages/auth/src/index.ts',
     '@daita/browser': '<rootDir>/src/packages/browser/src/index.ts',
     '@daita/cli': '<rootDir>/src/packages/cli/src/index.ts',
     '@daita/common': '<rootDir>/src/packages/common/src/index.ts',
