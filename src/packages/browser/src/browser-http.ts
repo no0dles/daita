@@ -5,10 +5,11 @@ import {
   getTokenIssuer,
   getUri,
   Http,
-  HttpRequestOptions,
+  HttpRequestGetOptions,
+  HttpRequestPostOptions,
   HttpSendResult,
   TokenIssuer,
-} from '@daita/http';
+} from '@daita/http-interface';
 import { parseJson } from '@daita/common';
 
 export class BrowserHttp implements Http {
@@ -18,9 +19,12 @@ export class BrowserHttp implements Http {
     this.tokenProvider = getTokenIssuer(authProvider);
   }
 
-  formData(options: HttpRequestOptions): Promise<HttpSendResult> {
-    return this.sendRequest({
-      method: options.method,
+  get<T>(options: HttpRequestGetOptions): Promise<HttpSendResult<T>> {
+    return this.sendRequest('GET', options);
+  }
+
+  formData(options: HttpRequestPostOptions): Promise<HttpSendResult> {
+    return this.sendRequest('POST', {
       authorized: options.authorized,
       data: encodeFormData(options.data),
       headers: {
@@ -32,9 +36,8 @@ export class BrowserHttp implements Http {
     });
   }
 
-  json<T>(options: HttpRequestOptions): Promise<HttpSendResult> {
-    return this.sendRequest({
-      method: options.method,
+  json<T>(options: HttpRequestPostOptions): Promise<HttpSendResult> {
+    return this.sendRequest('POST', {
       path: options.path,
       headers: {
         ...(options.headers || {}),
@@ -46,7 +49,9 @@ export class BrowserHttp implements Http {
     });
   }
 
-  private async sendRequest(options: HttpRequestOptions) {
+  private async sendRequest(method: 'POST', options: HttpRequestPostOptions): Promise<HttpSendResult>;
+  private async sendRequest(method: 'GET', options: HttpRequestPostOptions): Promise<HttpSendResult>;
+  private async sendRequest(method: 'POST' | 'GET', options: HttpRequestPostOptions): Promise<HttpSendResult> {
     const qs = getQueryString(options.query);
     const url = getUri(this.baseUrl, options.path, qs);
     const httpHeader = new Headers(options.headers);
@@ -57,7 +62,7 @@ export class BrowserHttp implements Http {
       }
     }
     try {
-      const result = await fetch(url, { method: options.method || 'POST', body: options.data, headers: httpHeader });
+      const result = await fetch(url, { method: method, body: options.data, headers: httpHeader });
       const timeout = result.headers.get('x-transaction-timeout');
       let data = '';
 

@@ -22,7 +22,7 @@ export interface BaseContextConfig {
 }
 
 export interface DaitaHttpContextConfig extends BaseContextConfig {
-  options: unknown;
+  options: any;
   authorization: undefined;
 }
 export interface DaitaSqliteContextConfig extends BaseContextConfig {

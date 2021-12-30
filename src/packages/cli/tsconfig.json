@@ -40,7 +40,7 @@
   }, {
     "path": "../node"
   }, {
-    "path": "../http"
+    "path": "../http-interface"
   }, {
     "path": "../auth-server"
   }, {

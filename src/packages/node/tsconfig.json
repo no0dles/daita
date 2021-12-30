@@ -27,7 +27,7 @@
   "references": [{
     "path": "../common"
   }, {
-    "path": "../http"
+    "path": "../http-interface"
   }, {
     "path": "../http-adapter"
   }, {

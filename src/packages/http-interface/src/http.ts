@@ -1,15 +1,18 @@
 export interface Http {
-  json<T>(options: HttpRequestOptions): Promise<HttpSendResult<T>>;
-  formData(options: HttpRequestOptions): Promise<HttpSendResult>;
+  json<T>(options: HttpRequestPostOptions): Promise<HttpSendResult<T>>;
+  formData(options: HttpRequestPostOptions): Promise<HttpSendResult>;
+  get<T>(options: HttpRequestGetOptions): Promise<HttpSendResult<T>>;
 }
 
-export interface HttpRequestOptions {
+export interface HttpRequestGetOptions {
   path: string;
-  data?: any;
   headers?: { [key: string]: string };
   query?: { [key: string]: string };
   authorized?: boolean;
-  method?: 'POST' | 'GET';
+}
+
+export interface HttpRequestPostOptions extends HttpRequestGetOptions {
+  data?: any;
 }
 
 export interface HttpSendResult<T = any> {

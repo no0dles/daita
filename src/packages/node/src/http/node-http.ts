@@ -9,10 +9,11 @@ import {
   getTokenIssuer,
   getUri,
   Http,
-  HttpRequestOptions,
+  HttpRequestPostOptions,
+  HttpRequestGetOptions,
   HttpSendResult,
   TokenIssuer,
-} from '@daita/http';
+} from '@daita/http-interface';
 
 export class NodeHttp implements Http {
   private readonly tokenProvider: TokenIssuer;
@@ -21,9 +22,12 @@ export class NodeHttp implements Http {
     this.tokenProvider = getTokenIssuer(authProvider);
   }
 
-  formData(options: HttpRequestOptions): Promise<HttpSendResult> {
-    return this.sendRequest({
-      method: options.method,
+  get<T>(options: HttpRequestGetOptions): Promise<HttpSendResult<T>> {
+    return this.sendRequest('GET', options);
+  }
+
+  formData(options: HttpRequestPostOptions): Promise<HttpSendResult> {
+    return this.sendRequest('POST', {
       authorized: options.authorized,
       data: encodeFormData(options.data),
       headers: {
@@ -35,9 +39,8 @@ export class NodeHttp implements Http {
     });
   }
 
-  json<T>(options: HttpRequestOptions): Promise<HttpSendResult> {
-    return this.sendRequest({
-      method: options.method,
+  json<T>(options: HttpRequestPostOptions): Promise<HttpSendResult> {
+    return this.sendRequest('POST', {
       path: options.path,
       headers: {
         ...(options.headers || {}),
@@ -49,7 +52,9 @@ export class NodeHttp implements Http {
     });
   }
 
-  private async sendRequest(options: HttpRequestOptions) {
+  private async sendRequest(method: 'GET', options: HttpRequestGetOptions): Promise<HttpSendResult>;
+  private async sendRequest(method: 'POST', options: HttpRequestPostOptions): Promise<HttpSendResult>;
+  private async sendRequest(method: 'GET' | 'POST', options: HttpRequestPostOptions): Promise<HttpSendResult> {
     const qs = getQueryString(options.query);
     const url = getUri(this.baseUrl, options.path, qs);
 
@@ -64,10 +69,11 @@ export class NodeHttp implements Http {
     const parsedUrl = parse(url);
     const reqOptions: RequestOptions = {
       ...options,
+      headers,
       hostname: parsedUrl.hostname,
       port: parsedUrl.port,
       path: parsedUrl.path,
-      method: options.method || 'POST',
+      method: method,
     };
     const requestMethod = this.baseUrl.startsWith('https:') ? httpsRequest : httpRequest;
 
@@ -96,8 +102,10 @@ export class NodeHttp implements Http {
       }).on('error', (err) => {
         reject(err);
       });
-      if (options.data !== null && options.data !== undefined) {
-        req.write(options.data);
+      if (method === 'POST') {
+        if (options.data !== null && options.data !== undefined) {
+          req.write(options.data);
+        }
       }
       req.end();
     });

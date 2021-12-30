@@ -1,4 +1,4 @@
-import { AuthProvider } from '@daita/http';
+import { AuthProvider } from '@daita/http-interface';
 
 export interface HttpAdapterOptions {
   baseUrl: string;

@@ -1,7 +1,7 @@
 import { TransactionManager } from './transaction-manager';
 import { HttpServerRelationalOptions } from './http-server-options';
-import { TimeoutError } from '@daita/common';
 import { AuthorizedTransactionContext, TransactionContext } from '@daita/orm';
+import { HttpError } from './http-error';
 
 export class TransactionContextManager {
   private readonly transactionTimeout: number;
@@ -17,11 +17,27 @@ export class TransactionContextManager {
     }
   }
 
-  create(client: TransactionContext<any> | AuthorizedTransactionContext<any>, transactionId: string) {
-    if (this.transactions[transactionId]) {
-      throw new Error('transaction already exists');
+  private getTimeout(timeout: number | undefined) {
+    if (timeout === null || timeout === undefined) {
+      return this.transactionTimeout;
+    } else {
+      if (timeout > this.transactionTimeout) {
+        return this.transactionTimeout;
+      } else {
+        return timeout;
+      }
     }
-    const transaction = new TransactionManager(client, this.transactionTimeout);
+  }
+
+  create(
+    client: TransactionContext<any> | AuthorizedTransactionContext<any>,
+    transactionId: string,
+    timeout: number | undefined,
+  ) {
+    if (this.transactions[transactionId]) {
+      throw new HttpError(400, 'transaction already exists');
+    }
+    const transaction = new TransactionManager(client, this.getTimeout(timeout));
     this.transactions[transactionId] = transaction;
     transaction.result.finally(() => {
       delete this.transactions[transactionId];
@@ -33,6 +49,6 @@ export class TransactionContextManager {
     if (this.transactions[transactionId]) {
       return this.transactions[transactionId];
     }
-    throw new Error('could not find transaction for ' + transactionId);
+    throw new HttpError(400, 'could not find transaction for ' + transactionId);
   }
 }

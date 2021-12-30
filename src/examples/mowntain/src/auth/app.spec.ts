@@ -1,4 +1,3 @@
-import { createAuthApp } from './app';
 import { field } from '@daita/relational';
 import { all } from '@daita/relational';
 import { table } from '@daita/relational';
@@ -7,15 +6,18 @@ import { MigrationContext } from '@daita/orm';
 import { getContext } from '@daita/orm';
 import { equal } from '@daita/relational';
 import { getServer, HttpServerApp } from '@daita/testing';
-import { NodeHttp } from '@daita/node';
 import { adapter } from '@daita/sqlite-adapter';
 import { createDefaultUserPool } from './testing/auth-test';
 import { authSchema, User, UserEmailVerify, UserRefreshToken } from '@daita/auth';
+import { NodeHttp } from '@daita/node';
+import { createAuthApp, createMetricsApp } from '@daita/auth-server';
 
 describe('app', () => {
   let app: HttpServerApp;
+  let metricsApp: HttpServerApp;
   let ctx: MigrationContext<any>;
   let http: NodeHttp;
+  let metricsHttp: NodeHttp;
 
   beforeAll(async () => {
     ctx = getContext(adapter, {
@@ -23,8 +25,11 @@ describe('app', () => {
       memory: true,
     });
     app = getServer((port) => createAuthApp(ctx, port));
+    metricsApp = getServer((port) => createMetricsApp(port));
     http = new NodeHttp(`http://localhost:${app.port}`, null);
+    metricsHttp = new NodeHttp(`http://localhost:${metricsApp.port}`, null);
     await app.start();
+    await metricsApp.start();
     await ctx.migrate();
     await createDefaultUserPool(ctx);
   });
@@ -145,8 +150,7 @@ describe('app', () => {
       select: all(UserEmailVerify),
       from: table(UserEmailVerify),
     });
-    const res = await http.json({
-      method: 'GET',
+    const res = await http.get({
       path: '/default/verify',
       query: {
         code: verify!.code,
@@ -167,5 +171,18 @@ describe('app', () => {
       from: table(User),
     });
     expect(user!.emailVerified).toBeTruthy();
+  });
+
+  it('should get metrics', async () => {
+    const res = await metricsHttp.get<string>({
+      path: '/',
+    });
+    expect(res.statusCode).toEqual(200);
+    expect(res.data).not.toBeNull();
+
+    const lines = res.data.split('\n');
+    const registrations = lines.find((l) => l.startsWith('auth_success_registrations'));
+    expect(registrations).not.toBeUndefined();
+    expect(parseInt(registrations!.split(' ')[1])).toBeGreaterThan(0);
   });
 });

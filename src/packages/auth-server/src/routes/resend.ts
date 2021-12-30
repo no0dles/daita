@@ -13,7 +13,7 @@ export function resendRoute(ctx: TransactionContext<any>) {
   const router = Router({ mergeParams: true });
 
   router.use(authMiddleware);
-  router.post('/', async (req, res, next) => {
+  router.post<{ userPoolId: string }>('/', async (req, res, next) => {
     try {
       const username = getRequiredRequestUserProp(req, 'sub');
       const user = await ctx.selectFirst({

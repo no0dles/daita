@@ -1,5 +1,5 @@
 import { Resolvable } from '@daita/common';
-import { Http, TokenIssuer } from '@daita/http';
+import { Http, TokenIssuer } from '@daita/http-interface';
 import { RelationalMigrationAdapter, RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { BrowserHttp } from './browser-http';
 import { BrowserAuth } from './browser-auth';

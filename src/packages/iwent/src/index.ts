@@ -13,5 +13,4 @@ export * from './iwent-handler';
 export * from './iwent-module';
 export * from './iwent-poll-processor';
 export * from './iwent-schema';
-export * from './iwent-test';
 export * from './iwent';

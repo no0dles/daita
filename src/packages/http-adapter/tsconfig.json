@@ -33,7 +33,7 @@
   }, {
     "path": "../relational"
   }, {
-    "path": "../http"
+    "path": "../http-interface"
   }, {
     "path": "../orm"
   }]

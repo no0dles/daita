@@ -30,7 +30,7 @@
   }, {
     "path": "src/packages/orm"
   }, {
-    "path": "src/packages/http"
+    "path": "src/packages/http-interface"
   }, {
     "path": "src/packages/pg-adapter"
   }, {

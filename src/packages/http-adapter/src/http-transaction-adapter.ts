@@ -5,11 +5,11 @@ import { randomString } from '@daita/common';
 import { HttpTransactionDataAdapter } from './http-transaction-data-adapter';
 
 export class HttpTransactionAdapter extends HttpDataAdapter implements RelationalTransactionAdapter {
-  async transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>): Promise<T> {
+  async transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>, timeout?: number): Promise<T> {
     const http = await this.http.get();
     const tid = randomString(12);
     const transaction = new HttpTransactionDataAdapter(tid, http);
-    return transaction.run(() => action(transaction));
+    return transaction.run(() => action(transaction), timeout);
   }
 
   toString() {

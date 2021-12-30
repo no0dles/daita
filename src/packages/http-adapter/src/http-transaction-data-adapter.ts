@@ -1,5 +1,5 @@
 import { Countdown } from '@daita/common';
-import { Http, HttpSendResult } from '@daita/http';
+import { Http, HttpSendResult } from '@daita/http-interface';
 import { RelationalRawResult } from '@daita/relational';
 import { RelationalDataAdapter } from '@daita/relational';
 import { Defer } from '@daita/common';
@@ -13,7 +13,10 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
   constructor(private transactionId: string, private http: Http) {}
 
   private handleErrorResponse(response: HttpSendResult) {
-    if (response.statusCode === 400 && response.data?.error === 'TimeoutError') {
+    if (
+      response.statusCode === 400 &&
+      (response.data?.error === 'TimeoutError' || response.data?.message?.startsWith('could not find transaction for'))
+    ) {
       this.resultDefer.reject(new TimeoutError());
       throw new Error('transaction already closed');
     }
@@ -52,8 +55,8 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
 
   async close(): Promise<void> {}
 
-  async run(action: () => Promise<any>): Promise<any> {
-    await this.http.json({ path: `api/relational/trx/${this.transactionId}`, authorized: true });
+  async run(action: () => Promise<any>, timeout?: number): Promise<any> {
+    await this.http.json({ path: `api/relational/trx/${this.transactionId}`, authorized: true, data: { timeout } });
     action()
       .then(async (result) => {
         await this.commit().then(() => {
@@ -75,7 +78,7 @@ export class HttpTransactionDataAdapter implements RelationalDataAdapter {
     if (this.resultDefer.isResolved || this.resultDefer.isRejected) {
       return;
     }
-    this.resultDefer.reject(new Error('transaction timeout'));
+    this.resultDefer.reject(new TimeoutError());
   }
 
   private async commit() {

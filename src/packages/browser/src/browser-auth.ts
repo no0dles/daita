@@ -1,4 +1,4 @@
-import { Http, LoginOptions, TokenIssuer, User } from '@daita/http';
+import { Http, LoginOptions, TokenIssuer, User } from '@daita/http-interface';
 import { createLogger, JwtPayload, parseJwtPayload } from '@daita/common';
 
 const logger = createLogger({ package: 'http' });
@@ -45,7 +45,6 @@ export class BrowserAuth implements TokenIssuer {
       path: `${options.userPoolId}/login`,
       data: { username: options.username, password: options.password },
       authorized: false,
-      method: 'POST',
     });
 
     this.storage.setItem('id_token', response.data.id_token);

@@ -29,7 +29,7 @@ const successfullLoginCounter = new Counter({
 export function loginRoute(ctx: TransactionContext<any>) {
   const router = Router({ mergeParams: true });
 
-  router.post('/', async (req, res, next) => {
+  router.post<{ userPoolId: string }>('/', async (req, res, next) => {
     try {
       const user = await ctx!.selectFirst({
         select: {

@@ -16,7 +16,7 @@ export function jwtAuth(providers: HttpServerAuthorizationProvider[]) {
     logger.info(`register jwks client ${uri}`);
     clients[provider.issuer] = new Resolvable<jose.JWKS.KeyStore>(async () => {
       const http = new NodeHttp(provider.uri, null); // TODO refersh and retry
-      const result = await http.json({ method: 'GET', path: provider.issuer + '/.well-known/jwks.json' });
+      const result = await http.get<{ keys: any[] }>({ path: provider.issuer + '/.well-known/jwks.json' });
       const keystore = new jose.JWKS.KeyStore((result.data.keys || []).map((key: any) => jose.JWK.asKey(key)));
       logger.debug(`loaded keys for ${provider.uri} with ${keystore.size} keys`);
       return keystore;

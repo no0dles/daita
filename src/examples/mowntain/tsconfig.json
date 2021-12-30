@@ -39,6 +39,12 @@
     "path": "../../packages/orm"
   }, {
     "path": "../../packages/common"
+  }, {
+    "path": "../../packages/auth"
+  }, {
+    "path": "../../packages/node"
+  }, {
+    "path": "../../packages/auth-server"
   }],
   "exclude": [
     "node_modules",

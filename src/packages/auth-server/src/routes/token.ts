@@ -13,7 +13,7 @@ export function tokenRoute(ctx: TransactionContext<any>) {
   const router = Router({ mergeParams: true });
 
   router.use(authMiddleware);
-  router.get('/', async (req, res, next) => {
+  router.get<{ userPoolId: string }>('/', async (req, res, next) => {
     try {
       const tokens = await ctx.select({
         select: {
@@ -33,7 +33,7 @@ export function tokenRoute(ctx: TransactionContext<any>) {
     }
   });
 
-  router.post('/', async (req, res, next) => {
+  router.post<{ userPoolId: string }>('/', async (req, res, next) => {
     try {
       const token = await createToken(ctx, {
         username: getRequiredRequestUserProp(req, 'sub'),

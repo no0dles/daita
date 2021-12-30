@@ -1,4 +1,4 @@
-import { AuthProvider, Http } from '@daita/http';
+import { AuthProvider, Http } from '@daita/http-interface';
 import { Resolvable } from '@daita/common';
 import { RelationalMigrationAdapter, RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { NodeHttp } from './node-http';

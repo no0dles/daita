@@ -77,9 +77,8 @@ export async function httpGet<T = any>(
   options?: { headers: any },
 ): Promise<GetResult<T>> {
   const http = new NodeHttp(app.uri, null);
-  const res = await http.json({
+  const res = await http.get<T>({
     path,
-    method: 'GET',
     headers: options?.headers,
   });
   return {

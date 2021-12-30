@@ -26,7 +26,7 @@ const invalidRefreshTokenCounter = new Counter({
 export function refreshRoute(ctx: TransactionContext<any>) {
   const router = Router({ mergeParams: true });
 
-  router.post('/', async (req, res, next) => {
+  router.post<{ userPoolId: string }>('/', async (req, res, next) => {
     try {
       const token = await ctx.selectFirst({
         select: {

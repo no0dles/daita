@@ -26,13 +26,17 @@
   "references": [{
     "path": "../../packages/common"
   }, {
+    "path": "../../packages/auth"
+  }, {
+    "path": "../../packages/auth-server"
+  }, {
     "path": "../../packages/relational"
   }, {
     "path": "../../packages/orm"
   }, {
     "path": "../../packages/node"
   }, {
-    "path": "../../packages/http"
+    "path": "../../packages/http-interface"
   }, {
     "path": "../../packages/http-server"
   }, {

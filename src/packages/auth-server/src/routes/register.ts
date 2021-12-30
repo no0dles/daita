@@ -19,7 +19,7 @@ const successRegisterCounter = new Counter({
 export function registerRoute(ctx: TransactionContext<any>) {
   const router = Router({ mergeParams: true });
 
-  router.post('/', async (req, res, next) => {
+  router.post<{ userPoolId: string }>('/', async (req, res, next) => {
     try {
       const userPool = await ctx.selectFirst({
         select: {

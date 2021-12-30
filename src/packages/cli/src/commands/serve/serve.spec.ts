@@ -5,7 +5,7 @@ import { Resolvable } from '@daita/common';
 import { field, table } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { setupEnv } from '@daita/testing';
-import { Http } from '@daita/http';
+import { Http } from '@daita/http-interface';
 import { NodeHttp } from '@daita/node';
 import { schemaRoot } from '../../testing';
 
@@ -37,7 +37,6 @@ describe('cli/commands/serve', () => {
                   const authHttp = new NodeHttp('http://localhost:8766', null);
                   const res = await authHttp.json({
                     authorized: false,
-                    method: 'POST',
                     data: {
                       username: 'test',
                       password: '123456',

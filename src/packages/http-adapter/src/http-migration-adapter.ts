@@ -8,7 +8,6 @@ export class HttpMigrationAdapter extends HttpTransactionAdapter implements Rela
     const http = await this.http.get();
     const result = await http.json<{ message?: string }>({
       path: `api/orm/${schema}/migrations`,
-      method: 'POST',
       data: { migrationPlan },
       authorized: true,
     });
@@ -20,8 +19,7 @@ export class HttpMigrationAdapter extends HttpTransactionAdapter implements Rela
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
     const http = await this.http.get();
     //TODO better response typing
-    const result = await http.json<{ message?: string; migrations: MigrationDescription[] }>({
-      method: 'GET',
+    const result = await http.get<{ message?: string; migrations: MigrationDescription[] }>({
       path: `api/orm/${schema}/migrations`,
       authorized: true,
     });

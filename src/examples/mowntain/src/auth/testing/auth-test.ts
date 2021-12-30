@@ -1,8 +1,8 @@
 import { ExcludeNonPrimitive } from '@daita/common';
 import { httpPost, HttpServerApp } from '@daita/testing';
 import { SqlClient, table } from '@daita/relational';
-import { hashPassword } from '../modules';
 import { User, UserPool, UserPoolUser } from '@daita/auth';
+import { hashPassword } from '@daita/auth-server';
 
 export async function createUserPool(client: SqlClient, userPool: UserPool) {
   await client.insert({

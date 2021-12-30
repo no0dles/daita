@@ -10,7 +10,7 @@ export async function seedAuthDefaults(client: TransactionClient<any> | Transact
   const addedPool = await seedUserPool(client, {
     id: 'admin',
     name: 'Administration',
-    algorithm: 'ES512',
+    algorithm: 'EC512',
     emailVerifyExpiresIn: 60 * 60 * 1000,
     checkPasswordForBreach: true,
     accessTokenExpiresIn: 60 * 10,

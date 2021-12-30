@@ -1,4 +1,4 @@
-import { Http } from '@daita/http';
+import { Http } from '@daita/http-interface';
 import { RelationalRawResult } from '@daita/relational';
 import { RelationalDataAdapter } from '@daita/relational';
 import { handleErrorResponse } from './error-handling';

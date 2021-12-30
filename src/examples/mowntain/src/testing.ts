@@ -8,11 +8,19 @@ import { Canton } from './models/canton';
 import { json } from '@daita/relational';
 import { Person } from './models/person';
 import { AscentPerson } from './models/ascent-person';
-import { MigrationTree } from '@daita/orm';
+import { getContext, MigrationTree } from '@daita/orm';
+import { httpTestAdapter } from '@daita/testing';
 
 export const testContext = getTestContext();
 testContext.addAdapter(sqliteAdapter, { schema, memory: true });
 testContext.addAdapter(pgAdapter, { schema, connectionString: 'postgres://postgres:postgres@localhost/mowntain' });
+testContext.addAdapter(httpTestAdapter, {
+  context: getContext(sqliteAdapter, { schema, memory: true }),
+  schema,
+  user: {
+    roles: ['daita:migration:admin'],
+  },
+});
 
 testContext.seed(Canton, {
   name: 'Bern',

@@ -35,9 +35,7 @@
   }, {
     "path": "../node"
   }, {
-    "path": "../../tooling/testing"
-  }, {
-    "path": "../http"
+    "path": "../http-interface"
   }, {
     "path": "../http-server"
   }, {

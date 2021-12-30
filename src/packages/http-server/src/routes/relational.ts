@@ -71,7 +71,7 @@ function extendTransactionRoutes(
         return;
       }
 
-      const transaction = manager.create(getRequestContext(req, options, relationalOptions), tid);
+      const transaction = manager.create(getRequestContext(req, options, relationalOptions), tid, req.body.timeout);
       await transaction.started;
       res.setHeader('X-Transaction', tid);
       res.status(200).send();

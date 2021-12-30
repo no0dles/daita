@@ -1,10 +1,9 @@
 import { getContext } from '@daita/orm';
 import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { getServer, HttpServerApp } from '@daita/testing';
-import { createAuthApp } from '../app';
-import { createAuthAdminApp } from '../admin-app';
 import { createDefaultUser, createDefaultUserPool } from './auth-test';
 import { authSchema } from '@daita/auth';
+import { createAuthAdminApp, createAuthApp } from '@daita/auth-server';
 
 export async function createTestAdminServer<TOptions>(options: {
   adapter: RelationalMigrationAdapterImplementation<any, TOptions>;

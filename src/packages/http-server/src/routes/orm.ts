@@ -11,7 +11,8 @@ export function ormRoute(options: HttpServerOptions) {
   }
 
   router.use((req, res, next) => {
-    const hasMigrationRole = getRequestUser(req)?.roles?.some((r) => r === 'daita:migration:admin');
+    const user = getRequestUser(req);
+    const hasMigrationRole = user?.roles?.some((r) => r === 'daita:migration:admin');
     if (hasMigrationRole) {
       next();
     } else {
