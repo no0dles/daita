@@ -22,8 +22,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
       if (!user) {
         return res.status(401).end();
       }
-      console.log(httpServ);
-      const pa = require.resolve('@daita/http-server');
       setRequestUser(req, user);
       next();
     } catch (e) {

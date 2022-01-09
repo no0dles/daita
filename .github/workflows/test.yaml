@@ -30,7 +30,7 @@ jobs:
       - run: lerna bootstrap
       - run: npm run build
       - run: docker-compose up -d
-      - run: npm test
+      - run: npx jest --runInBand
       - name: coverage upload
         uses: codacy/codacy-coverage-reporter-action@master
         with:

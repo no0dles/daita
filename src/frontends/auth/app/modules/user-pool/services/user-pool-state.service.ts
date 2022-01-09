@@ -32,7 +32,6 @@ export class UserPoolStateService implements NgxsOnInit {
   constructor(private api: ApiService) {}
 
   ngxsOnInit(ctx?: StateContext<UserPoolStateModel>): any {
-    console.log('init');
     ctx?.dispatch(new UserPoolLoad());
   }
 

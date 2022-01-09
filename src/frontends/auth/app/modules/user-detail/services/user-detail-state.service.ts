@@ -46,9 +46,7 @@ export class UserDetailStateService implements NgxsOnInit {
 
   constructor(private api: ApiService) {}
 
-  ngxsOnInit(ctx?: StateContext<any>): any {
-    console.log('init user detail');
-  }
+  ngxsOnInit(ctx?: StateContext<any>): any {}
 
   @Action(UserDetailLoad)
   async onLoadRoles(ctx: StateContext<UserDetailStateModel>, action: UserDetailLoad) {
@@ -82,7 +80,6 @@ export class UserDetailStateService implements NgxsOnInit {
         equal(field(UserPool, 'id'), action.userPoolId),
       ),
     });
-    console.log(result);
   }
 
   @Action(UserDetailLoad)

@@ -30,16 +30,13 @@ export class UserPoolDetailStateService implements NgxsOnInit {
 
   constructor(private api: ApiService) {}
 
-  ngxsOnInit(ctx?: StateContext<any>): any {
-    console.log('init detail');
-  }
+  ngxsOnInit(ctx?: StateContext<any>): any {}
 
   @Action(UserPoolDetailLoad)
   async onLoad(ctx: StateContext<UserPoolDetailStateModel>, action: UserPoolDetailLoad) {
     ctx.patchState({
       loading: true,
     });
-    console.log('start sql');
     const result = await this.api.selectFirst({
       select: {
         name: field(UserPool, 'name'),
@@ -47,7 +44,6 @@ export class UserPoolDetailStateService implements NgxsOnInit {
       from: table(UserPool),
       where: equal(field(UserPool, 'id'), action.userPoolId),
     });
-    console.log('set result sql');
     ctx.patchState({
       id: action.userPoolId,
       loading: false,
