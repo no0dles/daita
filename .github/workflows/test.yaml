@@ -29,6 +29,7 @@ jobs:
       - run: npm ci
       - run: lerna bootstrap
       - run: npm run build
+      - run: docker-compose up -d
       - run: npm test
       - name: coverage upload
         uses: codacy/codacy-coverage-reporter-action@master

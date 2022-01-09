@@ -20,9 +20,9 @@ jobs:
           registry: docker.pkg.github.com
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - run: docker build -t @daita/auth -f src/containers/auth/Dockerfile .
+      - run: docker build -t ghcr.io/no0dles/daita/auth -f src/containers/auth/Dockerfile .
         name: Build auth container
-      - run: docker build -t @daita/http -f src/containers/http/Dockerfile .
+      - run: docker build -t ghcr.io/no0dles/daita/http -f src/containers/http/Dockerfile .
         name: Build http container
 
   build:
