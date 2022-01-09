@@ -3,9 +3,7 @@ import { equal, field, table } from '@daita/relational';
 import { Mountain } from '../../../models/mountain';
 
 describe('relational/types/sql', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

@@ -3,9 +3,7 @@ import { testContext } from '../../../../testing';
 import { Person } from '../../../../models/person';
 
 describe('relational/sql/function/string/concat', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

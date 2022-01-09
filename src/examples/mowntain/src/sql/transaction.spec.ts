@@ -5,9 +5,7 @@ import { testContext } from '../testing';
 import { Person } from '../models/person';
 
 describe('relational/adapter/relational-transaction-adapter/transaction', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

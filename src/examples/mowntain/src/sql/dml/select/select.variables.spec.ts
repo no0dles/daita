@@ -1,9 +1,7 @@
 import { testContext } from '../../../testing';
 
 describe('sql/dml/select/variables', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

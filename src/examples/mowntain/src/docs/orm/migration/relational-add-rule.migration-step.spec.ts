@@ -7,9 +7,8 @@ describe('packages/orm/migration/steps/relational-add-rule', () => {
   const migrationTree = createMigrationTree([
     { kind: 'add_rule', rule: allow(authorized(), { select: now() }), ruleId: 'a' },
   ]);
-  const ctxs = getContexts(migrationTree);
 
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(getContexts(migrationTree))('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

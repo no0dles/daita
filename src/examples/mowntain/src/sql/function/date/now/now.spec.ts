@@ -2,9 +2,7 @@ import { now } from '@daita/relational';
 import { testContext } from '../../../../testing';
 
 describe('relational/sql/function/date/now', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

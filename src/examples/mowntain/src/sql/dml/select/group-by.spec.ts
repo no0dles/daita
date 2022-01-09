@@ -4,9 +4,7 @@ import { count, equal, field, greaterThan, join, table } from '@daita/relational
 import { Canton } from '../../../models/canton';
 
 describe('docs/example/sql/dml/select', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

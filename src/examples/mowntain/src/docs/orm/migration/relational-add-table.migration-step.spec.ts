@@ -14,9 +14,7 @@ describe('packages/orm/migration/steps/relational-add-table', () => {
     id!: string;
   }
 
-  const ctxs = getContexts(migrationTree);
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(getContexts(migrationTree))('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

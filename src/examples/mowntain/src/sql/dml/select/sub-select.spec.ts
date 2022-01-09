@@ -3,9 +3,7 @@ import { alias, field, max, subSelect, table } from '@daita/relational';
 import { Mountain } from '../../../models/mountain';
 
 describe('relational/sql/dml/select/subquery', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

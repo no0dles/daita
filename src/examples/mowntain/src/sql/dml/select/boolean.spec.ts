@@ -3,9 +3,7 @@ import { equal, field, table } from '@daita/relational';
 import { Person } from '../../../models/person';
 
 describe('relational/types/boolean', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

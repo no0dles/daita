@@ -20,9 +20,7 @@ import { Ascent } from '../../../models/ascent';
 import { testContext } from '../../../testing';
 
 describe('docs/example/sql/dml/select', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

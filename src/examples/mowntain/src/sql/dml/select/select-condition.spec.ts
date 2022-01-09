@@ -3,9 +3,7 @@ import { and, desc, equal, field, isIn, min, notEqual, table } from '@daita/rela
 import { Mountain } from '../../../models/mountain';
 
 describe('docs/example/sql/dml/select', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

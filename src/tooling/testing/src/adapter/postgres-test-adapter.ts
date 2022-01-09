@@ -1,7 +1,15 @@
 import { RelationalTransactionAdapterImplementation } from '@daita/relational';
 import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { RelationalMigrationAdapter } from '@daita/orm';
-import { execCommand, getDynamicPort, getFreeTestPort, runContainer } from '@daita/node';
+import {
+  execCommand,
+  getDynamicPort,
+  getFreeTestPort,
+  removeContainer,
+  runContainer,
+  startContainer,
+  stopContainer,
+} from '@daita/node';
 import { sleep } from '@daita/common';
 import { Resolvable } from '@daita/common';
 import { PostgresMigrationAdapter, PostgresSql } from '@daita/pg-adapter';
@@ -49,12 +57,13 @@ export async function getPostgresDb(): Promise<PostgresDb> {
   });
 
   //const newPort = await getDynamicPort(container, 5432);
+  let stopped = false;
 
   async function awaitForReady() {
-    let isReady = await execCommand(container, ['pg_isready']);
-    while (isReady.indexOf('accepting connections') === -1) {
+    let isReady = await execCommand(container.id, ['pg_isready']);
+    while (isReady.indexOf('accepting connections') === -1 && !stopped) {
       await sleep(500);
-      isReady = await execCommand(container, ['pg_isready']);
+      isReady = await execCommand(container.id, ['pg_isready']);
     }
     //TODO figure out why connect does not work after pg_isready
     await sleep(1000);
@@ -65,14 +74,16 @@ export async function getPostgresDb(): Promise<PostgresDb> {
   const db: PostgresDb = {
     connectionString: `postgres://postgres:postgres@localhost:${freePort}/postgres`,
     close: async () => {
-      await container.stop();
-      await container.remove();
+      stopped = true;
+      await removeContainer(container.id, { force: true });
     },
     stop: async () => {
-      await container.stop();
+      stopped = true;
+      await stopContainer(container.id, {});
     },
     start: async () => {
-      await container.start();
+      stopped = false;
+      await startContainer(container.id);
       await awaitForReady();
     },
   };

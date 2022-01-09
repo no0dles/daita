@@ -4,9 +4,7 @@ import { testContext } from '../../../testing';
 import { Person } from '../../../models/person';
 
 describe('insert', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

@@ -3,9 +3,7 @@ import { Ascent } from '../../../models/ascent';
 import { field, table } from '@daita/relational';
 
 describe('relational/types/date', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

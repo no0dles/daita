@@ -7,9 +7,7 @@ import { Person } from '../models/person';
 import { testContext } from '../testing';
 
 describe('relational/adapter/relational-transaction-adapter/timeout', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

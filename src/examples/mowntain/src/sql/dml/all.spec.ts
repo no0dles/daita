@@ -3,9 +3,7 @@ import { all, table } from '@daita/relational';
 import { Person } from '../../models/person';
 
 describe('relational/sql/keyword/all', () => {
-  const ctxs = testContext.contexts();
-
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(testContext.contexts())('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup();
     });

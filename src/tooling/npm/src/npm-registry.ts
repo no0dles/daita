@@ -1,5 +1,5 @@
 import { sleep } from '@daita/common';
-import { getDynamicPort, runContainer } from '@daita/node';
+import { getDynamicPort, removeContainer, runContainer } from '@daita/node';
 import { waitForPort } from '@daita/node';
 import { shell } from '@daita/node';
 
@@ -37,8 +37,7 @@ export async function getNpmRegistry(): Promise<NpmRegistry> {
   return {
     uri: `http://localhost:${newPort}`,
     stop: async () => {
-      await container.stop();
-      await container.remove();
+      await removeContainer(container.id, { force: true });
     },
   };
 }

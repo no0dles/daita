@@ -34,5 +34,6 @@ export class Resolvable<T> {
 
   async close(): Promise<void> {
     await this.closeFn(this.value);
+    this.reset();
   }
 }

@@ -20,9 +20,8 @@ describe('packages/orm/migration/steps/add-table-field', () => {
       after: 'init',
     },
   ]);
-  const ctxs = getContexts(migrationTree);
 
-  describe.each(ctxs)('%s', (ctx) => {
+  describe.each(getContexts(migrationTree))('%s', (ctx) => {
     beforeAll(async () => {
       await ctx.setup({ migrate: false, seed: false });
     });
