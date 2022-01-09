@@ -14,7 +14,7 @@
         }
       },
       "root": "auth",
-      "sourceRoot": "auth/src",
+      "sourceRoot": "auth",
       "prefix": "app",
       "architect": {
         "build": {

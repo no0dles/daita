@@ -190,7 +190,7 @@
         "algorithm": {
           "type": "string",
           "default": "RS256",
-          "enum": ["RS256", "RS384", "RS512", "EC384", "EC512"]
+          "enum": ["RS256", "RS384", "RS512", "ES384", "ES512"]
         },
         "allowRegistration": {
           "type": "boolean",

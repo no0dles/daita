@@ -10,8 +10,8 @@ import { ActivatedRoute } from '@angular/router';
 export class UserPoolDetailSettingsComponent {
   form: FormGroup;
   algorithms = [
-    { name: 'EC512', value: 'EC512' },
-    { name: 'EC384', value: 'EC384' },
+    { name: 'ES512', value: 'ES512' },
+    { name: 'ES384', value: 'ES384' },
     { name: 'RS512', value: 'RS512' },
     { name: 'RS384', value: 'RS384' },
   ];
@@ -19,7 +19,7 @@ export class UserPoolDetailSettingsComponent {
   constructor(private route: ActivatedRoute) {
     this.form = new FormGroup({
       name: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      algorithm: new FormControl('EC512', [Validators.required]),
+      algorithm: new FormControl('ES512', [Validators.required]),
       accessTokenExpire: new FormControl(3600, [Validators.required]),
       refreshTokenExpire: new FormControl(2419200, [Validators.required]),
       allowRegistration: new FormControl(false),

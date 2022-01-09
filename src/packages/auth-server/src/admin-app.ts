@@ -9,6 +9,7 @@ import { Server } from 'http';
 import { createLogger } from '@daita/common';
 import { MigrationContext } from '@daita/orm';
 import { responseTimeMetricMiddleware } from './middlewares/response-time-middleware';
+import { loginRoute, refreshRoute } from './routes';
 
 export function createAuthAdminApp(context: MigrationContext<any>, port: number) {
   const adminApp = express();
@@ -22,6 +23,8 @@ export function createAuthAdminApp(context: MigrationContext<any>, port: number)
   }
 
   adminApp.use('/:userPoolId/token', adminTokenRoute(context));
+  adminApp.use('/:userPoolId/login', loginRoute(context));
+  adminApp.use('/:userPoolId/refresh', refreshRoute(context));
 
   adminApp.use(
     '/api/relational',

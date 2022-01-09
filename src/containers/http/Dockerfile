@@ -1,29 +1,38 @@
-FROM node:13-alpine as build
-
-RUN apk update && apk add curl bash
-RUN curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | bash -s -- -b /usr/local/bin
+FROM node:16-alpine as base
 
 WORKDIR /build
 COPY package.json .
 COPY package-lock.json .
 RUN npm ci
 
-COPY tsconfig.json .
-COPY src/containers/http src/containers/http
-COPY src/packages/relational src/packages/relational
-COPY src/packages/common src/packages/common
-COPY src/packages/orm src/packages/orm
-COPY src/packages/node src/packages/node
-COPY src/packages/sqlite-adapter src/packages/sqlite-adapter
-COPY src/packages/pg-adapter src/packages/pg-adapter
-COPY src/packages/http-server-common src/packages/http-server-common
-COPY src/packages/http-client-common src/packages/http-client-common
-COPY src/packages/http-server src/packages/http-server
-RUN npx tsc
+###################################
+FROM node:16-alpine as runetime-modules
 
-COPY src/containers/http/package.json .
-RUN npm prune --production
-RUN /usr/local/bin/node-prune
+WORKDIR /build
+COPY package.json .
+COPY --from=base /build/node_modules node_modules
+COPY lerna.json .
+COPY src/containers/ src/containers
+COPY src/packages/ src/packages
+COPY src/tooling/ src/tooling
+RUN node_modules/.bin/lerna bootstrap -- --production
+
+###################################
+FROM node:16-alpine as build
+
+WORKDIR /build
+COPY package.json .
+COPY --from=base /build/node_modules node_modules
+
+COPY lerna.json .
+COPY tsconfig.json .
+COPY src/containers/ src/containers
+COPY src/packages/ src/packages
+COPY src/tooling/ src/tooling
+RUN node_modules/.bin/lerna bootstrap
+
+WORKDIR /build/src/containers/http
+RUN npm run build
 
 ###################################
 FROM alpine:3.12 as runtime
@@ -32,8 +41,11 @@ WORKDIR /app
 ENV NODE_ENV=production
 RUN apk update && apk add --no-cache nodejs && rm -rf /var/cache/apk
 
-COPY --from=build /build/node_modules node_modules
-COPY --from=build /build/dist/containers/http containers/http
-COPY --from=build /build/dist/packages packages
+COPY --from=runetime-modules /build/src/containers src/containers
+COPY --from=runetime-modules /build/src/packages src/packages
+COPY --from=runetime-modules /build/src/tooling src/tooling
+COPY --from=build /build/src/packages src/packages
+COPY --from=build /build/src/containers src/containers
 
-CMD ["node", "containers/http/index.js"]
+WORKDIR /app/src/containers/http
+CMD ["node", "dist/index.js"]

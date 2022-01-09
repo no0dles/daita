@@ -36,8 +36,8 @@ export async function getKeyForId(userPoolId: string, id: string) {
 
 export function getKeyAlgorithm(algorithm: UserPoolAlgorithm) {
   switch (algorithm) {
-    case 'EC384':
-    case 'EC512':
+    case 'ES384':
+    case 'ES512':
       return 'EC';
     case 'RS256':
     case 'RS384':
@@ -92,7 +92,7 @@ export async function getKey(userPoolId: string, algorithm: UserPoolAlgorithm): 
       type: 'pkcs8',
     });
     keystore.add(key);
-  } else if (algorithm === 'EC384') {
+  } else if (algorithm === 'ES384') {
     const ecKey = crypto.generateKeyPairSync('ec', { namedCurve: 'secp384r1' });
     const ecKeyPem = ecKey.privateKey.export({ type: 'sec1', format: 'pem' });
     key = jose.JWK.asKey({
@@ -101,7 +101,7 @@ export async function getKey(userPoolId: string, algorithm: UserPoolAlgorithm): 
       type: 'sec1',
     });
     keystore.add(key);
-  } else if (algorithm === 'EC512') {
+  } else if (algorithm === 'ES512') {
     const ecKey = crypto.generateKeyPairSync('ec', { namedCurve: 'secp521r1' });
     const ecKeyPem = ecKey.privateKey.export({ type: 'sec1', format: 'pem' });
     key = jose.JWK.asKey({
