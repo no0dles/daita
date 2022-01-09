@@ -1,7 +1,6 @@
 import { AstContext } from '../../ast/ast-context';
 import * as path from 'path';
 import { parseRelationalSchema } from './parse-relational-schema';
-import 'jest-extended';
 import { allow } from '@daita/relational';
 import { authorized } from '@daita/relational';
 import {

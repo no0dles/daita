@@ -1,6 +1,5 @@
 import { MigrationStep } from '@daita/orm';
 import { getMigrationSteps } from '../utils/utils.test';
-import 'jest-extended';
 
 describe('cli/cmds/add/add-seed', () => {
   let steps: MigrationStep[] = [];

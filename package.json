@@ -27,17 +27,15 @@
   },
   "devDependencies": {
     "@types/dockerode": "^3.3.0",
-    "@types/jest": "^27.0.3",
+    "@types/jest": "^27.4.0",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "eslint": "^8.3.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
-    "jest": "^27.3.1",
-    "jest-extended": "^1.1.0",
-    "lerna": "^4.0.0",
-    "prettier": "^2.4.1",
-    "ts-jest": "^27.0.7",
+    "jest": "^27.4.7",
+    "prettier": "^2.5.1",
+    "ts-jest": "^27.1.2",
     "ts-node": "^10.4.0"
   }
 }
