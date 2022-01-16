@@ -8,6 +8,7 @@ export interface Client<T> extends SqlClient {
   exec(sql: T): Promise<RelationalRawResult>;
   supportsQuery<S = any>(sql: S): this is Client<T | S>;
   authorizable(rules: { id: string; rule: Rule }[]): AuthorizableClient<T>;
+  close(): Promise<void>;
 }
 
 export interface AuthorizableClient<T> {

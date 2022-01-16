@@ -1,38 +1,37 @@
 import { allow, authorized } from '@daita/relational';
 import { now } from '@daita/relational';
 import { createMigrationTree } from '@daita/orm';
-import { getContexts } from '../../../testing';
+import { cleanupTestContext, getContexts } from '../../../testing';
 
 describe('packages/orm/migration/steps/relational-add-rule', () => {
   const migrationTree = createMigrationTree([
     { kind: 'add_rule', rule: allow(authorized(), { select: now() }), ruleId: 'a' },
   ]);
+  const ctx = getContexts(migrationTree);
 
-  describe.each(getContexts(migrationTree))('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
+  beforeAll(async () => {
+    await ctx.migrate();
+  });
+
+  afterAll(async () => cleanupTestContext(ctx));
+
+  it('should allow authorized access', async () => {
+    const authorizedContext = ctx.authorize({
+      isAuthorized: true,
+      userId: 'foo',
+      roles: [],
     });
+    const res = await authorizedContext.isAuthorized({ select: now() });
+    expect(res).toEqual(true);
+  });
 
-    afterAll(async () => ctx.close());
-
-    it('should allow authorized access', async () => {
-      const authorizedContext = ctx.authorize({
-        isAuthorized: true,
-        userId: 'foo',
-        roles: [],
-      });
-      const res = await authorizedContext.isAuthorized({ select: now() });
-      expect(res).toEqual(true);
+  it('should not allow unauthorized access', async () => {
+    const unauthorizedContext = ctx.authorize({
+      isAuthorized: false,
+      userId: undefined,
+      roles: undefined,
     });
-
-    it('should not allow unauthorized access', async () => {
-      const unauthorizedContext = ctx.authorize({
-        isAuthorized: false,
-        userId: undefined,
-        roles: undefined,
-      });
-      const res = await unauthorizedContext.isAuthorized({ select: now() });
-      expect(res).toEqual(false);
-    });
+    const res = await unauthorizedContext.isAuthorized({ select: now() });
+    expect(res).toEqual(false);
   });
 });

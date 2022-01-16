@@ -19,7 +19,7 @@ export class AuthService {
   } | null = null;
   private accessToken: { sub: string; iss: string; exp: number; iat: number; roles: string[] } | null = null;
   private refreshToken: string | null = null;
-  private refreshDefer: Defer<boolean> | null = null;
+  private refreshDefer: Promise<boolean> | null = null;
 
   constructor(private http: HttpClient, private router: Router) {
     this.load();
@@ -86,41 +86,45 @@ export class AuthService {
 
   private async refresh() {
     if (this.refreshDefer) {
-      return this.refreshDefer.promise;
+      return this.refreshDefer;
     }
 
-    const defer = new Defer<boolean>();
-    this.refreshDefer = defer;
-
     try {
-      const response = await this.http
-        .post<{ refresh_token: string; access_token: string }>(
-          `${environment.apiUrl}/${this.accessToken!.iss}/refresh`,
-          {
-            refreshToken: this.refreshToken,
-          },
-        )
-        .toPromise();
-      localStorage.setItem('access_token', response.access_token);
-      localStorage.setItem('refresh_token', response.refresh_token);
-      this.accessToken = parseJwtPayload(response.access_token);
-      defer.resolve(true);
-    } catch (e) {
-      if (e instanceof HttpErrorResponse && e.error && e.error.message === 'invalid token') {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('id_token');
-        this.accessToken = null;
-        this.identityToken = null;
-        this.refreshToken = null;
-        await this.router.navigate(['/login']);
-      }
-      defer.resolve(false);
+      this.refreshDefer = new Promise<boolean>((resolve, reject) => {
+        resolve(
+          (async () => {
+            try {
+              const response = await this.http
+                .post<{ refresh_token: string; access_token: string }>(
+                  `${environment.apiUrl}/${this.accessToken!.iss}/refresh`,
+                  {
+                    refreshToken: this.refreshToken,
+                  },
+                )
+                .toPromise();
+              localStorage.setItem('access_token', response.access_token);
+              localStorage.setItem('refresh_token', response.refresh_token);
+              this.accessToken = parseJwtPayload(response.access_token);
+
+              return true;
+            } catch (e) {
+              if (e instanceof HttpErrorResponse && e.error && e.error.message === 'invalid token') {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                localStorage.removeItem('id_token');
+                this.accessToken = null;
+                this.identityToken = null;
+                this.refreshToken = null;
+                await this.router.navigate(['/login']);
+              }
+              return false;
+            }
+          })(),
+        );
+      });
     } finally {
       this.refreshDefer = null;
     }
-
-    return defer.promise;
   }
 
   async login(options: { userPoolId: string; username: string; password: string }) {

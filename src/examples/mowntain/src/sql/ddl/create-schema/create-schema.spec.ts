@@ -1,28 +1,26 @@
-import { testContext } from '../../../testing';
+import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
 
 describe('relational/sql/ddl/create-schema', () => {
-  const ctxs = testContext.contexts({
+  const ctx = getMowntainTestContext({
     createSchema: 'test',
   });
 
-  describe.each(ctxs)('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
+  beforeAll(async () => {
+    await seedMowntainData(ctx);
+  });
+
+  afterAll(async () => cleanupTestContext(ctx));
+
+  it('should create schema', async () => {
+    await ctx.exec({
+      createSchema: 'auth',
     });
+  });
 
-    afterAll(async () => ctx.close());
-
-    it('should create schema', async () => {
-      await ctx.exec({
-        createSchema: 'auth',
-      });
-    });
-
-    it('should create schema if not exists', async () => {
-      await ctx.exec({
-        createSchema: 'auth',
-        ifNotExists: true,
-      });
+  it('should create schema if not exists', async () => {
+    await ctx.exec({
+      createSchema: 'auth',
+      ifNotExists: true,
     });
   });
 });

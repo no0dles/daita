@@ -1,6 +1,3 @@
-// import { Container } from 'dockerode';
-// import Docker = require('dockerode');
-// import { Defer } from '@daita/common';
 import { request } from 'http';
 
 export interface DockerCompose {
@@ -24,36 +21,16 @@ export async function getDynamicPort(container: CreateContainerResult, container
   return inspect.networkSettings.ports[`${containerPort}/tcp`][0].hostPort;
 }
 
-//const docker = new Docker();
-
 export async function runContainer(options: {
   image: string;
   env?: string[];
   labels?: { [key: string]: string };
   portBinding?: { [key: string]: number };
 }) {
-  //await pullImage(options.image);
   await createImage({
     fromImage: options.image,
   });
 
-  // const hostConfig: Docker.HostConfig = { PortBindings: {} };
-  // const exposedPorts: { [key: string]: any } = {};
-  // if (options.portBinding) {
-  //   for (const containerPort of Object.keys(options.portBinding)) {
-  //     hostConfig.PortBindings[`${containerPort}/tcp`] = [{ HostPort: `${options.portBinding[containerPort]}` }];
-  //     exposedPorts[`${containerPort}/tcp:`] = {};
-  //   }
-  // }
-  // const container = await docker.createContainer({
-  //   Image: options.image,
-  //   Env: options.env,
-  //   Labels: options.labels,
-  //   HostConfig: hostConfig,
-  //   ExposedPorts: exposedPorts,
-  // });
-  // await container.start();
-  // return container;
   const container = await createContainer({
     env: options.env,
     image: options.image,
@@ -64,17 +41,6 @@ export async function runContainer(options: {
 
   return container;
 }
-// export async function pullImage(imageName: string) {
-//   const images = await docker.listImages({});
-//   if (images.some((i) => i.RepoTags?.some((repoTag) => repoTag === imageName))) {
-//     return;
-//   }
-//
-//   const image = await docker.pull(imageName);
-//   const pullDefer = new Defer<any>();
-//   docker.modem.followProgress(image, (err: any, res: any) => (err ? pullDefer.reject(err) : pullDefer.resolve(res)));
-//   await pullDefer.promise;
-// }
 
 export async function execCommand(containerId: string, cmd: string[]) {
   const exec = await createExec(containerId, {
@@ -85,17 +51,6 @@ export async function execCommand(containerId: string, cmd: string[]) {
   return startExec(exec.id, {
     detach: false,
   });
-  // const command = await container.exec({ Cmd: cmd, AttachStderr: true, AttachStdout: true });
-  // const isReady = await command.start({});
-  // const defer = new Defer<string>();
-  // const chunks: Buffer[] = [];
-  // isReady.on('data', (chunk) => chunks.push(chunk));
-  // isReady.on('error', (err) => defer.reject(err));
-  // isReady.on('end', () => {
-  //   isReady.destroy();
-  //   defer.resolve(Buffer.concat(chunks).toString());
-  // });
-  // return defer.promise;
 }
 
 export interface CreateContainerOptions {
@@ -183,142 +138,66 @@ export interface ExecInspectResult {
 
 export interface CreateImageOptions {
   fromImage: string;
-  // fromSrc?: string;
-  // repo?: string;
-  // tag?: string;
-  // platform?: string;
+  fromSrc?: string;
+  repo?: string;
+  tag?: string;
+  platform?: string;
 }
 
-export function createImage(options: CreateImageOptions): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+function buildQuery(query: { [key: string]: string | boolean | undefined | null | number }): string {
+  const keys = Object.keys(query).filter((key) => query[key] !== undefined && query[key] !== null);
+  if (keys.length === 0) {
+    return '';
+  }
+  return '?' + keys.map((key) => `${key}=${query[key]}`).join('&');
+}
+
+function handleRequest<T>(
+  options: { method: 'GET' | 'POST' | 'DELETE'; path: string },
+  responseHandlers: { [key: number]: (responseData: string) => T | Error },
+  data?: any,
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
     const clientRequest = request(
       {
         socketPath: '/var/run/docker.sock',
-        path: `/images/create?fromImage=${options.fromImage}`,
-        method: 'POST',
+        path: options.path,
+        method: options.method,
         headers: { 'content-type': 'application/json' },
       },
       (res) => {
-        res.setEncoding('utf8');
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('error', (data) => reject(data));
-        res.on('end', () => {
-          resolve();
-        });
-      },
-    );
-
-    clientRequest.end();
-  });
-}
-
-export function inspectExec(id: string): Promise<ExecInspectResult> {
-  return new Promise<ExecInspectResult>((resolve, reject) => {
-    const clientRequest = request(
-      {
-        socketPath: '/var/run/docker.sock',
-        path: `/exec/${id}/json`,
-        method: 'GET',
-        headers: { 'content-type': 'application/json' },
-      },
-      (res) => {
-        res.setEncoding('utf8');
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('error', (data) => reject(data));
-        res.on('end', () => {
-          const result = JSON.parse(data);
-          resolve({
-            id: result.ID,
-            canRemove: result.CanRemove,
-            containerId: result.ContainerID,
-            exitCode: result.ExitCode,
-            openStderr: result.OpenStderr,
-            openStdin: result.OpenStdin,
-            openStdout: result.OpenStdout,
-            pid: result.Pid,
-            processConfig: result.ProcessConfig,
-            running: result.Running,
+        const responseHandler = responseHandlers[res.statusCode || 0];
+        if (!responseHandler) {
+          reject(new Error(`unexpected http response ${res.statusCode} for ${options.method} ${options.path}`));
+        } else {
+          res.setEncoding('utf8');
+          let data = '';
+          res.on('data', (chunk) => (data += chunk));
+          res.on('error', (data) => reject(data));
+          res.on('end', () => {
+            const result = responseHandler(data);
+            if (result instanceof Error) {
+              reject(result);
+            } else {
+              resolve(result);
+            }
           });
-        });
+        }
       },
     );
 
-    clientRequest.end();
-  });
-}
-
-export function createExec(id: string, options: ExecOptions): Promise<ExecResult> {
-  return new Promise<ExecResult>((resolve, reject) => {
-    const clientRequest = request(
-      {
-        socketPath: '/var/run/docker.sock',
-        path: `/containers/${id}/exec`,
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-      },
-      (res) => {
-        res.setEncoding('utf8');
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('error', (data) => reject(data));
-        res.on('end', () => {
-          const result = JSON.parse(data);
-          resolve({
-            id: result.Id,
-          });
-        });
-      },
-    );
-
-    clientRequest.write(
-      JSON.stringify({
-        AttachStdin: options.attachStdin,
-        AttachStdout: options.attachStdout,
-        AttachStderr: options.attachStderr,
-        DetachKeys: options.detachKeys,
-        Tty: options.tty,
-        Env: options.env,
-        Cmd: options.cmd,
-        Privileged: options.priviledged,
-        User: options.user,
-        WorkingDir: options.workingDir,
-      }),
-    );
-
-    clientRequest.end();
-  });
-}
-
-export function startContainer(id: string): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    const clientRequest = request(
-      {
-        socketPath: '/var/run/docker.sock',
-        path: `/containers/${id}/start`,
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-      },
-      (res) => {
-        res.setEncoding('utf8');
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('error', (data) => reject(data));
-        res.on('end', () => {
-          resolve();
-        });
-      },
-    );
+    if (data) {
+      clientRequest.write(JSON.stringify(data));
+    }
 
     clientRequest.end();
   });
 }
 
 export interface RemoveContainerOptions {
-  v?: boolean;
+  removeVolumes?: boolean;
   force?: boolean;
-  link?: boolean;
+  removeLinks?: boolean;
 }
 
 export interface StopContainerOptions {
@@ -343,137 +222,202 @@ export interface ContainerNetworkSettingsPorts {
   [key: string]: { hostIp: string; hostPort: number }[];
 }
 
-export function inspectContainer(id: string) {
-  return new Promise<ContainerInspectResult>((resolve, reject) => {
-    const clientRequest = request(
-      {
-        socketPath: '/var/run/docker.sock',
-        path: `/containers/${id}/json`,
-        method: 'GET',
-        headers: { 'content-type': 'application/json' },
-      },
-      (res) => {
-        res.setEncoding('utf8');
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('error', (data) => reject(data));
-        res.on('end', () => {
-          const result = JSON.parse(data);
-          resolve({
-            id: result.Id,
-            created: new Date(result.Created),
-            name: result.Name,
-            image: result.Image,
-            restartCount: result.RestartCount,
-            path: result.Path,
-            networkSettings: {
-              ports: Object.keys(result.NetworkSettings.Ports).reduce<ContainerNetworkSettingsPorts>((map, key) => {
-                const value: any[] = result.NetworkSettings.Ports[key];
-                if (value) {
-                  map[key] = value.map((v) => ({ hostIp: v.HostIp, hostPort: parseInt(v.HostPort) }));
-                }
-                return map;
-              }, {}),
-            },
-          });
-        });
-      },
-    );
+export function createImage(options: CreateImageOptions): Promise<void> {
+  return handleRequest<void>(
+    {
+      path: `/images/create${buildQuery({
+        fromImage: options.fromImage,
+        fromSrc: options.fromSrc,
+        repo: options.repo,
+        tag: options.tag,
+        platform: options.platform,
+      })}`,
+      method: 'POST',
+    },
+    {
+      200: () => {},
+      404: () => new Error('repository does not exist or no read access'),
+      500: () => new Error('server error'),
+    },
+  );
+}
 
-    clientRequest.end();
-  });
+export function inspectExec(id: string): Promise<ExecInspectResult> {
+  return handleRequest<ExecInspectResult>(
+    {
+      path: `/exec/${id}/json`,
+      method: 'GET',
+    },
+    {
+      200: (data) => {
+        const result = JSON.parse(data);
+        return {
+          id: result.ID,
+          canRemove: result.CanRemove,
+          containerId: result.ContainerID,
+          exitCode: result.ExitCode,
+          openStderr: result.OpenStderr,
+          openStdin: result.OpenStdin,
+          openStdout: result.OpenStdout,
+          pid: result.Pid,
+          processConfig: result.ProcessConfig,
+          running: result.Running,
+        };
+      },
+      404: () => new Error('no such exec instance'),
+      500: () => new Error('server error'),
+    },
+  );
+}
+
+export function createExec(id: string, options: ExecOptions): Promise<ExecResult> {
+  return handleRequest<ExecResult>(
+    {
+      path: `/containers/${id}/exec`,
+      method: 'POST',
+    },
+    {
+      201: (data) => {
+        const result = JSON.parse(data);
+        return {
+          id: result.Id,
+        };
+      },
+      404: () => new Error('no such container'),
+      409: () => new Error('container is paused'),
+      500: () => new Error('server error'),
+    },
+    {
+      AttachStdin: options.attachStdin,
+      AttachStdout: options.attachStdout,
+      AttachStderr: options.attachStderr,
+      DetachKeys: options.detachKeys,
+      Tty: options.tty,
+      Env: options.env,
+      Cmd: options.cmd,
+      Privileged: options.priviledged,
+      User: options.user,
+      WorkingDir: options.workingDir,
+    },
+  );
+}
+
+export function startContainer(id: string): Promise<void> {
+  return handleRequest<void>(
+    {
+      path: `/containers/${id}/start`,
+      method: 'POST',
+    },
+    {
+      204: () => {},
+      304: () => {},
+      404: () => new Error('no such container'),
+      500: () => new Error('server error'),
+    },
+  );
+}
+
+export function inspectContainer(id: string) {
+  return handleRequest<ContainerInspectResult>(
+    {
+      path: `/containers/${id}/json`,
+      method: 'GET',
+    },
+    {
+      200: (data) => {
+        const result = JSON.parse(data);
+        return {
+          id: result.Id,
+          created: new Date(result.Created),
+          name: result.Name,
+          image: result.Image,
+          restartCount: result.RestartCount,
+          path: result.Path,
+          networkSettings: {
+            ports: Object.keys(result.NetworkSettings.Ports).reduce<ContainerNetworkSettingsPorts>((map, key) => {
+              const value: any[] = result.NetworkSettings.Ports[key];
+              if (value) {
+                map[key] = value.map((v) => ({ hostIp: v.HostIp, hostPort: parseInt(v.HostPort) }));
+              }
+              return map;
+            }, {}),
+          },
+        };
+      },
+      404: () => new Error('no such container'),
+      500: () => new Error('server error'),
+    },
+  );
 }
 
 export function stopContainer(id: string, options: StopContainerOptions) {
-  return new Promise<void>((resolve, reject) => {
-    const clientRequest = request(
-      {
-        socketPath: '/var/run/docker.sock',
-        path: `/containers/${id}/stop?t=${options.timeout}`,
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-      },
-      (res) => {
-        res.setEncoding('utf8');
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('error', (data) => reject(data));
-        res.on('end', () => {
-          resolve();
-        });
-      },
-    );
-
-    clientRequest.end();
-  });
+  return handleRequest<void>(
+    {
+      path: `/containers/${id}/stop${buildQuery({ t: options.timeout })}`,
+      method: 'POST',
+    },
+    {
+      204: () => {},
+      304: () => {},
+      404: () => new Error('no such container'),
+      500: () => new Error('server error'),
+    },
+  );
 }
 
 export function removeContainer(id: string, options: RemoveContainerOptions) {
-  return new Promise<void>((resolve, reject) => {
-    const clientRequest = request(
-      {
-        socketPath: '/var/run/docker.sock',
-        path: `/containers/${id}?force=${options.force}&v=${options.v}&link=${options.link}`,
-        method: 'DELETE',
-        headers: { 'content-type': 'application/json' },
-      },
-      (res) => {
-        res.setEncoding('utf8');
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('error', (data) => reject(data));
-        res.on('end', () => {
-          resolve();
-        });
-      },
-    );
-
-    clientRequest.end();
-  });
+  return handleRequest<void>(
+    {
+      path: `/containers/${id}${buildQuery({
+        force: options.force,
+        v: options.removeVolumes,
+        link: options.removeLinks,
+      })}`,
+      method: 'DELETE',
+    },
+    {
+      204: () => {},
+      400: () => new Error('bad parameter'),
+      404: () => new Error('no such container'),
+      409: () => new Error('conflict'),
+      500: () => new Error('server error'),
+    },
+  );
 }
 
 export function createContainer(options: CreateContainerOptions) {
-  return new Promise<CreateContainerResult>((resolve, reject) => {
-    const hostConfig: { PortBindings: { [key: string]: { HostPort: string }[] } } = { PortBindings: {} };
-    const exposedPorts: { [key: string]: any } = {};
-    if (options.portMappings) {
-      for (const [containerPort, hostPort] of Object.entries(options.portMappings)) {
-        hostConfig.PortBindings[`${containerPort}/tcp`] = [{ HostPort: `${hostPort}` }];
-        exposedPorts[`${containerPort}/tcp:`] = {};
-      }
+  const hostConfig: { PortBindings: { [key: string]: { HostPort: string }[] } } = { PortBindings: {} };
+  const exposedPorts: { [key: string]: any } = {};
+  if (options.portMappings) {
+    for (const [containerPort, hostPort] of Object.entries(options.portMappings)) {
+      hostConfig.PortBindings[`${containerPort}/tcp`] = [{ HostPort: `${hostPort}` }];
+      exposedPorts[`${containerPort}/tcp:`] = {};
     }
+  }
 
-    const clientRequest = request(
-      {
-        socketPath: '/var/run/docker.sock',
-        path: '/containers/create',
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
+  return handleRequest<CreateContainerResult>(
+    {
+      path: '/containers/create',
+      method: 'POST',
+    },
+    {
+      201: (data) => {
+        const result = JSON.parse(data);
+        return {
+          id: result.Id,
+        };
       },
-      (res) => {
-        res.setEncoding('utf8');
-        let data = '';
-        res.on('data', (chunk) => (data += chunk));
-        res.on('error', (data) => reject(data));
-        res.on('end', () => {
-          const result = JSON.parse(data);
-          resolve({
-            id: result.Id,
-          });
-        });
-      },
-    );
-
-    clientRequest.write(
-      JSON.stringify({
-        Image: options.image,
-        Env: options.env,
-        Labels: options.labels,
-        ExposedPorts: exposedPorts,
-        HostConfig: hostConfig,
-      }),
-    );
-
-    clientRequest.end();
-  });
+      400: () => new Error('bad parameter'),
+      404: () => new Error('no such container'),
+      409: () => new Error('conflict'),
+      500: () => new Error('server error'),
+    },
+    {
+      Image: options.image,
+      Env: options.env,
+      Labels: options.labels,
+      ExposedPorts: exposedPorts,
+      HostConfig: hostConfig,
+    },
+  );
 }

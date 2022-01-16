@@ -1,16 +1,16 @@
-import { testContext } from '../../../testing';
+import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
 
 describe('sql/dml/select/variables', () => {
-  describe.each(testContext.contexts())('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
-    });
+  const ctx = getMowntainTestContext();
 
-    afterAll(async () => ctx.close());
+  beforeAll(async () => {
+    await seedMowntainData(ctx);
+  });
 
-    it('should select 1', async () => {
-      const result = await ctx.selectFirst({ select: 1 });
-      expect(result).toEqual(1);
-    });
+  afterAll(async () => cleanupTestContext(ctx));
+
+  it('should select 1', async () => {
+    const result = await ctx.selectFirst({ select: 1 });
+    expect(result).toEqual(1);
   });
 });

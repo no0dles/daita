@@ -5,7 +5,7 @@ import { RelationalMigrationAdapter } from '@daita/orm';
 import { MariadbSql } from '../sql/mariadb-sql';
 import { createPool } from 'mariadb';
 import { isConnectionStringOptions, MariadbAdapterOptions } from './mariadb-adapter-options';
-import { Resolvable } from '@daita/common';
+import { failNever, Resolvable } from '@daita/common';
 import { MariadbRelationalMigrationAdapter } from './mariadb-relational-migration-adapter';
 
 class MariadbAdapterImplementation
@@ -18,24 +18,27 @@ class MariadbAdapterImplementation
     options: MariadbAdapterOptions,
   ): RelationalTransactionAdapter<MariadbSql> & RelationalMigrationAdapter<MariadbSql> {
     if (isConnectionStringOptions(options)) {
-      return new MariadbRelationalMigrationAdapter(
-        new Resolvable(createPool(options.connectionString), (pool) => pool?.end()),
-      );
+      return new MariadbRelationalMigrationAdapter({
+        connectionString: options.connectionString,
+      });
     } else {
-      return new MariadbRelationalMigrationAdapter(
-        new Resolvable(
-          createPool({
-            user: options.user,
-            host: options.host,
-            database: options.database,
-            password: options.password,
-            ssl: options.ssl,
-            port: options.port,
-          }),
-          (pool) => pool?.end(),
-        ),
-      );
+      failNever(options, 'unknown options');
     }
+    // else {
+    //   return new MariadbRelationalMigrationAdapter(
+    //     new Resolvable(
+    //       createPool({
+    //         user: options.user,
+    //         host: options.host,
+    //         database: options.database,
+    //         password: options.password,
+    //         ssl: options.ssl,
+    //         port: options.port,
+    //       }),
+    //       (pool) => pool?.end(),
+    //     ),
+    //   );
+    // }
   }
 }
 

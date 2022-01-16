@@ -1,45 +1,60 @@
-import { getPostgresDb, postgresTestAdapter } from '@daita/testing';
+import { getPostgresDb } from '@daita/testing';
 import { sleep } from '@daita/common';
-import { Defer } from '@daita/common';
+import { adapter, PostgresMigrationAdapter } from '@daita/pg-adapter';
 
 describe('pg-adapter/adapter/postgres-adapter/notify', () => {
   it('should listen on notify connection', async () => {
     const db = await getPostgresDb();
-    const adapter = postgresTestAdapter.getRelationalAdapter({ listenForNotifications: true });
+    const postgresAdapter = adapter.getRelationalAdapter({
+      listenForNotifications: true,
+      connectionString: db.connectionString,
+    }) as PostgresMigrationAdapter;
     try {
-      const listenerDefer = new Defer<void>();
-      await adapter.addNotificationListener('test1', (msg) => {
-        listenerDefer.resolve();
+      await new Promise<void>((resolve) => {
+        resolve(
+          (async () => {
+            await postgresAdapter.addNotificationListener('test1', (msg) => {
+              resolve();
+            });
+            await sleep(1000);
+            await postgresAdapter.exec({
+              notify: 'test1',
+            });
+          })(),
+        );
       });
-      await sleep(1000);
-      await adapter.exec({
-        notify: 'test1',
-      });
-      await listenerDefer.promise;
     } finally {
-      await adapter.close();
+      await postgresAdapter.close();
       await db.close();
     }
   });
 
   it('should reconnect notify connection', async () => {
     const db = await getPostgresDb();
-    const adapter = postgresTestAdapter.getRelationalAdapter({ listenForNotifications: true });
+    const postgresAdapter = adapter.getRelationalAdapter({
+      listenForNotifications: true,
+      connectionString: db.connectionString,
+    }) as PostgresMigrationAdapter;
+
     try {
-      const listenerDefer = new Defer<void>();
-      await adapter.addNotificationListener('test2', (msg) => {
-        listenerDefer.resolve();
+      await new Promise<void>((resolve) => {
+        resolve(
+          (async () => {
+            await postgresAdapter.addNotificationListener('test2', (msg) => {
+              resolve();
+            });
+            await db.stop();
+            await sleep(4000);
+            await db.start();
+            await postgresAdapter.exec({
+              notify: 'test2',
+            });
+          })(),
+        );
       });
-      await db.stop();
-      await db.start();
-      await sleep(2000);
-      await adapter.exec({
-        notify: 'test2',
-      });
-      await listenerDefer.promise;
     } finally {
-      await adapter.close();
+      await postgresAdapter.close();
       await db.close();
     }
-  });
+  }, 25000);
 });

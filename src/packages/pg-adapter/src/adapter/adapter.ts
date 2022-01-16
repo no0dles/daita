@@ -7,7 +7,6 @@ import { failNever } from '@daita/common';
 import { RelationalMigrationAdapter } from '@daita/orm';
 import { PostgresMigrationAdapter } from './postgres-migration-adapter';
 import { RelationalMigrationAdapterImplementation } from '@daita/orm';
-import { Resolvable } from '@daita/common';
 
 export interface PostgresAdapterBaseOptions {
   listenForNotifications?: boolean;
@@ -82,51 +81,63 @@ class PostgresAdapterImplementation
     RelationalTransactionAdapterImplementation<PostgresSql, PostgresAdapterOptions>,
     RelationalMigrationAdapterImplementation<PostgresSql, PostgresAdapterOptions>
 {
-  getRelationalAdapter(
-    options: PostgresAdapterOptions,
-  ): RelationalTransactionAdapter<PostgresSql> & RelationalMigrationAdapter<PostgresSql> {
-    return new PostgresMigrationAdapter(
-      new Resolvable<string>(async () => {
-        const connectionString = await prepareDatabase(options);
-        return connectionString;
-      }),
-    );
+  getRelationalAdapter(options: PostgresAdapterOptions): PostgresMigrationAdapter {
+    return new PostgresMigrationAdapter({
+      connectionString: prepareConnectionString(options),
+      listenForNotifications: options.listenForNotifications,
+      prepare: () => prepareDatabase(options),
+    });
   }
 }
 
 export const adapter = new PostgresAdapterImplementation();
 
-async function prepareDatabase(options: PostgresAdapterOptions) {
+function prepareConnectionString(options: PostgresAdapterOptions): string {
+  if (
+    isConnectionStringCreateOptions(options) ||
+    isConnectionStringDropOptions(options) ||
+    isConnectionStringOptions(options)
+  ) {
+    return options.connectionString;
+  } else if (
+    isHostWithDatabaseCreateOptions(options) ||
+    isHostWithDatabaseDropOptions(options) ||
+    isHostWithDatabaseOptions(options) ||
+    isHostOptions(options)
+  ) {
+    return getConnectionString(options);
+  } else {
+    failNever(options, 'unknown postgres adapter options');
+  }
+}
+
+async function prepareDatabase(options: PostgresAdapterOptions): Promise<void> {
   if (isConnectionStringCreateOptions(options)) {
     if (options.createIfNotExists) {
       await ensureDatabaseExists(options.connectionString);
     }
-    return options.connectionString;
   } else if (isConnectionStringDropOptions(options)) {
     if (options.dropIfExists) {
       await dropDatabase(options.connectionString);
       await ensureDatabaseExists(options.connectionString);
     }
-    return options.connectionString;
   } else if (isConnectionStringOptions(options)) {
-    return options.connectionString;
+    return;
   } else if (isHostWithDatabaseCreateOptions(options)) {
     const connectionString = getConnectionString(options);
     if (options.createIfNotExists) {
       await ensureDatabaseExists(connectionString);
     }
-    return connectionString;
   } else if (isHostWithDatabaseDropOptions(options)) {
     const connectionString = getConnectionString(options);
     if (options.dropIfExists) {
       await dropDatabase(connectionString);
       await ensureDatabaseExists(connectionString);
     }
-    return connectionString;
   } else if (isHostWithDatabaseOptions(options)) {
-    return getConnectionString(options);
+    return;
   } else if (isHostOptions(options)) {
-    return getConnectionString(options);
+    return;
   } else {
     failNever(options, 'unknown postgres adapter options');
   }

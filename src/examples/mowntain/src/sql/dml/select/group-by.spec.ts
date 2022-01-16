@@ -1,53 +1,53 @@
-import { testContext } from '../../../testing';
+import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
 import { Mountain } from '../../../models/mountain';
 import { count, equal, field, greaterThan, join, table } from '@daita/relational';
 import { Canton } from '../../../models/canton';
 
 describe('docs/example/sql/dml/select', () => {
-  describe.each(testContext.contexts())('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
+  const ctx = getMowntainTestContext();
+
+  beforeAll(async () => {
+    await seedMowntainData(ctx);
+  });
+
+  afterAll(async () => cleanupTestContext(ctx));
+
+  it('should select group by disabled and select count', async () => {
+    const result = await ctx.select({
+      select: {
+        name: field(Canton, 'name'),
+        count: count(),
+      },
+      from: table(Canton),
+      join: [join(Mountain, equal(field(Mountain, 'cantonShortname'), field(Canton, 'shortname')))],
+      groupBy: field(Canton, 'name'),
+      orderBy: [count(), field(Canton, 'name')],
     });
 
-    afterAll(async () => ctx.close());
+    expect(result).toEqual([
+      {
+        count: 1,
+        name: 'Bern',
+      },
+      {
+        count: 1,
+        name: 'Valais',
+      },
+    ]);
+  });
 
-    it('should select group by disabled and select count', async () => {
-      const result = await ctx.select({
-        select: {
-          name: field(Canton, 'name'),
-          count: count(),
-        },
-        from: table(Canton),
-        join: [join(Mountain, equal(field(Mountain, 'cantonShortname'), field(Canton, 'shortname')))],
-        groupBy: field(Canton, 'name'),
-        orderBy: [count(), field(Canton, 'name')],
-      });
-
-      expect(result).toEqual([
-        {
-          count: 1,
-          name: 'Bern',
-        },
-        {
-          count: 1,
-          name: 'Valais',
-        },
-      ]);
+  it('should select group by with having', async () => {
+    const result = await ctx.select({
+      select: {
+        name: field(Canton, 'name'),
+        count: count(),
+      },
+      from: table(Canton),
+      join: [join(Mountain, equal(field(Mountain, 'cantonShortname'), field(Canton, 'shortname')))],
+      groupBy: field(Canton, 'name'),
+      having: greaterThan(count(), 1),
+      orderBy: [count(), field(Canton, 'name')],
     });
-
-    it('should select group by with having', async () => {
-      const result = await ctx.select({
-        select: {
-          name: field(Canton, 'name'),
-          count: count(),
-        },
-        from: table(Canton),
-        join: [join(Mountain, equal(field(Mountain, 'cantonShortname'), field(Canton, 'shortname')))],
-        groupBy: field(Canton, 'name'),
-        having: greaterThan(count(), 1),
-        orderBy: [count(), field(Canton, 'name')],
-      });
-      expect(result).toEqual([]);
-    });
+    expect(result).toEqual([]);
   });
 });

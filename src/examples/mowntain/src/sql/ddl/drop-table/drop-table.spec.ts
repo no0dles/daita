@@ -1,26 +1,26 @@
 import { AscentPerson } from '../../../models/ascent-person';
-import { testContext } from '../../../testing';
+import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
 import { table } from '@daita/relational';
 
 describe('relational/sql/ddl/drop-table', () => {
-  describe.each(testContext.contexts())('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
+  const ctx = getMowntainTestContext();
+
+  beforeAll(async () => {
+    await seedMowntainData(ctx);
+  });
+
+  afterAll(async () => cleanupTestContext(ctx));
+
+  it('should create person table', async () => {
+    await ctx.exec({
+      dropTable: table(AscentPerson),
     });
+  });
 
-    afterAll(async () => ctx.close());
-
-    it('should create person table', async () => {
-      await ctx.exec({
-        dropTable: table(AscentPerson),
-      });
-    });
-
-    it('should create person table if exists', async () => {
-      await ctx.exec({
-        dropTable: table(AscentPerson),
-        ifExists: true,
-      });
+  it('should create person table if exists', async () => {
+    await ctx.exec({
+      dropTable: table(AscentPerson),
+      ifExists: true,
     });
   });
 });

@@ -1,21 +1,21 @@
 import { sum, table } from '@daita/relational';
 import { Mountain } from '../../../../models/mountain';
-import { testContext } from '../../../../testing';
+import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
 
 describe('relational/sql/function/aggregation/sum', () => {
-  describe.each(testContext.contexts())('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
-    });
+  const ctx = getMowntainTestContext();
 
-    afterAll(async () => ctx.close());
+  beforeAll(async () => {
+    await seedMowntainData(ctx);
+  });
 
-    it('should get sum', async () => {
-      const result = await ctx.selectFirst({
-        select: sum(Mountain, 'prominence'),
-        from: table(Mountain),
-      });
-      expect(result).toEqual(1737.501);
+  afterAll(async () => cleanupTestContext(ctx));
+
+  it('should get sum', async () => {
+    const result = await ctx.selectFirst({
+      select: sum(Mountain, 'prominence'),
+      from: table(Mountain),
     });
+    expect(result).toEqual(1737.501);
   });
 });

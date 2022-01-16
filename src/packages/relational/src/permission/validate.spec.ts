@@ -28,6 +28,9 @@ describe('relational/permission', () => {
         where: equal(field(table('user'), 'test'), 'a'),
       },
     );
-    console.log(result);
+    expect(result).not.toBeNull();
+    expect(result).not.toBeUndefined();
+    expect(result!.id).toBe('a');
+    expect(result!.type).toBe('allow');
   });
 });

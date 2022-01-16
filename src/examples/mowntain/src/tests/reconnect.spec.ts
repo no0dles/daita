@@ -1,13 +1,12 @@
-import { PostgresTransactionAdapter } from '@daita/pg-adapter';
+import { PostgresMigrationAdapter } from '@daita/pg-adapter';
 import { getPostgresDb } from '@daita/testing';
 import { ConnectionError } from '@daita/relational';
 import { RelationalDataAdapter } from '@daita/relational';
-import { Resolvable } from '@daita/common';
 
 describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
   it('should handle disconnect after initial connection', async () => {
     const db = await getPostgresDb();
-    const adapter = new PostgresTransactionAdapter(new Resolvable<string>(db.connectionString));
+    const adapter = new PostgresMigrationAdapter({ connectionString: db.connectionString });
     try {
       await testConnection(adapter);
       await db.stop();
@@ -28,7 +27,7 @@ describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
     const db = await getPostgresDb();
     await db.stop();
 
-    const adapter = new PostgresTransactionAdapter(new Resolvable<string>(db.connectionString));
+    const adapter = new PostgresMigrationAdapter({ connectionString: db.connectionString });
     try {
       try {
         await testConnection(adapter);

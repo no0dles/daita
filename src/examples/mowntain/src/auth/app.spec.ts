@@ -36,6 +36,7 @@ describe('app', () => {
 
   afterAll(async () => {
     await app?.close();
+    await metricsApp?.close();
     await ctx.close();
   });
 

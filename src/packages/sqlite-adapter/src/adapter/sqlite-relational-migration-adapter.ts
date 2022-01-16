@@ -2,10 +2,9 @@ import { RelationalMigrationAdapter } from '@daita/orm';
 import { SqliteSql } from '../sql/sqlite-sql';
 import { MigrationStorage } from '@daita/orm';
 import { MigrationPlan } from '@daita/orm';
-import { failNever } from '@daita/common';
+import { createLogger, failNever, handleTimeout } from '@daita/common';
 import { MigrationDescription } from '@daita/orm';
-import { RelationalClient } from '@daita/relational';
-import { SqliteRelationalTransactionAdapter } from './sqlite-relational-transaction-adapter';
+import { RelationalClient, RelationalDataAdapter } from '@daita/relational';
 import { addTableAction } from '@daita/orm';
 import { addTableFieldAction } from '@daita/orm';
 import { addTablePrimaryKeyAction } from '@daita/orm';
@@ -23,18 +22,34 @@ import { dropTableFieldAction } from '../orm/drop-table-field.action';
 import { dropTableForeignKeyAction } from '../orm/drop-table-foreign-key.action';
 import { RelationalTransactionClient } from '@daita/relational';
 import { unlinkSync } from 'fs';
+import { SqliteRelationalDataAdapter } from './sqlite-relational-data-adapter';
+import { Database } from 'sqlite3';
 
 export class SqliteRelationalMigrationAdapter
-  extends SqliteRelationalTransactionAdapter
+  extends SqliteRelationalDataAdapter
   implements RelationalMigrationAdapter<SqliteSql>
 {
+  protected readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });
   private storage = new MigrationStorage({
     idType: { type: 'string' },
     transactionClient: new RelationalTransactionClient(this),
   });
 
+  constructor(private connectionString: string) {
+    super(new Database(connectionString));
+    this.db.on('error', (err) => {
+      this.logger.error(err);
+    });
+    this.db.on('close', () => {
+      this.logger.debug('database closed');
+    });
+    this.db.on('open', () => {
+      this.logger.debug('database opened');
+    });
+  }
+
   toString() {
-    return this.connectionString.instant() === ':memory:' ? 'sqlite-memory' : 'sqlite-file';
+    return this.connectionString === ':memory:' ? 'sqlite-memory' : 'sqlite-file';
   }
 
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
@@ -49,13 +64,25 @@ export class SqliteRelationalMigrationAdapter
     return this.storage.get(schema);
   }
 
+  transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>, timeout?: number): Promise<T> {
+    return this.transactionSerializable.run(async () => {
+      const db = await this.db;
+      await db.run('BEGIN');
+      try {
+        const result = await handleTimeout(() => action(new SqliteRelationalDataAdapter(db)), timeout);
+        await this.run('COMMIT');
+        return result;
+      } catch (e) {
+        await this.run('ROLLBACK');
+        throw e;
+      }
+    });
+  }
+
   async remove(): Promise<void> {
-    const connectionString = await this.connectionString.get();
-    await this.db.close();
-    if (connectionString !== ':memory:') {
-      unlinkSync(connectionString);
+    if (this.connectionString !== ':memory:') {
+      unlinkSync(this.connectionString);
     }
-    this.db.reset();
   }
 
   private async applyMigrationPlan(client: Client<SqliteSql>, migrationPlan: MigrationPlan) {

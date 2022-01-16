@@ -13,4 +13,9 @@ export class RelationalBaseContext extends RelationalClient {
   exec(sql: any): Promise<RelationalRawResult> {
     return super.exec(new RelationalNormalMapper().normalizeSql(sql));
   }
+
+  async close(): Promise<void> {
+    this.migrationTree.close();
+    await super.close();
+  }
 }

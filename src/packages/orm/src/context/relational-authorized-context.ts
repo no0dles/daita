@@ -21,6 +21,11 @@ export class RelationalAuthorizedContext extends RelationalBaseContext implement
     });
   }
 
+  async close(): Promise<void> {
+    this.rulesEvaluator.close();
+    return super.close();
+  }
+
   async exec(sql: any): Promise<RelationalRawResult> {
     const rulesEval = await this.rulesEvaluator.get();
     const result = rulesEval.evaluate(this.auth, sql);

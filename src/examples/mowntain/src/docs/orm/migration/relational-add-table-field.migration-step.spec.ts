@@ -1,7 +1,7 @@
 import { table } from '@daita/relational';
 import { all } from '@daita/relational';
 import { MigrationTree } from '@daita/orm';
-import { getContexts } from '../../../testing';
+import { cleanupTestContext, getContexts } from '../../../testing';
 
 describe('packages/orm/migration/steps/add-table-field', () => {
   const migrationTree = new MigrationTree('', [
@@ -23,38 +23,37 @@ describe('packages/orm/migration/steps/add-table-field', () => {
       after: 'init',
     },
   ]);
+  const ctx = getContexts(migrationTree);
 
-  describe.each(getContexts(migrationTree))('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup({ seed: false });
+  beforeAll(async () => {
+    await ctx.migrate();
+  });
+
+  afterAll(async () => cleanupTestContext(ctx));
+
+  it('should be insertable and selectable', async () => {
+    const date = new Date();
+    await ctx.insert({
+      into: table('foo'),
+      insert: {
+        id: 'd015a090-7c69-4472-b108-a4f8ab77443d',
+        text: 'test',
+        count: 2,
+        date,
+        uuid: 'd015a090-7c69-4472-b108-a4f8ab77443c',
+      },
     });
-
-    afterAll(async () => ctx.close());
-
-    it('should be insertable and selectable', async () => {
-      const date = new Date();
-      await ctx.insert({
-        into: table('foo'),
-        insert: {
-          id: 'd015a090-7c69-4472-b108-a4f8ab77443d',
-          text: 'test',
-          count: 2,
-          date,
-          uuid: 'd015a090-7c69-4472-b108-a4f8ab77443c',
-        },
-      });
-      const row = await ctx.selectFirst({
-        select: all(),
-        from: table('foo'),
-      });
-      expect(row).not.toBeNull();
-      expect(row).not.toBeUndefined();
-      expect(row.id).toEqual('d015a090-7c69-4472-b108-a4f8ab77443d');
-      expect(row.text).toEqual('test');
-      expect(row.count).toEqual(2);
-      expect(row.date).toBeInstanceOf(Date);
-      expect(row.date).toEqual(date);
-      expect(row.uuid).toEqual('d015a090-7c69-4472-b108-a4f8ab77443c');
+    const row = await ctx.selectFirst({
+      select: all(),
+      from: table('foo'),
     });
+    expect(row).not.toBeNull();
+    expect(row).not.toBeUndefined();
+    expect(row.id).toEqual('d015a090-7c69-4472-b108-a4f8ab77443d');
+    expect(row.text).toEqual('test');
+    expect(row.count).toEqual(2);
+    expect(row.date).toBeInstanceOf(Date);
+    expect(row.date).toEqual(date);
+    expect(row.uuid).toEqual('d015a090-7c69-4472-b108-a4f8ab77443c');
   });
 });

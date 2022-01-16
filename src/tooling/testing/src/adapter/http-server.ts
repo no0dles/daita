@@ -1,5 +1,4 @@
 import { Server } from 'http';
-import { Defer } from '@daita/common';
 import { NodeHttp } from '@daita/node';
 
 export interface HttpServerApp {
@@ -21,19 +20,21 @@ export class HttpExpressServerApp implements HttpServerApp {
   }
 
   async close(): Promise<void> {
-    if (!this.server) {
-      return;
-    }
-    const defer = new Defer<void>();
-    this.server.close((err) => {
-      this.server = null;
-      if (err) {
-        defer.reject(err);
-      } else {
-        defer.resolve();
+    return new Promise<void>((resolve, reject) => {
+      if (!this.server) {
+        resolve();
+        return;
       }
+
+      this.server.close((err) => {
+        this.server = null;
+        if (err) {
+          reject(err);
+        } else {
+          resolve();
+        }
+      });
     });
-    await defer.promise;
   }
 
   async start(): Promise<void> {

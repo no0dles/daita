@@ -1,22 +1,20 @@
 import { table } from '@daita/relational';
-import { testContext } from '../../../testing';
+import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
 import { Person } from '../../../models/person';
 
 describe('relational/sql/ddl/lock-table', () => {
-  const ctxs = testContext.contexts({ lockTable: table(Person) });
+  const ctx = getMowntainTestContext({ lockTable: table(Person) });
 
-  describe.each(ctxs)('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
-    });
+  beforeAll(async () => {
+    await seedMowntainData(ctx);
+  });
 
-    afterAll(async () => ctx.close());
+  afterAll(async () => cleanupTestContext(ctx));
 
-    it('should lock person table', async () => {
-      await ctx.transaction(async (trx) => {
-        await trx.exec({
-          lockTable: table(Person),
-        });
+  it('should lock person table', async () => {
+    await ctx.transaction(async (trx) => {
+      await trx.exec({
+        lockTable: table(Person),
       });
     });
   });

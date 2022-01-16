@@ -1,29 +1,27 @@
 import { table } from '@daita/relational';
-import { testContext } from '../../../testing';
+import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
 import { Person } from '../../../models/person';
 
 describe('relational/sql/ddl/alter-table', () => {
-  const ctxs = testContext.contexts({
+  const ctx = getMowntainTestContext({
     alterTable: table(Person),
     drop: {
       column: 'firstName',
     },
   });
 
-  describe.each(ctxs)('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
-    });
+  beforeAll(async () => {
+    await seedMowntainData(ctx);
+  });
 
-    afterAll(async () => ctx.close());
+  afterAll(async () => cleanupTestContext(ctx));
 
-    it('should drop column', async () => {
-      await ctx.exec({
-        alterTable: table(Person),
-        drop: {
-          column: 'firstName',
-        },
-      });
+  it('should drop column', async () => {
+    await ctx.exec({
+      alterTable: table(Person),
+      drop: {
+        column: 'firstName',
+      },
     });
   });
 });

@@ -1,6 +1,3 @@
-import { RelationalTransactionAdapterImplementation } from '@daita/relational';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm';
-import { RelationalMigrationAdapter } from '@daita/orm';
 import {
   execCommand,
   getDynamicPort,
@@ -11,38 +8,25 @@ import {
   stopContainer,
 } from '@daita/node';
 import { sleep } from '@daita/common';
-import { Resolvable } from '@daita/common';
-import { PostgresMigrationAdapter, PostgresSql } from '@daita/pg-adapter';
+import { PostgresMigrationAdapter } from '@daita/pg-adapter';
 
 export interface PostgresDb {
   connectionString: string;
+
   close(): Promise<void>;
+
   stop(): Promise<void>;
+
   start(): Promise<void>;
 }
 
-export interface PostgresTestAdapterOptions {}
-
-class PostgresTestAdapterImplementation
-  implements
-    RelationalTransactionAdapterImplementation<PostgresSql, PostgresTestAdapterOptions>,
-    RelationalMigrationAdapterImplementation<PostgresSql, PostgresTestAdapterOptions>
-{
-  getRelationalAdapter(
-    options: PostgresTestAdapterOptions,
-  ): RelationalMigrationAdapter<PostgresSql> & PostgresMigrationAdapter {
-    const dbResolvable = new Resolvable(getPostgresDb, (db) => db?.close());
-    const poolResolvable = new Resolvable(
-      async () => {
-        const db = await dbResolvable.get();
-        return db.connectionString;
-      },
-      async () => {
-        await dbResolvable.close();
-      },
-    );
-    return new PostgresMigrationAdapter(poolResolvable);
-  }
+export async function getPostgresTestAdapter(): Promise<PostgresMigrationAdapter> {
+  const db = await getPostgresDb();
+  return new PostgresMigrationAdapter({
+    connectionString: db.connectionString,
+    listenForNotifications: false,
+    cleanup: () => db.close(),
+  });
 }
 
 export async function getPostgresDb(): Promise<PostgresDb> {
@@ -89,5 +73,3 @@ export async function getPostgresDb(): Promise<PostgresDb> {
   };
   return db;
 }
-
-export const postgresTestAdapter = new PostgresTestAdapterImplementation();

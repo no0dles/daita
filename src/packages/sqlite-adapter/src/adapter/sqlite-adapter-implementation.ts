@@ -5,7 +5,6 @@ import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { RelationalMigrationAdapter } from '@daita/orm';
 import { SqliteSql } from '../sql/sqlite-sql';
 import { SqliteRelationalMigrationAdapter } from './sqlite-relational-migration-adapter';
-import { Resolvable } from '@daita/common';
 
 export type SqliteAdapterOptions = SqliteAdapterFileOptions | SqliteAdapterMemoryOptions;
 
@@ -44,12 +43,12 @@ export class SqliteAdapterImplementation
           fs.unlinkSync(fileName);
         }
       }
-      return new SqliteRelationalMigrationAdapter(new Resolvable<string>(fileName));
+      return new SqliteRelationalMigrationAdapter(fileName);
     }
     if (isMemoryOptions(options) && options.memory) {
-      return new SqliteRelationalMigrationAdapter(new Resolvable<string>(':memory:'));
+      return new SqliteRelationalMigrationAdapter(':memory:');
     }
 
-    return new SqliteRelationalMigrationAdapter(new Resolvable<string>(':memory:'));
+    return new SqliteRelationalMigrationAdapter(':memory:');
   }
 }

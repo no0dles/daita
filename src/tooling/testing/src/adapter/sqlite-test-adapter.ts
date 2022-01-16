@@ -6,7 +6,6 @@ import os from 'os';
 import { promises as fs } from 'fs';
 import { randomString } from '@daita/common';
 import { SqliteSql, SqliteRelationalMigrationAdapter, adapter } from '@daita/sqlite-adapter';
-import { Resolvable } from '@daita/common';
 
 export interface SqliteTestAdapterFileOptions {
   type: 'file';
@@ -28,11 +27,9 @@ export class SqliteTestAdapterImplementation
       return adapter.getRelationalAdapter({ memory: true });
     } else {
       const fileName = path.join(os.tmpdir(), `${randomString(22)}.db`);
-      return new SqliteRelationalMigrationAdapter(
-        new Resolvable<string>(fileName, async () => {
-          await fs.unlink(fileName);
-        }),
-      );
+      return new SqliteRelationalMigrationAdapter(fileName);
+
+      // await fs.unlink(fileName); // TODO
     }
   }
 }

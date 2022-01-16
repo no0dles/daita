@@ -1,23 +1,23 @@
 import { now } from '@daita/relational';
-import { testContext } from '../../../../testing';
+import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
 
 describe('relational/sql/function/date/now', () => {
-  describe.each(testContext.contexts())('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
-    });
+  const ctx = getMowntainTestContext();
 
-    afterAll(async () => ctx.close());
+  beforeAll(async () => {
+    await seedMowntainData(ctx);
+  });
 
-    it('should get now', async () => {
-      const result = await ctx.selectFirst({
-        select: {
-          date: now(),
-        },
-      });
-      expect(result).not.toBeNull();
-      expect(result).not.toBeUndefined();
-      expect(result!.date).toBeInstanceOf(Date);
+  afterAll(async () => cleanupTestContext(ctx));
+
+  it('should get now', async () => {
+    const result = await ctx.selectFirst({
+      select: {
+        date: now(),
+      },
     });
+    expect(result).not.toBeNull();
+    expect(result).not.toBeUndefined();
+    expect(result!.date).toBeInstanceOf(Date);
   });
 });

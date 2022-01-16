@@ -101,4 +101,8 @@ export class RelationalClient implements SqlClient, Client<any> {
   authorizable(rules: { id: string; rule: Rule }[]): AuthorizableClient<any> {
     return new RelationalAuthorizableClient(this.dataAdapter, rules);
   }
+
+  async close(): Promise<void> {
+    await this.dataAdapter.close();
+  }
 }

@@ -1,13 +1,12 @@
 import * as crypto from 'crypto';
-import { Defer } from '@daita/common';
 
 export function getRandomCode() {
-  const defer = new Defer<string>();
-  crypto.randomBytes(256 / 8, (err, bytes) => {
-    if (err) {
-      return defer.reject(err);
-    }
-    defer.resolve(bytes.toString('hex'));
+  return new Promise<string>((resolve, reject) => {
+    crypto.randomBytes(256 / 8, (err, bytes) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(bytes.toString('hex'));
+    });
   });
-  return defer.promise;
 }

@@ -1,7 +1,7 @@
 import { table } from '@daita/relational';
 import { all } from '@daita/relational';
 import { MigrationTree } from '@daita/orm';
-import { getContexts } from '../../../testing';
+import { cleanupTestContext, getContexts } from '../../../testing';
 
 describe('packages/orm/migration/steps/add-table-field', () => {
   const migrationTree = new MigrationTree('test', [
@@ -20,34 +20,29 @@ describe('packages/orm/migration/steps/add-table-field', () => {
       after: 'init',
     },
   ]);
+  const ctx = getContexts(migrationTree);
 
-  describe.each(getContexts(migrationTree))('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup({ migrate: false, seed: false });
+  afterAll(async () => cleanupTestContext(ctx));
+
+  it('should be keep data after table field drop', async () => {
+    await ctx.migrate({ targetMigration: 'init' });
+    await ctx.insert({
+      into: table('foo'),
+      insert: {
+        id: '23ad96bf-8eec-450d-97f5-ece30acbf356',
+        text: 'test',
+        count: 2,
+      },
     });
-
-    afterAll(async () => ctx.close());
-
-    it('should be keep data after table field drop', async () => {
-      await ctx.migrate({ targetMigration: 'init' });
-      await ctx.insert({
-        into: table('foo'),
-        insert: {
-          id: '23ad96bf-8eec-450d-97f5-ece30acbf356',
-          text: 'test',
-          count: 2,
-        },
-      });
-      await ctx.migrate({ targetMigration: 'second' });
-      const row = await ctx.selectFirst({
-        select: all(),
-        from: table('foo'),
-      });
-      expect(row).not.toBeNull();
-      expect(row).not.toBeUndefined();
-      expect(row.id).toEqual('23ad96bf-8eec-450d-97f5-ece30acbf356');
-      expect(row.text).toBeUndefined();
-      expect(row.count).toEqual(2);
+    await ctx.migrate({ targetMigration: 'second' });
+    const row = await ctx.selectFirst({
+      select: all(),
+      from: table('foo'),
     });
+    expect(row).not.toBeNull();
+    expect(row).not.toBeUndefined();
+    expect(row.id).toEqual('23ad96bf-8eec-450d-97f5-ece30acbf356');
+    expect(row.text).toBeUndefined();
+    expect(row.count).toEqual(2);
   });
 });

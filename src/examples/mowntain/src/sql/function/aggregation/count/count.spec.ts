@@ -1,30 +1,30 @@
 import { count, field, greaterThan, table } from '@daita/relational';
 import { Mountain } from '../../../../models/mountain';
-import { testContext } from '../../../../testing';
+import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
 
 describe('relational/sql/function/aggregation/count', () => {
-  describe.each(testContext.contexts())('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
-    });
+  const ctx = getMowntainTestContext();
 
-    afterAll(async () => ctx.close());
+  beforeAll(async () => {
+    await seedMowntainData(ctx);
+  });
 
-    it('should count', async () => {
-      const result = await ctx.selectFirst({
-        select: count(),
-        from: table(Mountain),
-      });
-      expect(result).toEqual(2);
-    });
+  afterAll(async () => cleanupTestContext(ctx));
 
-    it('should count with filter', async () => {
-      const result = await ctx.selectFirst({
-        select: count(),
-        from: table(Mountain),
-        where: greaterThan(field(Mountain, 'prominence'), 10),
-      });
-      expect(result).toEqual(2);
+  it('should count', async () => {
+    const result = await ctx.selectFirst({
+      select: count(),
+      from: table(Mountain),
     });
+    expect(result).toEqual(2);
+  });
+
+  it('should count with filter', async () => {
+    const result = await ctx.selectFirst({
+      select: count(),
+      from: table(Mountain),
+      where: greaterThan(field(Mountain, 'prominence'), 10),
+    });
+    expect(result).toEqual(2);
   });
 });

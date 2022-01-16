@@ -10,14 +10,14 @@ import { RelationDoesNotExistsError } from '@daita/relational';
 import { parseJson } from '@daita/common';
 
 export class MariadbRelationalDataAdapter implements RelationalDataAdapter<MariadbSql> {
-  constructor(protected pool: Resolvable<Pool> | Resolvable<PoolConnection>) {}
+  constructor(protected pool: PoolConnection) {}
 
   toString() {
     return 'mariadb';
   }
 
   async close(): Promise<void> {
-    await this.pool.close();
+    await this.pool.end();
   }
 
   exec(sql: Sql<any>): Promise<RelationalRawResult> {
@@ -27,9 +27,8 @@ export class MariadbRelationalDataAdapter implements RelationalDataAdapter<Maria
   }
 
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
-    const pool = await this.pool.get();
     try {
-      const result = await pool.query(
+      const result = await this.pool.query(
         {
           sql,
           typeCast: (column, next) => {

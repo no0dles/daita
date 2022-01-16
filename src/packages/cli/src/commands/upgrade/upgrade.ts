@@ -63,20 +63,20 @@ async function upgradeDependencies(dependencies: any) {
 
 function getLatest(daitaName: string): Promise<string> {
   const url = `https://registry.npmjs.org/-/package/@daita/${daitaName}/dist-tags`;
-  const defer = new Defer<string>();
-  https
-    .get(url, {}, (resp) => {
-      let data = '';
-      resp.on('data', (chunk) => {
-        data += chunk;
+  return new Promise<string>((resolve, reject) => {
+    https
+      .get(url, {}, (resp) => {
+        let data = '';
+        resp.on('data', (chunk) => {
+          data += chunk;
+        });
+        resp.on('end', () => {
+          const content = JSON.parse(data);
+          resolve(content.latest);
+        });
+      })
+      .on('error', (err) => {
+        reject(err);
       });
-      resp.on('end', () => {
-        const content = JSON.parse(data);
-        defer.resolve(content.latest);
-      });
-    })
-    .on('error', (err) => {
-      defer.reject(err);
-    });
-  return defer.promise;
+  });
 }

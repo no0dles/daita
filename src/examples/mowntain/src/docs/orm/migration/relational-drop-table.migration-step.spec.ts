@@ -2,7 +2,7 @@ import { all } from '@daita/relational';
 import { table } from '@daita/relational';
 import { RelationDoesNotExistsError } from '@daita/relational';
 import { MigrationTree } from '@daita/orm';
-import { getContexts } from '../../../testing';
+import { cleanupTestContext, getContexts } from '../../../testing';
 
 describe('packages/orm/migration/steps/drop-table', () => {
   const migrationTree = new MigrationTree('', [
@@ -22,20 +22,19 @@ describe('packages/orm/migration/steps/drop-table', () => {
       after: 'init',
     },
   ]);
+  const ctx = getContexts(migrationTree);
 
-  describe.each(getContexts(migrationTree))('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
-    });
+  beforeAll(async () => {
+    await ctx.migrate();
+  });
 
-    afterAll(async () => ctx.close());
+  afterAll(async () => cleanupTestContext(ctx));
 
-    it('should drop table', async () => {
-      try {
-        await ctx.select({ select: all(), from: table('foo') });
-      } catch (e) {
-        expect(e).toBeInstanceOf(RelationDoesNotExistsError);
-      }
-    });
+  it('should drop table', async () => {
+    try {
+      await ctx.select({ select: all(), from: table('foo') });
+    } catch (e) {
+      expect(e).toBeInstanceOf(RelationDoesNotExistsError);
+    }
   });
 });

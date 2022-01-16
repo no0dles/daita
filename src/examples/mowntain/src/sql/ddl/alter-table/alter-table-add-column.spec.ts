@@ -1,23 +1,23 @@
 import { table } from '@daita/relational';
-import { testContext } from '../../../testing';
+import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
 import { Person } from '../../../models/person';
 
 describe('relational/sql/ddl/alter-table', () => {
-  describe.each(testContext.contexts())('%s', (ctx) => {
-    beforeAll(async () => {
-      await ctx.setup();
-    });
+  const ctx = getMowntainTestContext();
 
-    afterAll(async () => ctx.close());
+  beforeAll(async () => {
+    await seedMowntainData(ctx);
+  });
 
-    it('should add column', async () => {
-      await ctx.exec({
-        alterTable: table(Person),
-        add: {
-          column: 'firstName2',
-          type: 'string',
-        },
-      });
+  afterAll(async () => cleanupTestContext(ctx));
+
+  it('should add column', async () => {
+    await ctx.exec({
+      alterTable: table(Person),
+      add: {
+        column: 'firstName2',
+        type: 'string',
+      },
     });
   });
 });
