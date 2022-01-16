@@ -1,10 +1,9 @@
 import { getRandomCode } from '@daita/auth-server';
 import { createLogger } from '@daita/common';
 import { seedPoolUser, seedUserPool } from '@daita/auth-server';
-import { TransactionClient } from '@daita/relational';
-import { TransactionContext } from '@daita/orm';
+import { RelationalAdapter } from '@daita/relational';
 
-export async function seedAuthDefaults(client: TransactionClient<any> | TransactionContext<any>) {
+export async function seedAuthDefaults(client: RelationalAdapter<any>) {
   const logger = createLogger({ container: 'auth-pg', task: 'seed' });
 
   const addedPool = await seedUserPool(client, {

@@ -1,7 +1,6 @@
 import { PostgresMigrationAdapter } from '@daita/pg-adapter';
 import { getPostgresDb } from '@daita/testing';
-import { ConnectionError } from '@daita/relational';
-import { RelationalDataAdapter } from '@daita/relational';
+import { ConnectionError, RelationalAdapter } from '@daita/relational';
 
 describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
   it('should handle disconnect after initial connection', async () => {
@@ -42,7 +41,7 @@ describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
     }
   });
 
-  async function testConnection(adapter: RelationalDataAdapter) {
+  async function testConnection(adapter: RelationalAdapter<any>) {
     const result = await adapter.exec({ select: 1 });
     expect(result.rowCount).toEqual(1);
   }

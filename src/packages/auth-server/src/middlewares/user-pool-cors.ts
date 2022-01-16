@@ -1,12 +1,14 @@
 import * as express from 'express';
 import cors = require('cors');
-import { field } from '@daita/relational';
+import { field, RelationalAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
-import { Context } from '@daita/orm';
 import { UserPoolCors } from '@daita/auth';
 
-export function userPoolCors(client: Context<any>, fn: (req: express.Request) => string): express.RequestHandler<any> {
+export function userPoolCors(
+  client: RelationalAdapter<any>,
+  fn: (req: express.Request) => string,
+): express.RequestHandler<any> {
   return cors(async (req, callback) => {
     try {
       const userPoolId = fn(req);

@@ -1,11 +1,17 @@
 import { Client, Pool, PoolClient, QueryResult, types } from 'pg';
 import { postgresFormatter } from '../formatters/postgres-formatter';
 import { PostgresFormatContext } from './postgres-format-context';
-import { DuplicateKeyError, RelationDoesNotExistsError, UnknownError } from '@daita/relational';
+import {
+  BaseRelationalAdapter,
+  DuplicateKeyError,
+  RelationalTransactionAdapter,
+  RelationDoesNotExistsError,
+  UnknownError,
+} from '@daita/relational';
 import { RelationalRawResult } from '@daita/relational';
-import { RelationalDataAdapter } from '@daita/relational';
 import { createLogger, Logger } from '@daita/common';
 import { ConnectionError } from '@daita/relational';
+import { PostgresSql } from '../sql';
 
 export async function mapError(
   logger: Logger,
@@ -58,10 +64,12 @@ export function formatQuery(query: any) {
   return { sql, values: formatCtx.getValues() };
 }
 
-export class PostgresDataAdapter implements RelationalDataAdapter {
+export class PostgresDataAdapter extends BaseRelationalAdapter implements RelationalTransactionAdapter<PostgresSql> {
   protected readonly logger = createLogger({ package: 'pg-adapter' });
 
-  constructor(protected client: PoolClient) {}
+  constructor(protected client: PoolClient) {
+    super();
+  }
 
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
     return execRaw(this.logger, this.client, sql, values);

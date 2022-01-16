@@ -1,9 +1,9 @@
-import { RelationalMigrationAdapter } from '@daita/orm';
 import { PostgresSql } from '../sql/postgres-sql';
-import { MigrationDescription } from '@daita/orm';
+import { MigrationDescription, RelationalOrmAdapter } from '@daita/orm';
 import {
+  BaseRelationalAdapter,
   ConnectionError,
-  RelationalDataAdapter,
+  RelationalAdapter,
   RelationalRawResult,
   RelationalTransactionAdapter,
   table,
@@ -11,7 +11,6 @@ import {
 import { createLogger, failNever, handleTimeout, parseJson } from '@daita/common';
 import { MigrationPlan } from '@daita/orm';
 import { MigrationStorage } from '@daita/orm';
-import { RelationalClient } from '@daita/relational';
 import { Migrations } from '@daita/orm';
 import { updateSeedAction } from '@daita/orm';
 import { insertSeedAction } from '@daita/orm';
@@ -29,8 +28,6 @@ import { dropIndexAction } from '@daita/orm';
 import { dropTableForeignKeyAction } from '@daita/orm';
 import { addTableForeignKeyAction } from '@daita/orm';
 import { dropTablePrimaryKeyAction } from '@daita/orm';
-import { Client } from '@daita/relational';
-import { RelationalTransactionClient } from '@daita/relational';
 import { dropDatabase, ensureDatabaseExists, parseConnectionString } from '../postgres.util';
 import { Pool, PoolClient, types } from 'pg';
 import { exec, execRaw, PostgresDataAdapter } from './postgres-data-adapter';
@@ -47,9 +44,11 @@ export interface PostgresMigrationAdapterOptions {
   cleanup?: () => Promise<void>;
 }
 
-export class PostgresMigrationAdapter implements RelationalMigrationAdapter<PostgresSql> {
+export class PostgresMigrationAdapter
+  extends BaseRelationalAdapter
+  implements RelationalAdapter<PostgresSql>, RelationalOrmAdapter
+{
   private notificationPoolClient: PoolClient | undefined = undefined;
-  private notificationPoolClientAdapter: RelationalDataAdapter<PostgresSql> | undefined = undefined;
   private notificationSubscribers: { [key: string]: PostgresNotificationSubscriber[] } = {};
 
   private closed = false;
@@ -86,12 +85,12 @@ export class PostgresMigrationAdapter implements RelationalMigrationAdapter<Post
     );
   });
 
-  private readonly migrationStorage = new MigrationStorage({
+  private readonly migrationStorage = new MigrationStorage(this, {
     idType: { type: 'string' },
-    transactionClient: new RelationalTransactionClient(this),
   });
 
   constructor(protected options: PostgresMigrationAdapterOptions) {
+    super();
     types.setTypeParser(types.builtins.NUMERIC, (val) => parseFloat(val));
     types.setTypeParser(types.builtins.FLOAT4, (val) => parseFloat(val));
     types.setTypeParser(types.builtins.FLOAT8, (val) => parseFloat(val));
@@ -110,7 +109,7 @@ export class PostgresMigrationAdapter implements RelationalMigrationAdapter<Post
     await ensureDatabaseExists(this.options.connectionString);
   }
 
-  private async applyMigrationPlan(client: Client<PostgresSql>, migrationPlan: MigrationPlan) {
+  private async applyMigrationPlan(client: RelationalTransactionAdapter<PostgresSql>, migrationPlan: MigrationPlan) {
     for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
         await addTableWithSchemaAction(client, step, migrationPlan.migration);
@@ -155,11 +154,10 @@ export class PostgresMigrationAdapter implements RelationalMigrationAdapter<Post
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
     this.checkForClosed();
     await this.transaction(async (trx) => {
-      const client = new RelationalClient(trx);
-      await client.exec({ lockTable: table(Migrations) });
-      await this.applyMigrationPlan(client, migrationPlan);
-      await this.migrationStorage.add(client, schema, migrationPlan.migration);
-      await client.exec({ notify: 'daita_migrations' });
+      await trx.exec({ lockTable: table(Migrations) });
+      await this.applyMigrationPlan(trx, migrationPlan);
+      await this.migrationStorage.add(trx, schema, migrationPlan.migration);
+      await trx.exec({ notify: 'daita_migrations' });
     });
   }
 
@@ -173,7 +171,7 @@ export class PostgresMigrationAdapter implements RelationalMigrationAdapter<Post
     return exec(this.logger, await this.pool, sql);
   }
 
-  supportsQuery<S>(sql: S): this is RelationalTransactionAdapter<PostgresSql | S> {
+  supportsQuery<S>(sql: S): this is RelationalAdapter<PostgresSql | S> {
     return postgresFormatter.canHandle(sql);
   }
 
@@ -192,7 +190,6 @@ export class PostgresMigrationAdapter implements RelationalMigrationAdapter<Post
       if (this.notificationPoolClient) {
         this.notificationPoolClient.release();
         this.notificationPoolClient = undefined;
-        this.notificationPoolClientAdapter = undefined;
       }
 
       this.notificationPoolClient = await pool.connect();
@@ -203,7 +200,6 @@ export class PostgresMigrationAdapter implements RelationalMigrationAdapter<Post
         }
         this.reconnectListener(pool);
       });
-      this.notificationPoolClientAdapter = new PostgresDataAdapter(this.notificationPoolClient);
       this.notificationPoolClient.on('notification', (msg) => {
         const subscribers = this.notificationSubscribers[msg.channel] ?? [];
         for (const subscriber of subscribers) {
@@ -211,7 +207,7 @@ export class PostgresMigrationAdapter implements RelationalMigrationAdapter<Post
         }
       });
       for (const channel of Object.keys(this.notificationSubscribers)) {
-        await this.notificationPoolClientAdapter.exec({ listen: channel });
+        await exec(this.logger, this.notificationPoolClient, { listen: channel });
       }
     } catch (e) {
       if (this.closed) {
@@ -229,8 +225,8 @@ export class PostgresMigrationAdapter implements RelationalMigrationAdapter<Post
       this.notificationSubscribers[channel] = [];
     }
     this.notificationSubscribers[channel].push(callback);
-    if (this.notificationPoolClientAdapter) {
-      await this.notificationPoolClientAdapter.exec({ listen: channel });
+    if (this.notificationPoolClient) {
+      await exec(this.logger, this.notificationPoolClient, { listen: channel });
     }
   }
 
@@ -244,7 +240,9 @@ export class PostgresMigrationAdapter implements RelationalMigrationAdapter<Post
     }
     if (this.notificationSubscribers[channel].length === 0) {
       delete this.notificationSubscribers[channel];
-      await this.notificationPoolClientAdapter?.exec({ unlisten: channel });
+      if (this.notificationPoolClient) {
+        await exec(this.logger, this.notificationPoolClient, { unlisten: channel });
+      }
     }
   }
 
@@ -266,7 +264,10 @@ export class PostgresMigrationAdapter implements RelationalMigrationAdapter<Post
     }
   }
 
-  async transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>, timeout?: number): Promise<T> {
+  async transaction<T>(
+    action: (adapter: RelationalTransactionAdapter<PostgresSql>) => Promise<T>,
+    timeout?: number,
+  ): Promise<T> {
     this.checkForClosed();
 
     const pool = await this.pool;

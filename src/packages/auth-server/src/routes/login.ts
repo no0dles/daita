@@ -2,14 +2,13 @@ import { Router } from 'express';
 import { compareHash } from '../modules/hash';
 import { getAccessToken } from '../modules/key';
 import { getRandomCode } from '../modules/random';
-import { or } from '@daita/relational';
+import { or, RelationalAdapter } from '@daita/relational';
 import { field } from '@daita/relational';
 import { and } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { join } from '@daita/relational';
 import { getRoles } from '../modules/roles';
-import { TransactionContext } from '@daita/orm';
 import { Counter } from 'prom-client';
 import { metricRegister } from '../metric';
 import { User, UserPool, UserPoolAlgorithm, UserPoolUser, UserRefreshToken } from '@daita/auth';
@@ -26,7 +25,7 @@ const successfullLoginCounter = new Counter({
   registers: [metricRegister],
 });
 
-export function loginRoute(ctx: TransactionContext<any>) {
+export function loginRoute(ctx: RelationalAdapter<any>) {
   const router = Router({ mergeParams: true });
 
   router.post<{ userPoolId: string }>('/', async (req, res, next) => {

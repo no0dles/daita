@@ -14,6 +14,11 @@ export interface RuleResult {
   errors: RuleErrorResult[];
 }
 
+export class RuleError extends Error {
+  constructor(message: string, public result?: RuleResult) {
+    super(message);
+  }
+}
 export interface RuleErrorResult {
   path?: string[];
   message: string;
@@ -163,6 +168,36 @@ export class RulesEvaluator {
     //TODO rule description
     this.allowRules = rules.filter((r) => r.rule.type === 'allow').map((r) => new RuleEvaluator(r.id, r.rule));
     this.forbidRules = rules.filter((r) => r.rule.type === 'forbid').map((r) => new RuleEvaluator(r.id, r.rule));
+  }
+
+  checkForAuthorization(auth: RuleContext, sql: any): void {
+    const rule = this.evaluate(auth, sql);
+    if (!rule) {
+      throw new RuleError('no matching rule');
+    }
+
+    if (rule.type === 'forbid') {
+      throw new RuleError('matches forbidden rule', rule);
+    } else if (rule.type === 'allow') {
+      if (rule.errors.length !== 0) {
+        throw new RuleError('not fullfilling rule', rule);
+      }
+    }
+  }
+
+  isAuthorized(auth: RuleContext, sql: any): boolean {
+    const rule = this.evaluate(auth, sql);
+    if (!rule) {
+      return false;
+    }
+
+    if (rule.type === 'forbid') {
+      return false;
+    } else if (rule.type === 'allow') {
+      return rule.errors.length === 0;
+    }
+
+    return true;
   }
 
   evaluate(auth: RuleContext, sql: any): RuleResult | null {

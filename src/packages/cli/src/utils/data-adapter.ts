@@ -3,13 +3,10 @@ import { HttpAdapterOptions } from '@daita/http-adapter';
 import { SqliteAdapterOptions } from '@daita/sqlite-adapter';
 import { PostgresAdapterOptions } from '@daita/pg-adapter';
 import { join, relative } from 'path';
-import { MigrationContext } from '@daita/orm';
-import { RelationalDataAdapterImplementation, RelationalTransactionAdapterImplementation } from '@daita/relational';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm';
-import { MigrationTree } from '@daita/orm';
-import { getContext } from '@daita/orm';
+import { RelationalAdapter, RelationalAdapterImplementation } from '@daita/relational';
 import { HttpServerAuthorizationProvider, HttpServerAuthorizationTokenEndpoint } from '@daita/http-server';
 import { UserPoolAlgorithm } from '@daita/auth';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 export type DaitaContextConfig = DaitaHttpContextConfig | DaitaSqliteContextConfig | DaitaPostgresContextConfig;
 
@@ -71,9 +68,7 @@ function getAdapterImpl<T>(
   options: any,
   contextConfig: DaitaContextConfig,
   defaultModule: string,
-): RelationalTransactionAdapterImplementation<any, any> &
-  RelationalMigrationAdapterImplementation<any, any> &
-  RelationalDataAdapterImplementation<any, any> {
+): RelationalAdapterImplementation<any, any, any> {
   const cwd = join(options?.cwd || process.cwd());
   if (contextConfig.module) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -129,7 +124,7 @@ function getAdapter(options: any, contextConfig: DaitaContextConfig) {
   }
 }
 
-export function getContextFromConfig(options: any, migrationTree: MigrationTree): MigrationContext<any> {
+export function getContextFromConfig(options: any): RelationalAdapter<any> & RelationalOrmAdapter {
   const contextConfig = getProjectConfig(options);
   if (!contextConfig.connectionString) {
     throw new Error('missing connection string');
@@ -137,5 +132,5 @@ export function getContextFromConfig(options: any, migrationTree: MigrationTree)
 
   const adapter = getAdapter(options, contextConfig);
 
-  return getContext(adapter.adapter, { ...adapter.options, migrationTree });
+  return adapter.adapter.getRelationalAdapter(adapter.options);
 }

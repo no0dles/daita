@@ -1,8 +1,11 @@
+import { MigrationTree, OrmRelationalSchema } from '@daita/orm';
+import { Rule } from '@daita/relational';
+
 export interface HttpServerAuthorization {
   providers?: HttpServerAuthorizationProvider[];
   tokenEndpoints?: HttpServerAuthorizationTokenEndpoint[];
   cors?: string[];
-  disableRules?: boolean;
+  rules: { id: string; rule: Rule }[] | 'disabled' | MigrationTree | { schemaName: string } | OrmRelationalSchema;
 }
 
 export interface HttpServerAuthorizationTokenEndpoint {

@@ -7,11 +7,12 @@ import { relationalRoute } from '@daita/http-server';
 import { adminTokenRoute } from './routes/admin-token';
 import { Server } from 'http';
 import { createLogger } from '@daita/common';
-import { MigrationContext } from '@daita/orm';
 import { responseTimeMetricMiddleware } from './middlewares/response-time-middleware';
 import { loginRoute, refreshRoute } from './routes';
+import { RelationalAdapter } from '@daita/relational';
+import { RelationalOrmAdapter } from '@daita/orm';
 
-export function createAuthAdminApp(context: MigrationContext<any>, port: number) {
+export function createAuthAdminApp(dataAdapter: RelationalAdapter<any> & RelationalOrmAdapter, port: number) {
   const adminApp = express();
   const logger = createLogger({ package: 'auth-server' });
 
@@ -22,16 +23,16 @@ export function createAuthAdminApp(context: MigrationContext<any>, port: number)
     adminApp.use(cors());
   }
 
-  adminApp.use('/:userPoolId/token', adminTokenRoute(context));
-  adminApp.use('/:userPoolId/login', loginRoute(context));
-  adminApp.use('/:userPoolId/refresh', refreshRoute(context));
+  adminApp.use('/:userPoolId/token', adminTokenRoute(dataAdapter));
+  adminApp.use('/:userPoolId/login', loginRoute(dataAdapter));
+  adminApp.use('/:userPoolId/refresh', refreshRoute(dataAdapter));
 
   adminApp.use(
     '/api/relational',
     authMiddleware,
     relationalRoute({
       relational: {
-        context,
+        dataAdapter,
         enableTransactions: true,
         transactionTimeout: 4000,
       },

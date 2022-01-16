@@ -1,6 +1,6 @@
 import { table } from '@daita/relational';
 import { all } from '@daita/relational';
-import { MigrationTree } from '@daita/orm';
+import { migrate, MigrationTree } from '@daita/orm';
 import { cleanupTestContext, getContexts } from '../../../testing';
 
 describe('packages/orm/migration/steps/add-table-field', () => {
@@ -20,12 +20,12 @@ describe('packages/orm/migration/steps/add-table-field', () => {
       after: 'init',
     },
   ]);
-  const ctx = getContexts(migrationTree);
+  const ctx = getContexts();
 
   afterAll(async () => cleanupTestContext(ctx));
 
   it('should be keep data after table field drop', async () => {
-    await ctx.migrate({ targetMigration: 'init' });
+    await migrate(ctx, migrationTree, { targetMigration: 'init' });
     await ctx.insert({
       into: table('foo'),
       insert: {
@@ -34,7 +34,7 @@ describe('packages/orm/migration/steps/add-table-field', () => {
         count: 2,
       },
     });
-    await ctx.migrate({ targetMigration: 'second' });
+    await migrate(ctx, migrationTree, { targetMigration: 'second' });
     const row = await ctx.selectFirst({
       select: all(),
       from: table('foo'),

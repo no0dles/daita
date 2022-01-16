@@ -92,13 +92,13 @@ export async function ensureDatabaseExists(connectionStringOrOptions: string | P
       : connectionStringOrOptions;
   const client = await getClient(config);
   try {
-    await client.query(`CREATE DATABASE "${config.database}";`).catch((err) => {
-      //42501 permission denied to create database
-      //42P04 already exists
-      if (err.code !== '42P04' && err.code !== '42501') {
-        throw err;
-      }
-    });
+    await client.query(`CREATE DATABASE "${config.database}";`);
+  } catch (err) {
+    //42501 permission denied to create database
+    //42P04 already exists
+    if (err.code !== '42P04' && err.code !== '42501') {
+      throw err;
+    }
   } finally {
     await client.end();
   }
@@ -113,11 +113,11 @@ export async function dropDatabase(connectionStringOrOptions: string | ParsedCon
       : connectionStringOrOptions;
   const client = await getClient(config);
   try {
-    await client.query(`DROP DATABASE "${config.database}";`).catch((err) => {
-      if (err.code !== '3D000') {
-        throw err;
-      }
-    });
+    await client.query(`DROP DATABASE "${config.database}";`);
+  } catch (err) {
+    if (err.code !== '3D000') {
+      throw err;
+    }
   } finally {
     await client.end();
   }

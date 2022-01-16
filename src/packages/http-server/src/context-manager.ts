@@ -1,7 +1,7 @@
-import { SqlClient } from '@daita/relational';
+import { RelationalAdapter, RelationalTransactionAdapter } from '@daita/relational';
 
 export class ContextManager {
-  constructor(private client: SqlClient) {}
+  constructor(private client: RelationalTransactionAdapter<any>) {}
 
   async exec(sql: any) {
     if (!this.client.supportsQuery(sql)) {

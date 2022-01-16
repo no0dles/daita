@@ -5,7 +5,7 @@ import { table } from '@daita/relational';
 import { join } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { isNull } from '@daita/relational';
-import { TransactionContext } from '@daita/orm';
+import { RelationalAdapter } from '@daita/relational';
 import { Counter } from 'prom-client';
 import { metricRegister } from '../metric';
 import { User, UserEmailVerify, UserPool } from '@daita/auth';
@@ -21,7 +21,7 @@ const successVerifyCounter = new Counter({
   registers: [metricRegister],
 });
 
-export function verifyRoute(ctx: TransactionContext<any>) {
+export function verifyRoute(ctx: RelationalAdapter<any>) {
   const router = Router({ mergeParams: true });
 
   router.get('/', async (req, res, next) => {

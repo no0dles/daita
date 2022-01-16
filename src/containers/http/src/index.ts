@@ -5,7 +5,6 @@ import {
   getEnvironmentVariable,
   getNumberEnvironmentVariable,
 } from '@daita/common';
-import { getContext, RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { createHttpServerApp, HttpServerAuthorization } from '@daita/http-server';
 import { Application } from '@daita/node';
 import { adapter as sqliteAdapter } from '@daita/sqlite-adapter';
@@ -26,16 +25,16 @@ logger.info(`AUTH_FILE=${AUTH_FILE}`);
 logger.info(`PORT=${PORT}`);
 logger.debug(`DATABASE_URL=${DATABASE_URL}`); // TODO redact pw, use logger
 
-const adapter: RelationalMigrationAdapterImplementation<any, any> = DATABASE_URL.startsWith('postgres')
-  ? pgAdapter
-  : sqliteAdapter;
+const adapter = DATABASE_URL.startsWith('postgres')
+  ? pgAdapter.getRelationalAdapter({
+      connectionString: DATABASE_URL,
+      createIfNotExists: true,
+    })
+  : sqliteAdapter.getRelationalAdapter({
+      file: DATABASE_URL,
+    });
 
-const context = getContext(adapter, {
-  connectionString: DATABASE_URL,
-  schemaName: SCHEMA_NAME,
-});
-
-const authentication: HttpServerAuthorization = { providers: [] };
+const authentication: HttpServerAuthorization = { providers: [], rules: { schemaName: SCHEMA_NAME } };
 if (fs.existsSync(AUTH_FILE)) {
   const content = fs.readFileSync(AUTH_FILE, { encoding: 'utf8' });
   try {
@@ -51,13 +50,13 @@ if (fs.existsSync(AUTH_FILE)) {
 }
 
 const application = new Application();
-application.attach(context);
+application.attach(adapter);
 application.attach(
   createHttpServerApp(
     {
       relational: RELATIONAL_ENABLED
         ? {
-            context,
+            dataAdapter: adapter,
             enableTransactions: TRANSACTION_ENABLED,
             transactionTimeout: TRANSACTION_TIMEOUT,
           }

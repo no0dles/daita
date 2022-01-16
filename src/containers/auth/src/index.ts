@@ -7,32 +7,31 @@ import { adapter as pgAdapter } from '@daita/pg-adapter';
 import { authSchema } from '@daita/auth';
 import { Application } from '@daita/node';
 import { createLogger } from '@daita/common';
-import { getContext } from '@daita/orm';
 import { createMetricsApp } from '@daita/auth-server';
+import { getMigrationContext } from '@daita/orm';
 
 const logger = createLogger({ container: 'auth' });
 const application = new Application();
 
 const dbUrl = process.env.DATABASE_URL || './auth.db';
 const ctx = dbUrl.startsWith('postgres')
-  ? getContext(pgAdapter, {
-      schema: authSchema,
+  ? pgAdapter.getRelationalAdapter({
       connectionString: dbUrl,
     })
   : dbUrl.startsWith('mariadb')
-  ? getContext(mariadbAdapter, {
-      schema: authSchema,
+  ? mariadbAdapter.getRelationalAdapter({
       connectionString: dbUrl,
     })
-  : getContext(sqliteAdapter, {
-      schema: authSchema,
+  : sqliteAdapter.getRelationalAdapter({
       file: dbUrl,
     });
 logger.info(`use adapter with connectionString ${dbUrl}`); // TODO redact pw
 
 application.attach(ctx);
 
-ctx
+getMigrationContext(ctx, {
+  schema: authSchema,
+})
   .migrate()
   .then(async () => {
     logger.info('migrated schema');

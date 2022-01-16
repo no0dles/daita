@@ -1,13 +1,12 @@
 import { Router } from 'express';
 import { getRandomCode } from '../modules/random';
 import { getAccessToken } from '../modules/key';
-import { field } from '@daita/relational';
+import { field, RelationalAdapter } from '@daita/relational';
 import { and } from '@daita/relational';
 import { table } from '@daita/relational';
 import { join } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { getRoles } from '../modules/roles';
-import { TransactionContext } from '@daita/orm';
 import { Counter } from 'prom-client';
 import { metricRegister } from '../metric';
 import { User, UserPool, UserPoolAlgorithm, UserRefreshToken } from '@daita/auth';
@@ -23,7 +22,7 @@ const invalidRefreshTokenCounter = new Counter({
   registers: [metricRegister],
 });
 
-export function refreshRoute(ctx: TransactionContext<any>) {
+export function refreshRoute(ctx: RelationalAdapter<any>) {
   const router = Router({ mergeParams: true });
 
   router.post<{ userPoolId: string }>('/', async (req, res, next) => {

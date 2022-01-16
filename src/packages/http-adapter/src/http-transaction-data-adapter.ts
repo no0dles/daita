@@ -1,16 +1,17 @@
 import { Countdown } from '@daita/common';
 import { Http, HttpSendResult } from '@daita/http-interface';
-import { RelationalRawResult } from '@daita/relational';
-import { RelationalDataAdapter } from '@daita/relational';
+import { BaseRelationalAdapter, RelationalRawResult, RelationalTransactionAdapter } from '@daita/relational';
 import { Defer } from '@daita/common';
 import { handleErrorResponse } from './error-handling';
 import { TimeoutError } from '@daita/common';
 
-export class HttpTransactionDataAdapter implements RelationalDataAdapter {
+export class HttpTransactionDataAdapter extends BaseRelationalAdapter implements RelationalTransactionAdapter<any> {
   private resultDefer = new Defer<any>();
   private countDown = new Countdown(() => this.timeout());
 
-  constructor(private transactionId: string, private http: Http) {}
+  constructor(private transactionId: string, private http: Http) {
+    super();
+  }
 
   private handleErrorResponse(response: HttpSendResult) {
     if (

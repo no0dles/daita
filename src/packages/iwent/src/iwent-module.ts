@@ -1,7 +1,7 @@
 import { Constructable } from '@daita/common';
 import { IwentHandler } from './iwent-handler';
 import { Iwent } from './iwent';
-import { Client } from '@daita/relational';
+import { RelationalAdapter } from '@daita/relational';
 
 export class IwentModule {
   private readonly events: { [key: string]: Constructable<IwentHandler<any>>[] } = {};
@@ -19,7 +19,7 @@ export class IwentModule {
     this.events[event.name].push(handler);
   }
 
-  process(state: Client<any>, iwent: Iwent) {
+  process(state: RelationalAdapter<any>, iwent: Iwent) {
     const handlers = this.events[iwent.type] || [];
     for (const handler of handlers) {
       const instance = new handler();

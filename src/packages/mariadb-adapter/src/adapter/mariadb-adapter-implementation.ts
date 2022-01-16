@@ -1,22 +1,16 @@
-import { RelationalDataAdapterImplementation, RelationalTransactionAdapterImplementation } from '@daita/relational';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm';
-import { RelationalTransactionAdapter } from '@daita/relational';
-import { RelationalMigrationAdapter } from '@daita/orm';
 import { MariadbSql } from '../sql/mariadb-sql';
-import { createPool } from 'mariadb';
 import { isConnectionStringOptions, MariadbAdapterOptions } from './mariadb-adapter-options';
 import { failNever, Resolvable } from '@daita/common';
 import { MariadbRelationalMigrationAdapter } from './mariadb-relational-migration-adapter';
+import { RelationalOrmAdapter, RelationalOrmAdapterImplementation } from '@daita/orm';
+import { RelationalAdapterImplementation } from '@daita/relational';
 
 class MariadbAdapterImplementation
   implements
-    RelationalDataAdapterImplementation<MariadbSql, MariadbAdapterOptions>,
-    RelationalTransactionAdapterImplementation<MariadbSql, MariadbAdapterOptions>,
-    RelationalMigrationAdapterImplementation<MariadbSql, MariadbAdapterOptions>
+    RelationalOrmAdapterImplementation<MariadbSql, MariadbAdapterOptions>,
+    RelationalAdapterImplementation<MariadbRelationalMigrationAdapter, MariadbSql, MariadbAdapterOptions>
 {
-  getRelationalAdapter(
-    options: MariadbAdapterOptions,
-  ): RelationalTransactionAdapter<MariadbSql> & RelationalMigrationAdapter<MariadbSql> {
+  getRelationalAdapter(options: MariadbAdapterOptions): MariadbRelationalMigrationAdapter {
     if (isConnectionStringOptions(options)) {
       return new MariadbRelationalMigrationAdapter({
         connectionString: options.connectionString,

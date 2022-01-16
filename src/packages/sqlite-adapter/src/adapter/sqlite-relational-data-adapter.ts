@@ -1,4 +1,4 @@
-import { RelationalDataAdapter } from '@daita/relational';
+import { BaseRelationalAdapter, RelationalTransactionAdapter } from '@daita/relational';
 import { Database } from 'sqlite3';
 import { RelationalRawResult } from '@daita/relational';
 import { SqliteFormatContext } from '../formatter/sqlite-format-context';
@@ -9,12 +9,17 @@ import { createLogger } from '@daita/common';
 import { RelationDoesNotExistsError } from '@daita/relational';
 import { parseJson } from '@daita/common';
 
-export class SqliteRelationalDataAdapter implements RelationalDataAdapter<SqliteSql> {
+export class SqliteRelationalDataAdapter
+  extends BaseRelationalAdapter
+  implements RelationalTransactionAdapter<SqliteSql>
+{
   protected readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });
   protected transactionSerializable = new Serializable();
   protected runSerializable = new Serializable();
 
-  constructor(protected readonly db: Database) {}
+  constructor(protected readonly db: Database) {
+    super();
+  }
 
   async close(): Promise<void> {
     const db = await this.db;

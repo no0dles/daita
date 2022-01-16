@@ -1,7 +1,7 @@
-import { Client } from '@daita/relational';
+import { RelationalAdapter } from '@daita/relational';
 
 export interface IwentHandlerContext {
-  state: Client<any>;
+  state: RelationalAdapter<any>;
   metadata: {
     createdAt: Date;
     eventId: string;

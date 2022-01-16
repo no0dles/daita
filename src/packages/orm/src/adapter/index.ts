@@ -1,2 +1,2 @@
-export * from './relational-migration-adapter-implementation';
-export * from './relational-migration-adapter';
+export * from './relational-orm-adapter-implementation';
+export * from './relational-orm-adapter';

@@ -1,28 +1,12 @@
-import { Client } from '../client/client';
-import { StorageOptions } from './storage-options';
-
-export abstract class RelationalStorage {
+export class RelationalStorage {
   private initialized = false;
 
-  constructor(protected options: StorageOptions) {}
+  constructor(private initialize: () => Promise<void>) {}
 
-  abstract initialize(client: Client<any>): Promise<void>;
-
-  async ensureInitialized<T>(fn: (client: Client<any>) => Promise<T>, client?: Client<any>): Promise<T> {
-    if (this.initialized) {
-      return fn(client ?? this.options.transactionClient);
-    }
-
-    if (client) {
-      await this.initialize(client);
+  async ensureInitialized<T>(): Promise<void> {
+    if (!this.initialized) {
+      await this.initialize();
       this.initialized = true;
-      return fn(client);
-    } else {
-      return this.options.transactionClient.transaction(async (trx) => {
-        await this.initialize(trx);
-        this.initialized = true;
-        return fn(trx);
-      });
     }
   }
 }

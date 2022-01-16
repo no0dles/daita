@@ -1,13 +1,13 @@
 import { RelationalAddTableMigrationStep } from './relational-add-table.migration-step';
 import { CreateTableSql } from '@daita/relational';
-import { Client } from '@daita/relational';
+import { RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { CreateSchemaSql } from '@daita/relational';
 import { isAddTableFieldStep } from '../add-table-field/relational-add-table-field.migration-step';
 import { MigrationDescription } from '../../migration-description';
 
 export async function addTableAction(
-  client: Client<CreateTableSql>,
+  client: RelationalTransactionAdapter<CreateTableSql>,
   step: RelationalAddTableMigrationStep,
   migration: MigrationDescription,
 ) {
@@ -34,7 +34,7 @@ export async function addTableAction(
 }
 
 export async function addTableWithSchemaAction(
-  client: Client<CreateTableSql | CreateSchemaSql>,
+  client: RelationalTransactionAdapter<CreateTableSql | CreateSchemaSql>,
   step: RelationalAddTableMigrationStep,
   migration: MigrationDescription,
 ) {

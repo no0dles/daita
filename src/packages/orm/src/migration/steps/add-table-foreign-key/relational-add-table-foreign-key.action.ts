@@ -1,10 +1,10 @@
 import { RelationalAddTableForeignKeyMigrationStep } from './relational-add-table-foreign-key.migration-step';
-import { Client } from '@daita/relational';
+import { RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { AlterTableAddForeignKeySql } from '@daita/relational';
 
 export async function addTableForeignKeyAction(
-  client: Client<AlterTableAddForeignKeySql<any>>,
+  client: RelationalTransactionAdapter<AlterTableAddForeignKeySql<any>>,
   step: RelationalAddTableForeignKeyMigrationStep,
 ) {
   await client.exec({

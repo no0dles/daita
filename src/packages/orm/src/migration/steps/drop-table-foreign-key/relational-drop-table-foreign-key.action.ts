@@ -1,10 +1,10 @@
 import { RelationalDropTableForeignKeyMigrationStep } from './relational-drop-table-foreign-key.migration-step';
-import { Client } from '@daita/relational';
+import { RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { AlterTableDropConstraintSql } from '@daita/relational';
 
 export async function dropTableForeignKeyAction(
-  client: Client<AlterTableDropConstraintSql>,
+  client: RelationalTransactionAdapter<AlterTableDropConstraintSql>,
   step: RelationalDropTableForeignKeyMigrationStep,
 ) {
   await client.exec({

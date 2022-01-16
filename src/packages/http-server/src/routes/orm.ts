@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import { HttpServerOptions } from '../http-server-options';
 import { getRequestUser } from '../get-request-user';
+import { isOrmAdapter } from '@daita/orm';
 
 export function ormRoute(options: HttpServerOptions) {
   const router = Router();
 
-  const context = options.relational?.context;
-  if (!context) {
+  const ormAdapter = options.relational?.dataAdapter;
+  if (!isOrmAdapter(ormAdapter)) {
     return router;
   }
 
@@ -22,7 +23,7 @@ export function ormRoute(options: HttpServerOptions) {
 
   router.get('/:schema/migrations', async (req, res, next) => {
     try {
-      const migrations = await context.migrationAdapter.getAppliedMigrations(req.params.schema);
+      const migrations = await ormAdapter.getAppliedMigrations(req.params.schema);
       res.json({ migrations });
     } catch (e) {
       next(e);
@@ -36,7 +37,7 @@ export function ormRoute(options: HttpServerOptions) {
         return res.status(400).json({ message: 'invalid data' });
       }
 
-      await context.migrationAdapter.applyMigration(req.params.schema, req.body.migrationPlan);
+      await ormAdapter.applyMigration(req.params.schema, req.body.migrationPlan);
       res.status(200).end();
     } catch (e) {
       next(e);

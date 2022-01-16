@@ -1,9 +1,13 @@
-import { RelationalMigrationAdapter } from '@daita/orm';
 import { MariadbSql } from '../sql/mariadb-sql';
-import { MigrationStorage } from '@daita/orm';
+import { MigrationStorage, RelationalOrmAdapter } from '@daita/orm';
 import { MigrationPlan } from '@daita/orm';
 import { MigrationDescription } from '@daita/orm';
-import { RelationalClient, RelationalDataAdapter, RelationalRawResult } from '@daita/relational';
+import {
+  BaseRelationalAdapter,
+  RelationalAdapter,
+  RelationalRawResult,
+  RelationalTransactionAdapter,
+} from '@daita/relational';
 import { addTableWithSchemaAction } from '@daita/orm';
 import { addTableFieldAction } from '@daita/orm';
 import { addTablePrimaryKeyAction } from '@daita/orm';
@@ -21,8 +25,6 @@ import { insertSeedAction } from '@daita/orm';
 import { updateSeedAction } from '@daita/orm';
 import { deleteSeedAction } from '@daita/orm';
 import { failNever, handleTimeout, Resolvable } from '@daita/common';
-import { Client } from '@daita/relational';
-import { RelationalTransactionClient } from '@daita/relational';
 import { MariadbRelationalDataAdapter } from './mariadb-relational-data-adapter';
 import { MariadbFormatContext, mariadbFormatter } from '../formatter';
 import { Pool } from 'mariadb';
@@ -31,15 +33,18 @@ export interface MariadbRelationalMigrationAdapterOptions {
   connectionString: string;
 }
 
-export class MariadbRelationalMigrationAdapter implements RelationalMigrationAdapter<MariadbSql> {
-  private readonly storage = new MigrationStorage({
+export class MariadbRelationalMigrationAdapter
+  extends BaseRelationalAdapter
+  implements RelationalOrmAdapter, RelationalAdapter<MariadbSql>
+{
+  private readonly storage = new MigrationStorage(this, {
     idType: { type: 'string', size: 255 },
-    transactionClient: new RelationalTransactionClient(this),
   });
   private readonly pool: Promise<Pool>;
 
   constructor(private options: MariadbRelationalMigrationAdapterOptions) {
-    this.pool = new Promise<Pool>((resolve) => {});
+    super();
+    this.pool = new Promise<Pool>((resolve) => {}); // TODO
   }
 
   async close(): Promise<void> {
@@ -57,20 +62,19 @@ export class MariadbRelationalMigrationAdapter implements RelationalMigrationAda
     return this.execRaw(query, ctx.getValues());
   }
 
-  supportsQuery<S>(sql: S): this is RelationalDataAdapter<MariadbSql | S> {
+  supportsQuery<S>(sql: S): this is RelationalAdapter<MariadbSql | S> {
     return mariadbFormatter.canHandle(sql);
   }
 
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
     await this.transaction(async (trx) => {
-      const client = new RelationalClient(trx);
-      await this.applyMigrationPlan(client, migrationPlan);
-      await this.storage.add(client, schema, migrationPlan.migration);
+      await this.applyMigrationPlan(trx, migrationPlan);
+      await this.storage.add(trx, schema, migrationPlan.migration);
     });
   }
 
   async transaction<T>(
-    action: (adapter: RelationalDataAdapter<MariadbSql>) => Promise<T>,
+    action: (adapter: RelationalTransactionAdapter<MariadbSql>) => Promise<T>,
     timeout?: number,
   ): Promise<T> {
     const pool = await this.pool;
@@ -85,19 +89,15 @@ export class MariadbRelationalMigrationAdapter implements RelationalMigrationAda
       await connection.rollback();
       throw e;
     } finally {
-      connection.release();
+      await connection.release();
     }
-  }
-
-  async remove(): Promise<void> {
-    // TODO
   }
 
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
     return this.storage.get(schema);
   }
 
-  private async applyMigrationPlan(client: Client<MariadbSql>, migrationPlan: MigrationPlan) {
+  private async applyMigrationPlan(client: RelationalTransactionAdapter<MariadbSql>, migrationPlan: MigrationPlan) {
     for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
         await addTableWithSchemaAction(client, step, migrationPlan.migration);

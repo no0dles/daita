@@ -1,5 +1,4 @@
 import { createLogger, getEnvironmentVariable, getNumberEnvironmentVariable } from '@daita/common';
-import { getContext, RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { Application } from '@daita/node';
 import { IwentApplication, IwentPollProcessor } from '@daita/iwent';
 import { adapter as sqliteAdapter } from '@daita/sqlite-adapter';
@@ -26,20 +25,19 @@ import(APP_PATH)
   .then((app: IwentApplication) => {
     const application = new Application();
 
-    const adapter: RelationalMigrationAdapterImplementation<any, any> = DATABASE_URL.startsWith('postgres')
-      ? pgAdapter
-      : sqliteAdapter;
-
-    const context = getContext(adapter, {
-      connectionString: DATABASE_URL,
-      schemaName: SCHEMA_NAME,
-    });
+    const adapter = DATABASE_URL.startsWith('postgres')
+      ? pgAdapter.getRelationalAdapter({
+          connectionString: DATABASE_URL,
+        })
+      : sqliteAdapter.getRelationalAdapter({
+          file: DATABASE_URL,
+        });
 
     console.log('process app');
     const processor = new IwentPollProcessor(app);
 
-    application.attach(context);
-    application.attach(processor.run(context));
+    application.attach(adapter);
+    application.attach(processor.run(adapter));
   })
   .catch((err) => {
     console.error(`unable to load app path ${APP_PATH}: ` + err.message);

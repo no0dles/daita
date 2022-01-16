@@ -1,7 +1,7 @@
 import { AstContext } from '../../ast/ast-context';
 import { getSchemaInformation, getSchemaLocation } from '../../utils/path';
 import { getContextFromConfig } from '../../utils/data-adapter';
-import { isMigrationContext } from '@daita/orm';
+import { migrate } from '@daita/orm';
 
 export async function applyMigration(options: { cwd?: string; schema?: string; context?: string; migration?: string }) {
   const astContext = new AstContext();
@@ -11,14 +11,10 @@ export async function applyMigration(options: { cwd?: string; schema?: string; c
     throw new Error('could not load schema');
   }
 
-  const context = await getContextFromConfig(options, schemaInfo.getMigrationTree());
+  const context = await getContextFromConfig(options);
   if (!context) {
     throw new Error('could not create migration context');
   }
 
-  if (!isMigrationContext(context)) {
-    throw new Error('adpater does not support migrations');
-  }
-
-  await context.migrate({ targetMigration: options?.migration });
+  await migrate(context, schemaInfo.getMigrationTree(), { targetMigration: options?.migration });
 }

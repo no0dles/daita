@@ -1,4 +1,4 @@
-import { RuleError } from '@daita/orm';
+import { RuleError } from '@daita/relational';
 import { HttpSendResult } from '@daita/http-interface';
 
 export function handleErrorResponse(response: HttpSendResult) {

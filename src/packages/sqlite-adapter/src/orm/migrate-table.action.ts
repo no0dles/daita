@@ -1,5 +1,4 @@
-import { Client } from '@daita/relational';
-import { InsertSql } from '@daita/relational';
+import { InsertSql, RelationalTransactionAdapter } from '@daita/relational';
 import { CreateTableForeignKey, CreateTableSql } from '@daita/relational';
 import { DropTableSql } from '@daita/relational';
 import { field, table } from '@daita/relational';
@@ -14,7 +13,7 @@ import {
 } from '@daita/orm';
 
 export async function migrateTableAction(
-  client: Client<InsertSql<any> | CreateTableSql | DropTableSql>,
+  client: RelationalTransactionAdapter<InsertSql<any> | CreateTableSql | DropTableSql>,
   tableName: string,
   schema: string | undefined,
   filterFields: (field: SchemaTableFieldDescription) => boolean,

@@ -1,43 +1,39 @@
-import { field } from '@daita/relational';
+import { field, RelationalAdapter } from '@daita/relational';
 import { all } from '@daita/relational';
 import { table } from '@daita/relational';
 import { notEqual } from '@daita/relational';
-import { MigrationContext } from '@daita/orm';
-import { getContext } from '@daita/orm';
 import { equal } from '@daita/relational';
-import { getServer, HttpServerApp } from '@daita/testing';
-import { adapter } from '@daita/sqlite-adapter';
+import { getServer, HttpServerApp, sqliteTestAdapter } from '@daita/testing';
 import { createDefaultUserPool } from './testing/auth-test';
 import { authSchema, User, UserEmailVerify, UserRefreshToken } from '@daita/auth';
 import { NodeHttp } from '@daita/node';
 import { createAuthApp, createMetricsApp } from '@daita/auth-server';
+import { migrate } from '@daita/orm';
 
 describe('app', () => {
   let app: HttpServerApp;
   let metricsApp: HttpServerApp;
-  let ctx: MigrationContext<any>;
+  const adapter = sqliteTestAdapter.getRelationalAdapter({
+    type: 'memory',
+  });
   let http: NodeHttp;
   let metricsHttp: NodeHttp;
 
   beforeAll(async () => {
-    ctx = getContext(adapter, {
-      schema: authSchema,
-      memory: true,
-    });
-    app = getServer((port) => createAuthApp(ctx, port));
+    app = getServer((port) => createAuthApp(adapter, port));
     metricsApp = getServer((port) => createMetricsApp(port));
     http = new NodeHttp(`http://localhost:${app.port}`, null);
     metricsHttp = new NodeHttp(`http://localhost:${metricsApp.port}`, null);
     await app.start();
     await metricsApp.start();
-    await ctx.migrate();
-    await createDefaultUserPool(ctx);
+    await migrate(adapter, authSchema);
+    await createDefaultUserPool(adapter);
   });
 
   afterAll(async () => {
     await app?.close();
     await metricsApp?.close();
-    await ctx.close();
+    await adapter.close();
   });
 
   it('should register', async () => {
@@ -69,7 +65,7 @@ describe('app', () => {
   });
 
   it('should refresh', async () => {
-    const token = await ctx.selectFirst({
+    const token = await adapter.selectFirst({
       select: all(UserRefreshToken),
       from: table(UserRefreshToken),
     });
@@ -100,7 +96,7 @@ describe('app', () => {
     });
 
     it('should resend', async () => {
-      const firstVerify = await ctx.selectFirst({
+      const firstVerify = await adapter.selectFirst({
         select: all(UserEmailVerify),
         from: table(UserEmailVerify),
       });
@@ -117,7 +113,7 @@ describe('app', () => {
       });
       expect(res.statusCode).toEqual(200);
 
-      const secondVerify = await ctx.selectFirst({
+      const secondVerify = await adapter.selectFirst({
         select: all(UserEmailVerify),
         from: table(UserEmailVerify),
         where: notEqual(field(UserEmailVerify, 'code'), firstVerify!.code),
@@ -147,7 +143,7 @@ describe('app', () => {
   });
 
   it('should verify', async () => {
-    const verify = await ctx.selectFirst({
+    const verify = await adapter.selectFirst({
       select: all(UserEmailVerify),
       from: table(UserEmailVerify),
     });
@@ -159,7 +155,7 @@ describe('app', () => {
     });
     expect(res.statusCode).toEqual(200);
 
-    const verifyEmail = await ctx.selectFirst({
+    const verifyEmail = await adapter.selectFirst({
       select: all(UserEmailVerify),
       from: table(UserEmailVerify),
       where: equal(field(UserEmailVerify, 'code'), verify!.code),
@@ -167,7 +163,7 @@ describe('app', () => {
     expect(verifyEmail!.verifiedAt).not.toBeNull();
     expect(verifyEmail!.verifiedAt).not.toBeUndefined();
 
-    const user = await ctx.selectFirst({
+    const user = await adapter.selectFirst({
       select: all(User),
       from: table(User),
     });

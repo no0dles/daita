@@ -1,4 +1,4 @@
-import { field, subtract, table } from '@daita/relational';
+import { field, RelationalAdapter, subtract, table } from '@daita/relational';
 import { Mountain } from '../../../../models/mountain';
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
 
@@ -9,7 +9,9 @@ describe('relational/sql/operands/subtract', () => {
     await seedMowntainData(ctx);
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => {
+    await cleanupTestContext(ctx);
+  });
 
   it('should subtract value', async () => {
     const result = await ctx.selectFirst({

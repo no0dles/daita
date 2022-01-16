@@ -11,3 +11,6 @@ export interface OrmRelationalSchema {
 
   getMapper(): RelationalMapper;
 }
+
+export const isOrmRelationalSchema = (val: any): val is OrmRelationalSchema =>
+  typeof val.getRules === 'function' && typeof val.getMigrations === 'function' && typeof val.getMapper === 'function';

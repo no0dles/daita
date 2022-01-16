@@ -1,6 +1,6 @@
 import { table } from '@daita/relational';
 import { all } from '@daita/relational';
-import { MigrationTree } from '@daita/orm';
+import { migrate, MigrationTree } from '@daita/orm';
 import { cleanupTestContext, getContexts } from '../../../testing';
 
 describe('packages/orm/migration/steps/add-table-field', () => {
@@ -23,10 +23,10 @@ describe('packages/orm/migration/steps/add-table-field', () => {
       after: 'init',
     },
   ]);
-  const ctx = getContexts(migrationTree);
+  const ctx = getContexts();
 
   beforeAll(async () => {
-    await ctx.migrate();
+    await migrate(ctx, migrationTree);
   });
 
   afterAll(async () => cleanupTestContext(ctx));

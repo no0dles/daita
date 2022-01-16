@@ -1,24 +1,19 @@
-import { getContext } from '@daita/orm';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm';
 import { getServer, HttpServerApp } from '@daita/testing';
 import { createDefaultUser, createDefaultUserPool } from './auth-test';
 import { authSchema } from '@daita/auth';
 import { createAuthAdminApp, createAuthApp } from '@daita/auth-server';
+import { RelationalAdapter } from '@daita/relational';
+import { migrate, RelationalOrmAdapter } from '@daita/orm';
 
-export async function createTestAdminServer<TOptions>(options: {
-  adapter: RelationalMigrationAdapterImplementation<any, TOptions>;
-  options: TOptions;
+export async function createTestAdminServer(options: {
+  adapter: RelationalAdapter<any> & RelationalOrmAdapter;
 }): Promise<AuthServerTestDisposable> {
-  const authCtx = getContext(options.adapter, {
-    schema: authSchema,
-    ...options.options,
-  });
-  const authApp = getServer((port) => createAuthApp(authCtx, port));
-  const authAdminApp = getServer((port) => createAuthAdminApp(authCtx, port));
+  const authApp = getServer((port) => createAuthApp(options.adapter, port));
+  const authAdminApp = getServer((port) => createAuthAdminApp(options.adapter, port));
 
-  await authCtx.migrate();
-  await createDefaultUserPool(authCtx);
-  await createDefaultUser(authCtx);
+  await migrate(options.adapter, authSchema);
+  await createDefaultUserPool(options.adapter);
+  await createDefaultUser(options.adapter);
 
   await authApp.start();
   await authAdminApp.start();
@@ -29,7 +24,6 @@ export async function createTestAdminServer<TOptions>(options: {
     close: async () => {
       await authApp.close();
       await authAdminApp.close();
-      await authCtx.close();
     },
   };
 }

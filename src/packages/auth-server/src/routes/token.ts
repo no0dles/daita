@@ -4,12 +4,12 @@ import { field } from '@daita/relational';
 import { and } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
-import { TransactionContext } from '@daita/orm';
+import { RelationalAdapter } from '@daita/relational';
 import { createToken } from '../seed';
 import { getRequiredRequestUserProp } from '@daita/http-server';
 import { UserToken } from '@daita/auth';
 
-export function tokenRoute(ctx: TransactionContext<any>) {
+export function tokenRoute(ctx: RelationalAdapter<any>) {
   const router = Router({ mergeParams: true });
 
   router.use(authMiddleware);

@@ -1,13 +1,13 @@
-import { getContext } from '@daita/orm';
 import { adapter as sqliteAdapter } from '@daita/sqlite-adapter';
 import { schema } from './schema';
 import { field, table } from '@daita/relational';
 import { Mountain } from './models/mountain';
+import { migrate } from '@daita/orm';
 
 async function main() {
-  const ctx = getContext(sqliteAdapter, { schema, memory: true });
+  const ctx = sqliteAdapter.getRelationalAdapter({ memory: true });
 
-  await ctx.migrate();
+  await migrate(ctx, schema);
 
   await ctx.insert({
     into: table(Mountain),

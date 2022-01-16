@@ -1,24 +1,23 @@
 import { field } from '../sql/keyword/field/field';
 import { all } from '../sql/keyword/all/all';
-import { getClient } from './get-client';
 import { mockAdapter } from '../testing/mock-adapter';
 
 describe('client', () => {
   it('should map select 1', async () => {
-    const client = getClient(mockAdapter, (sql) => {
+    const adapter = mockAdapter.getRelationalAdapter((sql) => {
       return { rowCount: 1, rows: [{ '?column?': 1 }] };
     });
-    const result = await client.select({
+    const result = await adapter.select({
       select: 1,
     });
     expect(result).toEqual([1]);
   });
 
   it('should map all select', async () => {
-    const client = getClient(mockAdapter, (sql) => {
+    const adapter = mockAdapter.getRelationalAdapter((sql) => {
       return { rowCount: 1, rows: [{ id: 'abc', name: 'foo' }] };
     });
-    const result = await client.select({
+    const result = await adapter.select({
       select: all(),
     });
     expect(result).toEqual([{ id: 'abc', name: 'foo' }]);
@@ -30,10 +29,10 @@ describe('client', () => {
       name!: string;
     }
 
-    const client = getClient(mockAdapter, (sql) => {
+    const adapter = mockAdapter.getRelationalAdapter((sql) => {
       return { rowCount: 1, rows: [{ 'bar.id': 'abc', 'foo.name': 'foo' }] };
     });
-    const result = await client.select({
+    const result = await adapter.select({
       select: {
         foo: {
           name: field(Model, 'name'),
@@ -51,10 +50,10 @@ describe('client', () => {
       id!: string;
     }
 
-    const client = getClient(mockAdapter, (sql) => {
+    const adapter = mockAdapter.getRelationalAdapter((sql) => {
       return { rowCount: 1, rows: [{ id: 'abc' }] };
     });
-    const result = await client.select({
+    const result = await adapter.select({
       select: field(Model, 'id'),
     });
     expect(result).toEqual(['abc']);
@@ -66,10 +65,10 @@ describe('client', () => {
       name!: string;
     }
 
-    const client = getClient(mockAdapter, (sql) => {
+    const adapter = mockAdapter.getRelationalAdapter((sql) => {
       return { rowCount: 1, rows: [{ id: 'abc', modelName: 'foo' }] };
     });
-    const result = await client.select({
+    const result = await adapter.select({
       select: {
         id: field(Model, 'id'),
         modelName: field(Model, 'name'),

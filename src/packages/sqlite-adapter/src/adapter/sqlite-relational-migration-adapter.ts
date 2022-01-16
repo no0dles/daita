@@ -1,10 +1,8 @@
-import { RelationalMigrationAdapter } from '@daita/orm';
 import { SqliteSql } from '../sql/sqlite-sql';
-import { MigrationStorage } from '@daita/orm';
+import { MigrationStorage, RelationalOrmAdapter } from '@daita/orm';
 import { MigrationPlan } from '@daita/orm';
 import { createLogger, failNever, handleTimeout } from '@daita/common';
 import { MigrationDescription } from '@daita/orm';
-import { RelationalClient, RelationalDataAdapter } from '@daita/relational';
 import { addTableAction } from '@daita/orm';
 import { addTableFieldAction } from '@daita/orm';
 import { addTablePrimaryKeyAction } from '@daita/orm';
@@ -17,22 +15,20 @@ import { dropViewAction } from '@daita/orm';
 import { insertSeedAction } from '@daita/orm';
 import { updateSeedAction } from '@daita/orm';
 import { deleteSeedAction } from '@daita/orm';
-import { Client } from '@daita/relational';
 import { dropTableFieldAction } from '../orm/drop-table-field.action';
 import { dropTableForeignKeyAction } from '../orm/drop-table-foreign-key.action';
-import { RelationalTransactionClient } from '@daita/relational';
 import { unlinkSync } from 'fs';
 import { SqliteRelationalDataAdapter } from './sqlite-relational-data-adapter';
 import { Database } from 'sqlite3';
+import { RelationalAdapter, RelationalTransactionAdapter } from '@daita/relational';
 
 export class SqliteRelationalMigrationAdapter
   extends SqliteRelationalDataAdapter
-  implements RelationalMigrationAdapter<SqliteSql>
+  implements RelationalOrmAdapter, RelationalAdapter<SqliteSql>
 {
   protected readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });
-  private storage = new MigrationStorage({
+  private storage = new MigrationStorage(this, {
     idType: { type: 'string' },
-    transactionClient: new RelationalTransactionClient(this),
   });
 
   constructor(private connectionString: string) {
@@ -54,9 +50,8 @@ export class SqliteRelationalMigrationAdapter
 
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
     await this.transaction(async (trx) => {
-      const client = new RelationalClient(trx);
-      await this.applyMigrationPlan(client, migrationPlan);
-      await this.storage.add(client, schema, migrationPlan.migration);
+      await this.applyMigrationPlan(trx, migrationPlan);
+      await this.storage.add(trx, schema, migrationPlan.migration);
     });
   }
 
@@ -64,7 +59,10 @@ export class SqliteRelationalMigrationAdapter
     return this.storage.get(schema);
   }
 
-  transaction<T>(action: (adapter: RelationalDataAdapter) => Promise<T>, timeout?: number): Promise<T> {
+  transaction<T>(
+    action: (adapter: RelationalTransactionAdapter<SqliteSql>) => Promise<T>,
+    timeout?: number,
+  ): Promise<T> {
     return this.transactionSerializable.run(async () => {
       const db = await this.db;
       await db.run('BEGIN');
@@ -85,7 +83,7 @@ export class SqliteRelationalMigrationAdapter
     }
   }
 
-  private async applyMigrationPlan(client: Client<SqliteSql>, migrationPlan: MigrationPlan) {
+  private async applyMigrationPlan(client: RelationalTransactionAdapter<SqliteSql>, migrationPlan: MigrationPlan) {
     for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
         await addTableAction(client, step, migrationPlan.migration);

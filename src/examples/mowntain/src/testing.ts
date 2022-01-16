@@ -1,16 +1,18 @@
-import { getTestContext } from '@daita/testing';
-import { schema } from './schema';
 import { adapter as pgAdapter, dropDatabase } from '@daita/pg-adapter';
 import { Mountain } from './models/mountain';
 import { Ascent } from './models/ascent';
 import { Canton } from './models/canton';
-import { json, table } from '@daita/relational';
+import { json, RelationalAdapter, table } from '@daita/relational';
 import { Person } from './models/person';
 import { AscentPerson } from './models/ascent-person';
-import { getContext, MigrationContext, MigrationTree } from '@daita/orm';
+import { getMigrationContext, MigrationTree, RelationalOrmAdapter } from '@daita/orm';
+import { schema } from './schema';
 
-export async function seedMowntainData(ctx: MigrationContext<any>): Promise<void> {
-  await ctx.migrate();
+export async function seedMowntainData(ctx: RelationalAdapter<any> & RelationalOrmAdapter): Promise<void> {
+  const migrationContext = getMigrationContext(ctx, {
+    schema,
+  });
+  await migrationContext.migrate();
   await ctx.insert({
     into: table(Canton),
     insert: {
@@ -83,12 +85,12 @@ export async function seedMowntainData(ctx: MigrationContext<any>): Promise<void
   });
 }
 
-export async function cleanupTestContext(ctx: MigrationContext<any>) {
+export async function cleanupTestContext(ctx: RelationalAdapter<any>) {
   await ctx.close();
   await dropDatabase('postgres://postgres:postgres@localhost/mowntain');
 }
 
-export function getMowntainTestContext(sql?: any): MigrationContext<any> {
+export function getMowntainTestContext(sql?: any): RelationalAdapter<any> & RelationalOrmAdapter {
   // const testContext = getTestContext();
   // testContext.addAdapter(sqliteAdapter, { schema, memory: true });
   //testContext.addAdapter(pgAdapter, { schema, connectionString: 'postgres://postgres:postgres@localhost/mowntain' });
@@ -99,19 +101,17 @@ export function getMowntainTestContext(sql?: any): MigrationContext<any> {
   //     roles: ['daita:migration:admin'],
   //   },
   // });
-  return getContext(pgAdapter, {
-    schema,
+  return pgAdapter.getRelationalAdapter({
     connectionString: 'postgres://postgres:postgres@localhost/mowntain',
     createIfNotExists: true,
   });
 }
 
-export function getContexts(migrationTree: MigrationTree): MigrationContext<any> {
+export function getContexts(): RelationalAdapter<any> & RelationalOrmAdapter {
   //const testContext = getTestContext();
   //testContext.addAdapter(sqliteAdapter, { migrationTree, memory: true });
 
-  return getContext(pgAdapter, {
-    migrationTree,
+  return pgAdapter.getRelationalAdapter({
     connectionString: 'postgres://postgres:postgres@localhost/mowntain',
     createIfNotExists: true,
   });

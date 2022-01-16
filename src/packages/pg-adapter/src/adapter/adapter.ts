@@ -1,12 +1,9 @@
 import { dropDatabase, ensureDatabaseExists } from '../postgres.util';
-import { RelationalDataAdapterImplementation, RelationalTransactionAdapterImplementation } from '@daita/relational';
 import { PostgresSql } from '../sql/postgres-sql';
 import { isKind } from '@daita/common';
-import { RelationalTransactionAdapter } from '@daita/relational';
 import { failNever } from '@daita/common';
-import { RelationalMigrationAdapter } from '@daita/orm';
 import { PostgresMigrationAdapter } from './postgres-migration-adapter';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm';
+import { RelationalOrmAdapterImplementation } from '@daita/orm';
 
 export interface PostgresAdapterBaseOptions {
   listenForNotifications?: boolean;
@@ -75,12 +72,7 @@ export type PostgresAdapterOptions = (
 ) &
   PostgresAdapterBaseOptions;
 
-class PostgresAdapterImplementation
-  implements
-    RelationalDataAdapterImplementation<PostgresSql, PostgresAdapterOptions>,
-    RelationalTransactionAdapterImplementation<PostgresSql, PostgresAdapterOptions>,
-    RelationalMigrationAdapterImplementation<PostgresSql, PostgresAdapterOptions>
-{
+class PostgresAdapterImplementation implements RelationalOrmAdapterImplementation<PostgresSql, PostgresAdapterOptions> {
   getRelationalAdapter(options: PostgresAdapterOptions): PostgresMigrationAdapter {
     return new PostgresMigrationAdapter({
       connectionString: prepareConnectionString(options),

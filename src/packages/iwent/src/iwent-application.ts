@@ -1,7 +1,7 @@
 import { IwentModule } from './iwent-module';
 import { RelationalSchema } from '@daita/orm';
 import { Iwent } from './iwent';
-import { Client } from '@daita/relational';
+import { RelationalAdapter } from '@daita/relational';
 
 export class IwentApplication {
   private readonly modules: IwentModule[] = [];
@@ -21,7 +21,7 @@ export class IwentApplication {
     return Array.from(eventTypes);
   }
 
-  async process(state: Client<any>, iwent: Iwent) {
+  async process(state: RelationalAdapter<any>, iwent: Iwent) {
     for (const module of this.modules) {
       await module.process(state, iwent);
     }

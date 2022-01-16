@@ -1,25 +1,23 @@
-import { RelationalMigrationAdapter } from '../adapter';
-import { Resolvable } from '@daita/common';
+import { RelationalOrmAdapter } from '../adapter';
 import { MigrationDescription, MigrationTree } from '../migration';
-import { MigrationContextUpdateOptions } from './get-migration-context';
 import { getSchemaDescription, NormalMapper, SchemaMapper } from '../schema';
 import { MigrationPlan } from './migration-plan';
+import { MigrationContextUpdateOptions } from './migration-context-update-options';
 
 export async function needsMigration(
-  migrationAdapter: RelationalMigrationAdapter<any>,
-  migrationTreeResolvable: Resolvable<MigrationTree>,
+  migrationAdapter: RelationalOrmAdapter,
+  migrationTree: MigrationTree,
   options?: MigrationContextUpdateOptions,
 ): Promise<boolean> {
-  const updates = await getPendingMigrations(migrationAdapter, migrationTreeResolvable, options);
+  const updates = await getPendingMigrations(migrationAdapter, migrationTree, options);
   return updates.length > 0;
 }
 
 export async function getPendingMigrations(
-  migrationAdapter: RelationalMigrationAdapter<any>,
-  migrationTreeResolvable: Resolvable<MigrationTree>,
+  migrationAdapter: RelationalOrmAdapter,
+  migrationTree: MigrationTree,
   options?: MigrationContextUpdateOptions,
 ): Promise<MigrationPlan[]> {
-  const migrationTree = await migrationTreeResolvable.get();
   const appliedMigrations = await migrationAdapter.getAppliedMigrations(migrationTree.name);
 
   let currentMigrations = migrationTree.roots();
@@ -72,13 +70,12 @@ export async function getPendingMigrations(
   return pendingMigrations;
 }
 
-export async function migrate(
-  migrationAdapter: RelationalMigrationAdapter<any>,
-  migrationTreeResolvable: Resolvable<MigrationTree>,
+export async function doMigrate(
+  migrationAdapter: RelationalOrmAdapter,
+  migrationTree: MigrationTree,
   options?: MigrationContextUpdateOptions,
 ) {
-  const pendingMigrations = await getPendingMigrations(migrationAdapter, migrationTreeResolvable, options);
-  const migrationTree = await migrationTreeResolvable.get();
+  const pendingMigrations = await getPendingMigrations(migrationAdapter, migrationTree, options);
   for (const migration of pendingMigrations) {
     await migrationAdapter.applyMigration(migrationTree.name, migration);
   }

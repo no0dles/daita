@@ -1,5 +1,5 @@
 import { field, table } from '@daita/relational';
-import { createMigrationTree } from '@daita/orm';
+import { createMigrationTree, migrate } from '@daita/orm';
 import { cleanupTestContext, getContexts } from '../../../testing';
 
 describe('packages/orm/migration/steps/relational-add-table', () => {
@@ -7,7 +7,7 @@ describe('packages/orm/migration/steps/relational-add-table', () => {
     { kind: 'add_table', table: 'foo', schema: 'bar' },
     { kind: 'add_table_field', table: 'foo', schema: 'bar', fieldName: 'id', required: true, type: 'uuid' },
   ]);
-  const ctx = getContexts(migrationTree);
+  const ctx = getContexts();
 
   class TestTable {
     static schema = 'bar';
@@ -18,7 +18,7 @@ describe('packages/orm/migration/steps/relational-add-table', () => {
   afterAll(async () => cleanupTestContext(ctx));
 
   beforeAll(async () => {
-    await ctx.migrate();
+    await migrate(ctx, migrationTree);
   });
 
   it('should add table', async () => {

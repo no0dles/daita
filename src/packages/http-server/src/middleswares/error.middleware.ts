@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { HttpError } from '../http-error';
-import { RuleError } from '@daita/orm';
+import { RuleError } from '@daita/relational';
 import { TimeoutError } from '@daita/common';
 import { Logger } from '@daita/common';
 

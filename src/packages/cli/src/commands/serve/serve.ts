@@ -10,10 +10,10 @@ import { seedPoolUser, seedRoles, seedUserPool, seedUserPoolCors, seedUserRole }
 import { Debouncer } from '@daita/common';
 import { AstContext } from '../../ast/ast-context';
 import { Defer } from '@daita/common';
-import { isTransactionContext } from '@daita/orm';
 import { createLogger } from '@daita/common';
 import { HttpServerOptions } from '@daita/http-server';
 import { authSchema } from '@daita/auth';
+import { migrate } from '@daita/orm';
 
 const logger = createLogger({ package: 'cli', command: 'serve' });
 export async function serve(opts: {
@@ -33,12 +33,12 @@ export async function serve(opts: {
     throw new Error('could not parse schema');
   }
 
-  const ctx = getContextFromConfig(opts, schemaInfo.getMigrationTree());
-  if (!ctx) {
+  const adapter = getContextFromConfig(opts);
+  if (!adapter) {
     throw new Error('no relational adapter');
   }
 
-  await ctx.migrate();
+  await migrate(adapter, schemaInfo.getMigrationTree());
 
   const authorization = getAuthorization(opts);
   const disableAuth = !authorization || opts.disableAuth;
@@ -59,7 +59,7 @@ export async function serve(opts: {
   const httpPort = opts.port || 8765;
   const httpOptions: HttpServerOptions = {
     relational: {
-      context: ctx,
+      dataAdapter: adapter,
       enableTransactions: true,
     },
     authorization: disableAuth ? false : authorization,
@@ -69,18 +69,14 @@ export async function serve(opts: {
 
   let authServer: any;
   if (!disableAuth) {
-    const ctx = getContextFromConfig(opts, authSchema.getMigrations());
-    if (!isTransactionContext(ctx)) {
-      throw new Error('authorization api requires a transaction capable adapter');
-    }
-    await ctx.migrate();
+    await migrate(adapter, authSchema);
 
     const userPools = contextConfig.authorization?.userPools || {};
     for (const issuerKey of Object.keys(userPools)) {
       const issuer = userPools[issuerKey];
 
       // TODO remove userpools
-      await seedUserPool(ctx, {
+      await seedUserPool(adapter, {
         id: issuerKey,
         name: issuer.name || issuerKey,
         accessTokenExpiresIn: issuer.accessTokenExpiresIn ?? 600,
@@ -91,12 +87,12 @@ export async function serve(opts: {
         refreshRefreshExpiresIn: issuer.refreshRefreshExpiresIn ?? 3600,
       });
 
-      await seedUserPoolCors(ctx, issuerKey, issuer.cors || []);
+      await seedUserPoolCors(adapter, issuerKey, issuer.cors || []);
 
       // TODO remove roles
       const roles = issuer.roles || {};
       for (const roleKey of Object.keys(roles)) {
-        await seedRoles(ctx, {
+        await seedRoles(adapter, {
           name: roleKey,
           description: roles[roleKey].description,
           userPoolId: issuerKey,
@@ -107,7 +103,7 @@ export async function serve(opts: {
       const users = issuer.users || {};
       for (const userKey of Object.keys(users)) {
         const user = users[userKey];
-        await seedPoolUser(ctx, {
+        await seedPoolUser(adapter, {
           password: user.password,
           username: userKey,
           emailVerified: user.emailVerified ?? true,
@@ -119,7 +115,7 @@ export async function serve(opts: {
         });
         // TODO remove user roles
         for (const role of user.roles || []) {
-          await seedUserRole(ctx, {
+          await seedUserRole(adapter, {
             roleUserPoolId: issuerKey,
             roleName: role,
             userUsername: userKey,
@@ -129,7 +125,7 @@ export async function serve(opts: {
     }
 
     const authPort = opts.authPort || 8766;
-    authServer = await createAuthApp(ctx, authPort);
+    authServer = await createAuthApp(adapter, authPort);
   }
 
   const closeDefer = new Defer<void>();
@@ -141,7 +137,7 @@ export async function serve(opts: {
       server?.close();
       authServer?.close();
       await watcher?.close();
-      await ctx?.close();
+      await adapter?.close();
       closedDefer.resolve();
     } catch (e) {
       closedDefer.reject(e);

@@ -1,7 +1,5 @@
-import { adapter } from '@daita/sqlite-adapter';
-import { MigrationTree } from '@daita/orm';
 import { allow, authorized, getRuleId, now } from '@daita/relational';
-import { httpGet, httpPost } from '@daita/testing';
+import { httpGet, httpPost, sqliteTestAdapter } from '@daita/testing';
 import { AuthServerTestDisposable, createTestAdminServer } from './admin-server.test';
 import { loginWithDefaultUser } from './auth-test';
 import { createTestHttpServer, HttpTestServerDisposable } from '@daita/testing';
@@ -10,46 +8,35 @@ describe('http-server/app', () => {
   let authServerTest: AuthServerTestDisposable;
   let httpServer: HttpTestServerDisposable;
 
+  const adapter = sqliteTestAdapter.getRelationalAdapter({
+    type: 'memory',
+  });
+
   beforeAll(async () => {
     authServerTest = await createTestAdminServer({
       adapter,
-      options: {
-        memory: true,
-      },
     });
     httpServer = await createTestHttpServer({
       adapter,
-      options: {
-        memory: true,
-      },
       authServer: {
         authPort: authServerTest.authHttp.port,
         adminPort: authServerTest.adminHttp.port,
       },
-      migrationTree: new MigrationTree('http', [
+      rules: [
         {
-          id: 'init',
-          steps: [
-            {
-              kind: 'add_rule',
-              rule: allow(authorized(), {
-                select: now(),
-              }),
-              ruleId: getRuleId(
-                allow(authorized(), {
-                  select: now(),
-                }),
-              ),
-            },
-          ],
+          id: 'test',
+          rule: allow(authorized(), {
+            select: now(),
+          }),
         },
-      ]),
+      ],
     });
   });
 
   afterAll(async () => {
     await httpServer.close();
     await authServerTest.close();
+    await adapter.close();
   });
 
   it('should login', async () => {

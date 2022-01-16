@@ -1,28 +1,22 @@
-import { getContext } from '@daita/orm';
-import { MigrationTree } from '@daita/orm';
-import { RelationalMigrationAdapterImplementation } from '@daita/orm';
+import { RelationalOrmAdapter } from '@daita/orm';
 import { createHttpServerApp } from '@daita/http-server';
 import { getServer, HttpServerApp } from './http-server';
+import { RelationalAdapter, Rule } from '@daita/relational';
 
-export async function createTestHttpServer<TOps>(options: {
+export async function createTestHttpServer(options: {
   authServer?: { adminPort: number; authPort: number };
-  adapter: RelationalMigrationAdapterImplementation<any, TOps>;
-  options: TOps;
-  migrationTree: MigrationTree;
+  adapter: RelationalAdapter<any> & RelationalOrmAdapter;
+  rules?: { id: string; rule: Rule }[];
 }): Promise<HttpTestServerDisposable> {
-  const httpCtx = getContext(options.adapter, {
-    ...options.options,
-    migrationTree: options.migrationTree,
-  });
-
   const httpApp = getServer((port) =>
     createHttpServerApp(
       {
         relational: {
-          context: httpCtx,
+          dataAdapter: options.adapter,
           enableTransactions: true,
         },
         authorization: {
+          rules: options.rules ?? 'disabled',
           providers: options.authServer
             ? [
                 {
@@ -52,7 +46,6 @@ export async function createTestHttpServer<TOps>(options: {
     http: httpApp,
     close: async () => {
       await httpApp.close();
-      await httpCtx.close();
     },
   };
 }

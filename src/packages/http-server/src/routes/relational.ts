@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { validateExecBody } from '../middleswares/validate-body.middleware';
-import { getRequestContext } from '../get-request-context';
+import { getRequestContext, RequestAdapterResolver } from '../get-request-context';
 import { HttpServerOptions, HttpServerRelationalOptions } from '../http-server-options';
 import { TransactionContextManager } from '../transaction-context-manager';
 import { TransactionManager } from '../transaction-manager';
@@ -14,16 +14,18 @@ export function relationalRoute(options: HttpServerOptions) {
     return router;
   }
 
-  extendRelationalDataRoute(options, relationalOptions, router);
+  const resolver = new RequestAdapterResolver(options, relationalOptions);
+
+  extendRelationalDataRoute(resolver, router);
   if (options.relational?.enableTransactions) {
-    extendTransactionRoutes(options, relationalOptions, router);
+    extendTransactionRoutes(resolver, relationalOptions, router);
   }
 
   return router;
 }
 
 function extendTransactionRoutes(
-  options: HttpServerOptions,
+  resolver: RequestAdapterResolver,
   relationalOptions: HttpServerRelationalOptions,
   router: Router,
 ) {
@@ -71,7 +73,7 @@ function extendTransactionRoutes(
         return;
       }
 
-      const transaction = manager.create(getRequestContext(req, options, relationalOptions), tid, req.body.timeout);
+      const transaction = manager.create(resolver.getAdapter(req), tid, req.body.timeout);
       await transaction.started;
       res.setHeader('X-Transaction', tid);
       res.status(200).send();
@@ -103,14 +105,10 @@ function extendTransactionRoutes(
   });
 }
 
-export function extendRelationalDataRoute(
-  options: HttpServerOptions,
-  relationalOptions: HttpServerRelationalOptions,
-  router: Router,
-) {
+export function extendRelationalDataRoute(resolver: RequestAdapterResolver, router: Router) {
   router.post('/exec', validateExecBody, async (req, res, next) => {
     try {
-      const context = new ContextManager(getRequestContext(req, options, relationalOptions));
+      const context = new ContextManager(resolver.getAdapter(req));
       const result = await context.exec(req.body.sql);
       res.status(200).json(result);
     } catch (e) {

@@ -4,8 +4,7 @@ import { getRandomCode } from '../modules/random';
 import { getLeakedCount } from '../modules/password';
 import { field } from '@daita/relational';
 import { table } from '@daita/relational';
-import { equal } from '@daita/relational';
-import { TransactionContext } from '@daita/orm';
+import { equal, RelationalAdapter } from '@daita/relational';
 import { Counter } from 'prom-client';
 import { metricRegister } from '../metric';
 import { User, UserEmailVerify, UserPool, UserPoolUser } from '@daita/auth';
@@ -16,7 +15,7 @@ const successRegisterCounter = new Counter({
   registers: [metricRegister],
 });
 
-export function registerRoute(ctx: TransactionContext<any>) {
+export function registerRoute(ctx: RelationalAdapter<any>) {
   const router = Router({ mergeParams: true });
 
   router.post<{ userPoolId: string }>('/', async (req, res, next) => {

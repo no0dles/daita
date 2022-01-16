@@ -1,22 +1,22 @@
 import { allow, authorized } from '@daita/relational';
 import { now } from '@daita/relational';
-import { createMigrationTree } from '@daita/orm';
+import { authorizable, createMigrationTree, migrate } from '@daita/orm';
 import { cleanupTestContext, getContexts } from '../../../testing';
 
 describe('packages/orm/migration/steps/relational-add-rule', () => {
   const migrationTree = createMigrationTree([
     { kind: 'add_rule', rule: allow(authorized(), { select: now() }), ruleId: 'a' },
   ]);
-  const ctx = getContexts(migrationTree);
+  const ctx = getContexts();
 
   beforeAll(async () => {
-    await ctx.migrate();
+    await migrate(ctx, migrationTree);
   });
 
   afterAll(async () => cleanupTestContext(ctx));
 
   it('should allow authorized access', async () => {
-    const authorizedContext = ctx.authorize({
+    const authorizedContext = authorizable(ctx, { migrationTree }).authorize({
       isAuthorized: true,
       userId: 'foo',
       roles: [],
@@ -26,7 +26,7 @@ describe('packages/orm/migration/steps/relational-add-rule', () => {
   });
 
   it('should not allow unauthorized access', async () => {
-    const unauthorizedContext = ctx.authorize({
+    const unauthorizedContext = authorizable(ctx, { migrationTree }).authorize({
       isAuthorized: false,
       userId: undefined,
       roles: undefined,

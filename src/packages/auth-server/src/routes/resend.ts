@@ -5,11 +5,11 @@ import { field } from '@daita/relational';
 import { and } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
-import { TransactionContext } from '@daita/orm';
+import { RelationalAdapter } from '@daita/relational';
 import { getRequiredRequestUserProp } from '@daita/http-server';
 import { User, UserEmailVerify } from '@daita/auth';
 
-export function resendRoute(ctx: TransactionContext<any>) {
+export function resendRoute(ctx: RelationalAdapter<any>) {
   const router = Router({ mergeParams: true });
 
   router.use(authMiddleware);

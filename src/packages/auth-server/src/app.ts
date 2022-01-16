@@ -11,10 +11,10 @@ import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
 import { Server } from 'http';
 import { createLogger } from '@daita/common';
-import { TransactionContext } from '@daita/orm';
 import { responseTimeMetricMiddleware } from './middlewares/response-time-middleware';
+import { RelationalAdapter } from '@daita/relational';
 
-export function createAuthApp(ctx: TransactionContext<any>, port: number) {
+export function createAuthApp(ctx: RelationalAdapter<any>, port: number) {
   const app = express();
   const logger = createLogger({ package: 'auth-server' });
 

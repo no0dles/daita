@@ -1,15 +1,14 @@
 import { Router } from 'express';
 import { getSha1 } from '../modules/hash';
-import { field } from '@daita/relational';
+import { field, RelationalAdapter } from '@daita/relational';
 import { and } from '@daita/relational';
 import { table } from '@daita/relational';
 import { join } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { getRoles } from '../modules/roles';
-import { Context } from '@daita/orm';
 import { User, UserPoolUser, UserToken } from '@daita/auth';
 
-export function adminTokenRoute(client: Context<any>) {
+export function adminTokenRoute(client: RelationalAdapter<any>) {
   const router = Router({ mergeParams: true });
 
   router.post('/:token', async (req, res, next) => {

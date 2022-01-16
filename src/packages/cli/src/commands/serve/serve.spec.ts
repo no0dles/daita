@@ -1,6 +1,5 @@
 import { serve } from './serve';
 import { getPostgresDb, PostgresDb } from '@daita/testing';
-import { HttpTransactionAdapter } from '@daita/http-adapter';
 import { Resolvable } from '@daita/common';
 import { field, table } from '@daita/relational';
 import { equal } from '@daita/relational';
@@ -8,6 +7,7 @@ import { setupEnv } from '@daita/testing';
 import { Http } from '@daita/http-interface';
 import { NodeHttp } from '@daita/node';
 import { schemaRoot } from '../../testing';
+import { HttpAdapter } from '@daita/http-adapter';
 
 describe('cli/commands/serve', () => {
   let postgresDb: PostgresDb;
@@ -30,23 +30,21 @@ describe('cli/commands/serve', () => {
         });
 
         try {
-          const client = new HttpTransactionAdapter(
-            new Resolvable<Http>(
-              new NodeHttp('http://localhost:8765', {
-                async getToken(): Promise<string | null> {
-                  const authHttp = new NodeHttp('http://localhost:8766', null);
-                  const res = await authHttp.json({
-                    authorized: false,
-                    data: {
-                      username: 'test',
-                      password: '123456',
-                    },
-                    path: '/cli/login',
-                  });
-                  return `Bearer ${res.data.access_token}`;
-                },
-              }),
-            ),
+          const client = new HttpAdapter(
+            new NodeHttp('http://localhost:8765', {
+              async getToken(): Promise<string | null> {
+                const authHttp = new NodeHttp('http://localhost:8766', null);
+                const res = await authHttp.json({
+                  authorized: false,
+                  data: {
+                    username: 'test',
+                    password: '123456',
+                  },
+                  path: '/cli/login',
+                });
+                return `Bearer ${res.data.access_token}`;
+              },
+            }),
           );
           const result = await client.exec({
             update: table('User'),

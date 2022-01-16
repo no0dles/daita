@@ -1,16 +1,20 @@
-import { RelationalDataAdapter } from '@daita/relational';
+import { BaseRelationalAdapter, RelationalTransactionAdapter } from '@daita/relational';
 import { RelationalRawResult } from '@daita/relational';
 import { Sql } from '@daita/relational';
 import { Pool, PoolConnection } from 'mariadb';
 import { MariadbSql } from '../sql/mariadb-sql';
 import { mariadbFormatter } from '../formatter/mariadb-formatter';
 import { MariadbFormatContext } from '../formatter/mariadb-format-context';
-import { Resolvable } from '@daita/common';
 import { RelationDoesNotExistsError } from '@daita/relational';
 import { parseJson } from '@daita/common';
 
-export class MariadbRelationalDataAdapter implements RelationalDataAdapter<MariadbSql> {
-  constructor(protected pool: PoolConnection) {}
+export class MariadbRelationalDataAdapter
+  extends BaseRelationalAdapter
+  implements RelationalTransactionAdapter<MariadbSql>
+{
+  constructor(protected pool: PoolConnection) {
+    super();
+  }
 
   toString() {
     return 'mariadb';
@@ -71,7 +75,7 @@ export class MariadbRelationalDataAdapter implements RelationalDataAdapter<Maria
     }
   }
 
-  supportsQuery<S>(sql: S): this is RelationalDataAdapter<Sql<any> | S> {
+  supportsQuery<S>(sql: S): this is RelationalTransactionAdapter<Sql<any> | S> {
     return mariadbFormatter.canHandle(sql);
   }
 }

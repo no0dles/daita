@@ -1,5 +1,6 @@
+import { RelationalOrmAdapter } from '@daita/orm';
+import { RelationalAdapter } from '@daita/relational';
 import { HttpServerAuthorization } from './http-server-authorization';
-import { MigrationContext } from '@daita/orm';
 
 export interface HttpServerOptions {
   relational?: HttpServerRelationalOptions;
@@ -8,7 +9,7 @@ export interface HttpServerOptions {
 }
 
 export interface HttpServerRelationalOptions {
-  context: MigrationContext<any>;
+  dataAdapter: RelationalAdapter<any> & RelationalOrmAdapter;
   enableTransactions: boolean;
   transactionTimeout?: number;
 }

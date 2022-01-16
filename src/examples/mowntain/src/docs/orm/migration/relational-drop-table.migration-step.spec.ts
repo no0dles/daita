@@ -1,7 +1,7 @@
 import { all } from '@daita/relational';
 import { table } from '@daita/relational';
 import { RelationDoesNotExistsError } from '@daita/relational';
-import { MigrationTree } from '@daita/orm';
+import { migrate, MigrationTree } from '@daita/orm';
 import { cleanupTestContext, getContexts } from '../../../testing';
 
 describe('packages/orm/migration/steps/drop-table', () => {
@@ -22,10 +22,10 @@ describe('packages/orm/migration/steps/drop-table', () => {
       after: 'init',
     },
   ]);
-  const ctx = getContexts(migrationTree);
+  const ctx = getContexts();
 
   beforeAll(async () => {
-    await ctx.migrate();
+    await migrate(ctx, migrationTree);
   });
 
   afterAll(async () => cleanupTestContext(ctx));
