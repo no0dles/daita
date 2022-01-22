@@ -1,6 +1,7 @@
 {
   "name": "frontends",
   "version": "0.4.0-alpha.0",
+  "private": true,
   "dependencies": {
     "@angular/animations": "~11.0.4",
     "@angular/common": "~11.0.4",
