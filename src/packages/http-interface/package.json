@@ -16,6 +16,9 @@
     "build": "tsc -b",
     "lint": "eslint src"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "@daita/common": "^0.4.0-alpha.0"
   }

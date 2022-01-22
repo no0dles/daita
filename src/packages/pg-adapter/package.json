@@ -24,6 +24,9 @@
     "@daita/relational": "^0.4.0-alpha.0",
     "pg": "^8.4.2"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
     "@types/pg": "^7.14.4"
   }
