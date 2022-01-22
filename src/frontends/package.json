@@ -1,6 +1,6 @@
 {
   "name": "frontends",
-  "version": "0.3.1-alpha.0",
+  "version": "0.4.0-alpha.0",
   "dependencies": {
     "@angular/animations": "~11.0.4",
     "@angular/common": "~11.0.4",
@@ -10,10 +10,10 @@
     "@angular/platform-browser": "~11.0.4",
     "@angular/platform-browser-dynamic": "~11.0.4",
     "@angular/router": "~11.0.4",
-    "@daita/auth": "^0.3.1-alpha.0",
-    "@daita/browser": "^0.3.1-alpha.0",
-    "@daita/common": "^0.3.1-alpha.0",
-    "@daita/relational": "^0.3.1-alpha.0",
+    "@daita/auth": "^0.4.0-alpha.0",
+    "@daita/browser": "^0.4.0-alpha.0",
+    "@daita/common": "^0.4.0-alpha.0",
+    "@daita/relational": "^0.4.0-alpha.0",
     "@fullhuman/postcss-purgecss": "^3.0.0",
     "@microsoft/tsdoc": "^0.12.21",
     "@ngxs/devtools-plugin": "^3.7.1",

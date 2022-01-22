@@ -1,6 +1,6 @@
 {
   "name": "@daita/http-interface",
-  "version": "0.3.1-alpha.0",
+  "version": "0.4.0-alpha.0",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -17,6 +17,6 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@daita/common": "^0.3.1-alpha.0"
+    "@daita/common": "^0.4.0-alpha.0"
   }
 }
