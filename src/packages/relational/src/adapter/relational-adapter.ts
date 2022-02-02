@@ -13,18 +13,16 @@ export interface RelationalAdapter<TQuery> {
   select<T>(sql: SelectSql<T>): Promise<T[]>;
   selectFirst<T>(sql: SelectSql<T>): Promise<T>;
   close(): Promise<void>;
-  transaction<T>(action: (adapter: RelationalTransactionAdapter<TQuery>) => Promise<T>, timeout?: number): Promise<T>;
+  transaction(action: (adapter: RelationalTransactionAdapter<TQuery>) => void): Promise<void>;
 }
 
 export interface RelationalTransactionAdapter<TQuery> {
-  delete(sql: DeleteSql): Promise<RelationalDeleteResult>;
-  insert<T>(sql: InsertSql<T>): Promise<RelationalInsertResult>;
-  update<T>(sql: UpdateSql<T>): Promise<RelationalUpdateResult>;
-  select<T>(sql: SelectSql<T>): Promise<T[]>;
-  selectFirst<T>(sql: SelectSql<T>): Promise<T>;
-  execRaw(sql: string, values: any[]): Promise<RelationalRawResult>;
+  delete(sql: DeleteSql): void;
+  insert<T>(sql: InsertSql<T>): void;
+  update<T>(sql: UpdateSql<T>): void;
+  execRaw(sql: string, values: any[]): void;
   supportsQuery<S>(sql: S): this is RelationalTransactionAdapter<TQuery | S>;
-  exec(sql: TQuery): Promise<RelationalRawResult>;
+  exec(sql: TQuery): void;
 }
 
 export interface RelationalAuthorizableAdapter<TQuery> {

@@ -1,15 +1,16 @@
-import { avg, table } from '@daita/relational';
+import { avg, RelationalAdapter, table } from '@daita/relational';
 import { Mountain } from '../../../../models/mountain';
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/function/aggregation/avg', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should avg date', async () => {
     const result = await ctx.selectFirst({

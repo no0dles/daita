@@ -7,6 +7,7 @@ import {
   RelationalAdapter,
   RelationalRawResult,
   RelationalTransactionAdapter,
+  RelationDoesNotExistsError,
 } from '@daita/relational';
 import { addTableWithSchemaAction } from '@daita/orm';
 import { addTableFieldAction } from '@daita/orm';
@@ -24,10 +25,10 @@ import { dropViewAction } from '@daita/orm';
 import { insertSeedAction } from '@daita/orm';
 import { updateSeedAction } from '@daita/orm';
 import { deleteSeedAction } from '@daita/orm';
-import { failNever, handleTimeout, Resolvable } from '@daita/common';
-import { MariadbRelationalDataAdapter } from './mariadb-relational-data-adapter';
+import { failNever, parseJson } from '@daita/common';
+import { Execution, MariadbRelationalDataAdapter } from './mariadb-relational-data-adapter';
 import { MariadbFormatContext, mariadbFormatter } from '../formatter';
-import { Pool } from 'mariadb';
+import { Connection, createPool, Pool } from 'mariadb';
 
 export interface MariadbRelationalMigrationAdapterOptions {
   connectionString: string;
@@ -40,20 +41,24 @@ export class MariadbRelationalMigrationAdapter
   private readonly storage = new MigrationStorage(this, {
     idType: { type: 'string', size: 255 },
   });
-  private readonly pool: Promise<Pool>;
+  private readonly pool: Pool;
 
   constructor(private options: MariadbRelationalMigrationAdapterOptions) {
     super();
-    this.pool = new Promise<Pool>((resolve) => {}); // TODO
+    this.pool = createPool(this.options.connectionString);
   }
 
   async close(): Promise<void> {
-    const pool = await this.pool;
-    await pool.end();
+    await this.pool.end();
   }
 
-  execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
-    throw new Error('Method not implemented.');
+  async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
+    const connection = await this.pool.getConnection();
+    try {
+      return await this.run(connection, { sql, values });
+    } finally {
+      await connection.release();
+    }
   }
 
   exec(sql: MariadbSql): Promise<RelationalRawResult> {
@@ -67,24 +72,24 @@ export class MariadbRelationalMigrationAdapter
   }
 
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
+    await this.storage.initialize();
     await this.transaction(async (trx) => {
-      await this.applyMigrationPlan(trx, migrationPlan);
-      await this.storage.add(trx, schema, migrationPlan.migration);
+      this.applyMigrationPlan(trx, migrationPlan);
+      this.storage.add(trx, schema, migrationPlan.migration);
     });
   }
 
-  async transaction<T>(
-    action: (adapter: RelationalTransactionAdapter<MariadbSql>) => Promise<T>,
-    timeout?: number,
-  ): Promise<T> {
-    const pool = await this.pool;
-    const connection = await pool.getConnection();
+  async transaction(action: (adapter: RelationalTransactionAdapter<MariadbSql>) => void): Promise<void> {
+    const adapter = new MariadbRelationalDataAdapter();
+    action(adapter);
+
+    const connection = await this.pool.getConnection();
     try {
       await connection.beginTransaction();
-      const adapter = new MariadbRelationalDataAdapter(connection);
-      const result = await handleTimeout(() => action(adapter), timeout);
+      for (const execution of adapter.executions) {
+        await this.run(connection, execution);
+      }
       await connection.commit();
-      return result;
     } catch (e) {
       await connection.rollback();
       throw e;
@@ -93,46 +98,91 @@ export class MariadbRelationalMigrationAdapter
     }
   }
 
+  private async run(connection: Connection, execution: Execution): Promise<RelationalRawResult> {
+    try {
+      const result = await connection.query(
+        {
+          sql: execution.sql,
+          typeCast: (column, next) => {
+            if (column.type == 'TINY' && column.columnLength === 1) {
+              const val = column.int();
+              return val === null ? null : val === 1;
+            } else if (column.columnType === 252) {
+              const val = column.string();
+              if (!val) {
+                return val;
+              }
+              return parseJson(val);
+            }
+            return next();
+          },
+        },
+        execution.values,
+      );
+      return {
+        rows: result instanceof Array ? [...result] : [],
+        rowCount: result instanceof Array ? result.length : result.affectedRows,
+      };
+    } catch (e) {
+      if (e.errno === 1146) {
+        const regex1 = /Table '(?<schema>[^.]+)\.(?<relation>[^']*?)' doesn't exist/g;
+        const match1 = regex1.exec(e.message);
+        const groups1 = match1?.groups || {};
+        if (groups1.schema && groups1.relation) {
+          throw new RelationDoesNotExistsError(e, execution.sql, execution.values, groups1.schema, groups1.relation);
+        } else {
+          const regex2 = /Table '(?<relation>[^']*?)' doesn't exist/g;
+          const match2 = regex2.exec(e.message);
+          const groups2 = match2?.groups || {};
+          if (groups2.relation) {
+            throw new RelationDoesNotExistsError(e, execution.sql, execution.values, undefined, groups2.relation);
+          }
+        }
+      }
+      throw e;
+    }
+  }
+
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
     return this.storage.get(schema);
   }
 
-  private async applyMigrationPlan(client: RelationalTransactionAdapter<MariadbSql>, migrationPlan: MigrationPlan) {
+  private applyMigrationPlan(client: RelationalTransactionAdapter<MariadbSql>, migrationPlan: MigrationPlan) {
     for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
-        await addTableWithSchemaAction(client, step, migrationPlan.migration);
+        addTableWithSchemaAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_field') {
-        await addTableFieldAction(client, step, migrationPlan.migration);
+        addTableFieldAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_primary_key') {
-        await addTablePrimaryKeyAction(client, step, migrationPlan.migration);
+        addTablePrimaryKeyAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_foreign_key') {
-        await addTableForeignKeyAction(client, step);
+        addTableForeignKeyAction(client, step);
       } else if (step.kind === 'drop_table_primary_key') {
-        await dropTablePrimaryKeyAction(client, step);
+        dropTablePrimaryKeyAction(client, step);
       } else if (step.kind === 'drop_table') {
-        await dropTableAction(client, step);
+        dropTableAction(client, step);
       } else if (step.kind === 'drop_table_field') {
-        await dropTableField(client, step);
+        dropTableField(client, step);
       } else if (step.kind === 'create_index') {
-        await createIndexAction(client, step);
+        createIndexAction(client, step);
       } else if (step.kind === 'drop_index') {
-        await dropIndexAction(client, step);
+        dropIndexAction(client, step);
       } else if (step.kind === 'drop_table_foreign_key') {
-        await dropTableForeignKeyAction(client, step);
+        dropTableForeignKeyAction(client, step);
       } else if (step.kind === 'add_rule') {
       } else if (step.kind === 'drop_rule') {
       } else if (step.kind === 'add_view') {
-        await addViewAction(client, step);
+        addViewAction(client, step);
       } else if (step.kind === 'alter_view') {
-        await alterViewAction(client, step);
+        alterViewAction(client, step);
       } else if (step.kind === 'drop_view') {
-        await dropViewAction(client, step);
+        dropViewAction(client, step);
       } else if (step.kind === 'insert_seed') {
-        await insertSeedAction(client, step);
+        insertSeedAction(client, step);
       } else if (step.kind === 'update_seed') {
-        await updateSeedAction(client, step);
+        updateSeedAction(client, step);
       } else if (step.kind === 'delete_seed') {
-        await deleteSeedAction(client, step);
+        deleteSeedAction(client, step);
       } else {
         failNever(step, 'unknown migration step');
       }

@@ -1,7 +1,6 @@
 import { ExcludeNonPrimitive } from '@daita/common';
 import { randomString } from '@daita/common';
-import { field, RelationalTransactionAdapter } from '@daita/relational';
-import { all } from '@daita/relational';
+import { field, isNotIn, RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { getSha1, hashPassword } from './modules/hash';
@@ -43,76 +42,41 @@ export async function createToken(
   return `${options.userPoolId}:${token}`;
 }
 
-export async function seedRoles(client: RelationalTransactionAdapter<any>, role: ExcludeNonPrimitive<Role>) {
-  const existingRole = await client.selectFirst({
-    select: all(Role),
-    from: table(Role),
-    where: and(equal(field(Role, 'name'), role.name), equal(field(Role, 'userPoolId'), role.userPoolId)),
-  });
-  if (existingRole) {
-    return false;
-  }
-  await client.insert({
+export function seedRoles(client: RelationalTransactionAdapter<any>, role: ExcludeNonPrimitive<Role>) {
+  client.insert({
     into: table(Role),
     insert: role,
+    onConflict: {
+      forField: ['name', 'userPoolId'],
+      do: 'nothing',
+    },
   });
-  return true;
 }
 
 export async function seedUserRole(client: RelationalTransactionAdapter<any>, userRole: ExcludeNonPrimitive<UserRole>) {
-  const existingUserRole = await client.selectFirst({
-    select: all(UserRole),
-    from: table(UserRole),
-    where: and(
-      equal(field(UserRole, 'roleName'), userRole.roleName),
-      equal(field(UserRole, 'roleUserPoolId'), userRole.roleUserPoolId),
-      equal(field(UserRole, 'userUsername'), userRole.userUsername),
-    ),
-  });
-  if (existingUserRole) {
-    return false;
-  }
-
   await client.insert({
     insert: userRole,
     into: table(UserRole),
+    onConflict: {
+      forField: ['roleName', 'roleUserPoolId', 'userUsername'],
+      do: 'nothing',
+    },
   });
 }
 
-export async function seedUserPool(
-  client: RelationalTransactionAdapter<any>,
-  userPool: ExcludeNonPrimitive<UserPool>,
-): Promise<boolean> {
-  const existingUserPool = await client.selectFirst({
-    select: all(UserPool),
-    from: table(UserPool),
-    where: equal(field(UserPool, 'id'), userPool.id),
-  });
-  if (existingUserPool) {
-    return false;
-  }
-
-  await client.insert({
+export function seedUserPool(client: RelationalTransactionAdapter<any>, userPool: ExcludeNonPrimitive<UserPool>): void {
+  client.insert({
     insert: userPool,
     into: table(UserPool),
+    onConflict: {
+      forField: ['id'],
+      do: 'nothing',
+    },
   });
-  return true;
 }
 
-export async function seedPoolUser(
-  client: RelationalTransactionAdapter<any>,
-  user: ExcludeNonPrimitive<User>,
-): Promise<boolean> {
-  const existingUser = await client.selectFirst({
-    select: all(User),
-    from: table(User),
-    where: and(equal(field(User, 'username'), user.username), equal(field(User, 'userPoolId'), user.userPoolId)),
-  });
-  if (existingUser) {
-    return false;
-  }
-
-  await client.insert({
+export function seedPoolUser(client: RelationalTransactionAdapter<any>, user: ExcludeNonPrimitive<User>): void {
+  client.insert({
     into: table(User),
     insert: {
       username: user.username,
@@ -120,43 +84,39 @@ export async function seedPoolUser(
       disabled: user.disabled ?? false,
       email: user.email,
       emailVerified: user.emailVerified || true,
-      password: await hashPassword(user.password),
+      password: user.password,
       phone: user.phone,
       phoneVerified: user.phoneVerified,
     },
+    onConflict: {
+      forField: ['username', 'userPoolId'],
+      do: 'nothing',
+    },
   });
-  await client.insert({
+  client.insert({
     into: table(UserPoolUser),
     insert: {
       userPoolId: user.userPoolId,
       userUsername: user.username,
     },
+    onConflict: {
+      forField: ['userUsername', 'userPoolId'],
+      do: 'nothing',
+    },
   });
-  return true;
 }
 
 export async function seedUserPoolCors(client: RelationalTransactionAdapter<any>, userPoolId: string, cors: string[]) {
-  const existingCors = await client.select({
-    select: all(UserPoolCors),
-    from: table(UserPoolCors),
-    where: equal(field(UserPoolCors, 'userPoolId'), userPoolId),
+  client.delete({
+    delete: table(UserPoolCors),
+    where: and(isNotIn(field(UserPoolCors, 'url'), cors), equal(field(UserPoolCors, 'userPoolId'), userPoolId)),
   });
-  for (const corsUrl of cors) {
-    const existingCorsUrl = existingCors.find((c) => c.url === corsUrl);
-    if (!existingCorsUrl) {
-      await client.insert({
-        insert: { url: corsUrl, userPoolId, id: randomString(22) },
-        into: table(UserPoolCors),
-      });
-    } else {
-      const index = existingCors.indexOf(existingCorsUrl);
-      existingCors.splice(index, 1);
-    }
-  }
-  for (const existingCorsUrl of existingCors) {
-    await client.delete({
-      delete: table(UserPoolCors),
-      where: equal(field(UserPoolCors, 'id'), existingCorsUrl.id),
-    });
-  }
+  client.insert({
+    insert: cors.map((url) => ({ url, userPoolId, id: randomString(22) })),
+    into: table(UserPoolCors),
+    onConflict: {
+      forField: 'url',
+      do: 'nothing',
+    },
+  });
 }

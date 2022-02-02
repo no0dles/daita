@@ -1,27 +1,18 @@
-import { table } from '@daita/relational';
+import { RelationalAdapter, table } from '@daita/relational';
 import { Ascent } from '../../../models/ascent';
 import { AscentPerson } from '../../../models/ascent-person';
 import { Person } from '../../../models/person';
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
+import { seedMowntainData } from '../../../testing';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/ddl/alter-table', () => {
-  const ctx = getMowntainTestContext({
-    alterTable: table(AscentPerson),
-    add: {
-      foreignKey: 'ascentId',
-      constraint: 'ascent2',
-      references: {
-        table: table(Ascent),
-        primaryKeys: 'id',
-      },
-    },
-  });
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should add foreign key with constraint name', async () => {
     await ctx.exec({

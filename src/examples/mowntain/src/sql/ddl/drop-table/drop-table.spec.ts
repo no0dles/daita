@@ -1,15 +1,16 @@
 import { AscentPerson } from '../../../models/ascent-person';
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
-import { table } from '@daita/relational';
+import { seedMowntainData } from '../../../testing';
+import { RelationalAdapter, table } from '@daita/relational';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/ddl/drop-table', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should create person table', async () => {
     await ctx.exec({

@@ -6,13 +6,13 @@ import { CreateSchemaSql } from '@daita/relational';
 import { isAddTableFieldStep } from '../add-table-field/relational-add-table-field.migration-step';
 import { MigrationDescription } from '../../migration-description';
 
-export async function addTableAction(
+export function addTableAction(
   client: RelationalTransactionAdapter<CreateTableSql>,
   step: RelationalAddTableMigrationStep,
   migration: MigrationDescription,
 ) {
   const tbl = table(step.table, step.schema);
-  await client.exec({
+  client.exec({
     createTable: tbl,
     columns: migration.steps
       .filter(isAddTableFieldStep)
@@ -33,16 +33,16 @@ export async function addTableAction(
   });
 }
 
-export async function addTableWithSchemaAction(
+export function addTableWithSchemaAction(
   client: RelationalTransactionAdapter<CreateTableSql | CreateSchemaSql>,
   step: RelationalAddTableMigrationStep,
   migration: MigrationDescription,
 ) {
   if (step.schema) {
-    await client.exec({
+    client.exec({
       createSchema: step.schema,
       ifNotExists: true,
     });
   }
-  await addTableAction(client, step, migration);
+  addTableAction(client, step, migration);
 }

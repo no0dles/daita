@@ -1,8 +1,8 @@
 import { MariadbSql } from '../sql/mariadb-sql';
 import { isConnectionStringOptions, MariadbAdapterOptions } from './mariadb-adapter-options';
-import { failNever, Resolvable } from '@daita/common';
+import { failNever } from '@daita/common';
 import { MariadbRelationalMigrationAdapter } from './mariadb-relational-migration-adapter';
-import { RelationalOrmAdapter, RelationalOrmAdapterImplementation } from '@daita/orm';
+import { RelationalOrmAdapterImplementation } from '@daita/orm';
 import { RelationalAdapterImplementation } from '@daita/relational';
 
 class MariadbAdapterImplementation

@@ -3,11 +3,11 @@ import { RelationalDropViewMigrationStep } from './relational-drop-view.migratio
 import { RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 
-export async function dropViewAction(
+export function dropViewAction(
   client: RelationalTransactionAdapter<DropViewSql>,
   step: RelationalDropViewMigrationStep,
 ) {
-  await client.exec({
+  client.exec({
     dropView: table(step.view, step.schema),
   });
 }

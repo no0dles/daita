@@ -4,22 +4,19 @@ import { InsertSql, RelationalTransactionAdapter, table } from '@daita/relationa
 import { User, UserPool, UserPoolUser } from '@daita/auth';
 import { hashPassword } from '@daita/auth-server';
 
-export async function createUserPool(client: RelationalTransactionAdapter<InsertSql<any>>, userPool: UserPool) {
-  await client.insert({
+export function createUserPool(client: RelationalTransactionAdapter<InsertSql<any>>, userPool: UserPool) {
+  client.insert({
     into: table(UserPool),
     insert: userPool,
   });
 }
 
-export async function createUser(
-  client: RelationalTransactionAdapter<InsertSql<any>>,
-  user: ExcludeNonPrimitive<User>,
-) {
-  await client.insert({
+export function createUser(client: RelationalTransactionAdapter<InsertSql<any>>, user: ExcludeNonPrimitive<User>) {
+  client.insert({
     into: table(User),
     insert: user,
   });
-  await client.insert({
+  client.insert({
     into: table(UserPoolUser),
     insert: {
       userPoolId: user.userPoolId,
@@ -27,8 +24,8 @@ export async function createUser(
     },
   });
 }
-export async function createDefaultUserPool(client: RelationalTransactionAdapter<InsertSql<any>>) {
-  await createUserPool(client, {
+export function createDefaultUserPool(client: RelationalTransactionAdapter<InsertSql<any>>) {
+  createUserPool(client, {
     id: 'default',
     algorithm: 'RS384',
     name: 'Default',

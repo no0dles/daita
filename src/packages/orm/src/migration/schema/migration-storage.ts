@@ -7,18 +7,22 @@ import { equal } from '@daita/relational';
 import { asc } from '@daita/relational';
 import { Migrations } from './migrations';
 import { MigrationSteps } from './migration-steps';
-import { RelationalStorage } from '@daita/relational';
 
 export class MigrationStorage {
-  private storage: RelationalStorage;
+  private initialized = false;
+  constructor(private adapter: RelationalAdapter<any>, private options: StorageOptions) {}
 
-  constructor(private adapter: RelationalAdapter<any>, private options: StorageOptions) {
-    this.storage = new RelationalStorage(async () => {
+  async initialize() {
+    if (this.initialized) {
+      return;
+    }
+
+    await this.adapter.transaction((trx) => {
       const createSchema: CreateSchemaSql = { createSchema: 'daita', ifNotExists: true };
       if (this.adapter.supportsQuery(createSchema)) {
-        await adapter.exec(createSchema);
+        trx.exec(createSchema);
       }
-      await adapter.exec({
+      trx.exec({
         createTable: table(Migrations),
         ifNotExists: true,
         columns: [
@@ -50,7 +54,7 @@ export class MigrationStorage {
           },
         ],
       });
-      await adapter.exec({
+      trx.exec({
         createTable: table(MigrationSteps),
         ifNotExists: true,
         columns: [
@@ -82,10 +86,10 @@ export class MigrationStorage {
         },
       });
     });
+    this.initialized = true;
   }
 
   async get(name: string) {
-    await this.storage.ensureInitialized();
     const steps = await this.adapter.select({
       select: {
         id: field(Migrations, 'id'),
@@ -120,20 +124,15 @@ export class MigrationStorage {
     return Object.keys(migrationMap).map((id) => migrationMap[id]);
   }
 
-  async add(
-    client: RelationalAdapter<any> | RelationalTransactionAdapter<any>,
-    schema: string,
-    migration: MigrationDescription,
-  ) {
-    await this.storage.ensureInitialized();
-    await client.insert({
+  add(client: RelationalTransactionAdapter<any>, schema: string, migration: MigrationDescription) {
+    client.insert({
       insert: { id: migration.id, schema, resolve: migration.resolve, after: migration.after },
       into: table(Migrations),
     });
 
     let index = 0;
     for (const step of migration.steps) {
-      await client.insert({
+      client.insert({
         insert: {
           migrationId: migration.id,
           migrationSchema: schema,

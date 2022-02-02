@@ -1,15 +1,18 @@
 import { RelationalOrmAdapter } from '../adapter';
 import {
   AuthorizedAdapter,
+  DeleteSql,
+  InsertSql,
   RelationalAdapter,
   RelationalAuthorizableAdapter,
   RelationalAuthorizedAdapter,
   RuleContext,
   RulesEvaluator,
+  UpdateSql,
 } from '@daita/relational';
 import { ContextOptions, getMigrationContext } from './context';
 
-export function authorizable<TQuery>(
+export function authorizable<TQuery extends InsertSql<any> & UpdateSql<any> & DeleteSql>(
   adapter: RelationalAdapter<TQuery> & RelationalOrmAdapter,
   options: ContextOptions,
 ): RelationalAuthorizableAdapter<TQuery> {

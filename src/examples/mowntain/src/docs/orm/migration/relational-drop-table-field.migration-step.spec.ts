@@ -1,9 +1,17 @@
-import { table } from '@daita/relational';
+import { RelationalAdapter, table } from '@daita/relational';
 import { all } from '@daita/relational';
-import { migrate, MigrationTree } from '@daita/orm';
-import { cleanupTestContext, getContexts } from '../../../testing';
+import { migrate, MigrationTree, RelationalOrmAdapter } from '@daita/orm';
+import { getTestAdapter } from '../../../testing';
 
 describe('packages/orm/migration/steps/add-table-field', () => {
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
+
+  beforeAll(async () => {
+    ctx = await getTestAdapter();
+  });
+
+  afterAll(async () => ctx.close());
+
   const migrationTree = new MigrationTree('test', [
     {
       id: 'init',
@@ -20,9 +28,6 @@ describe('packages/orm/migration/steps/add-table-field', () => {
       after: 'init',
     },
   ]);
-  const ctx = getContexts();
-
-  afterAll(async () => cleanupTestContext(ctx));
 
   it('should be keep data after table field drop', async () => {
     await migrate(ctx, migrationTree, { targetMigration: 'init' });

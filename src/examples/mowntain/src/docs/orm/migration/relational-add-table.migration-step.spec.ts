@@ -1,13 +1,12 @@
-import { field, table } from '@daita/relational';
-import { createMigrationTree, migrate } from '@daita/orm';
-import { cleanupTestContext, getContexts } from '../../../testing';
+import { field, RelationalAdapter, table } from '@daita/relational';
+import { createMigrationTree, migrate, RelationalOrmAdapter } from '@daita/orm';
+import { cleanupTestContext, getContexts, getTestAdapter } from '../../../testing';
 
 describe('packages/orm/migration/steps/relational-add-table', () => {
   const migrationTree = createMigrationTree([
     { kind: 'add_table', table: 'foo', schema: 'bar' },
     { kind: 'add_table_field', table: 'foo', schema: 'bar', fieldName: 'id', required: true, type: 'uuid' },
   ]);
-  const ctx = getContexts();
 
   class TestTable {
     static schema = 'bar';
@@ -15,11 +14,14 @@ describe('packages/orm/migration/steps/relational-add-table', () => {
     id!: string;
   }
 
-  afterAll(async () => cleanupTestContext(ctx));
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
+    ctx = await getTestAdapter();
     await migrate(ctx, migrationTree);
   });
+
+  afterAll(async () => ctx.close());
 
   it('should add table', async () => {
     const res = await ctx.select({

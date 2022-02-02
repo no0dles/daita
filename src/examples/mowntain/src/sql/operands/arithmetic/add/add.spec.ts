@@ -1,15 +1,16 @@
-import { add, field, table } from '@daita/relational';
+import { add, field, RelationalAdapter, table } from '@daita/relational';
 import { Mountain } from '../../../../models/mountain';
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/operands/add', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should add field and value', async () => {
     const result = await ctx.selectFirst({

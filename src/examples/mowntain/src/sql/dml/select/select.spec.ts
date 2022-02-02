@@ -11,6 +11,7 @@ import {
   hour,
   minute,
   month,
+  RelationalAdapter,
   round,
   second,
   table,
@@ -18,15 +19,16 @@ import {
 } from '@daita/relational';
 import { Ascent } from '../../../models/ascent';
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('docs/example/sql/dml/select', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should select Mountain.name, Mountain.prominence from Mountain', async () => {
     await ctx.select({

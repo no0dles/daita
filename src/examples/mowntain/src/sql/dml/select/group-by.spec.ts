@@ -1,16 +1,17 @@
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
 import { Mountain } from '../../../models/mountain';
-import { count, equal, field, greaterThan, join, table } from '@daita/relational';
+import { count, equal, field, greaterThan, join, RelationalAdapter, table } from '@daita/relational';
 import { Canton } from '../../../models/canton';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('docs/example/sql/dml/select', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should select group by disabled and select count', async () => {
     const result = await ctx.select({

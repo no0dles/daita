@@ -1,5 +1,6 @@
 import { Rule, RuleContext, RulesEvaluator } from '../permission';
 import {
+  BaseRelationalTransactionAdapter,
   RelationalAdapter,
   RelationalAuthorizableAdapter,
   RelationalAuthorizedAdapter,
@@ -7,12 +8,13 @@ import {
   RelationalTransactionAdapter,
 } from '../adapter';
 import { BaseRelationalAdapter } from '../adapter/base-relational-adapter';
+import { DeleteSql, InsertSql, UpdateSql } from '../sql';
 
 export interface AuthorizableClientOptions {
   rules: { id: string; rule: Rule }[];
 }
 
-export function authorizable<TQuery>(
+export function authorizable<TQuery extends InsertSql<any> & UpdateSql<any> & DeleteSql>(
   adapter: RelationalAdapter<TQuery>,
   options: AuthorizableClientOptions,
 ): RelationalAuthorizableAdapter<TQuery> {
@@ -24,24 +26,25 @@ export function authorizable<TQuery>(
   };
 }
 
-export class AuthorizedTransactionAdapter<T> extends BaseRelationalAdapter implements RelationalTransactionAdapter<T> {
+export class AuthorizedTransactionAdapter<T extends InsertSql<any> & UpdateSql<any> & DeleteSql>
+  extends BaseRelationalTransactionAdapter
+  implements RelationalTransactionAdapter<T>
+{
   constructor(
     private adapter: RelationalTransactionAdapter<T>,
     private context: RuleContext,
-    private ruleEvaluator: () => Promise<RulesEvaluator>,
+    private rulesEvaluator: RulesEvaluator,
   ) {
     super();
   }
 
-  async exec(sql: any): Promise<RelationalRawResult> {
-    const rulesEvaluator = await this.ruleEvaluator();
-    rulesEvaluator.checkForAuthorization(this.context, sql);
-    return this.adapter.exec(sql);
+  exec(sql: T): void {
+    this.rulesEvaluator.checkForAuthorization(this.context, sql);
+    this.adapter.exec(sql);
   }
 
-  async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
-    const rulesEvaluator = await this.ruleEvaluator();
-    rulesEvaluator.checkForAuthorization(this.context, sql);
+  execRaw(sql: string, values: any[]): void {
+    this.rulesEvaluator.checkForAuthorization(this.context, sql);
     return this.adapter.execRaw(sql, values);
   }
 
@@ -50,7 +53,10 @@ export class AuthorizedTransactionAdapter<T> extends BaseRelationalAdapter imple
   }
 }
 
-export class AuthorizedAdapter<T> extends BaseRelationalAdapter implements RelationalAuthorizedAdapter<T> {
+export class AuthorizedAdapter<T extends InsertSql<any> & UpdateSql<any> & DeleteSql>
+  extends BaseRelationalAdapter
+  implements RelationalAuthorizedAdapter<T>
+{
   constructor(
     private adapter: RelationalAdapter<T>,
     private context: RuleContext,
@@ -84,9 +90,10 @@ export class AuthorizedAdapter<T> extends BaseRelationalAdapter implements Relat
     return this.adapter.supportsQuery(sql);
   }
 
-  transaction<R>(action: (adapter: RelationalTransactionAdapter<T>) => Promise<R>, timeout?: number): Promise<R> {
-    return this.adapter.transaction<R>((adapter) => {
-      return action(new AuthorizedTransactionAdapter<T>(adapter, this.context, this.ruleEvaluator));
-    }, timeout);
+  async transaction(action: (adapter: RelationalTransactionAdapter<T>) => void): Promise<void> {
+    const rulesEvaluator = await this.ruleEvaluator();
+    return this.adapter.transaction((adapter) => {
+      return action(new AuthorizedTransactionAdapter<T>(adapter, this.context, rulesEvaluator));
+    });
   }
 }

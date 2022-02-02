@@ -1,15 +1,16 @@
-import { max, table } from '@daita/relational';
+import { max, RelationalAdapter, table } from '@daita/relational';
 import { Mountain } from '../../../../models/mountain';
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/function/aggregation/max', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should get max', async () => {
     const result = await ctx.selectFirst({

@@ -1,19 +1,21 @@
-import { allow, authorized } from '@daita/relational';
+import { allow, authorized, RelationalAdapter } from '@daita/relational';
 import { now } from '@daita/relational';
-import { authorizable, createMigrationTree, migrate } from '@daita/orm';
-import { cleanupTestContext, getContexts } from '../../../testing';
+import { authorizable, createMigrationTree, migrate, RelationalOrmAdapter } from '@daita/orm';
+import { cleanupTestContext, getContexts, getTestAdapter } from '../../../testing';
 
 describe('packages/orm/migration/steps/relational-add-rule', () => {
   const migrationTree = createMigrationTree([
     { kind: 'add_rule', rule: allow(authorized(), { select: now() }), ruleId: 'a' },
   ]);
-  const ctx = getContexts();
+
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
+    ctx = await getTestAdapter();
     await migrate(ctx, migrationTree);
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should allow authorized access', async () => {
     const authorizedContext = authorizable(ctx, { migrationTree }).authorize({

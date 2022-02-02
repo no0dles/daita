@@ -1,13 +1,15 @@
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
+import { RelationalOrmAdapter } from '@daita/orm';
+import { RelationalAdapter } from '@daita/relational';
 
 describe('sql/dml/select/variables', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should select 1', async () => {
     const result = await ctx.selectFirst({ select: 1 });

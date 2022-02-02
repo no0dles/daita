@@ -1,15 +1,16 @@
-import { table } from '@daita/relational';
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
+import { RelationalAdapter, table } from '@daita/relational';
+import { seedMowntainData } from '../../../testing';
 import { Person } from '../../../models/person';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/ddl/alter-table', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should add column', async () => {
     await ctx.exec({

@@ -1,15 +1,16 @@
 import { Mountain } from '../../../../models/mountain';
-import { field, greatest, table } from '@daita/relational';
+import { field, greatest, RelationalAdapter, table } from '@daita/relational';
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/function/number/greatest', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should get greatest from value and value', async () => {
     const result = await ctx.selectFirst({

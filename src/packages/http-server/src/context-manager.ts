@@ -1,4 +1,4 @@
-import { RelationalAdapter, RelationalTransactionAdapter } from '@daita/relational';
+import { RelationalTransactionAdapter } from '@daita/relational';
 
 export class ContextManager {
   constructor(private client: RelationalTransactionAdapter<any>) {}

@@ -1,4 +1,4 @@
-import { allow, authorized, getRuleId, now } from '@daita/relational';
+import { allow, authorized, now } from '@daita/relational';
 import { httpGet, httpPost, sqliteTestAdapter } from '@daita/testing';
 import { AuthServerTestDisposable, createTestAdminServer } from './admin-server.test';
 import { loginWithDefaultUser } from './auth-test';

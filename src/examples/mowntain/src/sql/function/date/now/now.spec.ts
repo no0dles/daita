@@ -1,14 +1,15 @@
-import { now } from '@daita/relational';
+import { now, RelationalAdapter } from '@daita/relational';
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/function/date/now', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should get now', async () => {
     const result = await ctx.selectFirst({

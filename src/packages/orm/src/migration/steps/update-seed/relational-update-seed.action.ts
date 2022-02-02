@@ -3,12 +3,12 @@ import { RelationalTransactionAdapter, table } from '@daita/relational';
 import { UpdateSql } from '@daita/relational';
 import { getWhereFromKeys } from '../get-where-from-keys';
 
-export async function updateSeedAction(
+export function updateSeedAction(
   client: RelationalTransactionAdapter<UpdateSql<any>>,
   step: RelationalUpdateSeedMigrationStep,
 ) {
   const tbl = table(step.table, step.schema);
-  await client.exec({
+  client.exec({
     update: tbl,
     set: step.seed,
     where: getWhereFromKeys(tbl, step.keys),

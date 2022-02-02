@@ -6,12 +6,12 @@ import { InsertSql } from '@daita/relational';
 import { SchemaDescription } from '@daita/orm';
 import { migrateTableAction } from './migrate-table.action';
 
-export async function dropTableFieldAction(
+export function dropTableFieldAction(
   client: RelationalTransactionAdapter<DropTableSql | CreateTableSql | InsertSql<any>>,
   step: RelationalDropTableFieldMigrationStep,
   targetSchema: SchemaDescription,
 ) {
-  await migrateTableAction(
+  migrateTableAction(
     client,
     step.table,
     step.schema,

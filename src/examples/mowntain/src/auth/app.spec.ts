@@ -1,4 +1,4 @@
-import { field, RelationalAdapter } from '@daita/relational';
+import { field } from '@daita/relational';
 import { all } from '@daita/relational';
 import { table } from '@daita/relational';
 import { notEqual } from '@daita/relational';
@@ -27,7 +27,9 @@ describe('app', () => {
     await app.start();
     await metricsApp.start();
     await migrate(adapter, authSchema);
-    await createDefaultUserPool(adapter);
+    await adapter.transaction((trx) => {
+      createDefaultUserPool(trx);
+    });
   });
 
   afterAll(async () => {

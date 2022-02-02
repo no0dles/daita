@@ -3,11 +3,11 @@ import { RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { CreateIndexSql } from '@daita/relational';
 
-export async function createIndexAction(
+export function createIndexAction(
   client: RelationalTransactionAdapter<CreateIndexSql<any>>,
   step: RelationalCreateIndexMigrationStep,
 ) {
-  await client.exec({
+  client.exec({
     createIndex: step.name,
     on: table(step.table, step.schema),
     columns: step.fields,

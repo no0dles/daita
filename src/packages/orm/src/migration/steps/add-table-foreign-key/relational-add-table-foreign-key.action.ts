@@ -3,11 +3,11 @@ import { RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { AlterTableAddForeignKeySql } from '@daita/relational';
 
-export async function addTableForeignKeyAction(
+export function addTableForeignKeyAction(
   client: RelationalTransactionAdapter<AlterTableAddForeignKeySql<any>>,
   step: RelationalAddTableForeignKeyMigrationStep,
 ) {
-  await client.exec({
+  client.exec({
     alterTable: table(step.table, step.schema),
     add: {
       constraint: step.name,

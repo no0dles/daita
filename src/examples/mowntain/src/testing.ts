@@ -7,8 +7,14 @@ import { Person } from './models/person';
 import { AscentPerson } from './models/ascent-person';
 import { getMigrationContext, MigrationTree, RelationalOrmAdapter } from '@daita/orm';
 import { schema } from './schema';
+import { getPostgresTestAdapter } from '@daita/testing';
 
-export async function seedMowntainData(ctx: RelationalAdapter<any> & RelationalOrmAdapter): Promise<void> {
+export function getTestAdapter() {
+  return getPostgresTestAdapter();
+}
+
+export async function seedMowntainData(): Promise<RelationalAdapter<any> & RelationalOrmAdapter> {
+  const ctx = await getTestAdapter();
   const migrationContext = getMigrationContext(ctx, {
     schema,
   });
@@ -83,6 +89,7 @@ export async function seedMowntainData(ctx: RelationalAdapter<any> & RelationalO
       ascentId: 'e2e6292c-551b-11ec-bf63-0242ac130002',
     },
   });
+  return ctx;
 }
 
 export async function cleanupTestContext(ctx: RelationalAdapter<any>) {

@@ -1,7 +1,7 @@
 import { SqliteSql } from '../sql/sqlite-sql';
 import { MigrationStorage, RelationalOrmAdapter } from '@daita/orm';
 import { MigrationPlan } from '@daita/orm';
-import { createLogger, failNever, handleTimeout } from '@daita/common';
+import { createLogger, failNever, handleTimeout, parseJson } from '@daita/common';
 import { MigrationDescription } from '@daita/orm';
 import { addTableAction } from '@daita/orm';
 import { addTableFieldAction } from '@daita/orm';
@@ -17,31 +17,86 @@ import { updateSeedAction } from '@daita/orm';
 import { deleteSeedAction } from '@daita/orm';
 import { dropTableFieldAction } from '../orm/drop-table-field.action';
 import { dropTableForeignKeyAction } from '../orm/drop-table-foreign-key.action';
-import { unlinkSync } from 'fs';
-import { SqliteRelationalDataAdapter } from './sqlite-relational-data-adapter';
-import { Database } from 'sqlite3';
-import { RelationalAdapter, RelationalTransactionAdapter } from '@daita/relational';
+import { SqliteRelationalTransactionAdapter } from './sqlite-relational-transaction-adapter';
+import Sqlite, { Database } from 'better-sqlite3';
+import {
+  BaseRelationalAdapter,
+  DeleteSql,
+  InsertSql,
+  RelationalAdapter,
+  RelationalRawResult,
+  RelationalTransactionAdapter,
+  SelectSql,
+  UpdateSql,
+} from '@daita/relational';
+import { SqliteFormatContext, sqliteFormatter } from '../formatter';
 
 export class SqliteRelationalMigrationAdapter
-  extends SqliteRelationalDataAdapter
+  extends BaseRelationalAdapter
   implements RelationalOrmAdapter, RelationalAdapter<SqliteSql>
 {
+  private readonly db: Database;
   protected readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });
   private storage = new MigrationStorage(this, {
     idType: { type: 'string' },
   });
 
   constructor(private connectionString: string) {
-    super(new Database(connectionString));
-    this.db.on('error', (err) => {
-      this.logger.error(err);
+    super();
+    this.db = Sqlite(connectionString, {
+      verbose: (message, additionalArgs) => {
+        this.logger.debug(message, additionalArgs);
+      },
     });
-    this.db.on('close', () => {
-      this.logger.debug('database closed');
-    });
-    this.db.on('open', () => {
-      this.logger.debug('database opened');
-    });
+  }
+
+  exec(sql: DeleteSql | SelectSql<any> | UpdateSql<any> | InsertSql<any>): Promise<RelationalRawResult> {
+    const ctx = new SqliteFormatContext();
+    const query = sqliteFormatter.format(sql, ctx);
+    return this.execRaw(query, ctx.getValues());
+  }
+
+  async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
+    this.logger.debug('execute sql', { sql, queryValues: values });
+    const statement = this.db.prepare(sql);
+    if (!sql.toLowerCase().startsWith('select')) {
+      const result = statement.run(values);
+      return {
+        rowCount: result.changes,
+        rows: [],
+      };
+    } else {
+      const result = statement.all(values);
+      return {
+        rows: result.map((row) => {
+          const columnKeys = Object.keys(row);
+          for (const columnKey of columnKeys) {
+            const columnValue = row[columnKey];
+            if (typeof columnValue === 'string' && columnValue.startsWith('JSON-')) {
+              row[columnKey] = parseJson(columnValue.substr('JSON-'.length));
+            } else if (
+              typeof columnValue === 'string' &&
+              /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}(Z){0,1}$/.test(columnValue)
+            ) {
+              row[columnKey] = new Date(columnValue);
+            } else if (typeof columnValue === 'string' && columnValue.startsWith('BOOL-')) {
+              row[columnKey] = columnValue.substr('BOOL-'.length) === 'true';
+            }
+            //TODO improve and document, make tests with text values BOOL-, JSON-, DATE- and wrong formats
+          }
+          return row;
+        }),
+        rowCount: result.length,
+      };
+    }
+  }
+
+  supportsQuery(sql: any): boolean {
+    return sqliteFormatter.canHandle(sql);
+  }
+
+  async close(): Promise<void> {
+    this.db.close();
   }
 
   toString() {
@@ -49,6 +104,7 @@ export class SqliteRelationalMigrationAdapter
   }
 
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
+    await this.storage.initialize();
     await this.transaction(async (trx) => {
       await this.applyMigrationPlan(trx, migrationPlan);
       await this.storage.add(trx, schema, migrationPlan.migration);
@@ -56,69 +112,54 @@ export class SqliteRelationalMigrationAdapter
   }
 
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
+    await this.storage.initialize();
     return this.storage.get(schema);
   }
 
-  transaction<T>(
-    action: (adapter: RelationalTransactionAdapter<SqliteSql>) => Promise<T>,
-    timeout?: number,
-  ): Promise<T> {
-    return this.transactionSerializable.run(async () => {
-      const db = await this.db;
-      await db.run('BEGIN');
-      try {
-        const result = await handleTimeout(() => action(new SqliteRelationalDataAdapter(db)), timeout);
-        await this.run('COMMIT');
-        return result;
-      } catch (e) {
-        await this.run('ROLLBACK');
-        throw e;
-      }
-    });
+  async transaction(action: (adapter: RelationalTransactionAdapter<SqliteSql>) => void): Promise<void> {
+    this.db
+      .transaction(() => {
+        action(new SqliteRelationalTransactionAdapter(this.db));
+      })
+      .exclusive();
   }
 
-  async remove(): Promise<void> {
-    if (this.connectionString !== ':memory:') {
-      unlinkSync(this.connectionString);
-    }
-  }
-
-  private async applyMigrationPlan(client: RelationalTransactionAdapter<SqliteSql>, migrationPlan: MigrationPlan) {
+  private applyMigrationPlan(client: RelationalTransactionAdapter<SqliteSql>, migrationPlan: MigrationPlan) {
     for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
-        await addTableAction(client, step, migrationPlan.migration);
+        addTableAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_field') {
-        await addTableFieldAction(client, step, migrationPlan.migration);
+        addTableFieldAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_primary_key') {
-        await addTablePrimaryKeyAction(client, step, migrationPlan.migration);
+        addTablePrimaryKeyAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_foreign_key') {
         // TODO await addTableForeignKeyAction(client, step);
       } else if (step.kind === 'drop_table_primary_key') {
         // TODO await dropTablePrimaryKeyAction(client, step);
       } else if (step.kind === 'drop_table') {
-        await dropTableAction(client, step);
+        dropTableAction(client, step);
       } else if (step.kind === 'drop_table_field') {
-        await dropTableFieldAction(client, step, migrationPlan.targetSchema);
+        dropTableFieldAction(client, step, migrationPlan.targetSchema);
       } else if (step.kind === 'create_index') {
-        await createIndexAction(client, step);
+        createIndexAction(client, step);
       } else if (step.kind === 'drop_index') {
-        await dropIndexAction(client, step);
+        dropIndexAction(client, step);
       } else if (step.kind === 'drop_table_foreign_key') {
-        await dropTableForeignKeyAction(client, step, migrationPlan.targetSchema);
+        dropTableForeignKeyAction(client, step, migrationPlan.targetSchema);
       } else if (step.kind === 'add_rule') {
       } else if (step.kind === 'drop_rule') {
       } else if (step.kind === 'add_view') {
-        await addViewAction(client, step);
+        addViewAction(client, step);
       } else if (step.kind === 'alter_view') {
-        await alterViewAction(client, step);
+        alterViewAction(client, step);
       } else if (step.kind === 'drop_view') {
-        await dropViewAction(client, step);
+        dropViewAction(client, step);
       } else if (step.kind === 'insert_seed') {
-        await insertSeedAction(client, step);
+        insertSeedAction(client, step);
       } else if (step.kind === 'update_seed') {
-        await updateSeedAction(client, step);
+        updateSeedAction(client, step);
       } else if (step.kind === 'delete_seed') {
-        await deleteSeedAction(client, step);
+        deleteSeedAction(client, step);
       } else {
         failNever(step, 'unknown migration step');
       }

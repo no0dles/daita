@@ -4,7 +4,7 @@ import { hasAddTableStep, MigrationDescription } from '../../migration-descripti
 import { table } from '@daita/relational';
 import { AlterTableAddColumnSql } from '@daita/relational';
 
-export async function addTableFieldAction(
+export function addTableFieldAction(
   client: RelationalTransactionAdapter<AlterTableAddColumnSql>,
   step: RelationalAddTableFieldMigrationStep,
   migration: MigrationDescription,
@@ -14,7 +14,7 @@ export async function addTableFieldAction(
     return;
   }
 
-  await client.exec({
+  client.exec({
     alterTable: tbl,
     add: {
       column: step.fieldName,

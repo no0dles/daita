@@ -1,15 +1,16 @@
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
-import { equal, field, table } from '@daita/relational';
+import { equal, field, RelationalAdapter, table } from '@daita/relational';
 import { Person } from '../../../models/person';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/types/boolean', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should save and retrive boolean false value', async () => {
     const result = await ctx.selectFirst({

@@ -3,11 +3,11 @@ import { RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { CreateViewSql } from '@daita/relational';
 
-export async function alterViewAction(
+export function alterViewAction(
   client: RelationalTransactionAdapter<CreateViewSql<any>>,
   step: RelationalAlterViewMigrationStep,
 ) {
-  await client.exec({
+  client.exec({
     createView: table(step.view, step.schema),
     orReplace: true,
     as: step.query,

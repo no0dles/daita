@@ -1,4 +1,4 @@
-import { PostgresSql } from '../sql/postgres-sql';
+import { PostgresSql } from '../sql';
 import { MigrationDescription, RelationalOrmAdapter } from '@daita/orm';
 import {
   BaseRelationalAdapter,
@@ -8,7 +8,7 @@ import {
   RelationalTransactionAdapter,
   table,
 } from '@daita/relational';
-import { createLogger, failNever, handleTimeout, parseJson } from '@daita/common';
+import { createLogger, failNever, parseJson } from '@daita/common';
 import { MigrationPlan } from '@daita/orm';
 import { MigrationStorage } from '@daita/orm';
 import { Migrations } from '@daita/orm';
@@ -30,7 +30,7 @@ import { addTableForeignKeyAction } from '@daita/orm';
 import { dropTablePrimaryKeyAction } from '@daita/orm';
 import { dropDatabase, ensureDatabaseExists, parseConnectionString } from '../postgres.util';
 import { Pool, PoolClient, types } from 'pg';
-import { exec, execRaw, PostgresDataAdapter } from './postgres-data-adapter';
+import { exec, execRaw, PostgresTransactionAdapter } from './postgres-transaction-adapter';
 import { postgresFormatter } from '../formatters';
 
 export interface PostgresNotificationSubscriber {
@@ -100,51 +100,46 @@ export class PostgresMigrationAdapter
   }
 
   async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
+    await this.migrationStorage.initialize();
     return this.migrationStorage.get(schema);
   }
 
-  async remove(): Promise<void> {
-    this.checkForClosed();
-    await dropDatabase(this.options.connectionString);
-    await ensureDatabaseExists(this.options.connectionString);
-  }
-
-  private async applyMigrationPlan(client: RelationalTransactionAdapter<PostgresSql>, migrationPlan: MigrationPlan) {
+  private applyMigrationPlan(client: RelationalTransactionAdapter<PostgresSql>, migrationPlan: MigrationPlan) {
     for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
-        await addTableWithSchemaAction(client, step, migrationPlan.migration);
+        addTableWithSchemaAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_field') {
-        await addTableFieldAction(client, step, migrationPlan.migration);
+        addTableFieldAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_primary_key') {
-        await addTablePrimaryKeyAction(client, step, migrationPlan.migration);
+        addTablePrimaryKeyAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_foreign_key') {
-        await addTableForeignKeyAction(client, step);
+        addTableForeignKeyAction(client, step);
       } else if (step.kind === 'drop_table_primary_key') {
-        await dropTablePrimaryKeyAction(client, step);
+        dropTablePrimaryKeyAction(client, step);
       } else if (step.kind === 'drop_table') {
-        await dropTableAction(client, step);
+        dropTableAction(client, step);
       } else if (step.kind === 'drop_table_field') {
-        await dropTableField(client, step);
+        dropTableField(client, step);
       } else if (step.kind === 'create_index') {
-        await createIndexAction(client, step);
+        createIndexAction(client, step);
       } else if (step.kind === 'drop_index') {
-        await dropIndexAction(client, step);
+        dropIndexAction(client, step);
       } else if (step.kind === 'drop_table_foreign_key') {
-        await dropTableForeignKeyAction(client, step);
+        dropTableForeignKeyAction(client, step);
       } else if (step.kind === 'add_rule') {
       } else if (step.kind === 'drop_rule') {
       } else if (step.kind === 'add_view') {
-        await addViewAction(client, step);
+        addViewAction(client, step);
       } else if (step.kind === 'alter_view') {
-        await alterViewAction(client, step);
+        alterViewAction(client, step);
       } else if (step.kind === 'drop_view') {
-        await dropViewAction(client, step);
+        dropViewAction(client, step);
       } else if (step.kind === 'insert_seed') {
-        await insertSeedAction(client, step);
+        insertSeedAction(client, step);
       } else if (step.kind === 'update_seed') {
-        await updateSeedAction(client, step);
+        updateSeedAction(client, step);
       } else if (step.kind === 'delete_seed') {
-        await deleteSeedAction(client, step);
+        deleteSeedAction(client, step);
       } else {
         failNever(step, 'unknown migration step');
       }
@@ -153,11 +148,12 @@ export class PostgresMigrationAdapter
 
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
     this.checkForClosed();
+    await this.migrationStorage.initialize();
     await this.transaction(async (trx) => {
-      await trx.exec({ lockTable: table(Migrations) });
-      await this.applyMigrationPlan(trx, migrationPlan);
-      await this.migrationStorage.add(trx, schema, migrationPlan.migration);
-      await trx.exec({ notify: 'daita_migrations' });
+      trx.exec({ lockTable: table(Migrations) });
+      this.applyMigrationPlan(trx, migrationPlan);
+      this.migrationStorage.add(trx, schema, migrationPlan.migration);
+      trx.exec({ notify: 'daita_migrations' });
     });
   }
 
@@ -264,20 +260,17 @@ export class PostgresMigrationAdapter
     }
   }
 
-  async transaction<T>(
-    action: (adapter: RelationalTransactionAdapter<PostgresSql>) => Promise<T>,
-    timeout?: number,
-  ): Promise<T> {
+  async transaction(action: (adapter: RelationalTransactionAdapter<PostgresSql>) => void): Promise<void> {
     this.checkForClosed();
 
     const pool = await this.pool;
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      const adapter = new PostgresDataAdapter(client);
-      const result = await handleTimeout(() => action(adapter), timeout);
+      const adapter = new PostgresTransactionAdapter(client);
+      action(adapter);
+      await adapter.run();
       await client.query('COMMIT');
-      return result;
     } catch (e) {
       if (e.errno === -111) {
         throw new ConnectionError('TODO', e); //TODO after connection string parsing

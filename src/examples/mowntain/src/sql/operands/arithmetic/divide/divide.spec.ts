@@ -1,15 +1,16 @@
-import { divide, field, table } from '@daita/relational';
+import { divide, field, RelationalAdapter, table } from '@daita/relational';
 import { Mountain } from '../../../../models/mountain';
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/operands/divide', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should divide value and field', async () => {
     const result = await ctx.selectFirst({

@@ -4,12 +4,12 @@ import { RelationalDeleteSeedMigrationStep } from './relational-delete-seed.migr
 import { table } from '@daita/relational';
 import { getWhereFromKeys } from '../get-where-from-keys';
 
-export async function deleteSeedAction(
+export function deleteSeedAction(
   client: RelationalTransactionAdapter<DeleteSql>,
   step: RelationalDeleteSeedMigrationStep,
 ) {
   const tbl = table(step.table, step.schema);
-  await client.exec({
+  client.exec({
     delete: tbl,
     where: getWhereFromKeys(tbl, step.keys),
   });

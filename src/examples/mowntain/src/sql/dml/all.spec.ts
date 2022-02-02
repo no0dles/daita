@@ -1,15 +1,16 @@
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../testing';
-import { all, table } from '@daita/relational';
+import { all, RelationalAdapter, table } from '@daita/relational';
 import { Person } from '../../models/person';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/keyword/all', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should select all fields', async () => {
     const result = await ctx.selectFirst({

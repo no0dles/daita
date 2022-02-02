@@ -35,3 +35,19 @@ export abstract class BaseRelationalAdapter {
     return { updatedRows: result.rowCount };
   }
 }
+
+export abstract class BaseRelationalTransactionAdapter {
+  abstract exec(sql: DeleteSql | UpdateSql<any> | InsertSql<any>): void;
+
+  delete(sql: DeleteSql): void {
+    this.exec(sql);
+  }
+
+  insert<T>(sql: InsertSql<T>): void {
+    this.exec(sql);
+  }
+
+  update<T>(sql: UpdateSql<T>): void {
+    this.exec(sql);
+  }
+}

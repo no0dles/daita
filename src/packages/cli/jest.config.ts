@@ -7,6 +7,8 @@ const config: Config.InitialOptions = {
   displayName: '@daita/cli',
   roots: ['<rootDir>/src/packages/cli'],
   modulePaths: ['src/packages/cli/src'],
+  projects: [],
+  coverageThreshold: undefined,
 };
 
 export default config;

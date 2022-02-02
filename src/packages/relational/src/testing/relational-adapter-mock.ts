@@ -1,11 +1,37 @@
 import { RelationalRawResult } from '../adapter/relational-raw-result';
-import { RelationalAdapter } from '../adapter/relational-adapter';
+import { RelationalAdapter, RelationalTransactionAdapter } from '../adapter/relational-adapter';
 import { RelationalAdapterImplementation } from '../adapter/relational-adapter-implementation';
 import { MockAdapterOptions } from './mock-adapter';
-import { BaseRelationalAdapter } from '../adapter/base-relational-adapter';
+import { BaseRelationalAdapter, BaseRelationalTransactionAdapter } from '../adapter/base-relational-adapter';
+import { DeleteSql, InsertSql, UpdateSql } from '../sql';
 
-export class RelationalAdapterMock<T = any> extends BaseRelationalAdapter implements RelationalAdapter<T> {
-  constructor(private handle: (sql: T) => RelationalRawResult | null) {
+export class RelationalTransactionAdapterMock<T extends InsertSql<any> & UpdateSql<any> & DeleteSql>
+  extends BaseRelationalTransactionAdapter
+  implements RelationalTransactionAdapter<T>
+{
+  constructor(private handle: (sql: any) => RelationalRawResult | null) {
+    super();
+  }
+
+  exec(sql: T): void {
+    this.handle(sql);
+  }
+
+  execRaw(sql: string, values: any[]): void {
+    throw new Error('not supported');
+  }
+
+  supportsQuery<S>(sql: S): this is RelationalTransactionAdapter<T | S> {
+    const result = this.handle(sql);
+    return result !== null && result !== undefined;
+  }
+}
+
+export class RelationalAdapterMock<T extends InsertSql<any> & UpdateSql<any> & DeleteSql>
+  extends BaseRelationalAdapter
+  implements RelationalAdapter<T>
+{
+  constructor(private handle: (sql: any) => RelationalRawResult | null) {
     super();
   }
 
@@ -21,8 +47,8 @@ export class RelationalAdapterMock<T = any> extends BaseRelationalAdapter implem
     throw new Error('unexpected sql: ' + JSON.stringify(sql));
   }
 
-  transaction<R>(action: (adapter: RelationalAdapter<T>) => Promise<R>): Promise<R> {
-    return action(new RelationalAdapterMock<T>(this.handle));
+  async transaction(action: (adapter: RelationalTransactionAdapter<T>) => void): Promise<void> {
+    return action(new RelationalTransactionAdapterMock<T>(this.handle));
   }
 
   close() {

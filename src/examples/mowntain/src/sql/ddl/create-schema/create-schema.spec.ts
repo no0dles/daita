@@ -1,15 +1,15 @@
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
+import { seedMowntainData } from '../../../testing';
+import { RelationalOrmAdapter } from '@daita/orm';
+import { RelationalAdapter } from '@daita/relational';
 
 describe('relational/sql/ddl/create-schema', () => {
-  const ctx = getMowntainTestContext({
-    createSchema: 'test',
-  });
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should create schema', async () => {
     await ctx.exec({

@@ -1,14 +1,15 @@
-import { CreateTableSql, table } from '@daita/relational';
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
+import { CreateTableSql, RelationalAdapter, table } from '@daita/relational';
+import { seedMowntainData } from '../../../testing';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/ddl/create-table', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should create person table', async () => {
     await ctx.exec({

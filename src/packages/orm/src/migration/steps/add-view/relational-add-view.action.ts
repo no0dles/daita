@@ -3,11 +3,11 @@ import { RelationalAddViewMigrationStep } from './relational-add-view.migration-
 import { RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 
-export async function addViewAction(
+export function addViewAction(
   client: RelationalTransactionAdapter<CreateViewSql<any>>,
   step: RelationalAddViewMigrationStep,
 ) {
-  await client.exec({
+  client.exec({
     createView: table(step.view, step.schema),
     as: step.query,
   });

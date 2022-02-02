@@ -3,7 +3,7 @@ import { hasAddTableStep, MigrationDescription } from '../../migration-descripti
 import { RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 
-export async function addTablePrimaryKeyAction(
+export function addTablePrimaryKeyAction(
   client: RelationalTransactionAdapter<any>,
   step: RelationalAddTablePrimaryKey,
   migration: MigrationDescription,

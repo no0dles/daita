@@ -1,16 +1,17 @@
-import { equal, field, table } from '@daita/relational';
+import { equal, field, RelationalAdapter, table } from '@daita/relational';
 import { AscentPerson } from '../../../models/ascent-person';
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
 import { Person } from '../../../models/person';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('delete', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should delete without conditions', async () => {
     const result = await ctx.delete({

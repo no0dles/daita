@@ -1,15 +1,16 @@
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
-import { field, table } from '@daita/relational';
+import { field, RelationalAdapter, table } from '@daita/relational';
 import { Mountain } from '../../../models/mountain';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('docs/example/sql/dml/select', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should return nested fields', async () => {
     const result = await ctx.select({

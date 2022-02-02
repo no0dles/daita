@@ -1,8 +1,8 @@
-import { all } from '@daita/relational';
+import { all, RelationalAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { RelationDoesNotExistsError } from '@daita/relational';
-import { migrate, MigrationTree } from '@daita/orm';
-import { cleanupTestContext, getContexts } from '../../../testing';
+import { migrate, MigrationTree, RelationalOrmAdapter } from '@daita/orm';
+import { cleanupTestContext, getContexts, getTestAdapter } from '../../../testing';
 
 describe('packages/orm/migration/steps/drop-table', () => {
   const migrationTree = new MigrationTree('', [
@@ -22,13 +22,15 @@ describe('packages/orm/migration/steps/drop-table', () => {
       after: 'init',
     },
   ]);
-  const ctx = getContexts();
+
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
+    ctx = await getTestAdapter();
     await migrate(ctx, migrationTree);
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should drop table', async () => {
     try {

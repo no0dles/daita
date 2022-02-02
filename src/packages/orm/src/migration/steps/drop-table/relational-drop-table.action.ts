@@ -3,11 +3,11 @@ import { RelationalDropTableMigrationStep } from './relational-drop-table.migrat
 import { RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 
-export async function dropTableAction(
+export function dropTableAction(
   client: RelationalTransactionAdapter<DropTableSql>,
   step: RelationalDropTableMigrationStep,
 ) {
-  await client.exec({
+  client.exec({
     dropTable: table(step.table, step.schema),
   });
 }

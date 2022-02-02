@@ -1,22 +1,23 @@
-import { table } from '@daita/relational';
+import { RelationalAdapter, table } from '@daita/relational';
 import { field } from '@daita/relational';
 import { equal } from '@daita/relational';
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../testing';
+import { seedMowntainData } from '../testing';
 import { Person } from '../models/person';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/adapter/relational-transaction-adapter/transaction', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should update in transaction', async () => {
     const newBirthday = new Date();
-    await ctx.transaction(async (trx) => {
-      await trx.update({
+    await ctx.transaction((trx) => {
+      trx.update({
         set: { birthday: newBirthday },
         update: table(Person),
         where: equal(field(Person, 'id'), '571cb303-bd0f-40a3-8404-9395471d03e3'),
@@ -35,8 +36,8 @@ describe('relational/adapter/relational-transaction-adapter/transaction', () => 
 
   it('should cancel transaction', async () => {
     try {
-      await ctx.transaction(async (trx) => {
-        await trx.update({
+      await ctx.transaction((trx) => {
+        trx.update({
           set: { firstName: 'Foo2' },
           update: table(Person),
           where: equal(field(Person, 'id'), '571cb303-bd0f-40a3-8404-9395471d03e3'),

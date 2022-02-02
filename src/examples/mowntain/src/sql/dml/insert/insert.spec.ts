@@ -1,16 +1,17 @@
-import { field, table } from '@daita/relational';
+import { field, RelationalAdapter, table } from '@daita/relational';
 import { Mountain } from '../../../models/mountain';
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
 import { Person } from '../../../models/person';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('insert', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should insert from object', async () => {
     const result = await ctx.insert({

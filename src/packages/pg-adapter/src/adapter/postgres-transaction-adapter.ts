@@ -2,7 +2,7 @@ import { Client, Pool, PoolClient, QueryResult, types } from 'pg';
 import { postgresFormatter } from '../formatters/postgres-formatter';
 import { PostgresFormatContext } from './postgres-format-context';
 import {
-  BaseRelationalAdapter,
+  BaseRelationalTransactionAdapter,
   DuplicateKeyError,
   RelationalTransactionAdapter,
   RelationDoesNotExistsError,
@@ -35,7 +35,11 @@ export async function mapError(
       }
       throw new DuplicateKeyError(e, sql, values, e.schema, e.table, e.constraint, obj);
     }
-    if (e.errno === -111 || e.message === 'Client has encountered a connection error and is not queryable') {
+    if (
+      e.errno === -61 ||
+      e.errno === -111 ||
+      e.message === 'Client has encountered a connection error and is not queryable'
+    ) {
       throw new ConnectionError('TODO', e); // TODO change after db connection string parse rewrite
     }
     if (e.code === '42P01') {
@@ -64,19 +68,29 @@ export function formatQuery(query: any) {
   return { sql, values: formatCtx.getValues() };
 }
 
-export class PostgresDataAdapter extends BaseRelationalAdapter implements RelationalTransactionAdapter<PostgresSql> {
+export class PostgresTransactionAdapter
+  extends BaseRelationalTransactionAdapter
+  implements RelationalTransactionAdapter<PostgresSql>
+{
   protected readonly logger = createLogger({ package: 'pg-adapter' });
+  private executions: (() => Promise<any>)[] = [];
 
   constructor(protected client: PoolClient) {
     super();
   }
 
-  async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
-    return execRaw(this.logger, this.client, sql, values);
+  execRaw(sql: string, values: any[]): void {
+    this.executions.push(() => execRaw(this.logger, this.client, sql, values));
   }
 
-  async exec(sql: any): Promise<RelationalRawResult> {
-    return exec(this.logger, this.client, sql);
+  exec(sql: any): void {
+    this.executions.push(() => exec(this.logger, this.client, sql));
+  }
+
+  async run(): Promise<void> {
+    for (const execution of this.executions) {
+      await execution();
+    }
   }
 
   async close(): Promise<void> {

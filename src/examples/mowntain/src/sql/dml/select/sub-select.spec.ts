@@ -1,15 +1,16 @@
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
-import { alias, field, max, subSelect, table } from '@daita/relational';
+import { alias, field, max, RelationalAdapter, subSelect, table } from '@daita/relational';
 import { Mountain } from '../../../models/mountain';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/dml/select/subquery', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
   it('should allow max with alias', async () => {
     const mountains = await ctx.select({

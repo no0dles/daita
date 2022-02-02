@@ -3,11 +3,11 @@ import { RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { DropIndexSql } from '@daita/relational';
 
-export async function dropIndexAction(
+export function dropIndexAction(
   client: RelationalTransactionAdapter<DropIndexSql>,
   step: RelationalDropIndexMigrationStep,
 ) {
-  await client.exec({
+  client.exec({
     dropIndex: step.name,
     on: table(step.table, step.schema),
   });

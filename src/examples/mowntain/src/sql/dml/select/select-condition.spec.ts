@@ -1,23 +1,23 @@
 import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
-import { and, desc, equal, field, isIn, min, notEqual, table } from '@daita/relational';
+import { and, desc, equal, field, isIn, min, notEqual, RelationalAdapter, table } from '@daita/relational';
 import { Mountain } from '../../../models/mountain';
+import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('docs/example/sql/dml/select', () => {
-  const ctx = getMowntainTestContext();
+  let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    await seedMowntainData(ctx);
+    ctx = await seedMowntainData();
   });
 
-  afterAll(async () => cleanupTestContext(ctx));
+  afterAll(async () => ctx.close());
 
-  // TODO postgres = '1', sqlite = 1
-  // it('should select 1', async () => {
-  //   const result = await ctx.select({
-  //     select: 1,
-  //   });
-  //   expect(result).toEqual([1]);
-  // });
+  it('should select 1', async () => {
+    const result = await ctx.select({
+      select: 1,
+    });
+    expect(result).toEqual([1]);
+  });
 
   it('should select min(Mountain, elevation)', async () => {
     const result = await ctx.selectFirst({

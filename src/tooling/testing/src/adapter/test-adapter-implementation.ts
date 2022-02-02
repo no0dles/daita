@@ -55,7 +55,7 @@ import { getMigrationContext, RelationalOrmAdapter } from '@daita/orm';
 //             username: 'test',
 //             disabled: false,
 //             userPoolId: 'test',
-//             password: '123456',
+//             password: '123456', // TODO hash
 //           });
 //           for (const role of options?.user?.roles || []) {
 //             await seedRoles(options.adapter, {

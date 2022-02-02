@@ -3,11 +3,11 @@ import { RelationalDropTableFieldMigrationStep } from './relational-drop-table-f
 import { RelationalTransactionAdapter } from '@daita/relational';
 import { AlterTableDropColumnSql } from '@daita/relational';
 
-export async function dropTableField(
+export function dropTableField(
   client: RelationalTransactionAdapter<AlterTableDropColumnSql>,
   step: RelationalDropTableFieldMigrationStep,
 ) {
-  await client.exec({
+  client.exec({
     alterTable: table(step.table, step.schema),
     drop: {
       column: step.fieldName,

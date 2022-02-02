@@ -12,7 +12,7 @@ import {
   SchemaTableReferenceDescription,
 } from '@daita/orm';
 
-export async function migrateTableAction(
+export function migrateTableAction(
   client: RelationalTransactionAdapter<InsertSql<any> | CreateTableSql | DropTableSql>,
   tableName: string,
   schema: string | undefined,
@@ -54,33 +54,33 @@ export async function migrateTableAction(
     };
     return refs;
   }, {});
-  await client.exec({
+  client.exec({
     createTable: tmpTbl,
     columns: newFields,
     foreignKey,
   });
-  await client.exec({
+  client.exec({
     into: tmpTbl,
     insert: {
       select: selectFields,
       from: tbl,
     },
   });
-  await client.exec({
+  client.exec({
     dropTable: tbl,
   });
-  await client.exec({
+  client.exec({
     createTable: tbl,
     columns: newFields,
   });
-  await client.exec({
+  client.exec({
     into: tbl,
     insert: {
       select: copyFields,
       from: tmpTbl,
     },
   });
-  await client.exec({
+  client.exec({
     dropTable: tmpTbl,
   });
 }

@@ -39,13 +39,7 @@ export class HttpAdapter extends BaseRelationalAdapter implements RelationalAdap
   }
 
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
-    const result = await this.http.json<RelationalRawResult>({
-      path: 'api/relational/execRaw',
-      data: { sql, values },
-      authorized: true,
-    });
-    handleErrorResponse(result);
-    return result.data;
+    throw new Error('not supported over http');
   }
 
   async exec(sql: any): Promise<RelationalRawResult> {
@@ -58,13 +52,11 @@ export class HttpAdapter extends BaseRelationalAdapter implements RelationalAdap
     return result.data;
   }
 
-  async transaction<T>(
-    action: (adapter: RelationalTransactionAdapter<any>) => Promise<T>,
-    timeout?: number,
-  ): Promise<T> {
+  async transaction(action: (adapter: RelationalTransactionAdapter<any>) => void): Promise<void> {
     const tid = randomString(12);
     const transaction = new HttpTransactionDataAdapter(tid, this.http);
-    return transaction.run(() => action(transaction), timeout);
+    action(transaction);
+    await transaction.send();
   }
 
   supportsQuery(sql: any): boolean {

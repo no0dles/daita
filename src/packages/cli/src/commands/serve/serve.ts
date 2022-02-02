@@ -1,19 +1,20 @@
-import { getContextFromConfig } from '../../utils/data-adapter';
+import { DaitaAuthorizationIssuerConfig, getContextFromConfig } from '../../utils/data-adapter';
 import { getSchemaInformation, getSchemaLocation } from '../../utils/path';
 import { getAuthorization } from '../../utils/authorization';
 import { watch, FSWatcher } from 'chokidar';
 import { applyMigration } from '../apply-migration/apply-migration';
 import { getProjectConfig } from '../../utils/config';
-import { createAuthApp } from '@daita/auth-server';
+import { createAuthApp, hashPassword } from '@daita/auth-server';
 import { createHttpServerApp } from '@daita/http-server';
 import { seedPoolUser, seedRoles, seedUserPool, seedUserPoolCors, seedUserRole } from '@daita/auth-server';
-import { Debouncer } from '@daita/common';
+import { Debouncer, ExcludeNonPrimitive } from '@daita/common';
 import { AstContext } from '../../ast/ast-context';
 import { Defer } from '@daita/common';
 import { createLogger } from '@daita/common';
 import { HttpServerOptions } from '@daita/http-server';
-import { authSchema } from '@daita/auth';
-import { migrate } from '@daita/orm';
+import { authSchema, Role, User, UserPool, UserRole } from '@daita/auth';
+import { migrate, RelationalOrmAdapter } from '@daita/orm';
+import { RelationalAdapter } from '@daita/relational';
 
 const logger = createLogger({ package: 'cli', command: 'serve' });
 export async function serve(opts: {
@@ -72,57 +73,7 @@ export async function serve(opts: {
     await migrate(adapter, authSchema);
 
     const userPools = contextConfig.authorization?.userPools || {};
-    for (const issuerKey of Object.keys(userPools)) {
-      const issuer = userPools[issuerKey];
-
-      // TODO remove userpools
-      await seedUserPool(adapter, {
-        id: issuerKey,
-        name: issuer.name || issuerKey,
-        accessTokenExpiresIn: issuer.accessTokenExpiresIn ?? 600,
-        algorithm: issuer.algorithm ?? 'RS256',
-        allowRegistration: issuer.allowRegistration ?? true,
-        checkPasswordForBreach: issuer.checkPasswordForBreach ?? false,
-        emailVerifyExpiresIn: issuer.emailVerifyExpiresIn ?? 3600,
-        refreshRefreshExpiresIn: issuer.refreshRefreshExpiresIn ?? 3600,
-      });
-
-      await seedUserPoolCors(adapter, issuerKey, issuer.cors || []);
-
-      // TODO remove roles
-      const roles = issuer.roles || {};
-      for (const roleKey of Object.keys(roles)) {
-        await seedRoles(adapter, {
-          name: roleKey,
-          description: roles[roleKey].description,
-          userPoolId: issuerKey,
-        });
-      }
-
-      // TODO remove users
-      const users = issuer.users || {};
-      for (const userKey of Object.keys(users)) {
-        const user = users[userKey];
-        await seedPoolUser(adapter, {
-          password: user.password,
-          username: userKey,
-          emailVerified: user.emailVerified ?? true,
-          phone: user.phone,
-          phoneVerified: user.phoneVerified ?? true,
-          userPoolId: issuerKey,
-          email: user.email,
-          disabled: user.disabled ?? false,
-        });
-        // TODO remove user roles
-        for (const role of user.roles || []) {
-          await seedUserRole(adapter, {
-            roleUserPoolId: issuerKey,
-            roleName: role,
-            userUsername: userKey,
-          });
-        }
-      }
-    }
+    await setupAuth(adapter, userPools);
 
     const authPort = opts.authPort || 8766;
     authServer = await createAuthApp(adapter, authPort);
@@ -154,4 +105,84 @@ export async function serve(opts: {
       return closedDefer.promise;
     },
   };
+}
+
+async function setupAuth(
+  adapter: RelationalAdapter<any> & RelationalOrmAdapter,
+  config: { [key: string]: DaitaAuthorizationIssuerConfig },
+) {
+  const userPools: ExcludeNonPrimitive<UserPool>[] = [];
+  const users: ExcludeNonPrimitive<User>[] = [];
+  const roles: ExcludeNonPrimitive<Role>[] = [];
+  const userRoles: ExcludeNonPrimitive<UserRole>[] = [];
+  const userPoolCors: { cors: string[]; userPoolId: string }[] = [];
+
+  for (const issuerKey of Object.keys(config)) {
+    const issuer = config[issuerKey];
+    userPools.push({
+      id: issuerKey,
+      name: issuer.name || issuerKey,
+      accessTokenExpiresIn: issuer.accessTokenExpiresIn ?? 600,
+      algorithm: issuer.algorithm ?? 'RS256',
+      allowRegistration: issuer.allowRegistration ?? true,
+      checkPasswordForBreach: issuer.checkPasswordForBreach ?? false,
+      emailVerifyExpiresIn: issuer.emailVerifyExpiresIn ?? 3600,
+      refreshRefreshExpiresIn: issuer.refreshRefreshExpiresIn ?? 3600,
+    });
+
+    userPoolCors.push({
+      cors: issuer.cors || [],
+      userPoolId: issuerKey,
+    });
+
+    const rolesMap = issuer.roles || {};
+    for (const roleKey of Object.keys(rolesMap)) {
+      roles.push({
+        name: roleKey,
+        description: rolesMap[roleKey].description,
+        userPoolId: issuerKey,
+      });
+    }
+
+    const userMap = issuer.users || {};
+    for (const userKey of Object.keys(userMap)) {
+      const user = userMap[userKey];
+      users.push({
+        password: await hashPassword(user.password),
+        username: userKey,
+        emailVerified: user.emailVerified ?? true,
+        phone: user.phone,
+        phoneVerified: user.phoneVerified ?? true,
+        userPoolId: issuerKey,
+        email: user.email,
+        disabled: user.disabled ?? false,
+      });
+
+      for (const role of user.roles || []) {
+        userRoles.push({
+          roleUserPoolId: issuerKey,
+          roleName: role,
+          userUsername: userKey,
+        });
+      }
+    }
+  }
+
+  await adapter.transaction((trx) => {
+    for (const userPool of userPools) {
+      seedUserPool(trx, userPool);
+    }
+    for (const cor of userPoolCors) {
+      seedUserPoolCors(trx, cor.userPoolId, cor.cors);
+    }
+    for (const role of roles) {
+      seedRoles(trx, role);
+    }
+    for (const user of users) {
+      seedPoolUser(trx, user);
+    }
+    for (const userRole of userRoles) {
+      seedUserRole(trx, userRole);
+    }
+  });
 }
