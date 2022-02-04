@@ -22,7 +22,7 @@ export async function mapError(
   try {
     const result = await run;
     return { rows: result.rows, rowCount: result.rowCount };
-  } catch (e) {
+  } catch (e: any) {
     logger.trace(e, { query: sql, queryValues: values });
     if (e.code === '23505') {
       const regex = /Key \((?<keys>.*?)\)=\((?<values>.*?)\) already exists./g;

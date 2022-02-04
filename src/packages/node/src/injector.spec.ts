@@ -76,7 +76,7 @@ describe('node/injector', () => {
     try {
       injector.get(SingleInstanceService);
       throw new Error('should not be successfull');
-    } catch (e) {
+    } catch (e: any) {
       expect(e.message).toBe('type TransientService is no single instance');
     }
   });

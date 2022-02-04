@@ -28,10 +28,11 @@ import { dropIndexAction } from '@daita/orm';
 import { dropTableForeignKeyAction } from '@daita/orm';
 import { addTableForeignKeyAction } from '@daita/orm';
 import { dropTablePrimaryKeyAction } from '@daita/orm';
-import { dropDatabase, ensureDatabaseExists, parseConnectionString } from '../postgres.util';
+import { parseConnectionString } from '../postgres.util';
 import { Pool, PoolClient, types } from 'pg';
 import { exec, execRaw, PostgresTransactionAdapter } from './postgres-transaction-adapter';
 import { postgresFormatter } from '../formatters';
+import { isPostgresError } from './postgres-error';
 
 export interface PostgresNotificationSubscriber {
   (msg: string | undefined): void;
@@ -272,7 +273,7 @@ export class PostgresMigrationAdapter
       await adapter.run();
       await client.query('COMMIT');
     } catch (e) {
-      if (e.errno === -111) {
+      if (isPostgresError(e) && e.errno === -111) {
         throw new ConnectionError('TODO', e); //TODO after connection string parsing
       }
 

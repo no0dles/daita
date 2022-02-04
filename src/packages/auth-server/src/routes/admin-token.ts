@@ -11,7 +11,7 @@ import { User, UserPoolUser, UserToken } from '@daita/auth';
 export function adminTokenRoute(client: RelationalAdapter<any>) {
   const router = Router({ mergeParams: true });
 
-  router.post('/:token', async (req, res, next) => {
+  router.post<{ userPoolId: string; token: string }>('/:token', async (req, res, next) => {
     try {
       const hashedToken = await getSha1(req.params.token);
       const token = await client.selectFirst({

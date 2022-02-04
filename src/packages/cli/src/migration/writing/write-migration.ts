@@ -203,7 +203,7 @@ export function writeMigration(
       false,
       undefined,
       factory.createNamedImports([
-        factory.createImportSpecifier(undefined, factory.createIdentifier('MigrationDescription')),
+        factory.createImportSpecifier(false, undefined, factory.createIdentifier('MigrationDescription')),
       ]),
     ),
     factory.createStringLiteral('@daita/orm'),

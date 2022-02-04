@@ -15,7 +15,7 @@ export class AstEnumDeclaration implements AstNode {
     return getName(this.node.name, 'enum declaration');
   }
 
-  get type() {
+  get type(): AstType {
     const types: AstType[] = [];
     for (const member of this.members) {
       const memberType = member.type;

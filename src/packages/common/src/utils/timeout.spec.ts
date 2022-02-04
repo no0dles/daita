@@ -7,7 +7,7 @@ describe('common/utils/timeout', () => {
     try {
       await handleTimeout(() => sleep(1000), 500);
       throw new Error('no timeout');
-    } catch (e) {
+    } catch (e: any) {
       expect(e.message).not.toEqual(' no timeout');
       expect(e).toBeInstanceOf(TimeoutError);
     }
@@ -16,7 +16,7 @@ describe('common/utils/timeout', () => {
   it('should not throw timeout when it ends before', async () => {
     try {
       await handleTimeout(() => sleep(200), 500);
-    } catch (e) {
+    } catch (e: any) {
       expect(e).not.toBeInstanceOf(TimeoutError);
     }
   });
@@ -26,7 +26,7 @@ describe('common/utils/timeout', () => {
       await handleTimeout(async () => {
         throw new Error('test');
       }, 500);
-    } catch (e) {
+    } catch (e: any) {
       expect(e.message).toEqual('test');
       expect(e).not.toBeInstanceOf(TimeoutError);
     }

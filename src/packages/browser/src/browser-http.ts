@@ -80,10 +80,12 @@ export class BrowserHttp implements Http {
         },
       };
     } catch (e) {
-      if (e.response && e.response.status === 500) {
+      if (isHttpError(e) && e.response.status === 500) {
         throw new Error(e.response.data.message);
       }
       throw e;
     }
   }
 }
+
+const isHttpError = (val: any): val is { response: { status: number; data: any } } => !!val.response;

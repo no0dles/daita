@@ -27,7 +27,7 @@ describe('common/utils/lock', () => {
         throw new Error('err');
       });
       throw new Error('should not be called');
-    } catch (e) {
+    } catch (e: any) {
       expect(e.message).toEqual('err');
     }
   });

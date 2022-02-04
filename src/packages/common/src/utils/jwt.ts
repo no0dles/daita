@@ -25,7 +25,11 @@ function parse(token: string, partIndex: number) {
       content = Buffer.from(tokenPart, 'base64').toString();
     }
   } catch (e) {
-    throw new Error('invalid format: ' + e.message);
+    if (e instanceof Error) {
+      throw new Error('invalid format: ' + e.message);
+    } else {
+      throw new Error(`invalid format: ${e}`);
+    }
   }
   return JSON.parse(content);
 }

@@ -54,7 +54,7 @@ export function jwtAuth(providers: HttpServerAuthorizationProvider[]) {
       });
       next();
     } catch (e) {
-      if (e.message.startsWith('invalid format')) {
+      if (e instanceof Error && e.message.startsWith('invalid format')) {
         return next(new HttpError(400, `invalid token format`));
       }
       next(e);

@@ -123,7 +123,7 @@ export class MariadbRelationalMigrationAdapter
         rows: result instanceof Array ? [...result] : [],
         rowCount: result instanceof Array ? result.length : result.affectedRows,
       };
-    } catch (e) {
+    } catch (e: any) {
       if (e.errno === 1146) {
         const regex1 = /Table '(?<schema>[^.]+)\.(?<relation>[^']*?)' doesn't exist/g;
         const match1 = regex1.exec(e.message);

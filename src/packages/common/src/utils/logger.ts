@@ -7,7 +7,7 @@ export interface Logger {
   info(message: string, props?: { [key: string]: any }): void;
   warn(message: string, props?: { [key: string]: any }): void;
   error(message: string, props?: { [key: string]: any }): void;
-  error(err: Error, props?: { [key: string]: any }): void;
+  error(err: Error | unknown, props?: { [key: string]: any }): void;
 }
 
 export function createLogger(props?: { [key: string]: any }): Logger {

@@ -28,7 +28,7 @@ export class BrowserAuth implements TokenIssuer {
         this.refreshToken = refreshToken;
         this.accessToken = accessToken;
       }
-    } catch (e) {
+    } catch (e: any) {
       logger.error(e.message);
       this.logout();
     }

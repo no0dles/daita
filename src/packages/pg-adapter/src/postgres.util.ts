@@ -93,7 +93,7 @@ export async function ensureDatabaseExists(connectionStringOrOptions: string | P
   const client = await getClient(config);
   try {
     await client.query(`CREATE DATABASE "${config.database}";`);
-  } catch (err) {
+  } catch (err: any) {
     //42501 permission denied to create database
     //42P04 already exists
     if (err.code !== '42P04' && err.code !== '42501') {
@@ -114,7 +114,7 @@ export async function dropDatabase(connectionStringOrOptions: string | ParsedCon
   const client = await getClient(config);
   try {
     await client.query(`DROP DATABASE "${config.database}";`);
-  } catch (err) {
+  } catch (err: any) {
     if (err.code !== '3D000') {
       throw err;
     }

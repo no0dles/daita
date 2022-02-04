@@ -28,7 +28,7 @@ export function userPoolCors(
         origin: urls,
       });
     } catch (e) {
-      callback(e, undefined);
+      callback(e as Error, undefined);
     }
   });
 }

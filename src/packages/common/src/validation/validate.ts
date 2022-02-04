@@ -151,6 +151,10 @@ export function* validate(type: Type, value: any, path: string[] = []): Generato
       failNever(type, ValidateUnknownTypeErrorMessage);
     }
   } catch (e) {
-    yield { message: e.message, path };
+    if (e instanceof Error) {
+      yield { message: e.message, path };
+    } else {
+      yield { message: `${e}`, path };
+    }
   }
 }

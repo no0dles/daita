@@ -45,7 +45,7 @@ describe('relational/adapter/relational-transaction-adapter/transaction', () => 
         throw new Error('abort');
       });
       throw new Error('should not be successful');
-    } catch (e) {
+    } catch (e: any) {
       expect(e.message).toEqual('abort');
     }
     const person = await ctx.selectFirst({
