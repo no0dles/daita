@@ -1,4 +1,4 @@
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
+import { seedMowntainData } from '../../../testing';
 import { Mountain } from '../../../models/mountain';
 import { count, equal, field, greaterThan, join, RelationalAdapter, table } from '@daita/relational';
 import { Canton } from '../../../models/canton';

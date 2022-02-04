@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-import { Defer, parseJwtPayload } from '@daita/common';
+import { parseJwtPayload } from '@daita/common';
 
 @Injectable({
   providedIn: 'root',
@@ -89,6 +89,11 @@ export class AuthService {
       return this.refreshDefer;
     }
 
+    const accessToken = this.accessToken;
+    if (!accessToken) {
+      throw new Error('cant refresh without current access token');
+    }
+
     try {
       this.refreshDefer = new Promise<boolean>((resolve, reject) => {
         resolve(
@@ -96,7 +101,7 @@ export class AuthService {
             try {
               const response = await this.http
                 .post<{ refresh_token: string; access_token: string }>(
-                  `${environment.apiUrl}/${this.accessToken!.iss}/refresh`,
+                  `${environment.apiUrl}/${accessToken.iss}/refresh`,
                   {
                     refreshToken: this.refreshToken,
                   },

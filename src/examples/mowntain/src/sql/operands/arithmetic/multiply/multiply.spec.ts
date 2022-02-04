@@ -1,6 +1,6 @@
 import { field, multiply, RelationalAdapter, table } from '@daita/relational';
 import { Mountain } from '../../../../models/mountain';
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
+import { seedMowntainData } from '../../../../testing';
 import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/operands/multiply', () => {

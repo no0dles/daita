@@ -10,21 +10,27 @@ import { DaitaContract } from './contract';
 import { DaitaContractChange } from './contract-change';
 import { Iwent } from '../iwent';
 import { json } from '@daita/relational';
-import { RelationalStorage } from '@daita/relational';
 
 export class ContractStorage {
-  private storage: RelationalStorage;
+  private initialized = false;
+
   constructor(
     private client: RelationalAdapter<InsertSql<any> | CreateTableSql | SelectSql<any>>,
     private options: StorageOptions,
-  ) {
-    this.storage = new RelationalStorage(async () => {
+  ) {}
+
+  private async ensureInitialized() {
+    if (this.initialized) {
+      return;
+    }
+
+    await this.client.transaction((trx) => {
       const createSchema: CreateSchemaSql = { createSchema: 'daita', ifNotExists: true };
-      if (client.supportsQuery(createSchema)) {
-        await client.exec(createSchema);
+      if (trx.supportsQuery(createSchema)) {
+        trx.exec(createSchema);
       }
 
-      await client.exec({
+      trx.exec({
         createTable: table(DaitaEvent),
         ifNotExists: true,
         columns: [
@@ -63,7 +69,7 @@ export class ContractStorage {
           },
         ],
       });
-      await client.exec({
+      trx.exec({
         createTable: table(DaitaContract),
         ifNotExists: true,
         columns: [
@@ -81,7 +87,7 @@ export class ContractStorage {
           },
         ],
       });
-      await client.exec({
+      trx.exec({
         createTable: table(DaitaContractChange),
         ifNotExists: true,
         columns: [
@@ -110,10 +116,11 @@ export class ContractStorage {
         },
       });
     });
+    this.initialized = true;
   }
 
   async addEvent(event: Iwent) {
-    await this.storage.ensureInitialized();
+    await this.ensureInitialized();
     await this.client.exec({
       into: table(DaitaEvent),
       insert: {
@@ -128,7 +135,7 @@ export class ContractStorage {
   }
 
   async getEvent(id: string) {
-    await this.storage.ensureInitialized();
+    await this.ensureInitialized();
     return this.client.selectFirst<Iwent>({
       select: {
         id: field(DaitaEvent, 'id'),
@@ -144,7 +151,7 @@ export class ContractStorage {
   }
 
   async getContract(): Promise<IwentContract[]> {
-    await this.storage.ensureInitialized();
+    await this.ensureInitialized();
     const steps = await this.client.select({
       select: {
         id: field(DaitaContract, 'id'),
@@ -169,7 +176,7 @@ export class ContractStorage {
   }
 
   async addContract(contract: IwentContract) {
-    await this.storage.ensureInitialized();
+    await this.ensureInitialized();
     await this.client.exec({
       insert: { id: contract.id, after: contract.after },
       into: table(DaitaContract),

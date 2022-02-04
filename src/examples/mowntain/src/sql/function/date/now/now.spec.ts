@@ -1,6 +1,7 @@
 import { now, RelationalAdapter } from '@daita/relational';
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
+import { seedMowntainData } from '../../../../testing';
 import { RelationalOrmAdapter } from '@daita/orm';
+import { isDefined } from '@daita/common';
 
 describe('relational/sql/function/date/now', () => {
   let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
@@ -17,8 +18,7 @@ describe('relational/sql/function/date/now', () => {
         date: now(),
       },
     });
-    expect(result).not.toBeNull();
-    expect(result).not.toBeUndefined();
-    expect(result!.date).toBeInstanceOf(Date);
+    isDefined(result);
+    expect(result.date).toBeInstanceOf(Date);
   });
 });

@@ -1,12 +1,4 @@
-import {
-  BooleanLiteral,
-  createKeywordTypeNode,
-  NumericLiteral,
-  StringLiteral,
-  SyntaxKind,
-  Node,
-  factory,
-} from 'typescript';
+import { BooleanLiteral, NumericLiteral, StringLiteral, SyntaxKind, Node, factory } from 'typescript';
 import { AstKeywordType } from './ast-keyword-type';
 import { AstNode } from './ast-node';
 import { failNever } from '@daita/common';

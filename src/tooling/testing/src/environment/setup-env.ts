@@ -29,7 +29,7 @@ export function setupEnv(
 
   function exists(dir: string, file?: RegExp): Promise<boolean> {
     return new Promise<boolean>((resolve) => {
-      fs.stat(path.join(resultPath, dir), (err, stats) => {
+      fs.stat(path.join(resultPath, dir), (err) => {
         if (err) {
           resolve(false);
           //assert.fail(null, dir, `expected path ${dir} to exist`);

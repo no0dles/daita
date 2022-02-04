@@ -1,4 +1,4 @@
-import { Client, Pool, PoolClient, QueryResult, types } from 'pg';
+import { Client, Pool, PoolClient, QueryResult } from 'pg';
 import { postgresFormatter } from '../formatters/postgres-formatter';
 import { PostgresFormatContext } from './postgres-format-context';
 import {

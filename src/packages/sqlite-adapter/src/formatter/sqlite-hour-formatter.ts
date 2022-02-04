@@ -5,7 +5,6 @@ import {
   FormatType,
   isHourDescription,
   HourDescription,
-  TableDescription,
 } from '@daita/relational';
 
 export class SqliteHourFormatter implements FormatHandle<HourDescription> {

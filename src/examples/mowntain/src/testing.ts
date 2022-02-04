@@ -5,7 +5,7 @@ import { Canton } from './models/canton';
 import { json, RelationalAdapter, table } from '@daita/relational';
 import { Person } from './models/person';
 import { AscentPerson } from './models/ascent-person';
-import { getMigrationContext, MigrationTree, RelationalOrmAdapter } from '@daita/orm';
+import { getMigrationContext, RelationalOrmAdapter } from '@daita/orm';
 import { schema } from './schema';
 import { getPostgresTestAdapter } from '@daita/testing';
 

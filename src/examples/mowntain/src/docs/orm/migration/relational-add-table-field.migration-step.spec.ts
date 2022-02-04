@@ -1,7 +1,7 @@
 import { RelationalAdapter, table } from '@daita/relational';
 import { all } from '@daita/relational';
 import { migrate, MigrationTree, RelationalOrmAdapter } from '@daita/orm';
-import { cleanupTestContext, getContexts, getTestAdapter } from '../../../testing';
+import { getTestAdapter } from '../../../testing';
 
 describe('packages/orm/migration/steps/add-table-field', () => {
   const migrationTree = new MigrationTree('', [

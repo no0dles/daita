@@ -1,9 +1,4 @@
-import { typeTest, validateType } from './validate.test';
-import { ValidateBooleanErrorMessage, ValidateStringErrorMessage } from './validate';
-import { isBackwardCompatible } from './backward-compatible';
-import { Type } from './type';
-import { BooleanType } from './boolean-type';
-import { AnyType } from './any-type';
+import { typeTest } from './validate.test';
 
 describe('type/any-type', () => {
   typeTest({

@@ -6,7 +6,7 @@ import {
   RelationalTransactionAdapter,
 } from '@daita/relational';
 import { handleErrorResponse } from './error-handling';
-import { randomString, Resolvable } from '@daita/common';
+import { randomString } from '@daita/common';
 import { HttpTransactionDataAdapter } from './http-transaction-data-adapter';
 import { MigrationDescription, MigrationPlan, RelationalOrmAdapter } from '@daita/orm';
 

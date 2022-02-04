@@ -4,9 +4,7 @@ import {
   Formatter,
   FormatType,
   isMinuteDescription,
-  isSecondDescription,
   MinuteDescription,
-  SecondDescription,
 } from '@daita/relational';
 
 export class SqliteMinuteFormatter implements FormatHandle<MinuteDescription> {

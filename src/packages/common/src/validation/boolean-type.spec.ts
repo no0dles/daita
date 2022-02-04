@@ -1,5 +1,5 @@
 import { validateType } from './validate.test';
-import { ValidateBooleanErrorMessage, ValidateStringErrorMessage } from './validate';
+import { ValidateBooleanErrorMessage } from './validate';
 import { isBackwardCompatible } from './backward-compatible';
 import { Type } from './type';
 import { BooleanType } from './boolean-type';

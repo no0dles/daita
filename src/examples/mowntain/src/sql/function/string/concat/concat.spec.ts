@@ -1,5 +1,5 @@
 import { concat, field, RelationalAdapter, table } from '@daita/relational';
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
+import { seedMowntainData } from '../../../../testing';
 import { Person } from '../../../../models/person';
 import { RelationalOrmAdapter } from '@daita/orm';
 

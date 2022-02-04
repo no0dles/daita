@@ -22,7 +22,7 @@ export abstract class BaseRelationalAdapter {
     return mapResult(sql, result.rows);
   }
 
-  async selectFirst<T>(sql: SelectSql<T>): Promise<T> {
+  async selectFirst<T>(sql: SelectSql<T>): Promise<T | null> {
     const clonedSql = deepClone(sql);
     clonedSql.limit = 1;
     const result = await this.exec(clonedSql);

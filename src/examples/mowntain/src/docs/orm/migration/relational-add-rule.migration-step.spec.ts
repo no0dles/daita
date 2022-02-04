@@ -1,7 +1,7 @@
 import { allow, authorized, RelationalAdapter } from '@daita/relational';
 import { now } from '@daita/relational';
 import { authorizable, createMigrationTree, migrate, RelationalOrmAdapter } from '@daita/orm';
-import { cleanupTestContext, getContexts, getTestAdapter } from '../../../testing';
+import { getTestAdapter } from '../../../testing';
 
 describe('packages/orm/migration/steps/relational-add-rule', () => {
   const migrationTree = createMigrationTree([

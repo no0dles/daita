@@ -1,6 +1,6 @@
 import { Mountain } from '../../../../models/mountain';
 import { field, greatest, RelationalAdapter, table } from '@daita/relational';
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../../testing';
+import { seedMowntainData } from '../../../../testing';
 import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('relational/sql/function/number/greatest', () => {

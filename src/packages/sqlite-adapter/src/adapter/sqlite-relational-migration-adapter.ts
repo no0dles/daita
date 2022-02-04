@@ -1,7 +1,7 @@
 import { SqliteSql } from '../sql/sqlite-sql';
 import { MigrationStorage, RelationalOrmAdapter } from '@daita/orm';
 import { MigrationPlan } from '@daita/orm';
-import { createLogger, failNever, handleTimeout, parseJson } from '@daita/common';
+import { createLogger, failNever, parseJson } from '@daita/common';
 import { MigrationDescription } from '@daita/orm';
 import { addTableAction } from '@daita/orm';
 import { addTableFieldAction } from '@daita/orm';

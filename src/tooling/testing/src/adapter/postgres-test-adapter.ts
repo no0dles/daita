@@ -1,6 +1,5 @@
 import {
   execCommand,
-  getDynamicPort,
   getFreeTestPort,
   removeContainer,
   runContainer,

@@ -16,12 +16,15 @@ import {
 } from '@daita/orm';
 import { all } from '@daita/relational';
 import { table } from '@daita/relational';
+import { isDefined } from '@daita/common';
 
 describe('parse-relational-schema', () => {
   const context = new AstContext();
   const sourceFile = context.get(path.join(__dirname, './parse-relational-schema.test.ts'));
-  const schemaVariable = sourceFile!.block.variable('schema');
-  const parsedSchema = parseRelationalSchema(schemaVariable!);
+  isDefined(sourceFile);
+  const schemaVariable = sourceFile.block.variable('schema');
+  isDefined(schemaVariable);
+  const parsedSchema = parseRelationalSchema(schemaVariable);
 
   it('should parse schema', () => {
     expect(schemaVariable).toBeDefined();

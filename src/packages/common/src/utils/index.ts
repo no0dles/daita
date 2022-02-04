@@ -26,3 +26,4 @@ export * from './traverse-object';
 export * from './timeout';
 export * from './timeout-error';
 export * from './countdown';
+export * from './is-defined';

@@ -1,6 +1,5 @@
 import { TableDescription } from '../../keyword/table/table-description';
 import { isKind } from '@daita/common';
-import { table } from '../../..';
 
 export interface CreateTableColumn {
   name: string;

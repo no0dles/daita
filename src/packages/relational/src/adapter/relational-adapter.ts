@@ -11,7 +11,7 @@ export interface RelationalAdapter<TQuery> {
   update<T>(sql: UpdateSql<T>): Promise<RelationalUpdateResult>;
   insert<T>(sql: InsertSql<T>): Promise<RelationalInsertResult>;
   select<T>(sql: SelectSql<T>): Promise<T[]>;
-  selectFirst<T>(sql: SelectSql<T>): Promise<T>;
+  selectFirst<T>(sql: SelectSql<T>): Promise<T | null>;
   close(): Promise<void>;
   transaction(action: (adapter: RelationalTransactionAdapter<TQuery>) => void): Promise<void>;
 }

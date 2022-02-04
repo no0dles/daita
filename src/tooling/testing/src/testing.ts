@@ -1,7 +1,4 @@
-import { DefaultConstructable, ExcludeNonPrimitive } from '@daita/common';
-import { MigrationContext } from '@daita/orm';
-import { RelationalAdapter, RelationalAdapterImplementation, table } from '@daita/relational';
-
+export {};
 // export interface TestContext {
 //   seed<T>(table: DefaultConstructable<T>, value: ExcludeNonPrimitive<T> | ExcludeNonPrimitive<T>[]): TestContext;
 //

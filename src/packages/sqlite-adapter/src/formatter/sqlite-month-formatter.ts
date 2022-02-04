@@ -5,7 +5,6 @@ import {
   FormatType,
   isMonthDescription,
   MonthDescription,
-  TableDescription,
 } from '@daita/relational';
 
 export class SqliteMonthFormatter implements FormatHandle<MonthDescription> {

@@ -1,4 +1,4 @@
-import { FieldDescription, isFieldDescription } from '../../../keyword/field/field-description';
+import { FieldDescription } from '../../../keyword/field/field-description';
 import { isExactKind } from '@daita/common';
 import { ValueType } from '../../../operands';
 

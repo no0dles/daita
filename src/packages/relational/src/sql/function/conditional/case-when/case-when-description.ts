@@ -1,5 +1,5 @@
 import { isExactKind } from '@daita/common';
-import { ConditionDescription, ValueType } from '../../../operands';
+import { ConditionDescription } from '../../../operands';
 
 export interface CaseWhenDescription {
   caseWhen: { whens: { condition: ConditionDescription; value: any }[]; else?: any };

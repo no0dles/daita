@@ -1,11 +1,8 @@
 import { BaseRelationalTransactionAdapter, RelationalTransactionAdapter } from '@daita/relational';
 import { Sql } from '@daita/relational';
-import { Pool, PoolConnection } from 'mariadb';
 import { MariadbSql } from '../sql/mariadb-sql';
 import { mariadbFormatter } from '../formatter/mariadb-formatter';
 import { MariadbFormatContext } from '../formatter/mariadb-format-context';
-import { RelationDoesNotExistsError } from '@daita/relational';
-import { parseJson } from '@daita/common';
 
 export interface Execution {
   sql: string;

@@ -1,10 +1,8 @@
 import { serve } from './serve';
 import { getPostgresDb, PostgresDb } from '@daita/testing';
-import { Resolvable } from '@daita/common';
 import { field, table } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { setupEnv } from '@daita/testing';
-import { Http } from '@daita/http-interface';
 import { NodeHttp } from '@daita/node';
 import { schemaRoot } from '../../testing';
 import { HttpAdapter } from '@daita/http-adapter';

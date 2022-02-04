@@ -6,6 +6,7 @@ import { table } from '../sql/keyword/table/table';
 import { equal } from '../sql/operands/comparison/equal/equal';
 import { field } from '../sql/keyword/field/field';
 import { requestContext } from './function/request-context';
+import { isDefined } from '@daita/common';
 
 describe('relational/permission', () => {
   it('should', async () => {
@@ -28,9 +29,8 @@ describe('relational/permission', () => {
         where: equal(field(table('user'), 'test'), 'a'),
       },
     );
-    expect(result).not.toBeNull();
-    expect(result).not.toBeUndefined();
-    expect(result!.id).toBe('a');
-    expect(result!.type).toBe('allow');
+    isDefined(result);
+    expect(result.id).toBe('a');
+    expect(result.type).toBe('allow');
   });
 });

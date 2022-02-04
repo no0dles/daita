@@ -1,6 +1,5 @@
 import path from 'path';
 import os from 'os';
-import { promises as fs } from 'fs';
 import { randomString } from '@daita/common';
 import { SqliteSql, SqliteRelationalMigrationAdapter, adapter } from '@daita/sqlite-adapter';
 import { RelationalAdapterImplementation } from '@daita/relational';

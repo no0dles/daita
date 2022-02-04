@@ -3,7 +3,6 @@ import {
   addExistingSeed,
   addIndexToTable,
   addRuleToSchema,
-  addSeed,
   addTableField,
   addTableReference,
   addTableToSchema,

@@ -1,5 +1,5 @@
 import { validateType } from './validate.test';
-import { ValidateStringErrorMessage, ValidateUndefinedErrorMessage } from './validate';
+import { ValidateUndefinedErrorMessage } from './validate';
 import { isBackwardCompatible } from './backward-compatible';
 import { Type } from './type';
 import { UndefinedType } from './undefined-type';

@@ -1,4 +1,4 @@
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
+import { seedMowntainData } from '../../../testing';
 import { field, RelationalAdapter, table } from '@daita/relational';
 import { Mountain } from '../../../models/mountain';
 import { RelationalOrmAdapter } from '@daita/orm';

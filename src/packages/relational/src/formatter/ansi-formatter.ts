@@ -34,7 +34,7 @@ import { AddFormatter } from '../sql/operands/arithmetic/add/add-formatter';
 import { SubtractFormatter } from '../sql/operands/arithmetic/substract/subtract-formatter';
 import { MultiplyFormatter } from '../sql/operands/arithmetic/multiply/multiply-formatter';
 import { DivideFormatter } from '../sql/operands/arithmetic/divide/divide-formatter';
-import { CaseWhenFormatter, CeilFormatter, CoalesceFormatter, IsNotNullFormatter, RoundFormatter } from '../sql';
+import { CaseWhenFormatter, CoalesceFormatter, IsNotNullFormatter, RoundFormatter } from '../sql';
 
 export const ansiFormatter = new Formatter();
 

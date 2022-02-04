@@ -1,4 +1,4 @@
-import { isLockTableSql, LockTableSql } from '@daita/relational';
+import { isLockTableSql } from '@daita/relational';
 import { FormatContext } from '@daita/relational';
 import { FormatHandle, Formatter, FormatType } from '@daita/relational';
 import { MariadbLockTableSql } from '../sql/mariadb-lock-table';

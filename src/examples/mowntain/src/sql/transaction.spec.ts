@@ -4,6 +4,7 @@ import { equal } from '@daita/relational';
 import { seedMowntainData } from '../testing';
 import { Person } from '../models/person';
 import { RelationalOrmAdapter } from '@daita/orm';
+import { isDefined } from '@daita/common';
 
 describe('relational/adapter/relational-transaction-adapter/transaction', () => {
   let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
@@ -28,10 +29,9 @@ describe('relational/adapter/relational-transaction-adapter/transaction', () => 
       from: table(Person),
       where: equal(field(Person, 'id'), '571cb303-bd0f-40a3-8404-9395471d03e3'),
     });
-    expect(person).not.toBeUndefined();
-    expect(person).not.toBeNull();
-    expect(person!.birthday).toBeInstanceOf(Date);
-    expect(person!.birthday).toEqual(newBirthday);
+    isDefined(person);
+    expect(person.birthday).toBeInstanceOf(Date);
+    expect(person.birthday).toEqual(newBirthday);
   });
 
   it('should cancel transaction', async () => {
@@ -53,8 +53,7 @@ describe('relational/adapter/relational-transaction-adapter/transaction', () => 
       from: table(Person),
       where: equal(field(Person, 'id'), '571cb303-bd0f-40a3-8404-9395471d03e3'),
     });
-    expect(person).not.toBeUndefined();
-    expect(person).not.toBeNull();
-    expect(person!.firstName).toEqual('Edward');
+    isDefined(person);
+    expect(person.firstName).toEqual('Edward');
   });
 });

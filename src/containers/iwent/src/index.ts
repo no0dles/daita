@@ -6,7 +6,6 @@ import { adapter as pgAdapter } from '@daita/pg-adapter';
 
 const DATABASE_URL = getEnvironmentVariable('DATABASE_URL', './daita.db');
 const PORT = getNumberEnvironmentVariable('PORT', 3000);
-const SCHEMA_NAME = getEnvironmentVariable('SCHEMA_NAME', 'default');
 const APP_PATH = getEnvironmentVariable('APP_PATH');
 
 const logger = createLogger({ container: 'iwent' });

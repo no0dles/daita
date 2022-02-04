@@ -9,6 +9,7 @@ import { authSchema, User, UserEmailVerify, UserRefreshToken } from '@daita/auth
 import { NodeHttp } from '@daita/node';
 import { createAuthApp, createMetricsApp } from '@daita/auth-server';
 import { migrate } from '@daita/orm';
+import { isDefined } from '@daita/common';
 
 describe('app', () => {
   let app: HttpServerApp;
@@ -71,10 +72,11 @@ describe('app', () => {
       select: all(UserRefreshToken),
       from: table(UserRefreshToken),
     });
+    isDefined(token);
     const res = await http.json({
       path: '/default/refresh',
       data: {
-        refreshToken: token!.token,
+        refreshToken: token.token,
       },
     });
     expect(res.statusCode).toEqual(200);
@@ -102,6 +104,7 @@ describe('app', () => {
         select: all(UserEmailVerify),
         from: table(UserEmailVerify),
       });
+      isDefined(firstVerify);
 
       const res = await http.json({
         path: '/default/resend',
@@ -118,12 +121,13 @@ describe('app', () => {
       const secondVerify = await adapter.selectFirst({
         select: all(UserEmailVerify),
         from: table(UserEmailVerify),
-        where: notEqual(field(UserEmailVerify, 'code'), firstVerify!.code),
+        where: notEqual(field(UserEmailVerify, 'code'), firstVerify.code),
       });
 
-      expect(firstVerify!.code).not.toBe(secondVerify!.code);
-      expect(firstVerify!.email).toBe(secondVerify!.email);
-      expect(firstVerify!.userUsername).toBe(secondVerify!.userUsername);
+      isDefined(secondVerify);
+      expect(firstVerify.code).not.toBe(secondVerify.code);
+      expect(firstVerify.email).toBe(secondVerify.email);
+      expect(firstVerify.userUsername).toBe(secondVerify.userUsername);
     });
 
     it('should create token', async () => {
@@ -149,10 +153,11 @@ describe('app', () => {
       select: all(UserEmailVerify),
       from: table(UserEmailVerify),
     });
+    isDefined(verify);
     const res = await http.get({
       path: '/default/verify',
       query: {
-        code: verify!.code,
+        code: verify.code,
       },
     });
     expect(res.statusCode).toEqual(200);
@@ -160,16 +165,18 @@ describe('app', () => {
     const verifyEmail = await adapter.selectFirst({
       select: all(UserEmailVerify),
       from: table(UserEmailVerify),
-      where: equal(field(UserEmailVerify, 'code'), verify!.code),
+      where: equal(field(UserEmailVerify, 'code'), verify.code),
     });
-    expect(verifyEmail!.verifiedAt).not.toBeNull();
-    expect(verifyEmail!.verifiedAt).not.toBeUndefined();
+    isDefined(verifyEmail);
+    expect(verifyEmail.verifiedAt).not.toBeNull();
+    expect(verifyEmail.verifiedAt).not.toBeUndefined();
 
     const user = await adapter.selectFirst({
       select: all(User),
       from: table(User),
     });
-    expect(user!.emailVerified).toBeTruthy();
+    isDefined(user);
+    expect(user.emailVerified).toBeTruthy();
   });
 
   it('should get metrics', async () => {
@@ -181,7 +188,7 @@ describe('app', () => {
 
     const lines = res.data.split('\n');
     const registrations = lines.find((l) => l.startsWith('auth_success_registrations'));
-    expect(registrations).not.toBeUndefined();
-    expect(parseInt(registrations!.split(' ')[1])).toBeGreaterThan(0);
+    isDefined(registrations);
+    expect(parseInt(registrations.split(' ')[1])).toBeGreaterThan(0);
   });
 });

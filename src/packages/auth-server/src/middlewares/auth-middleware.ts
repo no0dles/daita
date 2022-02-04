@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../modules/token';
 import { createLogger } from '@daita/common';
-import * as httpServ from '@daita/http-server';
 import { setRequestUser } from '@daita/http-server';
 
 const logger = createLogger({ package: 'auth-server', middleware: 'auth' });

@@ -41,7 +41,9 @@ export class Defer<T> {
 
     this.promiseResolved = true;
     this.promiseResult = value ?? null;
-    this.resolveFn!(value);
+    if (this.resolveFn) {
+      this.resolveFn(value);
+    }
   }
 
   reject(err?: any) {
@@ -54,6 +56,8 @@ export class Defer<T> {
 
     this.promiseRejected = true;
     this.promiseError = err;
-    this.rejectFn!(err);
+    if (this.rejectFn) {
+      this.rejectFn(err);
+    }
   }
 }

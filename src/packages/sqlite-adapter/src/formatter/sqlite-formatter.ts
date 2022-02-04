@@ -1,4 +1,4 @@
-import { AlterTableAddColumnFormatter, AlterTableDropColumnFormatter, CeilRoundFormatter } from '@daita/relational';
+import { AlterTableAddColumnFormatter, CeilRoundFormatter } from '@daita/relational';
 import { Formatter } from '@daita/relational';
 import { CreateTableFormatter } from '@daita/relational';
 import { DropTableFormatter } from '@daita/relational';

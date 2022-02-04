@@ -2,7 +2,7 @@ import { all, RelationalAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { RelationDoesNotExistsError } from '@daita/relational';
 import { migrate, MigrationTree, RelationalOrmAdapter } from '@daita/orm';
-import { cleanupTestContext, getContexts, getTestAdapter } from '../../../testing';
+import { getTestAdapter } from '../../../testing';
 
 describe('packages/orm/migration/steps/drop-table', () => {
   const migrationTree = new MigrationTree('', [

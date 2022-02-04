@@ -30,7 +30,7 @@ export function loginRoute(ctx: RelationalAdapter<any>) {
 
   router.post<{ userPoolId: string }>('/', async (req, res, next) => {
     try {
-      const user = await ctx!.selectFirst({
+      const user = await ctx.selectFirst({
         select: {
           password: field(User, 'password'),
           username: field(User, 'username'),

@@ -18,7 +18,7 @@ import {
   year,
 } from '@daita/relational';
 import { Ascent } from '../../../models/ascent';
-import { cleanupTestContext, getMowntainTestContext, seedMowntainData } from '../../../testing';
+import { seedMowntainData } from '../../../testing';
 import { RelationalOrmAdapter } from '@daita/orm';
 
 describe('docs/example/sql/dml/select', () => {

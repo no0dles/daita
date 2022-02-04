@@ -4,7 +4,6 @@ import {
   FormatHandle,
   Formatter,
   FormatType,
-  isDayOfMonthDescription,
   isDayOfYearDescription,
 } from '@daita/relational';
 
