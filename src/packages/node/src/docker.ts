@@ -352,7 +352,7 @@ export function listContainers(options?: {
         }));
       },
       400: () => new Error('bad parameter'),
-      500: () => new Error('server error'),
+      500: (data) => new Error('server error: ' + data),
     },
   );
 }
@@ -367,7 +367,7 @@ export function startContainer(id: string): Promise<void> {
       204: () => {},
       304: () => {},
       404: () => new Error('no such container'),
-      500: () => new Error('server error'),
+      500: (data) => new Error('server error: ' + data),
     },
   );
 }
@@ -400,7 +400,7 @@ export function inspectContainer(id: string) {
         };
       },
       404: () => new Error('no such container'),
-      500: () => new Error('server error'),
+      500: (data) => new Error('server error: ' + data),
     },
   );
 }
@@ -415,7 +415,7 @@ export function stopContainer(id: string, options: StopContainerOptions) {
       204: () => {},
       304: () => {},
       404: () => new Error('no such container'),
-      500: () => new Error('server error'),
+      500: (data) => new Error('server error: ' + data),
     },
   );
 }
@@ -435,7 +435,7 @@ export function removeContainer(id: string, options: RemoveContainerOptions) {
       400: () => new Error('bad parameter'),
       404: () => new Error('no such container'),
       409: () => new Error('conflict'),
-      500: () => new Error('server error'),
+      500: (data) => new Error('server error: ' + data),
     },
   );
 }
@@ -465,7 +465,7 @@ export function createContainer(options: CreateContainerOptions) {
       400: () => new Error('bad parameter'),
       404: () => new Error('no such container'),
       409: () => new Error('conflict'),
-      500: () => new Error('server error'),
+      500: (data) => new Error('server error: ' + data),
     },
     {
       Image: options.image,

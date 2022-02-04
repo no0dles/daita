@@ -7,8 +7,13 @@ async function tearDown() {
       label: ['ch.daita.source=test'],
     },
   });
+
   for (const container of containers) {
-    await removeContainer(container.id, { force: true, removeLinks: true, removeVolumes: true });
+    try {
+      await removeContainer(container.id, { force: true, removeLinks: true, removeVolumes: true });
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
 
