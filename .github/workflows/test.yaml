@@ -30,7 +30,7 @@ jobs:
       - run: lerna bootstrap
       - run: npm run build
       - run: docker-compose up -d
-      - run: node --expose-gc ./node_modules/.bin/jest --runInBand --logHeapUsage
+      - run: jest --coverage --maxWorkers=50%
       - name: coverage upload
         uses: codacy/codacy-coverage-reporter-action@master
         with:
