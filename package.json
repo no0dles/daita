@@ -26,7 +26,6 @@
     "lerna": "^4.0.0"
   },
   "devDependencies": {
-    "@types/dockerode": "^3.3.0",
     "@types/jest": "^27.4.0",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
@@ -36,7 +35,6 @@
     "jest": "^27.4.7",
     "prettier": "^2.5.1",
     "ts-jest": "^27.1.2",
-    "ts-node": "^10.4.0",
-    "dockerode": "^3.3.1"
+    "ts-node": "^10.4.0"
   }
 }

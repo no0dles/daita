@@ -3,12 +3,32 @@ import {
   createExec,
   createImage,
   inspectContainer,
+  listContainers,
   removeContainer,
   startContainer,
   startExec,
 } from './docker';
 
 describe('node/docker', () => {
+  it('should list', async () => {
+    const container = await createContainer({
+      image: 'postgres:12',
+      env: ['POSTGRES_PASSWORD=postgres'],
+      labels: {
+        'ch.daita.source': 'docker',
+      },
+      portMappings: { 5432: 0 },
+    });
+
+    const containers = await listContainers({
+      all: true,
+      filters: {
+        label: ['ch.daita.source=docker'],
+      },
+    });
+    expect(containers.length).toBe(1);
+    await removeContainer(container.id, { force: true });
+  });
   it('should create', async () => {
     await createImage({
       fromImage: 'library/postgres:12',

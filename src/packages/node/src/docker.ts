@@ -302,6 +302,61 @@ export function createExec(id: string, options: ExecOptions): Promise<ExecResult
   );
 }
 
+export interface ContainerItem {
+  id: string;
+  image: string;
+  created: number;
+  state: string;
+  labels: { [key: string]: string };
+  command: string;
+  names: string[];
+}
+
+export function listContainers(options?: {
+  all?: boolean;
+  limit?: number;
+  size?: boolean;
+  filters?: {
+    before?: string;
+    exited?: number;
+    id?: string[];
+    'is-task'?: boolean;
+    label?: string[];
+    name?: string;
+    network?: string;
+    since?: string;
+    volume?: string;
+  };
+}) {
+  return handleRequest<ContainerItem[]>(
+    {
+      path: `/containers/json${buildQuery({
+        all: options?.all,
+        limit: options?.limit,
+        size: options?.size,
+        filters: options?.filters ? JSON.stringify(options.filters) : undefined,
+      })}`,
+      method: 'GET',
+    },
+    {
+      200: (data) => {
+        const result = JSON.parse(data);
+        return result.map((i: any) => ({
+          id: i.Id,
+          image: i.Image,
+          created: i.Created,
+          state: i.State,
+          names: i.Names,
+          labels: i.Labels,
+          command: i.Command,
+        }));
+      },
+      400: () => new Error('bad parameter'),
+      500: () => new Error('server error'),
+    },
+  );
+}
+
 export function startContainer(id: string): Promise<void> {
   return handleRequest<void>(
     {
