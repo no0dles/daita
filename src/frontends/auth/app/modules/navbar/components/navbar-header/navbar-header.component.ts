@@ -1,21 +1,17 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-navbar-header',
   templateUrl: './navbar-header.component.html',
   styleUrls: ['./navbar-header.component.scss'],
 })
-export class NavbarHeaderComponent implements OnInit {
+export class NavbarHeaderComponent {
   @Input()
-  name: string = '';
+  name = '';
 
   @Input()
   link?: string[];
 
   @Output()
   createClicked = new EventEmitter();
-
-  constructor() {}
-
-  ngOnInit(): void {}
 }

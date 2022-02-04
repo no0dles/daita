@@ -1,39 +1,60 @@
-FROM node:13-alpine AS api
+FROM node:16-alpine as base
 
-RUN apk update && apk add curl bash
-RUN curl -sfL https://install.goreleaser.com/github.com/tj/node-prune.sh | bash -s -- -b /usr/local/bin
-
-WORKDIR /app
-COPY package-lock.json .
+WORKDIR /build
 COPY package.json .
+COPY package-lock.json .
 RUN npm ci
 
-COPY tsconfig.json .
-COPY src/containers src/containers
-COPY src/packages src/packages
-RUN npm run build
+###################################
+FROM node:16-alpine as runetime-modules
 
-COPY src/frontends src/frontends
-WORKDIR src/frontends/auth
+WORKDIR /build
+COPY package.json .
+COPY --from=base /build/node_modules node_modules
+COPY lerna.json .
+COPY src/containers/ src/containers
+COPY src/packages/ src/packages
+COPY src/tooling/ src/tooling
+RUN node_modules/.bin/lerna bootstrap -- --production
+
+###################################
+FROM node:16-alpine as build
+
+WORKDIR /build
+COPY package.json .
+COPY --from=base /build/node_modules node_modules
+
+COPY lerna.json .
+COPY tsconfig.json .
+COPY src/containers/ src/containers
+COPY src/frontends/ src/frontends
+COPY src/packages/ src/packages
+COPY src/tooling/ src/tooling
+RUN node_modules/.bin/lerna bootstrap
+
+WORKDIR /build/src/containers/auth
+RUN npx tsc -b
+
+WORKDIR /build/src/frontends/auth
+RUN npx tsc -b
+
+WORKDIR /build/src/frontends/auth
 ENV NODE_ENV production
 RUN npx ng build --prod --base-href /admin/ auth
 
-WORKDIR /app
-COPY src/containers/auth/package.json .
-RUN npm prune --production
-RUN /usr/local/bin/node-prune
-
-###############
+###################################
 FROM alpine:3.12 as runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
 RUN apk update && apk add --no-cache nodejs && rm -rf /var/cache/apk
 
-COPY --from=api /app/node_modules node_modules
-COPY --from=api /app/dist/containers/auth containers/auth
-COPY --from=api /app/dist/packages packages
-COPY --from=api /app/dist/frontends/auth /app/www
-RUN mkdir /app/keys
+COPY --from=runetime-modules /build/src/containers src/containers
+COPY --from=runetime-modules /build/src/packages src/packages
+COPY --from=runetime-modules /build/src/tooling src/tooling
+COPY --from=build /build/src/packages src/packages
+COPY --from=build /build/src/containers src/containers
+COPY --from=build /build/src/frontends/dist/auth /app/src/containers/auth/www
 
-CMD ["node", "containers/auth/index.js"]
+WORKDIR /app/src/containers/auth
+CMD ["node", "dist/index.js"]

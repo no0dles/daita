@@ -1,0 +1,26 @@
+{
+  "name": "@daita/common",
+  "version": "0.4.0-alpha.0",
+  "license": "MIT",
+  "homepage": "https://daita.ch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "eslint src",
+    "test": "jest"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/node": "^16.11.9"
+  }
+}

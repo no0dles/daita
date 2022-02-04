@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../../services/api.service';
-import { Role } from '../../../../../../../packages/auth-server/models/role';
-import { field } from '../../../../../../../packages/relational/sql/keyword/field/field';
-import { table } from '../../../../../../../packages/relational/sql/keyword/table/table';
+import { Role } from '@daita/auth';
+import { field, table } from '@daita/relational';
 
 @Component({
   selector: 'app-role-list',

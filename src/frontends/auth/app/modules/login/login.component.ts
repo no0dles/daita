@@ -42,6 +42,8 @@ export class LoginComponent {
         this.invalidCredentials = true;
       } else if (e instanceof HttpErrorResponse && e.status === 500) {
         this.errorMessage = 'Internal Server Error';
+      } else {
+        console.error(e);
       }
     }
   }

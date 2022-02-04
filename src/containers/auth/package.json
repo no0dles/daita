@@ -1,0 +1,26 @@
+{
+  "version": "0.4.0-alpha.0",
+  "private": true,
+  "name": "@daita/auth-container",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "node -r ts-node/register src/index.ts",
+    "package": "pkg -t \"node16-linux-x64,node16-linux-arm64\" ."
+  },
+  "dependencies": {
+    "@daita/auth": "^0.4.0-alpha.0",
+    "@daita/auth-server": "^0.4.0-alpha.0",
+    "@daita/common": "^0.4.0-alpha.0",
+    "@daita/mariadb-adapter": "^0.4.0-alpha.0",
+    "@daita/node": "^0.4.0-alpha.0",
+    "@daita/orm": "^0.4.0-alpha.0",
+    "@daita/pg-adapter": "^0.4.0-alpha.0",
+    "@daita/relational": "^0.4.0-alpha.0",
+    "@daita/sqlite-adapter": "^0.4.0-alpha.0"
+  },
+  "devDependencies": {
+    "pkg": "^5.4.1"
+  }
+}

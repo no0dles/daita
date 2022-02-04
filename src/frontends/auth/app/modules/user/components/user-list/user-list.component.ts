@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../../services/api.service';
-import { UserPool } from '../../../../../../../packages/auth-server/models/user-pool';
-import { User } from '../../../../../../../packages/auth-server/models/user';
-import { field } from '../../../../../../../packages/relational/sql/keyword/field/field';
-import { table } from '../../../../../../../packages/relational/sql/keyword/table/table';
-import { join } from '../../../../../../../packages/relational/sql/dml/select/join/join';
-import { equal } from '../../../../../../../packages/relational/sql/operands/comparison/equal/equal';
+import { equal, field, join, table } from '@daita/relational';
+import { User, UserPool } from '@daita/auth';
 
 @Component({
   selector: 'app-user-list',

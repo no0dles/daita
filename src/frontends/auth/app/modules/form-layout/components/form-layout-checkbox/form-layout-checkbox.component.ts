@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 @Component({
@@ -6,7 +6,7 @@ import { FormGroup } from '@angular/forms';
   templateUrl: './form-layout-checkbox.component.html',
   styleUrls: ['./form-layout-checkbox.component.scss'],
 })
-export class FormLayoutCheckboxComponent implements OnInit {
+export class FormLayoutCheckboxComponent {
   @Input()
   id!: string;
 
@@ -18,8 +18,4 @@ export class FormLayoutCheckboxComponent implements OnInit {
 
   @Input()
   form!: FormGroup;
-
-  constructor() {}
-
-  ngOnInit(): void {}
 }

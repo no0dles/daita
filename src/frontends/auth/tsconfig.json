@@ -28,5 +28,14 @@
   ],
   "include": [
     "app/**.ts"
-  ]
+  ],
+  "references": [{
+    "path": "../../packages/browser"
+  }, {
+    "path": "../../packages/relational"
+  }, {
+    "path": "../../packages/common"
+  }, {
+    "path": "../../packages/auth"
+  }]
 }

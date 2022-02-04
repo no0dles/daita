@@ -1,0 +1,49 @@
+{
+  "name": "@daita/auth-server",
+  "version": "0.4.0-alpha.0",
+  "license": "MIT",
+  "homepage": "https://daita.ch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@daita/auth": "^0.4.0-alpha.0",
+    "@daita/common": "^0.4.0-alpha.0",
+    "@daita/http-server": "^0.4.0-alpha.0",
+    "@daita/orm": "^0.4.0-alpha.0",
+    "@daita/relational": "^0.4.0-alpha.0",
+    "bcrypt": "^5.0.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "helmet": "^4.1.1",
+    "jose": "^2.0.3",
+    "prom-client": "^13.0.0"
+  },
+  "devDependencies": {
+    "@daita/http-interface": "^0.4.0-alpha.0",
+    "@daita/node": "^0.4.0-alpha.0",
+    "@daita/sqlite-adapter": "^0.4.0-alpha.0",
+    "@types/bcrypt": "^3.0.0",
+    "@types/body-parser": "^1.17.1",
+    "@types/cors": "^2.8.6",
+    "@types/express": "^4.17.2",
+    "@types/helmet": "^0.0.47",
+    "@types/jest": "^27.0.3",
+    "jest": "^27.4.5",
+    "ts-jest": "^27.1.2",
+    "ts-node": "^10.4.0"
+  }
+}

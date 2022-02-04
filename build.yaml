@@ -1,0 +1,10 @@
+tasks:
+  install:
+    image: node:16-alpine
+    cmds:
+      - npm install
+    generates:
+      - node_modules
+    src:
+      - package.json
+      - package-lock.json

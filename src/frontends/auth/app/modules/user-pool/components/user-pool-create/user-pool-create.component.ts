@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ApiService } from '../../../../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { uuid } from '../../../../utils/uuid';
-import { UserPool } from '../../../../../../../packages/auth-server/models/user-pool';
-import { table } from '../../../../../../../packages/relational/sql/keyword/table/table';
 import { Store } from '@ngxs/store';
 import { UserPoolCreate } from '../../actions/user-pool-create';
+import { UserPool } from '@daita/auth';
+import { table } from '@daita/relational';
 
 @Component({
   selector: 'app-user-pool-create',

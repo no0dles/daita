@@ -7,11 +7,6 @@ import { FormLayoutModule } from '../form-layout/form-layout.module';
 
 @NgModule({
   declarations: [LoginComponent],
-  imports: [
-    LoginRoutingModule,
-    CommonModule,
-    ReactiveFormsModule,
-    FormLayoutModule,
-  ],
+  imports: [LoginRoutingModule, CommonModule, ReactiveFormsModule, FormLayoutModule],
 })
-export class LoginModule { }
+export class LoginModule {}
