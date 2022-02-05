@@ -19,3 +19,4 @@ yarn-debug.log*
 yarn-error.log*
 src/**/*.d.ts
 src/**/*.js
+**/.angular
