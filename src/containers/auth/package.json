@@ -19,8 +19,5 @@
     "@daita/pg-adapter": "^0.4.0-alpha.0",
     "@daita/relational": "^0.4.0-alpha.0",
     "@daita/sqlite-adapter": "^0.4.0-alpha.0"
-  },
-  "devDependencies": {
-    "pkg": "^5.4.1"
   }
 }
