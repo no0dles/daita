@@ -1,7 +1,7 @@
 import express = require('express');
 import * as bodyParser from 'body-parser';
 import { wellKnownRoute } from './routes/well-known/jwks';
-import helmet = require('helmet');
+import * as helmet from 'helmet';
 import { userPoolCors } from './middlewares/user-pool-cors';
 import { resendRoute } from './routes/resend';
 import { tokenRoute } from './routes/token';
@@ -19,7 +19,7 @@ export function createAuthApp(ctx: RelationalAdapter<any>, port: number) {
   const logger = createLogger({ package: 'auth-server' });
 
   app.use(responseTimeMetricMiddleware('auth'));
-  app.use(helmet());
+  app.use(helmet.default());
   app.use(bodyParser.json());
 
   app.use('/:userPoolId/verify', verifyRoute(ctx));
