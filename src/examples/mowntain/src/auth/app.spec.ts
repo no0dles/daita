@@ -24,7 +24,7 @@ describe('app', () => {
   });
 
   it('should register', async () => {
-    const res = await test.http.json({
+    const res = await test.authHttp.json({
       path: '/test/register',
       data: {
         password: '123456',
@@ -36,7 +36,7 @@ describe('app', () => {
   });
 
   it('should login', async () => {
-    const res = await test.http.json({
+    const res = await test.authHttp.json({
       path: '/test/login',
       data: {
         password: '123456',
@@ -57,7 +57,7 @@ describe('app', () => {
       from: table(UserRefreshToken),
     });
     isDefined(token);
-    const res = await test.http.json({
+    const res = await test.authHttp.json({
       path: '/test/refresh',
       data: {
         refreshToken: token.token,
@@ -72,7 +72,7 @@ describe('app', () => {
     let accessToken: string | undefined;
 
     beforeAll(async () => {
-      const res = await test.http.json({
+      const res = await test.authHttp.json({
         path: '/test/login',
         data: {
           password: '123456',
@@ -90,7 +90,7 @@ describe('app', () => {
       });
       isDefined(firstVerify);
 
-      const res = await test.http.json({
+      const res = await test.authHttp.json({
         path: '/test/resend',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -115,7 +115,7 @@ describe('app', () => {
     });
 
     it('should create token', async () => {
-      const res = await test.http.json({
+      const res = await test.authHttp.json({
         path: '/test/token',
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -138,7 +138,7 @@ describe('app', () => {
       from: table(UserEmailVerify),
     });
     isDefined(verify);
-    const res = await test.http.get({
+    const res = await test.authHttp.get({
       path: '/test/verify',
       query: {
         code: verify.code,
@@ -163,16 +163,16 @@ describe('app', () => {
     expect(user.emailVerified).toBeTruthy();
   });
 
-  // it('should get metrics', async () => {
-  //   const res = await metricsHttp.get<string>({
-  //     path: '/',
-  //   });
-  //   expect(res.statusCode).toEqual(200);
-  //   expect(res.data).not.toBeNull();
-  //
-  //   const lines = res.data.split('\n');
-  //   const registrations = lines.find((l) => l.startsWith('auth_success_registrations'));
-  //   isDefined(registrations);
-  //   expect(parseInt(registrations.split(' ')[1])).toBeGreaterThan(0);
-  // });
+  it('should get metrics', async () => {
+    const res = await test.metricHttp.get<string>({
+      path: '/',
+    });
+    expect(res.statusCode).toEqual(200);
+    expect(res.data).not.toBeNull();
+
+    const lines = res.data.split('\n');
+    const registrations = lines.find((l) => l.startsWith('auth_success_registrations'));
+    isDefined(registrations);
+    expect(parseInt(registrations.split(' ')[1])).toBeGreaterThan(0);
+  });
 });

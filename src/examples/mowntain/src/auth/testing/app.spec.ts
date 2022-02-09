@@ -26,20 +26,6 @@ describe('http-server/app', () => {
     await adapter.close();
   });
 
-  it('should login', async () => {
-    const res = await test.http.json({
-      path: `/test/login`,
-      data: {
-        username: 'user',
-        password: '123456',
-      },
-    });
-    expect(res.statusCode).toEqual(200);
-    expect(res.data).not.toBeNull();
-    expect(res.data).not.toBeUndefined();
-    expect(res.data.token_type).toEqual('bearer');
-  });
-
   it('should handle malformed bearer token', async () => {
     const res = await test.http.json({
       headers: { Authorization: 'Bearer asd' },
@@ -49,8 +35,8 @@ describe('http-server/app', () => {
     expect(res.data).toEqual({ message: 'invalid token format' });
   });
 
-  it('should login with token', async () => {
-    const res = await test.authorized('test').json({
+  it('should login with access token', async () => {
+    const res = await test.authorized('test', []).json({
       path: '/api/relational/exec',
       authorized: true,
       data: {
@@ -64,36 +50,23 @@ describe('http-server/app', () => {
     expect(res.data.rows[0]).not.toBeUndefined();
   });
 
-  // it('should return result', async () => {
-  //   const res = await test.authorized('test').json({
-  //     path: '/api/relational/exec',
-  //     data: {
-  //       sql: {
-  //         select: now(),
-  //       },
-  //     },
-  //   });
-  //
-  //   token = await loginWithDefaultUser(authServerTest.authHttp);
-  //   const res = await httpPost(
-  //     test.http,
-  //     '/api/relational/exec',
-  //     {
-  //       sql: {
-  //         select: now(),
-  //       },
-  //     },
-  //     {
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     },
-  //   );
-  //   expect(res.statusCode).toEqual(200);
-  //   expect(res.body.rowCount).toEqual(1);
-  //   expect(res.body.rows[0]).not.toBeUndefined();
-  // });
+  it('should login with user token', async () => {
+    const res = await test.authorizedToken('test').json({
+      path: '/api/relational/exec',
+      authorized: true,
+      data: {
+        sql: {
+          select: now(),
+        },
+      },
+    });
+    expect(res.statusCode).toEqual(200);
+    expect(res.data.rowCount).toEqual(1);
+    expect(res.data.rows[0]).not.toBeUndefined();
+  });
 
   it('should not allow undefined sql', async () => {
-    const res = await test.authorized('test').json({
+    const res = await test.authorizedToken('test').json({
       path: '/api/relational/exec',
       data: {
         sql: {

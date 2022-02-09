@@ -1,12 +1,25 @@
 import { migrate, RelationalOrmAdapter } from '@daita/orm';
 import { RelationalAdapter } from '@daita/relational';
 import { getServer, NodeHttp } from '@daita/node';
-import { createAuthApp, hashPassword, seedPoolUser, seedRoles, seedUserPool, seedUserRole } from '@daita/auth-server';
+import {
+  createAuthAdminApp,
+  createAuthApp,
+  createMetricsApp,
+  hashPassword,
+  seedPoolUser,
+  seedRoles,
+  seedUserPool,
+  seedUserRole,
+} from '@daita/auth-server';
 import { authSchema } from '@daita/auth';
 
 export interface AuthTest {
-  http: NodeHttp;
-  address: string;
+  authHttp: NodeHttp;
+  adminHttp: NodeHttp;
+  metricHttp: NodeHttp;
+  authAddress: string;
+  adminAddress: string;
+  metricAddress: string;
   close(): Promise<void>;
 }
 
@@ -68,12 +81,22 @@ export async function createTestAuthServer(
   }
 
   const authApp = createAuthApp(adapter);
+  const adminApp = createAuthAdminApp(adapter);
+  const metricApp = createMetricsApp();
   const authServer = await getServer(authApp);
-  const http = new NodeHttp(authServer.address, null);
+  const adminServer = await getServer(adminApp);
+  const metricServer = await getServer(metricApp);
+  const authHttp = new NodeHttp(authServer.address, null);
+  const adminHttp = new NodeHttp(authServer.address, null);
+  const metricHttp = new NodeHttp(metricServer.address, null);
 
   return {
-    http,
-    address: authServer.address,
+    authHttp,
+    adminHttp,
+    metricHttp,
+    authAddress: authServer.address,
+    adminAddress: adminServer.address,
+    metricAddress: metricServer.address,
     async close(): Promise<void> {
       await authServer.server.close();
     },

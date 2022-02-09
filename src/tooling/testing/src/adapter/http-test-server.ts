@@ -2,12 +2,13 @@ import { RelationalOrmAdapter } from '@daita/orm';
 import { createHttpServerApp } from '@daita/http-server';
 import { RelationalAdapter, Rule } from '@daita/relational';
 import { getServer, NodeHttp } from '@daita/node';
-import { createToken } from '@daita/auth-server';
+import { createToken, getAccessToken } from '@daita/auth-server';
 import { createTestAuthServer } from './auth-test-server';
 
 export interface HttpTest {
   http: NodeHttp;
-  authorized: (username: string) => NodeHttp;
+  authorized: (username: string, roles: string[]) => NodeHttp;
+  authorizedToken: (username: string) => NodeHttp;
   close(): Promise<void>;
 }
 
@@ -17,7 +18,9 @@ export async function createTestHttpServer(
     rules?: { id: string; rule: Rule }[];
   },
 ): Promise<HttpTest> {
-  const auth = await createTestAuthServer(adapter, {});
+  const auth = await createTestAuthServer(adapter, {
+    auth: { username: 'test', password: '12356', roles: [] },
+  });
 
   const httpApp = createHttpServerApp({
     relational: {
@@ -28,12 +31,12 @@ export async function createTestHttpServer(
       providers: [
         {
           issuer: 'test',
-          uri: auth.address,
+          uri: auth.authAddress,
         },
       ],
       tokenEndpoints: [
         {
-          uri: auth.address,
+          uri: auth.adminAddress,
           issuer: 'test',
         },
       ],
@@ -45,14 +48,31 @@ export async function createTestHttpServer(
 
   return {
     http,
-    authorized: (username) =>
+    authorized: (username, roles) =>
       new NodeHttp(httpServer.address, {
-        getToken: () => {
-          return createToken(adapter, {
+        getToken: async () => {
+          return `Bearer ${await getAccessToken(
+            'test',
+            {
+              roles,
+            },
+            {
+              subject: username,
+              expiresIn: 3600,
+              issuer: 'test',
+              algorithm: 'RS256',
+            },
+          )}`;
+        },
+      }),
+    authorizedToken: (username) =>
+      new NodeHttp(httpServer.address, {
+        getToken: async () => {
+          return `Token ${await createToken(adapter, {
             name: 'test',
             userPoolId: 'test',
             username,
-          });
+          })}`;
         },
       }),
     async close(): Promise<void> {
