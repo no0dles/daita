@@ -15,6 +15,8 @@ import { HttpServerOptions } from '@daita/http-server';
 import { authSchema, Role, User, UserPool, UserRole } from '@daita/auth';
 import { migrate, RelationalOrmAdapter } from '@daita/orm';
 import { RelationalAdapter } from '@daita/relational';
+import { Server } from 'http';
+import { getServer } from '@daita/node';
 
 const logger = createLogger({ package: 'cli', command: 'serve' });
 export async function serve(opts: {
@@ -61,14 +63,14 @@ export async function serve(opts: {
   const httpOptions: HttpServerOptions = {
     relational: {
       dataAdapter: adapter,
-      enableTransactions: true,
     },
     authorization: disableAuth ? false : authorization,
     cors: true,
   };
-  const server = await createHttpServerApp(httpOptions, httpPort);
+  const http = createHttpServerApp(httpOptions);
+  const httpServer = await getServer(http, httpPort).then((r) => r.server);
 
-  let authServer: any;
+  let authServer: Server | null = null;
   if (!disableAuth) {
     await migrate(adapter, authSchema);
 
@@ -76,7 +78,8 @@ export async function serve(opts: {
     await setupAuth(adapter, userPools);
 
     const authPort = opts.authPort || 8766;
-    authServer = await createAuthApp(adapter, authPort);
+    const auth = createAuthApp(adapter);
+    authServer = await getServer(auth, authPort).then((r) => r.server);
   }
 
   const closeDefer = new Defer<void>();
@@ -85,7 +88,7 @@ export async function serve(opts: {
     try {
       logger.info('closing...');
       reloadDebouncer.clear();
-      server?.close();
+      httpServer?.close();
       authServer?.close();
       await watcher?.close();
       await adapter?.close();

@@ -9,3 +9,4 @@ export * from './path';
 export * from './random-port';
 export * from './file/index';
 export * from './http/node-http';
+export * from './server';

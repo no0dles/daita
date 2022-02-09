@@ -5,14 +5,14 @@ import { authMiddleware } from './middlewares/auth-middleware';
 import cors = require('cors');
 import { relationalRoute } from '@daita/http-server';
 import { adminTokenRoute } from './routes/admin-token';
-import { Server } from 'http';
+import { RequestListener } from 'http';
 import { createLogger } from '@daita/common';
 import { responseTimeMetricMiddleware } from './middlewares/response-time-middleware';
 import { loginRoute, refreshRoute } from './routes';
 import { RelationalAdapter } from '@daita/relational';
 import { RelationalOrmAdapter } from '@daita/orm';
 
-export function createAuthAdminApp(dataAdapter: RelationalAdapter<any> & RelationalOrmAdapter, port: number) {
+export function createAuthAdminApp(dataAdapter: RelationalAdapter<any> & RelationalOrmAdapter): RequestListener {
   const adminApp = express();
   const logger = createLogger({ package: 'auth-server' });
 
@@ -33,8 +33,6 @@ export function createAuthAdminApp(dataAdapter: RelationalAdapter<any> & Relatio
     relationalRoute({
       relational: {
         dataAdapter,
-        enableTransactions: true,
-        transactionTimeout: 4000,
       },
       authorization: false,
       cors: false,
@@ -63,10 +61,5 @@ export function createAuthAdminApp(dataAdapter: RelationalAdapter<any> & Relatio
     }
   });
 
-  return new Promise<Server>((resolve) => {
-    const server = adminApp.listen(port, () => {
-      resolve(server);
-      logger.info(`auth admin server is running on http://localhost:${port}`);
-    });
-  });
+  return adminApp;
 }

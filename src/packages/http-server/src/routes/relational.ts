@@ -15,9 +15,7 @@ export function relationalRoute(options: HttpServerOptions) {
   const resolver = new RequestAdapterResolver(options, relationalOptions);
 
   extendRelationalDataRoute(resolver, router);
-  if (options.relational?.enableTransactions) {
-    extendTransactionRoutes(resolver, relationalOptions, router);
-  }
+  extendTransactionRoutes(resolver, relationalOptions, router);
 
   return router;
 }

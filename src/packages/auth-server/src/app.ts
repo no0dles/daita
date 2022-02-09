@@ -9,12 +9,12 @@ import { verifyRoute } from './routes/verify';
 import { registerRoute } from './routes/register';
 import { refreshRoute } from './routes/refresh';
 import { loginRoute } from './routes/login';
-import { Server } from 'http';
 import { createLogger } from '@daita/common';
 import { responseTimeMetricMiddleware } from './middlewares/response-time-middleware';
 import { RelationalAdapter } from '@daita/relational';
+import { RequestListener } from 'http';
 
-export function createAuthApp(ctx: RelationalAdapter<any>, port: number) {
+export function createAuthApp(ctx: RelationalAdapter<any>): RequestListener {
   const app = express();
   const logger = createLogger({ package: 'auth-server' });
 
@@ -63,10 +63,5 @@ export function createAuthApp(ctx: RelationalAdapter<any>, port: number) {
     }
   });
 
-  return new Promise<Server>((resolve) => {
-    const server = app.listen(port, () => {
-      resolve(server);
-      logger.info(`auth server is running on http://localhost:${port}`);
-    });
-  });
+  return app;
 }

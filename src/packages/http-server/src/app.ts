@@ -5,12 +5,12 @@ import * as bodyParser from 'body-parser';
 import { jwtAuth } from './middleswares/jwt-auth.middleware';
 import { errorMiddleware } from './middleswares/error.middleware';
 import { tokenAuth } from './middleswares/token-auth.middleware';
-import { Server } from 'http';
+import { RequestListener } from 'http';
 import { createLogger } from '@daita/common';
 import { ormRoute } from './routes/orm';
 import { HttpServerOptions } from './http-server-options';
 
-export function createHttpServerApp(options: HttpServerOptions, port: number) {
+export function createHttpServerApp(options: HttpServerOptions): RequestListener {
   const app = express();
   const logger = createLogger({ package: 'http-server' });
 
@@ -41,10 +41,5 @@ export function createHttpServerApp(options: HttpServerOptions, port: number) {
 
   app.use(errorMiddleware(logger));
 
-  return new Promise<Server>((resolve) => {
-    const server = app.listen(port, () => {
-      logger.info(`listening on http://0.0.0.0:${port}`);
-      resolve(server);
-    });
-  });
+  return app;
 }

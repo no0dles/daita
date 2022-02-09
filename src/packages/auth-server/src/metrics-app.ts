@@ -1,21 +1,14 @@
 import express from 'express';
-import { Server } from 'http';
-import { createLogger } from '@daita/common';
+import { RequestListener } from 'http';
 import { metricRegister } from './metric';
 
-export function createMetricsApp(port: number) {
+export function createMetricsApp(): RequestListener {
   const app = express();
-  const logger = createLogger({ package: 'auth-server', app: 'metric' });
 
   app.get('', async (req, res) => {
     res.status(200).set('Content-Type', 'text/plain');
     res.end(await metricRegister.metrics());
   });
 
-  return new Promise<Server>((resolve) => {
-    const server = app.listen(port, () => {
-      resolve(server);
-      logger.info(`metric server is running on http://localhost:${port}`);
-    });
-  });
+  return app;
 }
