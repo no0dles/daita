@@ -10,8 +10,12 @@ export class NotInFormatter implements FormatHandle<NotInDescription<any>> {
   }
 
   handle(param: NotInDescription<any>, ctx: FormatContext, formatter: Formatter): string {
-    return `${formatter.format(param.notIn.field, ctx)} NOT IN (${param.notIn.values.map((v) =>
-      formatter.format(v, ctx),
-    )})`;
+    if (param.notIn.values instanceof Array) {
+      return `${formatter.format(param.notIn.field, ctx)} NOT IN (${param.notIn.values
+        .map((value) => formatter.format(value, ctx))
+        .join(', ')})`;
+    } else {
+      return `${formatter.format(param.notIn.field, ctx)} NOT IN (${formatter.format(param.notIn.values, ctx)})`;
+    }
   }
 }

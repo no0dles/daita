@@ -98,6 +98,8 @@ export async function createTestAuthServer(
     adminAddress: adminServer.address,
     metricAddress: metricServer.address,
     async close(): Promise<void> {
+      await metricServer.server.close();
+      await adminServer.server.close();
       await authServer.server.close();
     },
   };

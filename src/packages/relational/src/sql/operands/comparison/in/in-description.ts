@@ -1,9 +1,10 @@
 import { isExactKind } from '@daita/common';
+import { SelectSql } from '../../../dml';
 
 export interface InDescription<T> {
   in: {
     field: T;
-    values: T[];
+    values: T[] | SelectSql<T>;
   };
 }
 

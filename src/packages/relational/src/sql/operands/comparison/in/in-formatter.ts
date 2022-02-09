@@ -10,8 +10,12 @@ export class InFormatter implements FormatHandle<InDescription<any>> {
   }
 
   handle(param: InDescription<any>, ctx: FormatContext, formatter: Formatter): string {
-    return `${formatter.format(param.in.field, ctx)} IN (${param.in.values
-      .map((value) => formatter.format(value, ctx))
-      .join(', ')})`;
+    if (param.in.values instanceof Array) {
+      return `${formatter.format(param.in.field, ctx)} IN (${param.in.values
+        .map((value) => formatter.format(value, ctx))
+        .join(', ')})`;
+    } else {
+      return `${formatter.format(param.in.field, ctx)} IN (${formatter.format(param.in.values, ctx)})`;
+    }
   }
 }

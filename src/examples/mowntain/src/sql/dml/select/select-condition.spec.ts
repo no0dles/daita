@@ -2,6 +2,7 @@ import { seedMowntainData } from '../../../testing';
 import { and, desc, equal, field, isIn, min, notEqual, RelationalAdapter, table } from '@daita/relational';
 import { Mountain } from '../../../models/mountain';
 import { RelationalOrmAdapter } from '@daita/orm';
+import { Canton } from '../../../models/canton';
 
 describe('docs/example/sql/dml/select', () => {
   let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
@@ -69,6 +70,19 @@ describe('docs/example/sql/dml/select', () => {
       select: field(Mountain, 'name'),
       from: table(Mountain),
       where: isIn(field(Mountain, 'name'), ['Matterhorn', 'Jungfrau']),
+      orderBy: field(Mountain, 'name'),
+    });
+    expect(result).toEqual(['Jungfrau', 'Matterhorn']);
+  });
+
+  it('should select in subselect', async () => {
+    const result = await ctx.select({
+      select: field(Mountain, 'name'),
+      from: table(Mountain),
+      where: isIn(field(Mountain, 'cantonShortname'), {
+        select: field(Canton, 'shortname'),
+        from: table(Canton),
+      }),
       orderBy: field(Mountain, 'name'),
     });
     expect(result).toEqual(['Jungfrau', 'Matterhorn']);

@@ -14,6 +14,7 @@ export const baseConfig: Config.InitialOptions = {
     '/coverage/',
     '/dist/',
     '/schemas/',
+    '/examples/',
     '/node_modules/',
     '/.*.test.ts',
     'jest.config.ts',
