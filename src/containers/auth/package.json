@@ -1,5 +1,5 @@
 {
-  "version": "0.4.0-alpha.0",
+  "version": "0.4.0-alpha.1",
   "private": true,
   "name": "@daita/auth-container",
   "main": "dist/index.js",
@@ -10,14 +10,14 @@
     "package": "pkg -t \"node16-linux-x64,node16-linux-arm64\" ."
   },
   "dependencies": {
-    "@daita/auth": "^0.4.0-alpha.0",
-    "@daita/auth-server": "^0.4.0-alpha.0",
-    "@daita/common": "^0.4.0-alpha.0",
-    "@daita/mariadb-adapter": "^0.4.0-alpha.0",
-    "@daita/node": "^0.4.0-alpha.0",
-    "@daita/orm": "^0.4.0-alpha.0",
-    "@daita/pg-adapter": "^0.4.0-alpha.0",
-    "@daita/relational": "^0.4.0-alpha.0",
-    "@daita/sqlite-adapter": "^0.4.0-alpha.0"
+    "@daita/auth": "^0.4.0-alpha.1",
+    "@daita/auth-server": "^0.4.0-alpha.1",
+    "@daita/common": "^0.4.0-alpha.1",
+    "@daita/mariadb-adapter": "^0.4.0-alpha.1",
+    "@daita/node": "^0.4.0-alpha.1",
+    "@daita/orm": "^0.4.0-alpha.1",
+    "@daita/pg-adapter": "^0.4.0-alpha.1",
+    "@daita/relational": "^0.4.0-alpha.1",
+    "@daita/sqlite-adapter": "^0.4.0-alpha.1"
   }
 }
