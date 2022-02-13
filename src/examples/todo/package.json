@@ -1,14 +1,14 @@
 {
   "name": "todo",
-  "version": "0.4.0-alpha.1",
+  "version": "0.4.0-alpha.2",
   "private": true,
   "scripts": {
     "build": "tsc -b"
   },
   "dependencies": {
-    "@daita/iwent": "^0.4.0-alpha.1",
-    "@daita/orm": "^0.4.0-alpha.1",
-    "@daita/relational": "^0.4.0-alpha.1"
+    "@daita/iwent": "^0.4.0-alpha.2",
+    "@daita/orm": "^0.4.0-alpha.2",
+    "@daita/relational": "^0.4.0-alpha.2"
   },
   "devDependencies": {
     "typescript": "~4.0.5"

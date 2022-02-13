@@ -1,6 +1,6 @@
 {
   "name": "@daita/pg-adapter",
-  "version": "0.4.0-alpha.1",
+  "version": "0.4.0-alpha.2",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -18,10 +18,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@daita/common": "^0.4.0-alpha.1",
-    "@daita/node": "^0.4.0-alpha.1",
-    "@daita/orm": "^0.4.0-alpha.1",
-    "@daita/relational": "^0.4.0-alpha.1",
+    "@daita/common": "^0.4.0-alpha.2",
+    "@daita/node": "^0.4.0-alpha.2",
+    "@daita/orm": "^0.4.0-alpha.2",
+    "@daita/relational": "^0.4.0-alpha.2",
     "pg": "^8.7.1"
   },
   "publishConfig": {

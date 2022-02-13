@@ -3,16 +3,16 @@
   "private": true,
   "main": "dist/index.js",
   "bin": "dist/index.js",
-  "version": "0.4.0-alpha.1",
+  "version": "0.4.0-alpha.2",
   "dependencies": {
-    "@daita/common": "^0.4.0-alpha.1",
-    "@daita/http-server": "^0.4.0-alpha.1",
-    "@daita/iwent": "^0.4.0-alpha.1",
-    "@daita/mariadb-adapter": "^0.4.0-alpha.1",
-    "@daita/node": "^0.4.0-alpha.1",
-    "@daita/orm": "^0.4.0-alpha.1",
-    "@daita/pg-adapter": "^0.4.0-alpha.1",
-    "@daita/relational": "^0.4.0-alpha.1",
-    "@daita/sqlite-adapter": "^0.4.0-alpha.1"
+    "@daita/common": "^0.4.0-alpha.2",
+    "@daita/http-server": "^0.4.0-alpha.2",
+    "@daita/iwent": "^0.4.0-alpha.2",
+    "@daita/mariadb-adapter": "^0.4.0-alpha.2",
+    "@daita/node": "^0.4.0-alpha.2",
+    "@daita/orm": "^0.4.0-alpha.2",
+    "@daita/pg-adapter": "^0.4.0-alpha.2",
+    "@daita/relational": "^0.4.0-alpha.2",
+    "@daita/sqlite-adapter": "^0.4.0-alpha.2"
   }
 }
