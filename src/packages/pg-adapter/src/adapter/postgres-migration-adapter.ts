@@ -55,8 +55,8 @@ export class PostgresMigrationAdapter
   private closed = false;
   protected readonly logger = createLogger({ package: 'pg-adapter' });
 
-  protected parseConnectionString = parseConnectionString(this.options.connectionString);
-  protected pool = new Promise<Pool>((resolve) => {
+  private parseConnectionString = parseConnectionString(this.options.connectionString);
+  private pool = new Promise<Pool>((resolve) => {
     resolve(
       (async () => {
         if (this.options.prepare) {

@@ -1,6 +1,6 @@
 {
   "name": "@daita/auth-server",
-  "version": "0.4.0-alpha.0",
+  "version": "0.4.0-alpha.2",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -19,11 +19,11 @@
     "build": "tsc -b"
   },
   "dependencies": {
-    "@daita/auth": "^0.4.0-alpha.0",
-    "@daita/common": "^0.4.0-alpha.0",
-    "@daita/http-server": "^0.4.0-alpha.0",
-    "@daita/orm": "^0.4.0-alpha.0",
-    "@daita/relational": "^0.4.0-alpha.0",
+    "@daita/auth": "^0.4.0-alpha.2",
+    "@daita/common": "^0.4.0-alpha.2",
+    "@daita/http-server": "^0.4.0-alpha.2",
+    "@daita/orm": "^0.4.0-alpha.2",
+    "@daita/relational": "^0.4.0-alpha.2",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -33,9 +33,9 @@
     "prom-client": "^14.0.1"
   },
   "devDependencies": {
-    "@daita/http-interface": "^0.4.0-alpha.0",
-    "@daita/node": "^0.4.0-alpha.0",
-    "@daita/sqlite-adapter": "^0.4.0-alpha.0",
+    "@daita/http-interface": "^0.4.0-alpha.2",
+    "@daita/node": "^0.4.0-alpha.2",
+    "@daita/sqlite-adapter": "^0.4.0-alpha.2",
     "@types/bcrypt": "^5.0.0",
     "@types/body-parser": "^1.19.2",
     "@types/cors": "^2.8.12",

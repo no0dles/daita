@@ -1,6 +1,6 @@
 {
   "name": "@daita/create",
-  "version": "0.4.0-alpha.0",
+  "version": "0.4.0-alpha.2",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -25,8 +25,8 @@
   },
   "bin": "dist/cmd.js",
   "dependencies": {
-    "@daita/common": "^0.4.0-alpha.0",
-    "@daita/node": "^0.4.0-alpha.0",
+    "@daita/common": "^0.4.0-alpha.2",
+    "@daita/node": "^0.4.0-alpha.2",
     "commander": "^8.3.0",
     "inquirer": "^8.2.0"
   },
