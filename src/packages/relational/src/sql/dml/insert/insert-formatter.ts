@@ -29,8 +29,8 @@ export class InsertFormatter implements FormatHandle<InsertSql<any>> {
     if (param.onConflict) {
       const fields =
         param.onConflict.forField instanceof Array
-          ? param.onConflict.forField.join(', ')
-          : String(param.onConflict.forField);
+          ? param.onConflict.forField.map((f) => ctx.escape(String(f))).join(', ')
+          : ctx.escape(String(param.onConflict.forField));
       sql += ` ON CONFLICT (${fields})`;
 
       if (param.onConflict.do === 'nothing') {
