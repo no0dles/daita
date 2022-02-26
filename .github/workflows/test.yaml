@@ -21,6 +21,8 @@ jobs:
       - run: lerna bootstrap
       - run: npm run build
       - run: npx jest --coverage --maxWorkers=50%
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8192"
       - name: coverage upload
         uses: codacy/codacy-coverage-reporter-action@master
         with:
