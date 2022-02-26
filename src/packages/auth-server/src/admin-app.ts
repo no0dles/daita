@@ -6,15 +6,23 @@ import cors = require('cors');
 import { relationalRoute } from '@daita/http-server';
 import { adminTokenRoute } from './routes/admin-token';
 import { RequestListener } from 'http';
-import { createLogger } from '@daita/common';
+import { createLogger, getNumberEnvironmentVariable } from '@daita/common';
 import { responseTimeMetricMiddleware } from './middlewares/response-time-middleware';
 import { loginRoute, refreshRoute } from './routes';
 import { RelationalAdapter } from '@daita/relational';
 import { RelationalOrmAdapter } from '@daita/orm';
+import RateLimit from 'express-rate-limit';
 
 export function createAuthAdminApp(dataAdapter: RelationalAdapter<any> & RelationalOrmAdapter): RequestListener {
   const adminApp = express();
   const logger = createLogger({ package: 'auth-server' });
+
+  adminApp.use(
+    RateLimit({
+      windowMs: getNumberEnvironmentVariable('RATE_LIMIT_WINDOW', 1 * 60 * 1000), // 1 minute
+      max: getNumberEnvironmentVariable('RATE_LIMIT_MAX', 20),
+    }),
+  );
 
   adminApp.use(responseTimeMetricMiddleware('admin'));
   adminApp.use(bodyParser.json());
