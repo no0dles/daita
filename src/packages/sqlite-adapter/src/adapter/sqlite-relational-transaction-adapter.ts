@@ -23,8 +23,16 @@ export class SqliteRelationalTransactionAdapter
 
   execRaw(sql: string, values: any[]): void {
     this.logger.debug('execute sql', { sql, queryValues: values });
-    const statement = this.db.prepare(sql);
-    statement.run(values);
+    try {
+      const statement = this.db.prepare(sql);
+      statement.run(values);
+    } catch (e) {
+      if (e instanceof Error) {
+        throw new Error(`${e.message}: ${sql}, ${values}`);
+      } else {
+        throw new Error(`${e}: ${sql}, ${values}`);
+      }
+    }
   }
 
   supportsQuery(sql: any): boolean {
