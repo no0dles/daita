@@ -89,7 +89,7 @@ export function seedPoolUser(client: RelationalTransactionAdapter<any>, user: Ex
       phoneVerified: user.phoneVerified,
     },
     onConflict: {
-      forField: ['username', 'userPoolId'],
+      forField: ['username'],
       do: 'nothing',
     },
   });
