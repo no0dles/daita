@@ -117,7 +117,13 @@ describe('get-migration-steps', () => {
           },
           primaryKeys: ['id'],
           references: {
-            role: { table: 'Role', keys: [{ field: 'roleId', foreignField: 'id' }], name: 'role' },
+            role: {
+              table: 'Role',
+              keys: [{ field: 'roleId', foreignField: 'id' }],
+              name: 'role',
+              onDelete: null,
+              onUpdate: null,
+            },
           },
         },
         Role: {
@@ -192,7 +198,13 @@ describe('get-migration-steps', () => {
           name: 'User',
           fields: { id: { type: 'string', required: true, name: 'id' } },
           references: {
-            parent: { keys: [{ field: 'parentId', foreignField: 'id' }], table: 'User', name: 'parent' },
+            parent: {
+              keys: [{ field: 'parentId', foreignField: 'id' }],
+              table: 'User',
+              name: 'parent',
+              onDelete: null,
+              onUpdate: null,
+            },
           },
           primaryKeys: ['id'],
         },

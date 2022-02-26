@@ -9,7 +9,13 @@ import { allow, authorized, now } from '@daita/relational';
 
 export const schema = new RelationalSchema('test-schema');
 schema.table(Ascent);
-schema.table(AscentPerson, { key: ['ascentId', 'personId'] });
+schema.table(AscentPerson, {
+  key: ['ascentId', 'personId'],
+  foreignKeys: {
+    ascent: { onDelete: 'cascade' },
+    person: { onDelete: 'restrict' },
+  },
+});
 schema.table(Canton, {
   key: ['shortname'],
   columns: {

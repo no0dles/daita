@@ -1,7 +1,7 @@
 import { ForeignKeyConstraint } from '../../../schema';
 
-export interface RelationalAddTableForeignKeyMigrationStep {
-  kind: 'add_table_foreign_key';
+export interface RelationalUpdateTableForeignKeyMigrationStep {
+  kind: 'update_table_foreign_key';
   table: string;
   schema?: string;
   name: string;

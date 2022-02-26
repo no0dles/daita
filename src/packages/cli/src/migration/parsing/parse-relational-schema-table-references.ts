@@ -2,12 +2,22 @@ import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { parseTableDescription } from './parse-table-description';
 import { AstReferenceType } from '../../ast/ast-reference-type';
 import { isRequiredProperty } from './parse-relational-type';
-import { addTableReference, getTableFromSchema, SchemaDescription, SchemaTableDescription } from '@daita/orm';
+import {
+  addTableReference,
+  ForeignKeyConstraint,
+  getTableFromSchema,
+  SchemaDescription,
+  SchemaTableDescription,
+} from '@daita/orm';
+import { AstObjectValue } from '../../ast/ast-object-value';
+import { AstObjectPropertyAssignmentValue } from '../../ast/ast-object-property-value';
+import { AstStringLiteralValue } from '../../ast/ast-literal-value';
 
 export function parseRelationalSchemaTableReferences(
   schema: SchemaDescription,
   table: SchemaTableDescription,
   classDeclaration: AstClassDeclaration,
+  optionsObject: AstObjectValue | null,
 ) {
   for (const property of classDeclaration.allProps) {
     if (!property.name) {
@@ -33,11 +43,35 @@ export function parseRelationalSchemaTableReferences(
       throw new Error('reference not registered');
     }
 
+    let onUpdate: ForeignKeyConstraint | null = null;
+    let onDelete: ForeignKeyConstraint | null = null;
+    const foreignKeys = optionsObject?.prop('foreignKeys');
+    if (foreignKeys) {
+      const foreignKeysValue = foreignKeys.value;
+      if (foreignKeysValue instanceof AstObjectValue) {
+        const foreignKeyValue = foreignKeysValue.prop(property.name);
+        if (foreignKeyValue instanceof AstObjectPropertyAssignmentValue) {
+          if (foreignKeyValue.value instanceof AstObjectValue) {
+            const onUpdateProp = foreignKeyValue.value.prop('onUpdate')?.value;
+            if (onUpdateProp instanceof AstStringLiteralValue) {
+              onUpdate = onUpdateProp.value as ForeignKeyConstraint;
+            }
+            const onDeleteProp = foreignKeyValue.value.prop('onDelete')?.value;
+            if (onDeleteProp instanceof AstStringLiteralValue) {
+              onDelete = onDeleteProp.value as ForeignKeyConstraint;
+            }
+          }
+        }
+      }
+    }
+
     addTableReference(table, {
       referenceTable: referenceTable.table,
       referenceTableKey: referenceTable.table.name,
       name: property.name,
       required: isRequiredProperty(property),
+      onUpdate,
+      onDelete,
     });
   }
 }

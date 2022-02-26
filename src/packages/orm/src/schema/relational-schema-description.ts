@@ -61,6 +61,8 @@ export function getSchemaDescription(
           required: step.required,
           referenceTable: foreignTable.table,
           referenceTableKey: foreignTable.key,
+          onDelete: step.onDelete ?? null,
+          onUpdate: step.onUpdate ?? null,
         });
       } else if (step.kind === 'drop_table_field') {
         const { table } = getTableFromSchema(schema, { schema: step.schema, table: step.table });

@@ -4,10 +4,14 @@ export interface SchemaTableOptions<T> {
   key?: keyof T | (keyof T)[];
   indices?: { [key: string]: SchemaTableIndexOption<T> };
   columns?: { [P in keyof T]?: { size?: number } };
+  foreignKeys?: { [P in keyof T]?: { onUpdate?: ForeignKeyConstraint; onDelete?: ForeignKeyConstraint } };
 }
 
 export interface SchemaTableRequiredKeyOptions<T> {
   key: keyof T | (keyof T)[];
   indices?: { [key: string]: SchemaTableIndexOption<T> };
   columns?: { [P in keyof T]?: { size?: number } };
+  foreignKeys?: { [P in keyof T]?: { onUpdate?: ForeignKeyConstraint; onDelete?: ForeignKeyConstraint } };
 }
+
+export type ForeignKeyConstraint = 'cascade' | 'set null' | 'default' | 'restrict' | 'no action';

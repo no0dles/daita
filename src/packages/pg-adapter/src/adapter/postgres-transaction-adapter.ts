@@ -75,7 +75,7 @@ export class PostgresTransactionAdapter
   protected readonly logger = createLogger({ package: 'pg-adapter' });
   private executions: (() => Promise<any>)[] = [];
 
-  constructor(protected client: PoolClient) {
+  constructor(private client: PoolClient) {
     super();
   }
 

@@ -4,6 +4,7 @@ import { SelectSql } from '@daita/relational';
 import { SchemaTableFieldTypeDescription } from '../schema-table-field-type-description';
 import { table } from '@daita/relational';
 import { capitalize } from '@daita/common';
+import { ForeignKeyConstraint } from '../schema-table-options';
 
 export function getTableDescriptionIdentifier(table: TableDescription<any>): string {
   if (table.schema) {
@@ -43,7 +44,14 @@ export function createSchema(
 
 export function addTableReference(
   table: SchemaTableDescription,
-  options: { name: string; referenceTableKey: string; referenceTable: SchemaTableDescription; required: boolean },
+  options: {
+    name: string;
+    referenceTableKey: string;
+    referenceTable: SchemaTableDescription;
+    required: boolean;
+    onUpdate: ForeignKeyConstraint | null;
+    onDelete: ForeignKeyConstraint | null;
+  },
 ): void {
   const keys: SchemaTableReferenceKeyDescription[] = [];
   if (!options.referenceTable.primaryKeys || options.referenceTable.primaryKeys.length === 0) {
@@ -81,6 +89,8 @@ export function addTableReference(
     name: options.name,
     schema: options.referenceTable.schema,
     table: options.referenceTableKey,
+    onDelete: options.onDelete,
+    onUpdate: options.onUpdate,
   };
 }
 
@@ -205,6 +215,8 @@ export interface SchemaTableReferenceDescription {
   table: string;
   schema?: string;
   keys: SchemaTableReferenceKeyDescription[];
+  onUpdate: ForeignKeyConstraint | null;
+  onDelete: ForeignKeyConstraint | null;
 }
 
 export interface SchemaTableReferenceKeyDescription {

@@ -11,7 +11,11 @@ import { addTableToSchema, containsTableInSchema, SchemaDescription, SchemaTable
 
 export function parseRelationalSchemaTables(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
   const calls = schemaVariable.callsByName('table');
-  const tables: { classDeclaration: AstClassDeclaration; table: SchemaTableDescription }[] = [];
+  const tables: {
+    classDeclaration: AstClassDeclaration;
+    table: SchemaTableDescription;
+    optionsObject: AstObjectValue | null;
+  }[] = [];
 
   for (const call of calls) {
     const classArgument = call.argumentAt(0);
@@ -57,10 +61,11 @@ export function parseRelationalSchemaTables(schema: SchemaDescription, schemaVar
     tables.push({
       table,
       classDeclaration: classArgument,
+      optionsObject,
     });
   }
 
   for (const table of tables) {
-    parseRelationalSchemaTableReferences(schema, table.table, table.classDeclaration);
+    parseRelationalSchemaTableReferences(schema, table.table, table.classDeclaration, table.optionsObject);
   }
 }

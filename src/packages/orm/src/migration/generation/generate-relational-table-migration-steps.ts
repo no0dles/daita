@@ -77,6 +77,15 @@ export function generateRelationalTableMigrationSteps(
     });
   }
 
+  for (const mergedRef of mergedReferences.merge) {
+    steps.push({
+      kind: 'update_table_foreign_key',
+      table: mergedRef.target.table,
+      onUpdate: mergedRef.target.onUpdate,
+      onDelete: mergedRef.target.onDelete,
+    });
+  }
+
   const mergedIndices = merge(currentTable.indices, newTable.indices);
   for (const addedIndex of mergedIndices.added) {
     steps.push({
@@ -97,7 +106,7 @@ export function generateRelationalTableMigrationSteps(
     });
   }
   for (const mergedIndex of mergedIndices.merge) {
-    throw new Error('chaning index is not supported yet');
+    throw new Error('changing index is not supported yet');
   }
 
   const mergedSeeds = merge(currentTable.seeds, newTable.seeds);
