@@ -39,7 +39,17 @@ export function createSchema(
     rules?: { [key: string]: Rule };
   },
 ): SchemaDescription {
-  return { name, rules: options?.rules ?? {}, tables: options?.tables ?? {}, views: options?.views ?? {} };
+  const tables = options?.tables ?? {};
+  return {
+    name,
+    rules: options?.rules ?? {},
+    tables: Object.keys(tables).reduce<{ [key: string]: SchemaTableDescription }>((result, key) => {
+      const tableKey = getTableDescriptionIdentifier({ table: key, schema: tables[key].schema });
+      result[tableKey] = tables[key];
+      return result;
+    }, {}),
+    views: options?.views ?? {},
+  };
 }
 
 export function addTableReference(

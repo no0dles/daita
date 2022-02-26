@@ -1,0 +1,45 @@
+import { createSchema, generateRelationalMigrationSteps } from '@daita/orm';
+
+describe('orm/migration/drop-table-field', () => {
+  const baseSchema = createSchema('test', {
+    tables: {
+      User: {
+        fields: {
+          id: { type: 'string', name: 'id', required: true },
+          username: { type: 'string', name: 'username', required: true },
+        },
+        primaryKeys: ['id'],
+        name: 'User',
+        schema: 'custom',
+      },
+    },
+  });
+  const targetSchema = createSchema('test', {
+    tables: {
+      User: {
+        fields: {
+          id: { type: 'string', name: 'id', required: true },
+        },
+        primaryKeys: ['id'],
+        name: 'User',
+        schema: 'custom',
+      },
+    },
+  });
+  const steps = generateRelationalMigrationSteps(baseSchema, targetSchema);
+
+  it('should generate steps', () => {
+    expect(steps).toEqual([
+      {
+        kind: 'drop_table_field',
+        table: 'User',
+        fieldName: 'username',
+        schema: 'custom',
+      },
+    ]);
+  });
+
+  it('should not generate steps if nothing changes', () => {
+    expect(generateRelationalMigrationSteps(targetSchema, targetSchema)).toEqual([]);
+  });
+});
