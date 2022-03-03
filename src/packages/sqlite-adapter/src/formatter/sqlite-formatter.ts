@@ -1,4 +1,4 @@
-import { AlterTableAddColumnFormatter, CeilRoundFormatter } from '@daita/relational';
+import { AlterTableAddColumnFormatter, CeilRoundFormatter, CreateIndexFormatter } from '@daita/relational';
 import { Formatter } from '@daita/relational';
 import { CreateTableFormatter } from '@daita/relational';
 import { DropTableFormatter } from '@daita/relational';
@@ -40,4 +40,5 @@ sqliteFormatter.add(new SqliteHourFormatter());
 sqliteFormatter.add(new SqliteMinuteFormatter());
 sqliteFormatter.add(new SqliteSecondFormatter());
 sqliteFormatter.add(new SqliteWeekOfYearFormatter());
+sqliteFormatter.add(new CreateIndexFormatter());
 // TODO move to better-sqlite3 sqliteFormatter.add(new AlterTableDropColumnFormatter());

@@ -1,4 +1,3 @@
-import { CreateIndexFormatter } from './create-index-formatter';
 import { DropIndexFormatter } from './drop-index-formatter';
 import { NotifyFormatter } from './notify-formatter';
 import { ListenFormatter } from './listen-formatter';
@@ -9,6 +8,7 @@ import {
   AlterTableDropColumnFormatter,
   AlterTableDropConstraintFormatter,
   CeilFormatter,
+  CreateIndexFormatter,
 } from '@daita/relational';
 import { Formatter } from '@daita/relational';
 import { CreateTableFormatter } from '@daita/relational';

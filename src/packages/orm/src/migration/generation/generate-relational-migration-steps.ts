@@ -266,7 +266,12 @@ const foreignKeyOptions: GenerateOptions<{
       target.foreignKey.keys,
       (first, second) => first.foreignField === second.foreignField && first.field === second.field,
     );
-    if (tableKeys.hasChanges) {
+    if (
+      tableKeys.hasChanges ||
+      current.foreignKey.onUpdate !== target.foreignKey.onUpdate ||
+      current.foreignKey.onDelete !== target.foreignKey.onDelete ||
+      current.foreignKey.name !== target.foreignKey.name
+    ) {
       return [...foreignKeyOptions.removeFunction(schema, current), ...foreignKeyOptions.addFunction(schema, target)];
     }
     return [];

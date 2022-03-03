@@ -48,13 +48,19 @@ describe('update-foreign-key', () => {
     const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
     expect(steps).toEqual([
       {
-        kind: 'update_table_foreign_key',
+        kind: 'drop_table_foreign_key',
+        table: 'User',
+        name: 'parent',
+      },
+      {
+        kind: 'add_table_foreign_key',
         table: 'User',
         name: 'parent',
         fieldNames: ['parentId'],
         foreignFieldNames: ['id'],
         foreignTable: 'User',
-        required: true,
+        required: false,
+        onDelete: 'cascade',
       },
     ]);
   });

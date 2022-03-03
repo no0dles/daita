@@ -212,10 +212,7 @@ describe('get-migration-steps', () => {
     });
     const newSchema = createSchema('test', {});
     const steps = generateRelationalMigrationSteps(currentSchema, newSchema);
-    expect(steps).toEqual([
-      { kind: 'drop_table_foreign_key', table: 'User', name: 'parent' },
-      { kind: 'drop_table', table: 'User' },
-    ]);
+    expect(steps).toEqual([{ kind: 'drop_table', table: 'User' }]);
   });
 
   it('should add table index on existing table', () => {

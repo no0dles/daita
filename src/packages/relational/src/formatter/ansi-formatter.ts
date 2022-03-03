@@ -34,7 +34,10 @@ import { AddFormatter } from '../sql/operands/arithmetic/add/add-formatter';
 import { SubtractFormatter } from '../sql/operands/arithmetic/substract/subtract-formatter';
 import { MultiplyFormatter } from '../sql/operands/arithmetic/multiply/multiply-formatter';
 import { DivideFormatter } from '../sql/operands/arithmetic/divide/divide-formatter';
-import { CaseWhenFormatter, CoalesceFormatter, IsNotNullFormatter, RoundFormatter } from '../sql';
+import { CoalesceFormatter } from '../sql/function/conditional/coalesce/coalesce-formatter';
+import { CaseWhenFormatter } from '../sql/function/conditional/case-when/case-when-formatter';
+import { IsNotNullFormatter } from '../sql/operands/comparison/is-not-null/is-not-null-formatter';
+import { RoundFormatter } from '../sql/function/numeric/round/round-formatter';
 
 export const ansiFormatter = new Formatter();
 
