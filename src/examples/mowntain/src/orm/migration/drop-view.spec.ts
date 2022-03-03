@@ -1,32 +1,36 @@
-import { createSchema, generateRelationalMigrationSteps } from '@daita/orm';
+import { testMigrationStepsTest } from './test-migration-steps.test';
+import { all, table } from '@daita/relational';
 
 describe('orm/migration/drop-view', () => {
-  const baseSchema = createSchema('test', {
-    views: {
-      User: {
-        name: 'User',
-        key: 'User',
-        schema: 'custom',
-        query: {
-          select: 1,
+  testMigrationStepsTest({
+    base: {
+      views: {
+        User: {
+          name: 'User',
+          key: 'User',
+          schema: 'custom',
+          query: {
+            select: 1,
+          },
         },
       },
     },
-  });
-  const targetSchema = createSchema('test');
-  const steps = generateRelationalMigrationSteps(baseSchema, targetSchema);
-
-  it('should generate steps', () => {
-    expect(steps).toEqual([
+    target: {},
+    expectedSteps: [
       {
         kind: 'drop_view',
         schema: 'custom',
         view: 'User',
       },
-    ]);
-  });
-
-  it('should not generate steps if nothing changes', () => {
-    expect(generateRelationalMigrationSteps(targetSchema, targetSchema)).toEqual([]);
+    ],
+    verifySqls: [
+      {
+        success: false,
+        sql: {
+          select: all(),
+          from: table('User', 'custom'),
+        },
+      },
+    ],
   });
 });

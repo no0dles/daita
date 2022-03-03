@@ -1,23 +1,22 @@
-import { createSchema, generateRelationalMigrationSteps } from '@daita/orm';
+import { testMigrationStepsTest } from './test-migration-steps.test';
+import { table } from '@daita/relational';
 
 describe('orm/migration/create-table', () => {
-  const baseSchema = createSchema('test');
-  const targetSchema = createSchema('test', {
-    tables: {
-      User: {
-        fields: {
-          id: { type: 'string', name: 'id', required: true },
+  testMigrationStepsTest({
+    base: {},
+    target: {
+      tables: {
+        User: {
+          fields: {
+            id: { type: 'string', name: 'id', required: true },
+          },
+          primaryKeys: ['id'],
+          name: 'User',
+          schema: 'custom',
         },
-        primaryKeys: ['id'],
-        name: 'User',
-        schema: 'custom',
       },
     },
-  });
-  const steps = generateRelationalMigrationSteps(baseSchema, targetSchema);
-
-  it('should generate steps', () => {
-    expect(steps).toEqual([
+    expectedSteps: [
       { kind: 'add_table', table: 'User', schema: 'custom' },
       {
         kind: 'add_table_field',
@@ -29,10 +28,22 @@ describe('orm/migration/create-table', () => {
         schema: 'custom',
       },
       { kind: 'add_table_primary_key', table: 'User', fieldNames: ['id'], schema: 'custom' },
-    ]);
-  });
-
-  it('should not generate steps if nothing changes', () => {
-    expect(generateRelationalMigrationSteps(targetSchema, targetSchema)).toEqual([]);
+    ],
+    verifySqls: [
+      {
+        success: true,
+        sql: {
+          into: table('User', 'custom'),
+          insert: { id: 'a' },
+        },
+      },
+      {
+        success: false,
+        sql: {
+          into: table('User', 'custom'),
+          insert: { id: 'a' },
+        },
+      },
+    ],
   });
 });

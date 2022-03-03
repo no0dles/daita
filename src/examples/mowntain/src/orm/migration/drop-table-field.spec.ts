@@ -1,45 +1,56 @@
-import { createSchema, generateRelationalMigrationSteps } from '@daita/orm';
+import { testMigrationStepsTest } from './test-migration-steps.test';
+import { field, table } from '@daita/relational';
 
 describe('orm/migration/drop-table-field', () => {
-  const baseSchema = createSchema('test', {
-    tables: {
-      User: {
-        fields: {
-          id: { type: 'string', name: 'id', required: true },
-          username: { type: 'string', name: 'username', required: true },
+  testMigrationStepsTest({
+    base: {
+      tables: {
+        User: {
+          fields: {
+            id: { type: 'string', name: 'id', required: true },
+            username: { type: 'string', name: 'username', required: true },
+          },
+          primaryKeys: ['id'],
+          name: 'User',
+          schema: 'custom',
         },
-        primaryKeys: ['id'],
-        name: 'User',
-        schema: 'custom',
       },
     },
-  });
-  const targetSchema = createSchema('test', {
-    tables: {
-      User: {
-        fields: {
-          id: { type: 'string', name: 'id', required: true },
+    target: {
+      tables: {
+        User: {
+          fields: {
+            id: { type: 'string', name: 'id', required: true },
+          },
+          primaryKeys: ['id'],
+          name: 'User',
+          schema: 'custom',
         },
-        primaryKeys: ['id'],
-        name: 'User',
-        schema: 'custom',
       },
     },
-  });
-  const steps = generateRelationalMigrationSteps(baseSchema, targetSchema);
-
-  it('should generate steps', () => {
-    expect(steps).toEqual([
+    expectedSteps: [
       {
         kind: 'drop_table_field',
         table: 'User',
         fieldName: 'username',
         schema: 'custom',
       },
-    ]);
-  });
-
-  it('should not generate steps if nothing changes', () => {
-    expect(generateRelationalMigrationSteps(targetSchema, targetSchema)).toEqual([]);
+    ],
+    verifySqls: [
+      {
+        success: true,
+        sql: {
+          select: field(table('User', 'custom'), 'id'),
+          from: table('User', 'custom'),
+        },
+      },
+      {
+        success: false,
+        sql: {
+          select: field(table('User', 'custom'), 'username'),
+          from: table('User', 'custom'),
+        },
+      },
+    ],
   });
 });

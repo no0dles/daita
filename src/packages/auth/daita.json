@@ -3,8 +3,8 @@
     "default": {
       "module": "../pg-adapter",
       "connectionString": "postgres://postgres:postgres@localhost/auth",
-      "schemaLocation": "schema.ts",
-      "migrationLocation": "migrations"
+      "schemaLocation": "src/schema.ts",
+      "migrationLocation": "src/migrations"
     }
   }
 }

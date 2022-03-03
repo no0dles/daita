@@ -1,4 +1,4 @@
-import { ForeignKeyConstraint } from '../../../schema';
+import { ForeignKeyConstraint } from '@daita/relational';
 
 export interface RelationalAddTableForeignKeyMigrationStep {
   kind: 'add_table_foreign_key';

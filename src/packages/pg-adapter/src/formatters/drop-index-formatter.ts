@@ -10,6 +10,10 @@ export class DropIndexFormatter implements FormatHandle<DropIndexSql> {
   }
 
   handle(param: DropIndexSql, ctx: FormatContext, formatter: Formatter): string {
-    return `DROP INDEX ${ctx.escape(param.dropIndex)}`;
+    if (param.on && param.on.schema) {
+      return `DROP INDEX ${ctx.escape(param.on.schema)}.${ctx.escape(param.dropIndex)}`;
+    } else {
+      return `DROP INDEX ${ctx.escape(param.dropIndex)}`;
+    }
   }
 }

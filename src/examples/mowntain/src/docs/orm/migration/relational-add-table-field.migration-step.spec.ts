@@ -27,7 +27,7 @@ describe('packages/orm/migration/steps/add-table-field', () => {
   let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    ctx = await getTestAdapter();
+    ctx = await getTestAdapter('pg');
     await migrate(ctx, migrationTree);
   });
 

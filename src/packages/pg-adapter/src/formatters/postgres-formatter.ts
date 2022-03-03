@@ -5,6 +5,7 @@ import { ListenFormatter } from './listen-formatter';
 import {
   AlterTableAddColumnFormatter,
   AlterTableAddForeignKeyFormatter,
+  AlterTableAddPrimaryKeyFormatter,
   AlterTableDropColumnFormatter,
   AlterTableDropConstraintFormatter,
   CeilFormatter,
@@ -45,6 +46,7 @@ postgresFormatter.add(new LeastFormatter());
 postgresFormatter.add(new CreateTableFormatter());
 postgresFormatter.add(new AlterTableAddColumnFormatter());
 postgresFormatter.add(new AlterTableAddForeignKeyFormatter());
+postgresFormatter.add(new AlterTableAddPrimaryKeyFormatter());
 postgresFormatter.add(new AlterTableDropColumnFormatter());
 postgresFormatter.add(new AlterTableDropConstraintFormatter());
 postgresFormatter.add(new CreateIndexFormatter());

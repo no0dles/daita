@@ -4,20 +4,50 @@ export interface MergeListResult<T> {
   merge: { current: T; target: T; key: string }[];
 }
 
-export interface MergeArrayResult {
-  added: string[];
-  removed: string[];
+export interface MergeArrayResult<T> {
+  added: T[];
+  removed: T[];
+  hasChanges: boolean;
 }
 
 export function mergeArray(
   currentItems: string[] | null | undefined,
   newItems: string[] | null | undefined,
-): MergeArrayResult {
-  const currentItemsArray: string[] = currentItems || [];
-  const newItemsArray: string[] = newItems || [];
+): MergeArrayResult<string>;
+export function mergeArray(
+  currentItems: number[] | null | undefined,
+  newItems: number[] | null | undefined,
+): MergeArrayResult<number>;
+export function mergeArray<T>(
+  currentItems: T[] | null | undefined,
+  newItems: T[] | null | undefined,
+  compareFn: (first: T, second: T) => boolean,
+): MergeArrayResult<T>;
+export function mergeArray<T>(
+  currentItems: T[] | null | undefined,
+  newItems: T[] | null | undefined,
+  compareFn?: (first: T, second: T) => boolean,
+): MergeArrayResult<T> {
+  const currentItemsArray: T[] = currentItems || [];
+  const newItemsArray: T[] = newItems || [];
+
+  const added = newItemsArray.filter((newItem) => {
+    if (compareFn) {
+      return !currentItemsArray.find((currentItem) => compareFn(currentItem, newItem));
+    }
+    return currentItemsArray.indexOf(newItem) === -1;
+  });
+  const removed = currentItemsArray.filter((currentItem) => {
+    if (compareFn) {
+      return !newItemsArray.find((newItem) => compareFn(currentItem, newItem));
+    }
+    return newItemsArray.indexOf(currentItem) === -1;
+  });
+
   return {
-    added: newItemsArray.filter((newItem) => currentItemsArray.indexOf(newItem) === -1),
-    removed: currentItemsArray.filter((currentItem) => newItemsArray.indexOf(currentItem) === -1),
+    added,
+    removed,
+    hasChanges: added.length > 0 || removed.length > 0,
   };
 }
 

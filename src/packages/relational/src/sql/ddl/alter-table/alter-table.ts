@@ -2,10 +2,12 @@ import { FormatHandle, Formatter, FormatType } from '../../../formatter/formatte
 import {
   AlterTableAddColumnSql,
   AlterTableAddForeignKeySql,
+  AlterTableAddPrimaryKeySql,
   AlterTableDropColumnSql,
   AlterTableDropConstraintSql,
   isAlterTableAddColumnSql,
   isAlterTableAddForeignKeySql,
+  isAlterTableAddPrimaryKeySql,
   isAlterTableDropColumnSql,
   isAlterTableDropConstraintSql,
 } from './alter-table-sql';
@@ -68,7 +70,36 @@ export class AlterTableAddForeignKeyFormatter implements FormatHandle<AlterTable
       param.add.references.primaryKeys,
       ctx,
     )})`;
+    if (param.add.onDelete) {
+      sql += ` ON DELETE ${param.add.onDelete}`;
+    }
+    if (param.add.onUpdate) {
+      sql += ` ON UPDATE ${param.add.onUpdate}`;
+    }
     return sql;
+  }
+
+  private formatKeys(key: string[] | string, ctx: FormatContext) {
+    if (key instanceof Array) {
+      return key.map((key) => ctx.escape(key)).join(', ');
+    } else {
+      return ctx.escape(key);
+    }
+  }
+}
+
+export class AlterTableAddPrimaryKeyFormatter implements FormatHandle<AlterTableAddPrimaryKeySql> {
+  type = FormatType.Sql;
+
+  canHandle(param: any): boolean {
+    return isAlterTableAddPrimaryKeySql(param);
+  }
+
+  handle(param: AlterTableAddPrimaryKeySql, ctx: FormatContext, formatter: Formatter): string {
+    return `ALTER TABLE ${formatter.format(param.alterTable, ctx)} ADD PRIMARY KEY (${this.formatKeys(
+      param.add.primaryKey,
+      ctx,
+    )})`;
   }
 
   private formatKeys(key: string[] | string, ctx: FormatContext) {

@@ -16,6 +16,8 @@ export function addTableForeignKeyAction(
         table: table(step.foreignTable, step.foreignTableSchema),
         primaryKeys: step.foreignFieldNames,
       },
+      onUpdate: step.onUpdate,
+      onDelete: step.onDelete,
     },
   });
 }

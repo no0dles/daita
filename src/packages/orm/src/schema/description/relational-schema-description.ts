@@ -1,10 +1,9 @@
-import { TableDescription } from '@daita/relational';
+import { ForeignKeyConstraint, TableDescription } from '@daita/relational';
 import { Rule } from '@daita/relational';
 import { SelectSql } from '@daita/relational';
 import { SchemaTableFieldTypeDescription } from '../schema-table-field-type-description';
 import { table } from '@daita/relational';
 import { capitalize } from '@daita/common';
-import { ForeignKeyConstraint } from '../schema-table-options';
 
 export function getTableDescriptionIdentifier(table: TableDescription<any>): string {
   if (table.schema) {
@@ -17,7 +16,12 @@ export interface SchemaDescription {
   name: string;
   tables?: { [key: string]: SchemaTableDescription };
   views?: { [key: string]: SchemaViewDescription };
-  rules?: { [key: string]: Rule }; // TODO create RuleDescription
+  rules?: { [key: string]: SchemaRuleDescription };
+}
+
+export interface SchemaRuleDescription {
+  id: string;
+  rule: Rule;
 }
 
 export interface SchemaTableDescription {
@@ -31,18 +35,21 @@ export interface SchemaTableDescription {
   seeds?: { [key: string]: SchemaTableSeedDescription };
 }
 
-export function createSchema(
-  name: string,
-  options?: {
-    tables?: { [key: string]: SchemaTableDescription };
-    views?: { [key: string]: SchemaViewDescription };
-    rules?: { [key: string]: Rule };
-  },
-): SchemaDescription {
+export interface CreateSchemaOptions {
+  tables?: { [key: string]: SchemaTableDescription };
+  views?: { [key: string]: SchemaViewDescription };
+  rules?: { [key: string]: Rule };
+}
+
+export function createSchema(name: string, options?: CreateSchemaOptions): SchemaDescription {
   const tables = options?.tables ?? {};
+  const rules = options?.rules ?? {};
   return {
     name,
-    rules: options?.rules ?? {},
+    rules: Object.keys(rules).reduce<{ [key: string]: SchemaRuleDescription }>((map, id) => {
+      map[id] = { id, rule: rules[id] };
+      return map;
+    }, {}),
     tables: Object.keys(tables).reduce<{ [key: string]: SchemaTableDescription }>((result, key) => {
       const tableKey = getTableDescriptionIdentifier({ table: key, schema: tables[key].schema });
       result[tableKey] = tables[key];
@@ -254,7 +261,7 @@ export function getRulesFromSchema(schema: SchemaDescription): Rule[] {
     return [];
   }
   const rules = schema.rules;
-  return Object.keys(rules).map((key) => rules[key]);
+  return Object.keys(rules).map((key) => rules[key].rule);
 }
 
 export function getFieldsFromSchemaTable(
@@ -422,7 +429,7 @@ export function dropTableReference(table: SchemaTableDescription, key: string): 
 
 export function addRuleToSchema(schema: SchemaDescription, id: string, rule: Rule): void {
   if (schema.rules) {
-    schema.rules[id] = rule;
+    schema.rules[id] = { id, rule };
   }
 }
 export function dropRuleFromSchema(schema: SchemaDescription, id: string): void {

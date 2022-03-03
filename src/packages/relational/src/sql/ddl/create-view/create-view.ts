@@ -1,6 +1,7 @@
 import { FormatHandle, Formatter, FormatType } from '../../../formatter/formatter';
 import { CreateViewSql, isCreateViewSql } from './create-view-sql';
 import { FormatContext } from '../../../formatter/format-context';
+import { InlineFormatContext } from '../../../formatter/inline-format-context';
 
 export class CreateViewFormatter implements FormatHandle<CreateViewSql<any>> {
   type = FormatType.Sql;
@@ -13,6 +14,6 @@ export class CreateViewFormatter implements FormatHandle<CreateViewSql<any>> {
     return `CREATE${param.orReplace ? ' OR REPLACE ' : ' '}VIEW ${formatter.format(
       param.createView,
       ctx,
-    )} AS ${formatter.format(param.as, ctx)}`;
+    )} AS ${formatter.format(param.as, new InlineFormatContext(ctx))}`;
   }
 }

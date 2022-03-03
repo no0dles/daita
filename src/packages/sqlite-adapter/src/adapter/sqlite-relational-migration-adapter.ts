@@ -131,7 +131,7 @@ export class SqliteRelationalMigrationAdapter
       } else if (step.kind === 'add_table_field') {
         addTableFieldAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_primary_key') {
-        addTablePrimaryKeyAction(client, step, migrationPlan.migration);
+        // TODO addTablePrimaryKeyAction(client, step, migrationPlan.migration);
       } else if (step.kind === 'add_table_foreign_key') {
         // TODO await addTableForeignKeyAction(client, step);
       } else if (step.kind === 'drop_table_primary_key') {

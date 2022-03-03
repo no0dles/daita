@@ -1,39 +1,38 @@
-import { createSchema, generateRelationalMigrationSteps } from '@daita/orm';
+import { testMigrationStepsTest } from './test-migration-steps.test';
+import { table } from '@daita/relational';
 
 describe('orm/migration/create-index', () => {
-  const baseSchema = createSchema('test', {
-    tables: {
-      User: {
-        fields: {
-          id: { type: 'string', name: 'id', required: true },
-          username: { type: 'string', name: 'username', required: true },
-        },
-        primaryKeys: ['id'],
-        name: 'User',
-        schema: 'custom',
-      },
-    },
-  });
-  const targetSchema = createSchema('test', {
-    tables: {
-      User: {
-        fields: {
-          id: { type: 'string', name: 'id', required: true },
-          username: { type: 'string', name: 'username', required: true },
-        },
-        primaryKeys: ['id'],
-        name: 'User',
-        schema: 'custom',
-        indices: {
-          username: { unique: true, name: 'username', fields: ['username'] },
+  testMigrationStepsTest({
+    base: {
+      tables: {
+        User: {
+          fields: {
+            id: { type: 'string', name: 'id', required: true },
+            username: { type: 'string', name: 'username', required: true },
+          },
+          primaryKeys: ['id'],
+          name: 'User',
+          schema: 'custom',
         },
       },
     },
-  });
-  const steps = generateRelationalMigrationSteps(baseSchema, targetSchema);
-
-  it('should generate steps', () => {
-    expect(steps).toEqual([
+    target: {
+      tables: {
+        User: {
+          fields: {
+            id: { type: 'string', name: 'id', required: true },
+            username: { type: 'string', name: 'username', required: true },
+          },
+          primaryKeys: ['id'],
+          name: 'User',
+          schema: 'custom',
+          indices: {
+            username: { unique: true, name: 'username', fields: ['username'] },
+          },
+        },
+      },
+    },
+    expectedSteps: [
       {
         fields: ['username'],
         kind: 'create_index',
@@ -42,10 +41,22 @@ describe('orm/migration/create-index', () => {
         table: 'User',
         unique: true,
       },
-    ]);
-  });
-
-  it('should not generate steps if nothing changes', () => {
-    expect(generateRelationalMigrationSteps(targetSchema, targetSchema)).toEqual([]);
+    ],
+    verifySqls: [
+      {
+        success: true,
+        sql: {
+          into: table('User', 'custom'),
+          insert: { id: 'a', username: 'test' },
+        },
+      },
+      {
+        success: false,
+        sql: {
+          into: table('User', 'custom'),
+          insert: { id: 'a', username: 'test' },
+        },
+      },
+    ],
   });
 });

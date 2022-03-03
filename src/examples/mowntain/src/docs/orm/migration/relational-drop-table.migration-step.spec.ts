@@ -26,7 +26,7 @@ describe('packages/orm/migration/steps/drop-table', () => {
   let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    ctx = await getTestAdapter();
+    ctx = await getTestAdapter('pg');
     await migrate(ctx, migrationTree);
   });
 

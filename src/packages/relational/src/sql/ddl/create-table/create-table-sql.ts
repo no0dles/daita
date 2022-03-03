@@ -22,7 +22,11 @@ export interface CreateTableForeignKey {
     table: TableDescription<any>;
     primaryKey: string | string[];
   };
+  onDelete?: ForeignKeyConstraint;
+  onUpdate?: ForeignKeyConstraint;
 }
+
+export type ForeignKeyConstraint = 'cascade' | 'set null' | 'default' | 'restrict' | 'no action';
 
 export const isCreateTableSql = (val: any): val is CreateTableSql =>
   isKind<CreateTableSql>(val, ['createTable', 'columns']);

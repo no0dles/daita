@@ -106,6 +106,21 @@ export class PostgresMigrationAdapter
   }
 
   private applyMigrationPlan(client: RelationalTransactionAdapter<PostgresSql>, migrationPlan: MigrationPlan) {
+    const schemas = new Set<string>();
+
+    for (const step of migrationPlan.migration.steps) {
+      if ((step.kind === 'create_index' || step.kind === 'add_table' || step.kind === 'add_view') && step.schema) {
+        schemas.add(step.schema);
+      }
+    }
+
+    for (const schema of schemas) {
+      client.exec({
+        createSchema: schema,
+        ifNotExists: true,
+      });
+    }
+
     for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
         addTableWithSchemaAction(client, step, migrationPlan.migration);
