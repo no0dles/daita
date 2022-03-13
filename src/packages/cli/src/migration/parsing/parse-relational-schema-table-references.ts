@@ -2,18 +2,18 @@ import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { parseTableDescription } from './parse-table-description';
 import { AstReferenceType } from '../../ast/ast-reference-type';
 import { isRequiredProperty } from './parse-relational-type';
-import { addTableReference, getTableFromSchema, SchemaDescription, SchemaTableDescription } from '@daita/orm';
+import { addTableReference, getTableFromSchema, SchemaDescription } from '@daita/orm';
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { AstObjectPropertyAssignmentValue } from '../../ast/ast-object-property-value';
 import { AstStringLiteralValue } from '../../ast/ast-literal-value';
-import { ForeignKeyConstraint } from '@daita/relational';
+import { ForeignKeyConstraint, TableDescription } from '@daita/relational';
 
 export function parseRelationalSchemaTableReferences(
   schema: SchemaDescription,
-  table: SchemaTableDescription,
+  table: TableDescription<any>,
   classDeclaration: AstClassDeclaration,
   optionsObject: AstObjectValue | null,
-) {
+): SchemaDescription {
   for (const property of classDeclaration.allProps) {
     if (!property.name) {
       throw new Error('missing prop name');
@@ -60,13 +60,13 @@ export function parseRelationalSchemaTableReferences(
       }
     }
 
-    addTableReference(table, {
-      referenceTable: referenceTable.table,
-      referenceTableKey: referenceTable.table.name,
+    schema = addTableReference(schema, table, tableDescription, {
       name: property.name,
       required: isRequiredProperty(property),
       onUpdate,
       onDelete,
     });
   }
+
+  return schema;
 }

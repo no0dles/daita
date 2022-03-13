@@ -9,7 +9,16 @@ export type AlterTableSql =
   | AlterTableDropConstraintSql
   | AlterTableAddPrimaryKeySql
   | AlterTableAddForeignKeySql<string>
-  | AlterTableAddForeignKeySql<string[]>;
+  | AlterTableAddForeignKeySql<string[]>
+  | AlterTableRenameSql;
+
+export interface AlterTableRenameSql {
+  alterTable: TableDescription<any>;
+  renameTo: string;
+}
+
+export const isAlterTableRenameSql = (val: any): val is AlterTableRenameSql =>
+  isExactKind<AlterTableRenameSql>(val, ['alterTable', 'renameTo']);
 
 export interface AlterTableDropColumnSql {
   alterTable: TableDescription<any>;

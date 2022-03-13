@@ -5,7 +5,10 @@ import { AstError } from '../../ast/utils';
 import { parseTableDescription } from './parse-table-description';
 import { addViewToSchema, SchemaDescription } from '@daita/orm';
 
-export function parseRelationalSchemaViews(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
+export function parseRelationalSchemaViews(
+  schema: SchemaDescription,
+  schemaVariable: AstVariableDeclaration,
+): SchemaDescription {
   const calls = schemaVariable.callsByName('view');
   for (const call of calls) {
     const classArgument = call.argumentAt(0);
@@ -21,10 +24,11 @@ export function parseRelationalSchemaViews(schema: SchemaDescription, schemaVari
 
     const tableDescription = parseTableDescription(classArgument);
     const query = convertValue(queryArgument);
-    addViewToSchema(schema, {
+    schema = addViewToSchema(schema, {
       query,
       name: tableDescription.table,
       schema: tableDescription.schema,
     });
   }
+  return schema;
 }

@@ -2,12 +2,14 @@ import { AstObjectValue } from '../../ast/ast-object-value';
 import { getArrayValue, getStringValue } from '../../ast/utils';
 import { AstArrayValue } from '../../ast/ast-array-value';
 import { AstLiteralValue } from '../../ast/ast-literal-value';
-import { SchemaTableDescription, setTablePrimaryKey } from '@daita/orm';
+import { SchemaDescription, setTablePrimaryKey } from '@daita/orm';
+import { TableDescription } from '@daita/relational';
 
 export function parseRelationalSchemaTablePrimaryKeys(
-  table: SchemaTableDescription,
+  schema: SchemaDescription,
+  table: TableDescription<any>,
   optionsArgument: AstObjectValue | null,
-) {
+): SchemaDescription {
   const key = optionsArgument?.prop('key');
 
   const keys = [];
@@ -27,5 +29,5 @@ export function parseRelationalSchemaTablePrimaryKeys(
     keys.push('id');
   }
 
-  setTablePrimaryKey(table, keys);
+  return setTablePrimaryKey(schema, table, keys);
 }

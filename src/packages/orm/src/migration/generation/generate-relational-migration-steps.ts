@@ -4,6 +4,7 @@ import {
   getIndicesFromSchemaTable,
   getReferencesFromSchemaTable,
   getSeedsFromSchemaTable,
+  getTableDescriptionIdentifier,
   getTableFromSchema,
   SchemaDescription,
   SchemaRuleDescription,
@@ -18,6 +19,8 @@ import { MigrationStep } from '../migration-step';
 import { merge, mergeArray, MergeListResult } from '@daita/common';
 import { table } from '@daita/relational';
 import { isTableReferenceRequiredInTable } from '../../schema/description/relational-table-reference-description';
+import { sortSteps } from '../sort-steps';
+import { MigrationSteps } from '../schema';
 
 interface GenerateOptions<T> {
   addFunction: (schema: SchemaDescription, result: T) => MigrationStep[];
@@ -32,14 +35,14 @@ function generateSteps<T>(
 ): MigrationStep[] {
   const steps: MigrationStep[] = [];
 
-  for (const added of merge.added) {
-    steps.push(...options.addFunction(newSchema, added.item));
+  for (const removed of merge.removed) {
+    steps.push(...options.removeFunction(newSchema, removed.item));
   }
   for (const merged of merge.merge) {
     steps.push(...options.mergeFunction(newSchema, merged.current, merged.target));
   }
-  for (const removed of merge.removed) {
-    steps.push(...options.removeFunction(newSchema, removed.item));
+  for (const added of merge.added) {
+    steps.push(...options.addFunction(newSchema, added.item));
   }
 
   return steps;
@@ -163,21 +166,23 @@ const tableOptions: GenerateOptions<SchemaTableDescription> = {
       'update_seed',
     ];
 
-    return [
-      ...generateSteps(schema, mergedFields, tableFields),
-      ...(mergedPrimaryKeys.hasChanges
-        ? primaryKeyOptions.mergeFunction(
-            schema,
-            { table: current, primaryKeys: current.primaryKeys },
-            { table: target, primaryKeys: target.primaryKeys },
-          )
-        : []),
-      ...generateSteps(schema, mergedReferences, foreignKeyOptions),
-      ...generateSteps(schema, mergedIndices, indexOptions),
-      ...generateSteps(schema, mergedSeeds, seedOptions),
-    ].sort((first, second) => {
-      return kindOrder.indexOf(first.kind) - kindOrder.indexOf(second.kind);
-    });
+    const steps = sortSteps(
+      [
+        ...generateSteps(schema, mergedFields, tableFields),
+        ...(mergedPrimaryKeys.hasChanges
+          ? primaryKeyOptions.mergeFunction(
+              schema,
+              { table: current, primaryKeys: current.primaryKeys },
+              { table: target, primaryKeys: target.primaryKeys },
+            )
+          : []),
+        ...generateSteps(schema, mergedReferences, foreignKeyOptions),
+        ...generateSteps(schema, mergedIndices, indexOptions),
+        ...generateSteps(schema, mergedSeeds, seedOptions),
+      ],
+      kindOrder,
+    );
+    return steps;
   },
 };
 
@@ -406,13 +411,59 @@ export function generateRelationalMigrationSteps(currentSchema: SchemaDescriptio
   steps.push(...generateSteps(newSchema, mergedViews, viewOptions));
   steps.push(...generateSteps(newSchema, mergedRules, ruleOptions));
 
-  return steps.map((step) => {
-    if (step.kind === 'drop_rule' || step.kind === 'add_rule') {
+  return reorderSteps(
+    steps.map((step) => {
+      if (step.kind === 'drop_rule' || step.kind === 'add_rule') {
+        return step;
+      }
+      if (step.schema === undefined || step.schema === null) {
+        delete step.schema;
+      }
       return step;
+    }),
+  );
+}
+
+export function reorderSteps(steps: MigrationStep[]): MigrationStep[] {
+  const result: MigrationStep[] = [...steps];
+  const tables: string[] = [];
+  const tableIndex: number[] = [];
+  for (let i = 0; i < steps.length; i++) {
+    const step = steps[i];
+    if (step.kind === 'add_table') {
+      const tableKey = getTableDescriptionIdentifier({ table: step.table, schema: step.schema });
+      tables.push(tableKey);
+      tableIndex.push(i);
+    } else if (step.kind === 'add_table_foreign_key') {
+      const tableKey = getTableDescriptionIdentifier({ table: step.table, schema: step.schema });
+      let currentTableStartIndex = tableIndex[tables.indexOf(tableKey)];
+      const foreignTable = getTableDescriptionIdentifier({ table: step.foreignTable, schema: step.foreignTableSchema });
+      const hasAddForeignTable = steps.some(
+        (s) =>
+          s.kind === 'add_table' &&
+          getTableDescriptionIdentifier({ table: s.table, schema: s.schema }) === foreignTable,
+      );
+      if (tables.indexOf(foreignTable) === -1 && hasAddForeignTable) {
+        //move steps
+        for (let j = i; j < result.length; j++) {
+          const moveStep = result[j];
+          if (
+            moveStep.kind === 'add_table' ||
+            moveStep.kind === 'add_table_field' ||
+            moveStep.kind === 'add_table_primary_key' ||
+            moveStep.kind === 'add_table_foreign_key' ||
+            moveStep.kind === 'drop_table_field'
+          ) {
+            const moveStepKey = getTableDescriptionIdentifier({ table: moveStep.table, schema: moveStep.schema });
+            if (moveStepKey === foreignTable) {
+              result.splice(currentTableStartIndex, 0, ...result.splice(j, 1));
+              j--;
+              currentTableStartIndex++;
+            }
+          }
+        }
+      }
     }
-    if (step.schema === undefined || step.schema === null) {
-      delete step.schema;
-    }
-    return step;
-  });
+  }
+  return result;
 }

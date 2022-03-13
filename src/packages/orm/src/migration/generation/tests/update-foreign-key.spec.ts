@@ -8,7 +8,7 @@ describe('update-foreign-key', () => {
         User: {
           fields: {
             id: { type: 'string', name: 'id', required: true },
-            parentId: { type: 'string', name: 'id', required: false },
+            parentId: { type: 'string', name: 'parentId', required: false },
           },
           primaryKeys: ['id'],
           name: 'User',
@@ -29,7 +29,7 @@ describe('update-foreign-key', () => {
         User: {
           fields: {
             id: { type: 'string', name: 'id', required: true },
-            parentId: { type: 'string', name: 'id', required: false },
+            parentId: { type: 'string', name: 'parentId', required: false },
           },
           primaryKeys: ['id'],
           name: 'User',

@@ -7,13 +7,17 @@ import { parseRelationalSchemaTableIndices } from './parse-relational-schema-tab
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { AstError } from '../../ast/utils';
-import { addTableToSchema, containsTableInSchema, SchemaDescription, SchemaTableDescription } from '@daita/orm';
+import { addTableToSchema, containsTableInSchema, SchemaDescription } from '@daita/orm';
+import { TableDescription } from '@daita/relational';
 
-export function parseRelationalSchemaTables(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
+export function parseRelationalSchemaTables(
+  schema: SchemaDescription,
+  schemaVariable: AstVariableDeclaration,
+): SchemaDescription {
   const calls = schemaVariable.callsByName('table');
   const tables: {
     classDeclaration: AstClassDeclaration;
-    table: SchemaTableDescription;
+    tableDescription: TableDescription<any>;
     optionsObject: AstObjectValue | null;
   }[] = [];
 
@@ -46,26 +50,30 @@ export function parseRelationalSchemaTables(schema: SchemaDescription, schemaVar
       throw new Error(`missing table class name`);
     }
 
-    const table = addTableToSchema(schema, {
-      table: tableDescription.table,
-      schema: tableDescription.schema,
-    });
+    schema = addTableToSchema(schema, tableDescription);
 
-    parseRelationalSchemaTableFields(table, classArgument, optionsObject);
-    parseRelationalSchemaTablePrimaryKeys(table, optionsObject);
+    schema = parseRelationalSchemaTableFields(schema, tableDescription, classArgument, optionsObject);
+    schema = parseRelationalSchemaTablePrimaryKeys(schema, tableDescription, optionsObject);
 
     if (optionsObject) {
-      parseRelationalSchemaTableIndices(table, optionsObject);
+      schema = parseRelationalSchemaTableIndices(schema, tableDescription, optionsObject);
     }
 
     tables.push({
-      table,
+      tableDescription,
       classDeclaration: classArgument,
       optionsObject,
     });
   }
 
   for (const table of tables) {
-    parseRelationalSchemaTableReferences(schema, table.table, table.classDeclaration, table.optionsObject);
+    schema = parseRelationalSchemaTableReferences(
+      schema,
+      table.tableDescription,
+      table.classDeclaration,
+      table.optionsObject,
+    );
   }
+
+  return schema;
 }

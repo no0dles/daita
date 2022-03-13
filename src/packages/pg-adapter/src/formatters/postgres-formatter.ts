@@ -1,4 +1,3 @@
-import { DropIndexFormatter } from './drop-index-formatter';
 import { NotifyFormatter } from './notify-formatter';
 import { ListenFormatter } from './listen-formatter';
 import {
@@ -7,8 +6,10 @@ import {
   AlterTableAddPrimaryKeyFormatter,
   AlterTableDropColumnFormatter,
   AlterTableDropConstraintFormatter,
+  AlterTableRenameFormatter,
   CeilFormatter,
   CreateIndexFormatter,
+  DropIndexFormatter,
 } from '@daita/relational';
 import { Formatter } from '@daita/relational';
 import { CreateTableFormatter } from '@daita/relational';
@@ -67,3 +68,4 @@ postgresFormatter.add(new DayOfMonthDatePartFormatter());
 postgresFormatter.add(new HourDatePartFormatter());
 postgresFormatter.add(new MinuteDatePartFormatter());
 postgresFormatter.add(new SecondDatePartFormatter());
+postgresFormatter.add(new AlterTableRenameFormatter());

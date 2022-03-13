@@ -5,7 +5,10 @@ import { convertValue } from './convert-value';
 import { getRuleId } from '@daita/relational';
 import { addRuleToSchema, SchemaDescription } from '@daita/orm';
 
-export function parseRelationalSchemaTableRules(schema: SchemaDescription, schemaVariable: AstVariableDeclaration) {
+export function parseRelationalSchemaTableRules(
+  schema: SchemaDescription,
+  schemaVariable: AstVariableDeclaration,
+): SchemaDescription {
   const rules = schemaVariable.callsByName('rules');
   for (const rule of rules) {
     let ruleValue = rule.argumentAt(0);
@@ -17,10 +20,11 @@ export function parseRelationalSchemaTableRules(schema: SchemaDescription, schem
       for (const ruleElement of ruleValue.elements) {
         const rule = convertValue(ruleElement);
         const id = getRuleId(rule);
-        addRuleToSchema(schema, id, rule);
+        schema = addRuleToSchema(schema, id, rule);
       }
     } else {
       throw new AstError(ruleValue?.node ?? rule.node, 'unable to parse rules');
     }
   }
+  return schema;
 }

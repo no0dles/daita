@@ -1,7 +1,6 @@
 import { MigrationStep } from './migration-step';
 import { getTableDescriptionIdentifier } from '../schema/description/relational-schema-description';
 import { table } from '@daita/relational';
-import { TableDescription } from '@daita/relational';
 
 export interface MigrationDescription {
   id: string;
@@ -10,10 +9,11 @@ export interface MigrationDescription {
   after?: string;
 }
 
-export function hasAddTableStep(migration: MigrationDescription, tbl: TableDescription<any>) {
+export function hasAddTableStep(migration: MigrationDescription, step: { table: string; schema?: string | undefined }) {
   return migration.steps.some(
     (s) =>
       s.kind === 'add_table' &&
-      getTableDescriptionIdentifier(table(s.table, s.schema)) == getTableDescriptionIdentifier(tbl),
+      getTableDescriptionIdentifier(table(s.table, s.schema)) ==
+        getTableDescriptionIdentifier(table(step.table, step.schema)),
   );
 }

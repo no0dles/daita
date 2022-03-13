@@ -1,4 +1,5 @@
 import { ForeignKeyConstraint } from '@daita/relational';
+import { MigrationStep } from '../../migration-step';
 
 export interface RelationalAddTableForeignKeyMigrationStep {
   kind: 'add_table_foreign_key';
@@ -13,3 +14,6 @@ export interface RelationalAddTableForeignKeyMigrationStep {
   onDelete?: ForeignKeyConstraint;
   onUpdate?: ForeignKeyConstraint;
 }
+
+export const isAddTableForeignKeyStep = (val: MigrationStep): val is RelationalAddTableForeignKeyMigrationStep =>
+  val.kind === 'add_table_foreign_key';

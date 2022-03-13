@@ -1,6 +1,6 @@
 import { RelationalOrmAdapter } from '../adapter';
 import { MigrationDescription, MigrationTree } from '../migration';
-import { getSchemaDescription, NormalMapper, SchemaMapper } from '../schema';
+import { emptySchema, getSchemaDescription, NormalMapper, SchemaMapper } from '../schema';
 import { MigrationPlan } from './migration-plan';
 import { MigrationContextUpdateOptions } from './migration-context-update-options';
 
@@ -41,6 +41,7 @@ export async function getPendingMigrations(
           migration,
           direction: 'reverse',
           targetSchema: null as any,
+          steps: [], // TODO
         }));
       }
     }
@@ -48,6 +49,7 @@ export async function getPendingMigrations(
 
   const pendingMigrations: MigrationPlan[] = [];
   const migrations: MigrationDescription[] = [];
+  let schema = emptySchema(migrationTree.name);
   while (currentMigrations.length > 0) {
     if (currentMigrations.length > 1) {
       throw new Error('multiple possible next migrations');
@@ -56,8 +58,16 @@ export async function getPendingMigrations(
     const currentMigration = currentMigrations[0];
     migrations.push(currentMigration);
     if (!appliedMigrations.some((m) => m.id === currentMigration.id)) {
-      const schema = getSchemaDescription(migrationTree.name, new SchemaMapper(() => new NormalMapper()), migrations);
-      pendingMigrations.push({ migration: currentMigration, direction: 'forward', targetSchema: schema });
+      const description = getSchemaDescription(schema, new SchemaMapper(() => new NormalMapper()), [currentMigration]);
+      pendingMigrations.push({
+        migration: currentMigration,
+        direction: 'forward',
+        targetSchema: description.schema,
+        steps: description.steps,
+      });
+      schema = description.schema;
+    } else {
+      schema = getSchemaDescription(schema, new SchemaMapper(() => new NormalMapper()), [currentMigration]).schema;
     }
 
     if (targetMigrationId && currentMigration.id === targetMigrationId) {

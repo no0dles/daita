@@ -1,19 +1,30 @@
 import { RelationalAddTableMigrationStep } from './relational-add-table.migration-step';
-import { CreateTableSql } from '@daita/relational';
-import { RelationalTransactionAdapter } from '@daita/relational';
+import { CreateTableForeignKey, CreateTableSql } from '@daita/relational';
 import { table } from '@daita/relational';
-import { CreateSchemaSql } from '@daita/relational';
 import { isAddTableFieldStep } from '../add-table-field/relational-add-table-field.migration-step';
 import { MigrationDescription } from '../../migration-description';
+import { isAddTableForeignKeyStep } from '../add-table-foreign-key';
 
-export function addTableAction(
-  client: RelationalTransactionAdapter<CreateTableSql>,
-  step: RelationalAddTableMigrationStep,
-  migration: MigrationDescription,
-) {
-  const tbl = table(step.table, step.schema);
-  client.exec({
-    createTable: tbl,
+export function addTableAction(step: RelationalAddTableMigrationStep, migration: MigrationDescription) {
+  const foreignKeySteps = migration.steps
+    .filter(isAddTableForeignKeyStep)
+    .filter((s) => s.table === step.table && s.schema === step.schema);
+
+  const foreignKeys = foreignKeySteps.reduce<{ [key: string]: CreateTableForeignKey }>((keys, step) => {
+    keys[step.name] = {
+      references: {
+        table: table(step.foreignTable, step.foreignTableSchema),
+        primaryKey: step.foreignFieldNames,
+      },
+      onDelete: step.onDelete,
+      onUpdate: step.onUpdate,
+      key: step.fieldNames,
+    };
+    return keys;
+  }, {});
+
+  const sql: CreateTableSql = {
+    createTable: table(step.table, step.schema),
     columns: migration.steps
       .filter(isAddTableFieldStep)
       .filter((s) => s.table === step.table && s.schema === step.schema)
@@ -30,19 +41,7 @@ export function addTableAction(
         ),
         notNull: false,
       })),
-  });
-}
-
-export function addTableWithSchemaAction(
-  client: RelationalTransactionAdapter<CreateTableSql | CreateSchemaSql>,
-  step: RelationalAddTableMigrationStep,
-  migration: MigrationDescription,
-) {
-  if (step.schema) {
-    client.exec({
-      createSchema: step.schema,
-      ifNotExists: true,
-    });
-  }
-  addTableAction(client, step, migration);
+    foreignKey: foreignKeys,
+  };
+  return sql;
 }

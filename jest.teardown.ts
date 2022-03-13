@@ -10,7 +10,8 @@ async function tearDown() {
 
   for (const container of containers) {
     try {
-      await removeContainer(container.id, { force: true, removeLinks: true, removeVolumes: true });
+      console.log('remove container ' + container.id);
+      await removeContainer(container.id, { force: true, removeLinks: false, removeVolumes: true });
     } catch (e) {
       console.error(e);
     }

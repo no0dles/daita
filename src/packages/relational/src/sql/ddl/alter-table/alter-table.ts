@@ -5,11 +5,13 @@ import {
   AlterTableAddPrimaryKeySql,
   AlterTableDropColumnSql,
   AlterTableDropConstraintSql,
+  AlterTableRenameSql,
   isAlterTableAddColumnSql,
   isAlterTableAddForeignKeySql,
   isAlterTableAddPrimaryKeySql,
   isAlterTableDropColumnSql,
   isAlterTableDropConstraintSql,
+  isAlterTableRenameSql,
 } from './alter-table-sql';
 import { FormatContext } from '../../../formatter/format-context';
 
@@ -24,6 +26,18 @@ export class AlterTableAddColumnFormatter implements FormatHandle<AlterTableAddC
     return `ALTER TABLE ${formatter.format(param.alterTable, ctx)} ADD COLUMN ${ctx.escape(
       param.add.column,
     )} ${ctx.getDataType({ type: param.add.type, size: param.add.size })}`;
+  }
+}
+
+export class AlterTableRenameFormatter implements FormatHandle<AlterTableRenameSql> {
+  type = FormatType.Sql;
+
+  canHandle(param: any): boolean {
+    return isAlterTableRenameSql(param);
+  }
+
+  handle(param: AlterTableRenameSql, ctx: FormatContext, formatter: Formatter): string {
+    return `ALTER TABLE ${formatter.format(param.alterTable, ctx)} RENAME TO ${ctx.escape(param.renameTo)}`;
   }
 }
 

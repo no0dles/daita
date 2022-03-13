@@ -20,7 +20,7 @@ export async function addMigration(name: string, options: { cwd?: string; schema
   const currentSchema = migrationTree.getSchemaDescription();
   const lastMigration = migrationTree.last()[0];
 
-  const steps = generateRelationalMigrationSteps(currentSchema, schemaInfo.getRelationalSchema());
+  const steps = generateRelationalMigrationSteps(currentSchema.schema, schemaInfo.getRelationalSchema());
   if (steps.length === 0) {
     logger.info('there are no pending changes');
     return;
@@ -40,8 +40,10 @@ export async function addMigration(name: string, options: { cwd?: string; schema
   const migrationName = getMigrationName(name);
   const padLeft = (val: number) => val.toString().padStart(2, '0');
   const migrationFilePath = `${schemaLocation.migrationDirectory}/${date.getFullYear()}-${padLeft(
-    date.getMonth(),
-  )}-${padLeft(date.getDay())}-${date.getHours()}${padLeft(date.getMinutes())}${padLeft(date.getSeconds())}-${name}.ts`;
+    date.getMonth() + 1,
+  )}-${padLeft(date.getDate())}-${date.getHours()}${padLeft(date.getMinutes())}${padLeft(
+    date.getSeconds(),
+  )}-${name}.ts`;
 
   if (fs.existsSync(migrationFilePath)) {
     throw new Error(`migration "${migrationFilePath}" file already exists`);

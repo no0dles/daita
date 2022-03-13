@@ -1,10 +1,15 @@
 import {
   createSchema,
   CreateSchemaOptions,
+  emptySchema,
   generateRelationalMigrationSteps,
+  getSchemaDescription,
+  MigrationDescription,
   MigrationPlan,
   MigrationStep,
+  NormalMapper,
   RelationalOrmAdapter,
+  SchemaMapper,
 } from '@daita/orm';
 import { getTestAdapter } from '../../testing';
 import { RelationalAdapter, Sql } from '@daita/relational';
@@ -17,7 +22,16 @@ export function testMigrationStepsTest(options: {
 }) {
   const baseSchema = createSchema('test', options.base);
   const targetSchema = createSchema('test', options.target);
+  const baseSteps = generateRelationalMigrationSteps(createSchema('test', {}), baseSchema);
   const steps = generateRelationalMigrationSteps(baseSchema, targetSchema);
+  const baseMigration: MigrationDescription = {
+    id: 'base',
+    steps: baseSteps,
+  };
+  const targetMigration: MigrationDescription = {
+    id: 'target',
+    steps,
+  };
 
   describe.each([['pg'], ['sqlite']])('%s', (adapter) => {
     let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
@@ -37,25 +51,32 @@ export function testMigrationStepsTest(options: {
     });
 
     it('should migrate base schema', async () => {
+      const description = getSchemaDescription(emptySchema('test'), new SchemaMapper(() => new NormalMapper()), [
+        baseMigration,
+      ]);
       const plan: MigrationPlan = {
         targetSchema: baseSchema,
         direction: 'forward',
-        migration: {
-          id: 'base',
-          steps: generateRelationalMigrationSteps(createSchema('test', {}), baseSchema),
-        },
+        migration: baseMigration,
+        steps: description.steps,
       };
       await ctx.applyMigration('test', plan);
     });
 
     it('should migrate target schema', async () => {
+      const baseDescription = getSchemaDescription(emptySchema('test'), new SchemaMapper(() => new NormalMapper()), [
+        baseMigration,
+      ]);
+      const targetDescription = getSchemaDescription(
+        baseDescription.schema,
+        new SchemaMapper(() => new NormalMapper()),
+        [targetMigration],
+      );
       const plan: MigrationPlan = {
         targetSchema: targetSchema,
         direction: 'forward',
-        migration: {
-          id: 'target',
-          steps,
-        },
+        migration: targetMigration,
+        steps: targetDescription.steps,
       };
       await ctx.applyMigration('test', plan);
     });
