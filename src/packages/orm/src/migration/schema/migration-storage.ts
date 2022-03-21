@@ -28,27 +28,23 @@ export class MigrationStorage {
         columns: [
           {
             name: 'id',
-            type: this.options.idType.type,
-            size: this.options.idType.size,
+            type: this.options.idType,
             notNull: true,
             primaryKey: true,
           },
           {
             name: 'after',
-            type: this.options.idType.type,
-            size: this.options.idType.size,
+            type: this.options.idType,
             notNull: false,
           },
           {
             name: 'resolve',
-            type: this.options.idType.type,
-            size: this.options.idType.size,
+            type: this.options.idType,
             notNull: false,
           },
           {
             name: 'schema',
-            type: this.options.idType.type,
-            size: this.options.idType.size,
+            type: this.options.idType,
             notNull: true,
             primaryKey: true,
           },
@@ -60,15 +56,13 @@ export class MigrationStorage {
         columns: [
           {
             name: 'migrationId',
-            type: this.options.idType.type,
-            size: this.options.idType.size,
+            type: this.options.idType,
             notNull: true,
             primaryKey: true,
           },
           {
             name: 'migrationSchema',
-            type: this.options.idType.type,
-            size: this.options.idType.size,
+            type: this.options.idType,
             notNull: true,
             primaryKey: true,
           },

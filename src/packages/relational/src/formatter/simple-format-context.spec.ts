@@ -1,14 +1,9 @@
 import { SimpleFormatContext } from './simple-format-context';
-import { FormatDataType } from './format-context';
 
 describe('simple-format-context', () => {
   class TestContext extends SimpleFormatContext {
     constructor() {
       super('?', '`');
-    }
-
-    getDataType(options: FormatDataType): string {
-      return options.type;
     }
   }
 

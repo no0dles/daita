@@ -54,7 +54,7 @@ function getMigrationPlanStep(step: MigrationStep, schema: SchemaDescription): S
       { schema: step.foreignTableSchema, table: step.foreignTable },
       {
         name: step.name,
-        required: step.required,
+        //required: step.required,
         onDelete: step.onDelete ?? null,
         onUpdate: step.onUpdate ?? null,
       },

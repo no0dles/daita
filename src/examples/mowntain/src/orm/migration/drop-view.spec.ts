@@ -6,8 +6,6 @@ describe('orm/migration/drop-view', () => {
     base: {
       views: {
         User: {
-          name: 'User',
-          key: 'User',
           schema: 'custom',
           query: {
             select: 1,

@@ -37,7 +37,7 @@ export class SqliteRelationalMigrationAdapter
   private readonly db: Database;
   protected readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });
   private storage = new MigrationStorage(this, {
-    idType: { type: 'string' },
+    idType: 'TEXT',
   });
 
   constructor(private connectionString: string) {

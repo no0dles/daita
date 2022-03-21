@@ -7,11 +7,10 @@ describe('orm/migration/drop-table-field', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
-            username: { type: 'string', name: 'username', required: true },
+            id: { type: 'string', required: true },
+            username: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
         },
       },
@@ -20,10 +19,9 @@ describe('orm/migration/drop-table-field', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
+            id: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
         },
       },

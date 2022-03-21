@@ -6,7 +6,7 @@ export interface CreateTableColumn {
   type: string;
   notNull?: boolean;
   primaryKey?: boolean;
-  size?: number;
+  defaultValue?: any;
 }
 
 export interface CreateTableSql {

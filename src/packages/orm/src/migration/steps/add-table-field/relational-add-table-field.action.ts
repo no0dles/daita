@@ -8,7 +8,6 @@ export function addTableFieldAction(step: RelationalAddTableFieldMigrationStep):
     add: {
       column: step.fieldName,
       type: step.type,
-      size: step.size,
     },
   };
 }

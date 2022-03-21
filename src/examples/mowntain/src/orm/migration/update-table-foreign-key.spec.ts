@@ -7,18 +7,16 @@ describe('orm/migration/update-table-foreign-key', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
-            username: { type: 'string', name: 'username', required: true },
-            parentId: { type: 'string', name: 'parentId', required: false },
+            id: { type: 'string', required: true },
+            username: { type: 'string', required: true },
+            parentId: { type: 'string', required: false },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
           references: {
             parent: {
               table: 'User',
               schema: 'custom',
-              name: 'parent',
               keys: [{ field: 'parentId', foreignField: 'id' }],
               onDelete: 'set null',
               onUpdate: null,
@@ -31,18 +29,16 @@ describe('orm/migration/update-table-foreign-key', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
-            username: { type: 'string', name: 'username', required: true },
-            parentUsername: { type: 'string', name: 'parentUsername', required: false },
+            id: { type: 'string', required: true },
+            username: { type: 'string', required: true },
+            parentUsername: { type: 'string', required: false },
           },
           primaryKeys: ['username'],
-          name: 'User',
           schema: 'custom',
           references: {
             parent: {
               table: 'User',
               schema: 'custom',
-              name: 'parent',
               keys: [{ field: 'parentUsername', foreignField: 'username' }],
               onDelete: 'set null',
               onUpdate: null,

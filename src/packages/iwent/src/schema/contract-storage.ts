@@ -36,15 +36,13 @@ export class ContractStorage {
         columns: [
           {
             name: 'id',
-            type: this.options.idType.type,
-            size: this.options.idType.size,
+            type: this.options.idType,
             notNull: true,
             primaryKey: true,
           },
           {
             name: 'type',
-            type: this.options.idType.type,
-            size: this.options.idType.size,
+            type: this.options.idType,
             notNull: true,
           },
           {
@@ -75,8 +73,7 @@ export class ContractStorage {
         columns: [
           {
             name: 'id',
-            type: this.options.idType.type,
-            size: this.options.idType.size,
+            type: this.options.idType,
             notNull: true,
             primaryKey: true,
           },
@@ -93,8 +90,7 @@ export class ContractStorage {
         columns: [
           {
             name: 'contractId',
-            type: this.options.idType.type,
-            size: this.options.idType.size,
+            type: this.options.idType,
             notNull: true,
             primaryKey: true,
           },

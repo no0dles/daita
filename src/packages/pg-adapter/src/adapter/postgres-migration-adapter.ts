@@ -86,7 +86,7 @@ export class PostgresMigrationAdapter
   });
 
   private readonly migrationStorage = new MigrationStorage(this, {
-    idType: { type: 'string' },
+    idType: 'VARCHAR',
   });
 
   constructor(protected options: PostgresMigrationAdapterOptions) {

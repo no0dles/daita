@@ -10,6 +10,10 @@ export function validateValueForTableField(key: string, field: SchemaTableFieldD
     return;
   }
 
+  if (field.type === 'unknown') {
+    return;
+  }
+
   if (field.type === 'string') {
     if (typeof value !== 'string') {
       throw new Error(`${key} is not a string`);

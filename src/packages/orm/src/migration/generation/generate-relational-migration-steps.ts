@@ -20,7 +20,6 @@ import { merge, mergeArray, MergeListResult } from '@daita/common';
 import { table } from '@daita/relational';
 import { isTableReferenceRequiredInTable } from '../../schema/description/relational-table-reference-description';
 import { sortSteps } from '../sort-steps';
-import { MigrationSteps } from '../schema';
 
 interface GenerateOptions<T> {
   addFunction: (schema: SchemaDescription, result: T) => MigrationStep[];

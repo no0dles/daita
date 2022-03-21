@@ -1,4 +1,4 @@
-import { FormatContext, FormatDataType } from './format-context';
+import { FormatContext } from './format-context';
 import { ValueType } from '../sql/operands/value-type';
 
 export class InlineFormatContext implements FormatContext {
@@ -31,13 +31,5 @@ export class InlineFormatContext implements FormatContext {
 
   escape(value: string): string {
     return this.baseFormatContext.escape(value);
-  }
-
-  getDataType(type: FormatDataType): string {
-    return this.baseFormatContext.getDataType(type);
-  }
-
-  restoreValue(type: FormatDataType, value: any): any {
-    return value;
   }
 }

@@ -7,10 +7,9 @@ describe('orm/migration/add-table-field', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
+            id: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
         },
       },
@@ -19,13 +18,12 @@ describe('orm/migration/add-table-field', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
-            username: { type: 'string', name: 'username', required: true },
-            lastLogin: { type: 'date', name: 'lastLogin', required: false },
-            enabled: { type: 'boolean', name: 'enabled', required: true, defaultValue: true },
+            id: { type: 'string', required: true },
+            username: { type: 'string', required: true },
+            lastLogin: { type: 'date', required: false },
+            enabled: { type: 'boolean', required: true, defaultValue: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
         },
       },

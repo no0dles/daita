@@ -1,7 +1,6 @@
 import { AstClassDeclaration } from '../../ast/ast-class-declaration';
 import { parseTableDescription } from './parse-table-description';
 import { AstReferenceType } from '../../ast/ast-reference-type';
-import { isRequiredProperty } from './parse-relational-type';
 import { addTableReference, getTableFromSchema, SchemaDescription } from '@daita/orm';
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { AstObjectPropertyAssignmentValue } from '../../ast/ast-object-property-value';
@@ -62,7 +61,7 @@ export function parseRelationalSchemaTableReferences(
 
     schema = addTableReference(schema, table, tableDescription, {
       name: property.name,
-      required: isRequiredProperty(property),
+      //required: isRequiredProperty(property),
       onUpdate,
       onDelete,
     });

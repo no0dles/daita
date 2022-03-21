@@ -27,6 +27,7 @@ import { SqliteHourFormatter } from './sqlite-hour-formatter';
 import { SqliteMinuteFormatter } from './sqlite-minute-formatter';
 import { SqliteSecondFormatter } from './sqlite-second-formatter';
 import { SqliteWeekOfYearFormatter } from './sqlite-week-of-year-formatter';
+import { SqlitePragmaFormatter } from './sqlite-pragma-formatter';
 
 export const sqliteFormatter = new Formatter();
 sqliteFormatter.extend(ansiFormatter);
@@ -55,4 +56,5 @@ sqliteFormatter.add(new CreateViewFormatter());
 sqliteFormatter.add(new DropViewFormatter());
 sqliteFormatter.add(new DropIndexFormatter());
 sqliteFormatter.add(new AlterTableRenameFormatter());
+sqliteFormatter.add(new SqlitePragmaFormatter());
 // TODO move to better-sqlite3 sqliteFormatter.add(new AlterTableDropColumnFormatter());

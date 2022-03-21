@@ -10,13 +10,15 @@ import {
   SchemaDescription,
   SchemaTableDescription,
 } from '@daita/orm';
+import { PragmaSql } from '../sql/pragma-sql';
 
 export type MigrateTableSql =
   | InsertSql<any>
   | CreateTableSql
   | DropTableSql
   | AlterTableRenameSql
-  | CreateIndexSql<any>;
+  | CreateIndexSql<any>
+  | PragmaSql;
 
 export function migrateTableAction(
   targetSchema: SchemaDescription,
@@ -46,6 +48,10 @@ export function migrateTableAction(
 
   const sqls: MigrateTableSql[] = [
     {
+      pragma: 'foreign_keys',
+      set: 'OFF',
+    },
+    {
       createTable: newTableAlias,
       columns: newFields,
       foreignKey,
@@ -66,6 +72,10 @@ export function migrateTableAction(
     {
       alterTable: newTableAlias,
       renameTo: targetTable.schema ? `${targetTable.schema}-${targetTable.name}` : targetTable.name,
+    },
+    {
+      pragma: 'foreign_keys',
+      set: 'ON',
     },
   ];
   for (const [indexName, index] of Object.entries(targetTable.indices || {})) {

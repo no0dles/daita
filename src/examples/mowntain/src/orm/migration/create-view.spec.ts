@@ -7,8 +7,6 @@ describe('orm/migration/create-view', () => {
     target: {
       views: {
         Test: {
-          name: 'Test',
-          key: 'Test',
           schema: 'custom',
           query: {
             select: "'hello'",

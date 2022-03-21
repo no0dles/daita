@@ -142,7 +142,6 @@ describe('order-sqls', () => {
           {
             name: 'shortname',
             type: 'string',
-            size: 2,
             primaryKey: true,
             notNull: false,
           },
@@ -175,7 +174,6 @@ describe('order-sqls', () => {
           {
             name: 'cantonShortname',
             type: 'string',
-            size: 2,
             primaryKey: false,
             notNull: false,
           },

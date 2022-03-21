@@ -38,7 +38,7 @@ export class MariadbRelationalMigrationAdapter
   implements RelationalOrmAdapter, RelationalAdapter<MariadbSql>
 {
   private readonly storage = new MigrationStorage(this, {
-    idType: { type: 'string', size: 255 },
+    idType: 'VARCHAR(255)',
   });
   private readonly pool: Pool;
 
