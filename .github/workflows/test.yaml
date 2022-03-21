@@ -20,7 +20,7 @@ jobs:
       - run: npm ci
       - run: lerna bootstrap
       - run: npm run build
-      - run: npx jest --coverage --maxWorkers=50%
+      - run: npx jest --coverage --maxWorkers=50% --forceExit
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
       - name: coverage upload
