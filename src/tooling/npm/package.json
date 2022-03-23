@@ -1,14 +1,14 @@
 {
   "name": "@daita/npm",
-  "version": "0.4.0-alpha.4",
+  "version": "0.4.0-alpha.5",
   "private": true,
   "scripts": {
     "build": "tsc -b"
   },
   "dependencies": {
-    "@daita/common": "^0.4.0-alpha.4",
-    "@daita/node": "^0.4.0-alpha.4",
-    "@daita/testing": "^0.4.0-alpha.4"
+    "@daita/common": "^0.4.0-alpha.5",
+    "@daita/node": "^0.4.0-alpha.5",
+    "@daita/testing": "^0.4.0-alpha.5"
   },
   "devDependencies": {
     "typescript": "~4.0.5"

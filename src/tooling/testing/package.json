@@ -1,6 +1,6 @@
 {
   "name": "@daita/testing",
-  "version": "0.4.0-alpha.4",
+  "version": "0.4.0-alpha.5",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -19,17 +19,17 @@
     "access": "public"
   },
   "dependencies": {
-    "@daita/auth": "^0.4.0-alpha.4",
-    "@daita/auth-server": "^0.4.0-alpha.4",
-    "@daita/common": "^0.4.0-alpha.4",
-    "@daita/http-adapter": "^0.4.0-alpha.4",
-    "@daita/http-interface": "^0.4.0-alpha.4",
-    "@daita/http-server": "^0.4.0-alpha.4",
-    "@daita/mariadb-adapter": "^0.4.0-alpha.4",
-    "@daita/node": "^0.4.0-alpha.4",
-    "@daita/orm": "^0.4.0-alpha.4",
-    "@daita/pg-adapter": "^0.4.0-alpha.4",
-    "@daita/relational": "^0.4.0-alpha.4",
-    "@daita/sqlite-adapter": "^0.4.0-alpha.4"
+    "@daita/auth": "^0.4.0-alpha.5",
+    "@daita/auth-server": "^0.4.0-alpha.5",
+    "@daita/common": "^0.4.0-alpha.5",
+    "@daita/http-adapter": "^0.4.0-alpha.5",
+    "@daita/http-interface": "^0.4.0-alpha.5",
+    "@daita/http-server": "^0.4.0-alpha.5",
+    "@daita/mariadb-adapter": "^0.4.0-alpha.5",
+    "@daita/node": "^0.4.0-alpha.5",
+    "@daita/orm": "^0.4.0-alpha.5",
+    "@daita/pg-adapter": "^0.4.0-alpha.5",
+    "@daita/relational": "^0.4.0-alpha.5",
+    "@daita/sqlite-adapter": "^0.4.0-alpha.5"
   }
 }

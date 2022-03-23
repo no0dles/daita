@@ -1,23 +1,23 @@
 {
   "name": "mowntain",
   "private": true,
-  "version": "0.4.0-alpha.4",
+  "version": "0.4.0-alpha.5",
   "scripts": {
     "build": "tsc -b",
     "test": "jest"
   },
   "dependencies": {
-    "@daita/common": "^0.4.0-alpha.4",
-    "@daita/mariadb-adapter": "^0.4.0-alpha.4",
-    "@daita/orm": "^0.4.0-alpha.4",
-    "@daita/pg-adapter": "^0.4.0-alpha.4",
-    "@daita/relational": "^0.4.0-alpha.4",
-    "@daita/sqlite-adapter": "^0.4.0-alpha.4"
+    "@daita/common": "^0.4.0-alpha.5",
+    "@daita/mariadb-adapter": "^0.4.0-alpha.5",
+    "@daita/orm": "^0.4.0-alpha.5",
+    "@daita/pg-adapter": "^0.4.0-alpha.5",
+    "@daita/relational": "^0.4.0-alpha.5",
+    "@daita/sqlite-adapter": "^0.4.0-alpha.5"
   },
   "devDependencies": {
-    "@daita/auth": "^0.4.0-alpha.4",
-    "@daita/auth-server": "^0.4.0-alpha.4",
-    "@daita/node": "^0.4.0-alpha.4",
-    "@daita/testing": "^0.4.0-alpha.4"
+    "@daita/auth": "^0.4.0-alpha.5",
+    "@daita/auth-server": "^0.4.0-alpha.5",
+    "@daita/node": "^0.4.0-alpha.5",
+    "@daita/testing": "^0.4.0-alpha.5"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@daita/node",
-  "version": "0.4.0-alpha.4",
+  "version": "0.4.0-alpha.5",
   "license": "MIT",
   "homepage": "https://daita.ch",
   "repository": {
@@ -20,11 +20,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@daita/common": "^0.4.0-alpha.4",
-    "@daita/http-adapter": "^0.4.0-alpha.4",
-    "@daita/http-interface": "^0.4.0-alpha.4",
-    "@daita/orm": "^0.4.0-alpha.4",
-    "@daita/relational": "^0.4.0-alpha.4",
+    "@daita/common": "^0.4.0-alpha.5",
+    "@daita/http-adapter": "^0.4.0-alpha.5",
+    "@daita/http-interface": "^0.4.0-alpha.5",
+    "@daita/orm": "^0.4.0-alpha.5",
+    "@daita/relational": "^0.4.0-alpha.5",
     "yaml": "^1.10.0"
   },
   "devDependencies": {
