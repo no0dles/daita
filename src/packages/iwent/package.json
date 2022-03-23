@@ -1,6 +1,6 @@
 {
   "name": "@daita/iwent",
-  "version": "0.4.0-alpha.3",
+  "version": "0.4.0-alpha.4",
   "private": true,
   "license": "MIT",
   "homepage": "https://daita.ch",
@@ -18,9 +18,9 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@daita/common": "^0.4.0-alpha.3",
-    "@daita/node": "^0.4.0-alpha.3",
-    "@daita/orm": "^0.4.0-alpha.3",
-    "@daita/relational": "^0.4.0-alpha.3"
+    "@daita/common": "^0.4.0-alpha.4",
+    "@daita/node": "^0.4.0-alpha.4",
+    "@daita/orm": "^0.4.0-alpha.4",
+    "@daita/relational": "^0.4.0-alpha.4"
   }
 }
