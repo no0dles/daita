@@ -24,7 +24,7 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
       - name: coverage upload
-        uses: codacy/codacy-coverage-reporter-action@master
+        uses: checkity/upload@v1
         with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: coverage/lcov.info
+          file-pattern: 'coverage/lcov.info'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
