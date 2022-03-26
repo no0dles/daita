@@ -89,7 +89,7 @@ export function seedPoolUser(client: RelationalTransactionAdapter<any>, user: Ex
       phoneVerified: user.phoneVerified,
     },
     onConflict: {
-      forField: ['username', 'userPoolId'],
+      forField: ['username'],
       do: 'nothing',
     },
   });
@@ -115,7 +115,7 @@ export async function seedUserPoolCors(client: RelationalTransactionAdapter<any>
     insert: cors.map((url) => ({ url, userPoolId, id: randomString(22) })),
     into: table(UserPoolCors),
     onConflict: {
-      forField: 'url',
+      forField: ['url', 'userPoolId'],
       do: 'nothing',
     },
   });

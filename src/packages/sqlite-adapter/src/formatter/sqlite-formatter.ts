@@ -1,4 +1,13 @@
-import { AlterTableAddColumnFormatter, CeilRoundFormatter } from '@daita/relational';
+import {
+  AlterTableAddColumnFormatter,
+  AlterTableDropColumnFormatter,
+  AlterTableRenameFormatter,
+  CeilRoundFormatter,
+  CreateIndexFormatter,
+  CreateViewFormatter,
+  DropIndexFormatter,
+  DropViewFormatter,
+} from '@daita/relational';
 import { Formatter } from '@daita/relational';
 import { CreateTableFormatter } from '@daita/relational';
 import { DropTableFormatter } from '@daita/relational';
@@ -25,6 +34,7 @@ sqliteFormatter.add(new NowFormatter());
 sqliteFormatter.add(new DropTableFormatter());
 sqliteFormatter.add(new CreateTableFormatter());
 sqliteFormatter.add(new AlterTableAddColumnFormatter());
+sqliteFormatter.add(new AlterTableDropColumnFormatter());
 sqliteFormatter.add(new SqliteTableFormatter());
 sqliteFormatter.add(new ConcatPipeFormatter());
 sqliteFormatter.add(new LeastFormatter());
@@ -40,4 +50,9 @@ sqliteFormatter.add(new SqliteHourFormatter());
 sqliteFormatter.add(new SqliteMinuteFormatter());
 sqliteFormatter.add(new SqliteSecondFormatter());
 sqliteFormatter.add(new SqliteWeekOfYearFormatter());
+sqliteFormatter.add(new CreateIndexFormatter());
+sqliteFormatter.add(new CreateViewFormatter());
+sqliteFormatter.add(new DropViewFormatter());
+sqliteFormatter.add(new DropIndexFormatter());
+sqliteFormatter.add(new AlterTableRenameFormatter());
 // TODO move to better-sqlite3 sqliteFormatter.add(new AlterTableDropColumnFormatter());

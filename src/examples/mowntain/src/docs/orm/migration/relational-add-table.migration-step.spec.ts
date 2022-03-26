@@ -17,7 +17,7 @@ describe('packages/orm/migration/steps/relational-add-table', () => {
   let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
   beforeAll(async () => {
-    ctx = await getTestAdapter();
+    ctx = await getTestAdapter('pg');
     await migrate(ctx, migrationTree);
   });
 

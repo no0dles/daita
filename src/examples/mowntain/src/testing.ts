@@ -1,4 +1,5 @@
 import { adapter as pgAdapter, dropDatabase } from '@daita/pg-adapter';
+import { adapter as sqliteAdapter } from '@daita/sqlite-adapter';
 import { Mountain } from './models/mountain';
 import { Ascent } from './models/ascent';
 import { Canton } from './models/canton';
@@ -9,12 +10,16 @@ import { getMigrationContext, RelationalOrmAdapter } from '@daita/orm';
 import { schema } from './schema';
 import { getPostgresTestAdapter } from '@daita/testing';
 
-export function getTestAdapter() {
-  return getPostgresTestAdapter();
+export function getTestAdapter(type: 'pg' | 'sqlite') {
+  if (type === 'pg') {
+    return getPostgresTestAdapter();
+  } else {
+    return sqliteAdapter.getRelationalAdapter({ memory: true });
+  }
 }
 
 export async function seedMowntainData(): Promise<RelationalAdapter<any> & RelationalOrmAdapter> {
-  const ctx = await getTestAdapter();
+  const ctx = await getTestAdapter('pg');
   const migrationContext = getMigrationContext(ctx, {
     schema,
   });

@@ -4,13 +4,15 @@ import { AstReferenceType } from '../../ast/ast-reference-type';
 import { AstObjectValue } from '../../ast/ast-object-value';
 import { AstObjectPropertyAssignmentValue } from '../../ast/ast-object-property-value';
 import { AstNumericLiteralValue } from '../../ast/ast-literal-value';
-import { addTableField, SchemaTableDescription } from '@daita/orm';
+import { addTableField, SchemaDescription } from '@daita/orm';
+import { TableDescription } from '@daita/relational';
 
 export function parseRelationalSchemaTableFields(
-  table: SchemaTableDescription,
+  schema: SchemaDescription,
+  table: TableDescription<any>,
   classDeclaration: AstClassDeclaration,
   optionsValue: AstObjectValue | null,
-) {
+): SchemaDescription {
   for (const property of classDeclaration.allProps) {
     if (!property.name) {
       throw new Error('missing prop name');
@@ -42,7 +44,7 @@ export function parseRelationalSchemaTableFields(
     }
 
     const type = parseRelationalType(property.type);
-    addTableField(table, {
+    schema = addTableField(schema, table, {
       key: property.name,
       type,
       size,
@@ -50,4 +52,5 @@ export function parseRelationalSchemaTableFields(
       defaultValue: getRawValue(property.value),
     });
   }
+  return schema;
 }

@@ -48,7 +48,7 @@ export class RelationalSchema implements OrmRelationalSchema {
   }
 
   private getSchemaDescription(): SchemaDescription {
-    return this.migrationTree.getSchemaDescription();
+    return this.migrationTree.getSchemaDescription().schema;
   }
 
   getRules(): Rule[] {

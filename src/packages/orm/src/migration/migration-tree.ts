@@ -1,5 +1,5 @@
 import { MigrationDescription } from './migration-description';
-import { getSchemaDescription } from '../schema/relational-schema-description';
+import { emptySchema, getSchemaDescription } from '../schema/relational-schema-description';
 import { SchemaMapper } from '../schema/description/schema-mapper';
 import { NormalMapper } from '../schema/description/normal-mapper';
 
@@ -103,7 +103,8 @@ export class MigrationTree {
     //   );
     // } else {
     // }
-    return getSchemaDescription(this.name, new SchemaMapper(() => new NormalMapper()), this.defaultPath());
+    const schema = emptySchema(this.name);
+    return getSchemaDescription(schema, new SchemaMapper(() => new NormalMapper()), this.defaultPath());
   }
 
   path(id: string) {

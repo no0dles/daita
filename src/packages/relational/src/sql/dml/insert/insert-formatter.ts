@@ -26,6 +26,27 @@ export class InsertFormatter implements FormatHandle<InsertSql<any>> {
       sql += rows.map((row) => `(${fields.map((field) => formatter.format(row[field], ctx)).join(', ')})`).join(', ');
     }
 
+    if (param.onConflict) {
+      const fields =
+        param.onConflict.forField instanceof Array
+          ? param.onConflict.forField.map((f) => ctx.escape(String(f))).join(', ')
+          : ctx.escape(String(param.onConflict.forField));
+      sql += ` ON CONFLICT (${fields})`;
+
+      if (param.onConflict.do === 'nothing') {
+        sql += ` DO NOTHING`;
+      } else {
+        const set = param.onConflict.do.set;
+        const sets = Object.keys(set)
+          .map((key) => `${ctx.escape(key)} = ${formatter.format(set[key], ctx)}`)
+          .join(', ');
+        sql += ` DO UPDATE SET ${sets}`;
+        if (param.onConflict.do.where) {
+          sql += ` WHERE ${formatter.format(param.onConflict.do.where, ctx)}`;
+        }
+      }
+    }
+
     return sql;
   }
 

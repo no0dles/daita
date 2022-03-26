@@ -83,6 +83,16 @@ export function parseConnectionString(connectionString: string): ParsedConnectio
   };
 }
 
+export async function executeSql(connectionString: string, sql: string): Promise<void> {
+  const config = parseConnectionString(connectionString);
+  const client = await getClient(config);
+  try {
+    await client.query(sql);
+  } finally {
+    await client.end();
+  }
+}
+
 export async function ensureDatabaseExists(connectionString: string): Promise<void>;
 export async function ensureDatabaseExists(connectionOptions: ParsedConnectionString): Promise<void>;
 export async function ensureDatabaseExists(connectionStringOrOptions: string | ParsedConnectionString): Promise<void> {

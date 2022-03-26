@@ -41,6 +41,12 @@ export class CreateTableFormatter implements FormatHandle<CreateTableSql> {
           constraint.references.primaryKey,
           ctx,
         )})`;
+        if (constraint.onDelete) {
+          sql += ` ON DELETE ${constraint.onDelete}`;
+        }
+        if (constraint.onUpdate) {
+          sql += ` ON UPDATE ${constraint.onUpdate}`;
+        }
       }
     }
 

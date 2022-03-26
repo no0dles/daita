@@ -1,5 +1,5 @@
 import { MariadbSql } from '../sql/mariadb-sql';
-import { MigrationStorage, RelationalOrmAdapter } from '@daita/orm';
+import { addTableAction, hasAddTableStep, MigrationStorage, RelationalOrmAdapter } from '@daita/orm';
 import { MigrationPlan } from '@daita/orm';
 import { MigrationDescription } from '@daita/orm';
 import {
@@ -9,7 +9,6 @@ import {
   RelationalTransactionAdapter,
   RelationDoesNotExistsError,
 } from '@daita/relational';
-import { addTableWithSchemaAction } from '@daita/orm';
 import { addTableFieldAction } from '@daita/orm';
 import { addTablePrimaryKeyAction } from '@daita/orm';
 import { addTableForeignKeyAction } from '@daita/orm';
@@ -74,7 +73,10 @@ export class MariadbRelationalMigrationAdapter
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
     await this.storage.initialize();
     await this.transaction(async (trx) => {
-      this.applyMigrationPlan(trx, migrationPlan);
+      const sqls = this.applyMigrationPlan(migrationPlan);
+      for (const sql of sqls) {
+        trx.exec(sql);
+      }
       this.storage.add(trx, schema, migrationPlan.migration);
     });
   }
@@ -147,45 +149,57 @@ export class MariadbRelationalMigrationAdapter
     return this.storage.get(schema);
   }
 
-  private applyMigrationPlan(client: RelationalTransactionAdapter<MariadbSql>, migrationPlan: MigrationPlan) {
+  private applyMigrationPlan(migrationPlan: MigrationPlan): MariadbSql[] {
+    const result: MariadbSql[] = [];
+
     for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
-        addTableWithSchemaAction(client, step, migrationPlan.migration);
+        result.push(addTableAction(step, migrationPlan.migration));
       } else if (step.kind === 'add_table_field') {
-        addTableFieldAction(client, step, migrationPlan.migration);
+        result.push(addTableFieldAction(step));
       } else if (step.kind === 'add_table_primary_key') {
-        addTablePrimaryKeyAction(client, step, migrationPlan.migration);
+        if (hasAddTableStep(migrationPlan.migration, step)) {
+          continue;
+        }
+
+        result.push(addTablePrimaryKeyAction(step));
       } else if (step.kind === 'add_table_foreign_key') {
-        addTableForeignKeyAction(client, step);
+        if (hasAddTableStep(migrationPlan.migration, step)) {
+          continue;
+        }
+
+        result.push(addTableForeignKeyAction(step));
       } else if (step.kind === 'drop_table_primary_key') {
-        dropTablePrimaryKeyAction(client, step);
+        result.push(dropTablePrimaryKeyAction(step));
       } else if (step.kind === 'drop_table') {
-        dropTableAction(client, step);
+        result.push(dropTableAction(step));
       } else if (step.kind === 'drop_table_field') {
-        dropTableField(client, step);
+        result.push(dropTableField(step));
       } else if (step.kind === 'create_index') {
-        createIndexAction(client, step);
+        result.push(createIndexAction(step));
       } else if (step.kind === 'drop_index') {
-        dropIndexAction(client, step);
+        result.push(dropIndexAction(step));
       } else if (step.kind === 'drop_table_foreign_key') {
-        dropTableForeignKeyAction(client, step);
+        result.push(dropTableForeignKeyAction(step));
       } else if (step.kind === 'add_rule') {
       } else if (step.kind === 'drop_rule') {
       } else if (step.kind === 'add_view') {
-        addViewAction(client, step);
+        result.push(addViewAction(step));
       } else if (step.kind === 'alter_view') {
-        alterViewAction(client, step);
+        result.push(alterViewAction(step));
       } else if (step.kind === 'drop_view') {
-        dropViewAction(client, step);
+        result.push(dropViewAction(step));
       } else if (step.kind === 'insert_seed') {
-        insertSeedAction(client, step);
+        result.push(insertSeedAction(step));
       } else if (step.kind === 'update_seed') {
-        updateSeedAction(client, step);
+        result.push(updateSeedAction(step));
       } else if (step.kind === 'delete_seed') {
-        deleteSeedAction(client, step);
+        result.push(deleteSeedAction(step));
       } else {
         failNever(step, 'unknown migration step');
       }
     }
+
+    return result;
   }
 }

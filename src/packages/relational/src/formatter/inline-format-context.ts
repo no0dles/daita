@@ -8,7 +8,7 @@ export class InlineFormatContext implements FormatContext {
     if (typeof value === 'number') {
       return value.toString();
     } else if (typeof value === 'string') {
-      return `'${value.replace(/'/g, "'")}'`;
+      return `'${value.replace(/'/g, "''")}'`;
     } else if (typeof value === 'boolean') {
       return value.toString().toUpperCase();
     } else if (value instanceof Date) {

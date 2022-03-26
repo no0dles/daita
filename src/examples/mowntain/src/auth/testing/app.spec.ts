@@ -1,27 +1,15 @@
 import { allow, authorized, now } from '@daita/relational';
-import { httpGet, httpPost, sqliteTestAdapter } from '@daita/testing';
-import { AuthServerTestDisposable, createTestAdminServer } from './admin-server.test';
-import { loginWithDefaultUser } from './auth-test';
-import { createTestHttpServer, HttpTestServerDisposable } from '@daita/testing';
+import { createTestHttpServer, HttpTest, sqliteTestAdapter } from '@daita/testing';
 
 describe('http-server/app', () => {
-  let authServerTest: AuthServerTestDisposable;
-  let httpServer: HttpTestServerDisposable;
+  let test: HttpTest;
 
   const adapter = sqliteTestAdapter.getRelationalAdapter({
     type: 'memory',
   });
 
   beforeAll(async () => {
-    authServerTest = await createTestAdminServer({
-      adapter,
-    });
-    httpServer = await createTestHttpServer({
-      adapter,
-      authServer: {
-        authPort: authServerTest.authHttp.port,
-        adminPort: authServerTest.adminHttp.port,
-      },
+    test = await createTestHttpServer(adapter, {
       rules: [
         {
           id: 'test',
@@ -34,100 +22,68 @@ describe('http-server/app', () => {
   });
 
   afterAll(async () => {
-    await httpServer.close();
-    await authServerTest.close();
+    await test.close();
     await adapter.close();
   });
 
-  it('should login', async () => {
-    const res = await httpPost(authServerTest.authHttp, `/default/login`, {
-      username: 'user',
-      password: '123456',
-    });
-    expect(res.statusCode).toEqual(200);
-    expect(res.body).not.toBeNull();
-    expect(res.body).not.toBeUndefined();
-    expect(res.body.token_type).toEqual('bearer');
-  });
-
   it('should handle malformed bearer token', async () => {
-    const res = await httpGet(httpServer.http, '', {
+    const res = await test.http.json({
       headers: { Authorization: 'Bearer asd' },
+      path: '/api/relational/exec',
     });
     expect(res.statusCode).toEqual(400);
-    expect(res.body).toEqual({ message: 'invalid token format' });
+    expect(res.data).toEqual({ message: 'invalid token format' });
   });
 
-  it('should login with token', async () => {
-    const accessToken = await loginWithDefaultUser(authServerTest.authHttp);
-    const tokenRes = await httpPost(
-      authServerTest.authHttp,
-      `/default/token`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
-    );
-    const apiToken = tokenRes.body.token;
-    const res = await httpPost(
-      httpServer.http,
-      '/api/relational/exec',
-      {
+  it('should login with access token', async () => {
+    const res = await test.authorized('test', []).json({
+      path: '/api/relational/exec',
+      authorized: true,
+      data: {
         sql: {
           select: now(),
         },
       },
-      {
-        headers: { Authorization: `Token ${apiToken}` },
-      },
-    );
+    });
     expect(res.statusCode).toEqual(200);
-    expect(res.body.rowCount).toEqual(1);
-    expect(res.body.rows[0]).not.toBeUndefined();
+    expect(res.data.rowCount).toEqual(1);
+    expect(res.data.rows[0]).not.toBeUndefined();
   });
 
-  it('should return result', async () => {
-    const token = await loginWithDefaultUser(authServerTest.authHttp);
-    const res = await httpPost(
-      httpServer.http,
-      '/api/relational/exec',
-      {
+  it('should login with user token', async () => {
+    const res = await test.authorizedToken('test').json({
+      path: '/api/relational/exec',
+      authorized: true,
+      data: {
         sql: {
           select: now(),
         },
       },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
+    });
     expect(res.statusCode).toEqual(200);
-    expect(res.body.rowCount).toEqual(1);
-    expect(res.body.rows[0]).not.toBeUndefined();
+    expect(res.data.rowCount).toEqual(1);
+    expect(res.data.rows[0]).not.toBeUndefined();
   });
 
   it('should not allow undefined sql', async () => {
-    const token = await loginWithDefaultUser(authServerTest.authHttp);
-    const res = await httpPost(
-      httpServer.http,
-      '/api/relational/exec',
-      {
+    const res = await test.authorizedToken('test').json({
+      path: '/api/relational/exec',
+      data: {
         sql: {
           select: { time: now() },
         },
       },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
+    });
     expect(res.statusCode).toEqual(403);
   });
 
   it('should not allow unauthorized result', async () => {
-    const res = await httpPost(httpServer.http, '/api/relational/exec', {
-      sql: {
-        select: now(),
+    const res = await test.http.json({
+      path: '/api/relational/exec',
+      data: {
+        sql: {
+          select: now(),
+        },
       },
     });
     expect(res.statusCode).toEqual(403);

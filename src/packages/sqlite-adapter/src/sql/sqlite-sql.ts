@@ -1,4 +1,4 @@
-import { Sql } from '@daita/relational';
+import { AlterTableDropColumnSql, AlterTableRenameSql, Sql } from '@daita/relational';
 import { CreateIndexSql } from '@daita/relational';
 import { DropTableSql } from '@daita/relational';
 import { AlterTableAddColumnSql } from '@daita/relational';
@@ -14,6 +14,8 @@ export type SqliteSql =
   | LockTableSql
   | DropTableSql
   | AlterTableAddColumnSql
+  | AlterTableDropColumnSql
+  | AlterTableRenameSql
   | CreateTableSql
   | CreateSchemaSql
   | DropIndexSql

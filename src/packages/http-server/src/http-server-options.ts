@@ -10,6 +10,4 @@ export interface HttpServerOptions {
 
 export interface HttpServerRelationalOptions {
   dataAdapter: RelationalAdapter<any> & RelationalOrmAdapter;
-  enableTransactions: boolean;
-  transactionTimeout?: number;
 }

@@ -1,6 +1,5 @@
-import { CreateIndexSql, isCreateIndexSql } from '@daita/relational';
-import { FormatContext } from '@daita/relational';
-import { FormatHandle, Formatter, FormatType } from '@daita/relational';
+import { CreateIndexSql, isCreateIndexSql } from './create-index-sql';
+import { FormatContext, FormatHandle, Formatter, FormatType } from '../../../formatter';
 
 export class CreateIndexFormatter implements FormatHandle<CreateIndexSql<any>> {
   type = [FormatType.Sql];

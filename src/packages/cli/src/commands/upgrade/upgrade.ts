@@ -76,6 +76,7 @@ function getLatest(daitaName: string): Promise<string> {
       })
       .on('error', (err) => {
         reject(err);
-      });
+      })
+      .end();
   });
 }

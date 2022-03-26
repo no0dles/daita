@@ -5,16 +5,24 @@ import { authMiddleware } from './middlewares/auth-middleware';
 import cors = require('cors');
 import { relationalRoute } from '@daita/http-server';
 import { adminTokenRoute } from './routes/admin-token';
-import { Server } from 'http';
-import { createLogger } from '@daita/common';
+import { RequestListener } from 'http';
+import { createLogger, getNumberEnvironmentVariable } from '@daita/common';
 import { responseTimeMetricMiddleware } from './middlewares/response-time-middleware';
 import { loginRoute, refreshRoute } from './routes';
 import { RelationalAdapter } from '@daita/relational';
 import { RelationalOrmAdapter } from '@daita/orm';
+import RateLimit from 'express-rate-limit';
 
-export function createAuthAdminApp(dataAdapter: RelationalAdapter<any> & RelationalOrmAdapter, port: number) {
+export function createAuthAdminApp(dataAdapter: RelationalAdapter<any> & RelationalOrmAdapter): RequestListener {
   const adminApp = express();
   const logger = createLogger({ package: 'auth-server' });
+
+  adminApp.use(
+    RateLimit({
+      windowMs: getNumberEnvironmentVariable('RATE_LIMIT_WINDOW', 1 * 60 * 1000), // 1 minute
+      max: getNumberEnvironmentVariable('RATE_LIMIT_MAX', 20),
+    }),
+  );
 
   adminApp.use(responseTimeMetricMiddleware('admin'));
   adminApp.use(bodyParser.json());
@@ -33,8 +41,6 @@ export function createAuthAdminApp(dataAdapter: RelationalAdapter<any> & Relatio
     relationalRoute({
       relational: {
         dataAdapter,
-        enableTransactions: true,
-        transactionTimeout: 4000,
       },
       authorization: false,
       cors: false,
@@ -63,10 +69,5 @@ export function createAuthAdminApp(dataAdapter: RelationalAdapter<any> & Relatio
     }
   });
 
-  return new Promise<Server>((resolve) => {
-    const server = adminApp.listen(port, () => {
-      resolve(server);
-      logger.info(`auth admin server is running on http://localhost:${port}`);
-    });
-  });
+  return adminApp;
 }

@@ -19,8 +19,8 @@ export function authorizable<TQuery extends InsertSql<any> & UpdateSql<any> & De
   const context = getMigrationContext(adapter, options);
   const rulesEvaluator = () =>
     context.getMigrations().then((migrationTree) => {
-      const rules = migrationTree.getSchemaDescription().rules || {};
-      return new RulesEvaluator(Object.keys(rules).map((id) => ({ id, rule: rules[id] })));
+      const rules = migrationTree.getSchemaDescription().schema.rules || {};
+      return new RulesEvaluator(Object.keys(rules).map((id) => ({ id, rule: rules[id].rule })));
     });
 
   return {

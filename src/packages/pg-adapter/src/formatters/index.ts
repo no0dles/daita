@@ -1,5 +1,3 @@
-export * from './create-index-formatter';
-export * from './drop-index-formatter';
 export * from './greatest-formatter';
 export * from './least-formatter';
 export * from './listen-formatter';

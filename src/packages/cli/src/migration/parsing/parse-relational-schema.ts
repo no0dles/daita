@@ -23,12 +23,12 @@ export function parseRelationalSchemaName(schemaVariable: AstVariableDeclaration
 
 export function parseRelationalSchema(schemaVariable: AstVariableDeclaration): SchemaDescription {
   const nameValue = parseRelationalSchemaName(schemaVariable);
-  const schema: SchemaDescription = { rules: {}, tables: {}, views: {}, name: nameValue };
+  let schema: SchemaDescription = { rules: {}, tables: {}, views: {}, name: nameValue };
 
-  parseRelationalSchemaTables(schema, schemaVariable);
-  parseRelationalSchemaTableSeed(schema, schemaVariable);
-  parseRelationalSchemaTableRules(schema, schemaVariable);
-  parseRelationalSchemaViews(schema, schemaVariable);
+  schema = parseRelationalSchemaTables(schema, schemaVariable);
+  schema = parseRelationalSchemaTableSeed(schema, schemaVariable);
+  schema = parseRelationalSchemaTableRules(schema, schemaVariable);
+  schema = parseRelationalSchemaViews(schema, schemaVariable);
 
   return schema;
 }

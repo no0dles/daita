@@ -1,4 +1,4 @@
-import { field, RelationalAdapter, table } from '@daita/relational';
+import { field, json, RelationalAdapter, table } from '@daita/relational';
 import { Mountain } from '../../../models/mountain';
 import { seedMowntainData } from '../../../testing';
 import { Person } from '../../../models/person';
@@ -58,5 +58,23 @@ describe('insert', () => {
       },
     });
     expect(result.insertedRows).toEqual(2);
+  });
+
+  it('should insert mountain', async () => {
+    const result = await ctx.insert({
+      into: table(Mountain),
+      insert: {
+        id: '006b7488-3e72-45e8-911c-86d65f02b94b',
+        ascents: 10,
+        elevation: 20,
+        prominence: 30,
+        extra: json({
+          foo: 'bar',
+        }),
+        cantonShortname: 'BE',
+        name: 'Hörnli',
+      },
+    });
+    expect(result.insertedRows).toEqual(1);
   });
 });

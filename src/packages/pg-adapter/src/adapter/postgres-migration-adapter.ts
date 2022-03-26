@@ -1,5 +1,5 @@
 import { PostgresSql } from '../sql';
-import { MigrationDescription, RelationalOrmAdapter } from '@daita/orm';
+import { addTableAction, hasAddTableStep, MigrationDescription, orderSqls, RelationalOrmAdapter } from '@daita/orm';
 import {
   BaseRelationalAdapter,
   ConnectionError,
@@ -19,7 +19,6 @@ import { dropViewAction } from '@daita/orm';
 import { dropTableAction } from '@daita/orm';
 import { addViewAction } from '@daita/orm';
 import { dropTableField } from '@daita/orm';
-import { addTableWithSchemaAction } from '@daita/orm';
 import { addTableFieldAction } from '@daita/orm';
 import { createIndexAction } from '@daita/orm';
 import { alterViewAction } from '@daita/orm';
@@ -55,8 +54,8 @@ export class PostgresMigrationAdapter
   private closed = false;
   protected readonly logger = createLogger({ package: 'pg-adapter' });
 
-  protected parseConnectionString = parseConnectionString(this.options.connectionString);
-  protected pool = new Promise<Pool>((resolve) => {
+  private parseConnectionString = parseConnectionString(this.options.connectionString);
+  private pool = new Promise<Pool>((resolve) => {
     resolve(
       (async () => {
         if (this.options.prepare) {
@@ -105,46 +104,76 @@ export class PostgresMigrationAdapter
     return this.migrationStorage.get(schema);
   }
 
-  private applyMigrationPlan(client: RelationalTransactionAdapter<PostgresSql>, migrationPlan: MigrationPlan) {
+  private applyMigrationPlan(migrationPlan: MigrationPlan): PostgresSql[] {
+    const schemas = new Set<string>();
+    const result: PostgresSql[] = [];
+
+    for (const step of migrationPlan.migration.steps) {
+      if ((step.kind === 'create_index' || step.kind === 'add_table' || step.kind === 'add_view') && step.schema) {
+        schemas.add(step.schema);
+      }
+    }
+
+    for (const schema of schemas) {
+      result.push({
+        createSchema: schema,
+        ifNotExists: true,
+      });
+    }
+
     for (const step of migrationPlan.migration.steps) {
       if (step.kind === 'add_table') {
-        addTableWithSchemaAction(client, step, migrationPlan.migration);
+        result.push(addTableAction(step, migrationPlan.migration));
       } else if (step.kind === 'add_table_field') {
-        addTableFieldAction(client, step, migrationPlan.migration);
+        if (hasAddTableStep(migrationPlan.migration, step)) {
+          continue;
+        }
+
+        result.push(addTableFieldAction(step));
       } else if (step.kind === 'add_table_primary_key') {
-        addTablePrimaryKeyAction(client, step, migrationPlan.migration);
+        if (hasAddTableStep(migrationPlan.migration, step)) {
+          continue;
+        }
+
+        result.push(addTablePrimaryKeyAction(step));
       } else if (step.kind === 'add_table_foreign_key') {
-        addTableForeignKeyAction(client, step);
+        if (hasAddTableStep(migrationPlan.migration, step)) {
+          continue;
+        }
+
+        result.push(addTableForeignKeyAction(step));
       } else if (step.kind === 'drop_table_primary_key') {
-        dropTablePrimaryKeyAction(client, step);
+        result.push(dropTablePrimaryKeyAction(step));
       } else if (step.kind === 'drop_table') {
-        dropTableAction(client, step);
+        result.push(dropTableAction(step));
       } else if (step.kind === 'drop_table_field') {
-        dropTableField(client, step);
+        result.push(dropTableField(step));
       } else if (step.kind === 'create_index') {
-        createIndexAction(client, step);
+        result.push(createIndexAction(step));
       } else if (step.kind === 'drop_index') {
-        dropIndexAction(client, step);
+        result.push(dropIndexAction(step));
       } else if (step.kind === 'drop_table_foreign_key') {
-        dropTableForeignKeyAction(client, step);
+        result.push(dropTableForeignKeyAction(step));
       } else if (step.kind === 'add_rule') {
       } else if (step.kind === 'drop_rule') {
       } else if (step.kind === 'add_view') {
-        addViewAction(client, step);
+        result.push(addViewAction(step));
       } else if (step.kind === 'alter_view') {
-        alterViewAction(client, step);
+        result.push(alterViewAction(step));
       } else if (step.kind === 'drop_view') {
-        dropViewAction(client, step);
+        result.push(dropViewAction(step));
       } else if (step.kind === 'insert_seed') {
-        insertSeedAction(client, step);
+        result.push(insertSeedAction(step));
       } else if (step.kind === 'update_seed') {
-        updateSeedAction(client, step);
+        result.push(updateSeedAction(step));
       } else if (step.kind === 'delete_seed') {
-        deleteSeedAction(client, step);
+        result.push(deleteSeedAction(step));
       } else {
         failNever(step, 'unknown migration step');
       }
     }
+
+    return orderSqls(result);
   }
 
   async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
@@ -152,7 +181,10 @@ export class PostgresMigrationAdapter
     await this.migrationStorage.initialize();
     await this.transaction(async (trx) => {
       trx.exec({ lockTable: table(Migrations) });
-      this.applyMigrationPlan(trx, migrationPlan);
+      const sqls = this.applyMigrationPlan(migrationPlan);
+      for (const sql of sqls) {
+        trx.exec(sql);
+      }
       this.migrationStorage.add(trx, schema, migrationPlan.migration);
       trx.exec({ notify: 'daita_migrations' });
     });

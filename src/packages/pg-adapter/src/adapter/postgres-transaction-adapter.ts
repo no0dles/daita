@@ -25,15 +25,7 @@ export async function mapError(
   } catch (e: any) {
     logger.trace(e, { query: sql, queryValues: values });
     if (e.code === '23505') {
-      const regex = /Key \((?<keys>.*?)\)=\((?<values>.*?)\) already exists./g;
-      const groups = regex.exec(e.message)?.groups || {};
-      const keys = groups.keys?.split(',').map((k) => k.trim()) || [];
-      const values = groups.values?.split(',').map((k) => k.trim()) || [];
-      const obj: any = {};
-      for (let i = 0; i < keys.length; i++) {
-        obj[keys[i]] = values[i];
-      }
-      throw new DuplicateKeyError(e, sql, values, e.schema, e.table, e.constraint, obj);
+      throw new DuplicateKeyError(e, sql, values, e.schema, e.table, e.constraint);
     }
     if (
       e.errno === -61 ||
@@ -75,7 +67,7 @@ export class PostgresTransactionAdapter
   protected readonly logger = createLogger({ package: 'pg-adapter' });
   private executions: (() => Promise<any>)[] = [];
 
-  constructor(protected client: PoolClient) {
+  constructor(private client: PoolClient) {
     super();
   }
 
