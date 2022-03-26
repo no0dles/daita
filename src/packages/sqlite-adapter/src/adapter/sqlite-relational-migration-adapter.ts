@@ -57,7 +57,6 @@ export class SqliteRelationalMigrationAdapter
 
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {
     this.logger.debug('execute sql', { sql, queryValues: values });
-    console.log(sql);
     const statement = this.db.prepare(sql);
     if (!sql.toLowerCase().startsWith('select')) {
       const result = statement.run(values);

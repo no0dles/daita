@@ -412,6 +412,5 @@ describe('get-migration-steps', () => {
       },
     ];
     const orderedSteps = reorderSteps(steps);
-    console.log(orderedSteps);
   });
 });

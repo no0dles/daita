@@ -90,7 +90,6 @@ export function testMigrationStepsTest(options: {
           }
 
           if (!sql.success) {
-            console.log(sql.sql);
             expect(true).toBe(sql.success);
           }
         } catch (e) {
