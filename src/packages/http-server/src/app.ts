@@ -7,7 +7,6 @@ import { errorMiddleware } from './middleswares/error.middleware';
 import { tokenAuth } from './middleswares/token-auth.middleware';
 import { RequestListener } from 'http';
 import { createLogger, getNumberEnvironmentVariable } from '@daita/common';
-import { ormRoute } from './routes/orm';
 import { HttpServerOptions } from './http-server-options';
 import RateLimit from 'express-rate-limit';
 
@@ -45,7 +44,6 @@ export function createHttpServerApp(options: HttpServerOptions): RequestListener
   }
 
   app.use('/api/relational', relationalRoute(options));
-  app.use('/api/orm', ormRoute(options));
 
   app.use(errorMiddleware(logger));
 

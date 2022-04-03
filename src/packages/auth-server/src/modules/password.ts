@@ -25,6 +25,7 @@ export function getLeakedCount(password: string) {
       })
       .on('error', (err) => {
         reject(err);
-      });
+      })
+      .end();
   });
 }

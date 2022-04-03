@@ -14,7 +14,7 @@ export interface AuthorizableClientOptions {
   rules: { id: string; rule: Rule }[];
 }
 
-export function authorizable<TQuery extends InsertSql<any> & UpdateSql<any> & DeleteSql>(
+export function authorizable<TQuery extends InsertSql<any> | UpdateSql<any> | DeleteSql>(
   adapter: RelationalAdapter<TQuery>,
   options: AuthorizableClientOptions,
 ): RelationalAuthorizableAdapter<TQuery> {
@@ -26,7 +26,7 @@ export function authorizable<TQuery extends InsertSql<any> & UpdateSql<any> & De
   };
 }
 
-export class AuthorizedTransactionAdapter<T extends InsertSql<any> & UpdateSql<any> & DeleteSql>
+export class AuthorizedTransactionAdapter<T extends InsertSql<any> | UpdateSql<any> | DeleteSql>
   extends BaseRelationalTransactionAdapter
   implements RelationalTransactionAdapter<T>
 {
@@ -53,7 +53,7 @@ export class AuthorizedTransactionAdapter<T extends InsertSql<any> & UpdateSql<a
   }
 }
 
-export class AuthorizedAdapter<T extends InsertSql<any> & UpdateSql<any> & DeleteSql>
+export class AuthorizedAdapter<T extends InsertSql<any> | UpdateSql<any> | DeleteSql>
   extends BaseRelationalAdapter
   implements RelationalAuthorizedAdapter<T>
 {

@@ -1,6 +1,6 @@
 {
   "name": "frontends",
-  "version": "0.4.0-alpha.2",
+  "version": "0.4.0-alpha.5",
   "private": true,
   "dependencies": {
     "@angular/animations": "~13.2.1",
@@ -11,10 +11,10 @@
     "@angular/platform-browser": "~13.2.1",
     "@angular/platform-browser-dynamic": "~13.2.1",
     "@angular/router": "~13.2.1",
-    "@daita/auth": "^0.4.0-alpha.2",
-    "@daita/browser": "^0.4.0-alpha.2",
-    "@daita/common": "^0.4.0-alpha.2",
-    "@daita/relational": "^0.4.0-alpha.2",
+    "@daita/auth": "^0.4.0-alpha.5",
+    "@daita/browser": "^0.4.0-alpha.5",
+    "@daita/common": "^0.4.0-alpha.5",
+    "@daita/relational": "^0.4.0-alpha.5",
     "@ngxs/devtools-plugin": "^3.7.3",
     "@ngxs/store": "^3.7.3",
     "highlight.js": "^11.4.0",

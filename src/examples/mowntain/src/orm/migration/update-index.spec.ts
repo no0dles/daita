@@ -33,20 +33,27 @@ describe('orm/migration/update-index', () => {
         },
       },
     },
-    expectedSteps: [
+    expectedUp: [
       {
-        kind: 'drop_index',
-        name: 'username',
-        schema: 'custom',
-        table: 'User',
+        dropIndex: 'username',
+        on: table('User', 'custom'),
       },
       {
-        fields: ['username'],
-        kind: 'create_index',
-        name: 'username',
-        schema: 'custom',
-        table: 'User',
+        createIndex: 'username',
+        columns: ['username'],
         unique: true,
+        on: table('User', 'custom'),
+      },
+    ],
+    expectedDown: [
+      {
+        dropIndex: 'username',
+        on: table('User', 'custom'),
+      },
+      {
+        createIndex: 'username',
+        columns: ['username'],
+        on: table('User', 'custom'),
       },
     ],
     verifySqls: [

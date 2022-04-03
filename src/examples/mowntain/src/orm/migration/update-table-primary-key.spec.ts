@@ -27,17 +27,18 @@ describe('orm/migration/update-table-primary-key', () => {
         },
       },
     },
-    expectedSteps: [
+    expectedUp: [
+      { alterTable: table('User', 'custom'), drop: { constraint: 'User_pkey' } },
       {
-        kind: 'drop_table_primary_key',
-        schema: 'custom',
-        table: 'User',
+        alterTable: table('User', 'custom'),
+        add: { primaryKey: ['username'] },
       },
+    ],
+    expectedDown: [
+      { alterTable: table('User', 'custom'), drop: { constraint: 'User_pkey' } },
       {
-        fieldNames: ['username'],
-        kind: 'add_table_primary_key',
-        schema: 'custom',
-        table: 'User',
+        alterTable: table('User', 'custom'),
+        add: { primaryKey: ['id'] },
       },
     ],
     verifySqls: [

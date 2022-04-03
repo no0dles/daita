@@ -5,18 +5,25 @@ import {
   isAlterTableDropColumnSql,
   isAlterTableDropConstraintSql,
   isAlterTableRenameSql,
+  isCreateIndexSql,
   isCreateTableSql,
   isCreateViewSql,
+  isDeleteSql,
+  isDropIndexSql,
   isDropTableSql,
   isDropViewSql,
+  isInsertSql,
+  isUpdateSql,
 } from '@daita/relational';
 import {
+  addIndexToTable,
   addTableField,
   addTableReference,
   addTableToSchema,
   addViewToSchema,
   doDropTableField,
   dropTableFromSchema,
+  dropTableIndex,
   dropViewFromSchema,
   extendSchema,
   getTableFromSchema,
@@ -25,22 +32,23 @@ import {
 } from '../../schema';
 import { failNever } from '@daita/common';
 import { OrmSql } from './orm-sql';
+import { RelationalOrmAdapter } from '../../adapter';
 
-export interface TypeAdapter {
-  databaseTypeToSchemaType(type: string): { type: SchemaTableFieldTypeDescription; size?: number };
-  schemaTypeToDatabaseType(type: SchemaTableFieldTypeDescription, size: number | undefined): string;
-}
-
-export function buildSchema(adapter: TypeAdapter, schema: SchemaDescription, sqls: OrmSql[]): SchemaDescription {
+export function buildSchema(
+  adapter: RelationalOrmAdapter,
+  schema: SchemaDescription,
+  sqls: OrmSql[],
+): SchemaDescription {
   for (const sql of sqls) {
     if (isCreateTableSql(sql)) {
       schema = addTableToSchema(schema, sql.createTable);
       for (const column of sql.columns) {
-        const columnType = adapter.databaseTypeToSchemaType(column.type);
+        // const columnType = adapter.getSchemaType(column.type); // TODO
+        const columnType: { type: SchemaTableFieldTypeDescription; size: null } = { type: 'string', size: null };
         schema = addTableField(schema, sql.createTable, {
           type: columnType.type,
           key: column.name,
-          size: columnType.size,
+          size: columnType.size ? `${columnType.size}` : undefined,
           defaultValue: column.defaultValue,
           required: !!column.notNull,
         });
@@ -63,11 +71,12 @@ export function buildSchema(adapter: TypeAdapter, schema: SchemaDescription, sql
     } else if (isDropViewSql(sql)) {
       schema = dropViewFromSchema(schema, sql.dropView);
     } else if (isAlterTableAddColumnSql(sql)) {
-      const columnType = adapter.databaseTypeToSchemaType(sql.add.type);
+      //const columnType = adapter.getSchemaType(sql.add.type); // TODO
+      const columnType: { type: SchemaTableFieldTypeDescription; size: null } = { type: 'string', size: null };
       schema = addTableField(schema, sql.alterTable, {
         type: columnType.type,
         key: sql.add.column,
-        size: columnType.size,
+        size: `${columnType.size}`,
         required: sql.add.notNull ?? false,
         defaultValue: sql.add.defaultValue,
       });
@@ -95,6 +104,16 @@ export function buildSchema(adapter: TypeAdapter, schema: SchemaDescription, sql
           table.table.primaryKeys = [];
         }
       });
+    } else if (isInsertSql(sql) || isDeleteSql(sql) || isUpdateSql(sql)) {
+      //schema = addSeed(schema, sql.into, sql.insert); // TODO
+    } else if (isCreateIndexSql(sql)) {
+      schema = addIndexToTable(schema, sql.on, {
+        key: sql.createIndex,
+        fields: sql.columns.map((c) => String(c)),
+        unique: sql.unique ?? false,
+      });
+    } else if (isDropIndexSql(sql)) {
+      schema = dropTableIndex(schema, sql.on, sql.dropIndex);
     } else {
       failNever(sql, 'unknown sql');
     }

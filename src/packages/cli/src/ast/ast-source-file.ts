@@ -11,7 +11,7 @@ export class AstSourceFile {
   block: AstBlock;
 
   constructor(public context: AstContext, private node: SourceFile) {
-    this.block = new AstBlock(this, node);
+    this.block = new AstBlock(this, node, null);
   }
 
   get fileName() {
@@ -28,18 +28,16 @@ export class AstSourceFile {
 
   private *getExports() {
     for (const statement of this.node.statements) {
-      const node = isKind(statement, SyntaxKind.ExportDeclaration);
-      if (node) {
-        yield new AstExportDeclaration(this, node);
+      if (isKind(statement, SyntaxKind.ExportDeclaration)) {
+        yield new AstExportDeclaration(this, statement);
       }
     }
   }
 
   private *getImports() {
     for (const statement of this.node.statements) {
-      const node = isKind(statement, SyntaxKind.ImportDeclaration);
-      if (node) {
-        yield new AstImportDeclaration(this, node);
+      if (isKind(statement, SyntaxKind.ImportDeclaration)) {
+        yield new AstImportDeclaration(this, statement);
       }
     }
   }

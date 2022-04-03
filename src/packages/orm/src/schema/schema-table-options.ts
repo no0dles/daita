@@ -5,13 +5,13 @@ export type SchemaTableIndexOption<T> = keyof T | (keyof T)[] | { columns: strin
 export interface SchemaTableOptions<T> {
   key?: keyof T | (keyof T)[];
   indices?: { [key: string]: SchemaTableIndexOption<T> };
-  columns?: { [P in keyof T]?: { size?: number } };
+  columns?: { [P in keyof T]?: { size?: string | number } };
   foreignKeys?: { [P in keyof T]?: { onUpdate?: ForeignKeyConstraint; onDelete?: ForeignKeyConstraint } };
 }
 
 export interface SchemaTableRequiredKeyOptions<T> {
   key: keyof T | (keyof T)[];
   indices?: { [key: string]: SchemaTableIndexOption<T> };
-  columns?: { [P in keyof T]?: { size?: number } };
+  columns?: { [P in keyof T]?: { size?: string | number } };
   foreignKeys?: { [P in keyof T]?: { onUpdate?: ForeignKeyConstraint; onDelete?: ForeignKeyConstraint } };
 }

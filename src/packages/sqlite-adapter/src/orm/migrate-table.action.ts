@@ -1,4 +1,4 @@
-import { AlterTableRenameSql, CreateIndexSql, field, InsertSql } from '@daita/relational';
+import { AlterTableRenameSql, CreateIndexSql, CreateTableColumn, field, InsertSql } from '@daita/relational';
 import { CreateTableForeignKey, CreateTableSql } from '@daita/relational';
 import { DropTableSql } from '@daita/relational';
 import { table } from '@daita/relational';
@@ -6,19 +6,18 @@ import {
   getFieldNamesFromSchemaTable,
   getFieldsFromSchemaTable,
   getReferencesFromSchemaTable,
+  getTableDescriptionIdentifier,
   getTableFromSchema,
   SchemaDescription,
   SchemaTableDescription,
 } from '@daita/orm';
-import { PragmaSql } from '../sql/pragma-sql';
 
 export type MigrateTableSql =
   | InsertSql<any>
   | CreateTableSql
   | DropTableSql
   | AlterTableRenameSql
-  | CreateIndexSql<any>
-  | PragmaSql;
+  | CreateIndexSql<any>;
 
 export function migrateTableAction(
   targetSchema: SchemaDescription,
@@ -30,6 +29,10 @@ export function migrateTableAction(
   const newReferences = getReferencesFromSchemaTable(targetTable);
   const foreignKey = newReferences.reduce<{ [key: string]: CreateTableForeignKey }>((refs, ref) => {
     const refTable = getTableFromSchema(targetSchema, table(ref.table, ref.schema));
+    let refAlias = table(refTable.table.name, refTable.table.schema);
+    if (getTableDescriptionIdentifier(refAlias) === getTableDescriptionIdentifier(currentTableAlias)) {
+      refAlias = newTableAlias;
+    }
     refs[ref.name] = {
       key: getFieldNamesFromSchemaTable(
         targetTable,
@@ -40,20 +43,24 @@ export function migrateTableAction(
           refTable.table,
           ref.keys.map((k) => k.foreignField),
         ),
-        table: table(refTable.table.name, refTable.table.schema),
+        table: refAlias,
       },
+      onDelete: ref.onDelete ?? undefined,
+      onUpdate: ref.onUpdate ?? undefined,
     };
     return refs;
   }, {});
 
   const sqls: MigrateTableSql[] = [
     {
-      pragma: 'foreign_keys',
-      set: 'OFF',
-    },
-    {
       createTable: newTableAlias,
-      columns: newFields,
+      columns: newFields.map<CreateTableColumn>((field) => ({
+        type: field.type,
+        name: field.name,
+        size: field.size,
+        notNull: field.required,
+        primaryKey: targetTable.primaryKeys?.some((p) => p === field.name),
+      })),
       foreignKey,
     },
     {
@@ -72,10 +79,6 @@ export function migrateTableAction(
     {
       alterTable: newTableAlias,
       renameTo: targetTable.schema ? `${targetTable.schema}-${targetTable.name}` : targetTable.name,
-    },
-    {
-      pragma: 'foreign_keys',
-      set: 'ON',
     },
   ];
   for (const [indexName, index] of Object.entries(targetTable.indices || {})) {

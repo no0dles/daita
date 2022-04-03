@@ -1,59 +1,59 @@
 import { MigrationContextUpdateOptions } from './migration-context-update-options';
 import { OrmRelationalSchema } from '../schema';
-import { isMigrationTree, MigrationTree } from '../migration';
+import { isMigrationTree, MigrationStorage, MigrationTree } from '../migration';
 import { failNever, isKind } from '@daita/common';
 import { RelationalOrmAdapter } from '../adapter';
 import { doMigrate, needsMigration } from './utils';
+import { RelationalAdapter } from '@daita/relational';
 
-export interface MigrationContext {
+export interface MigrationContext<TSql> {
   needsMigration(options?: MigrationContextUpdateOptions): Promise<boolean>;
   migrate(options?: MigrationContextUpdateOptions): Promise<void>;
-  getMigrations(): Promise<MigrationTree>;
+  getMigrations(): Promise<MigrationTree<TSql>>;
 }
 
-export interface ContextSchemaOptions {
-  schema: OrmRelationalSchema;
+export interface ContextSchemaOptions<TSql> {
+  schema: OrmRelationalSchema<TSql>;
 }
-export const isContextSchemaOptions = (val: ContextOptions): val is ContextSchemaOptions => isKind(val, ['schema']);
+export const isContextSchemaOptions = (val: ContextOptions<any>): val is ContextSchemaOptions<any> =>
+  isKind(val, ['schema']);
 
-export interface ContextMigrationTreeOptions {
-  migrationTree: MigrationTree;
+export interface ContextMigrationTreeOptions<TSql> {
+  migrationTree: MigrationTree<TSql>;
 }
-export const isContextMigrationTreeOptions = (val: ContextOptions): val is ContextMigrationTreeOptions =>
+export const isContextMigrationTreeOptions = (val: ContextOptions<any>): val is ContextMigrationTreeOptions<any> =>
   isKind(val, ['migrationTree']);
 
-export type ContextOptions = ContextSchemaOptions | ContextMigrationTreeOptions | ContextSchemaNameOptions;
+export type ContextOptions<TSql> =
+  | ContextSchemaOptions<TSql>
+  | ContextMigrationTreeOptions<TSql>
+  | ContextSchemaNameOptions;
 
 export interface ContextSchemaNameOptions {
   schemaName: string;
 }
 
-export const isContextSchemaNameOptions = (val: ContextOptions): val is ContextSchemaNameOptions =>
+export const isContextSchemaNameOptions = (val: ContextOptions<any>): val is ContextSchemaNameOptions =>
   isKind(val, ['schemaName']);
 
-export function getMigrationContext(adapter: RelationalOrmAdapter, options: ContextOptions): MigrationContext {
+export function getMigrationContext<TSql>(
+  adapter: RelationalOrmAdapter & RelationalAdapter<TSql>,
+  options: ContextOptions<TSql>,
+): MigrationContext<TSql> {
   if (isContextSchemaOptions(options)) {
-    return new RelationalMigrationContext(adapter, Promise.resolve(options.schema.getMigrations()));
-  } else if (isContextSchemaNameOptions(options)) {
-    return new RelationalMigrationContext(
-      adapter,
-      Promise.resolve(
-        (async () => {
-          const migrations = await adapter.getAppliedMigrations(options.schemaName);
-          return new MigrationTree(options.schemaName, migrations);
-        })(),
-      ),
-    );
+    return new RelationalMigrationContext(adapter, options.schema.getMigrations());
   } else if (isContextMigrationTreeOptions(options)) {
-    return new RelationalMigrationContext(adapter, Promise.resolve(options.migrationTree));
+    return new RelationalMigrationContext(adapter, options.migrationTree);
+  } else if (isContextSchemaNameOptions(options)) {
+    return new RelationalSchemaContext(adapter, options.schemaName);
   } else {
     failNever(options, 'unsupported options');
   }
 }
 
-export async function migrate(
-  adapter: RelationalOrmAdapter,
-  migrationTree: MigrationTree | OrmRelationalSchema,
+export async function migrate<TSql>(
+  adapter: RelationalOrmAdapter & RelationalAdapter<TSql>,
+  migrationTree: MigrationTree<TSql> | OrmRelationalSchema<TSql>,
   options?: MigrationContextUpdateOptions,
 ) {
   const ctx = getMigrationContext(
@@ -63,18 +63,45 @@ export async function migrate(
   await ctx.migrate(options);
 }
 
-class RelationalMigrationContext implements MigrationContext {
-  constructor(private adapter: RelationalOrmAdapter, private migrationTree: Promise<MigrationTree>) {}
+class RelationalSchemaContext<TSql> implements MigrationContext<TSql> {
+  private readonly storage: MigrationStorage<TSql>;
 
-  getMigrations(): Promise<MigrationTree> {
-    return this.migrationTree;
+  constructor(private adapter: RelationalOrmAdapter & RelationalAdapter<TSql>, private schemaName: string) {
+    this.storage = new MigrationStorage<TSql>(adapter);
+  }
+
+  getMigrations(): Promise<MigrationTree<TSql>> {
+    return this.storage.get(this.schemaName);
   }
 
   async migrate(options?: MigrationContextUpdateOptions): Promise<void> {
-    return doMigrate(this.adapter, await this.migrationTree, options);
+    return;
   }
 
   async needsMigration(options?: MigrationContextUpdateOptions): Promise<boolean> {
-    return needsMigration(this.adapter, await this.migrationTree, options);
+    return false;
+  }
+}
+
+class RelationalMigrationContext<TSql> implements MigrationContext<TSql> {
+  private readonly storage: MigrationStorage<TSql>;
+
+  constructor(
+    private adapter: RelationalOrmAdapter & RelationalAdapter<TSql>,
+    private migrationTree: MigrationTree<TSql>,
+  ) {
+    this.storage = new MigrationStorage<TSql>(adapter);
+  }
+
+  getMigrations(): Promise<MigrationTree<TSql>> {
+    return this.storage.get(this.migrationTree.name);
+  }
+
+  async migrate(options?: MigrationContextUpdateOptions): Promise<void> {
+    return doMigrate(this.storage, await this.migrationTree, options ?? {});
+  }
+
+  async needsMigration(options?: MigrationContextUpdateOptions): Promise<boolean> {
+    return needsMigration(this.storage, await this.migrationTree, options ?? {});
   }
 }

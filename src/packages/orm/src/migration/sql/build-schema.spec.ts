@@ -1,23 +1,12 @@
 import { table } from '@daita/relational';
-import { buildSchema, TypeAdapter } from './build-schema';
+import { buildSchema } from './build-schema';
 import { emptySchema, SchemaTableFieldTypeDescription } from '../../schema';
 import { OrmSql } from './orm-sql';
+import { RelationalOrmAdapter } from '../../adapter';
 
 describe('build-schema', () => {
-  const varcharRegex = /VARCHAR\((?<size>\d+)\)/;
-  const testAdapter: TypeAdapter = {
-    databaseTypeToSchemaType(type: string): { type: SchemaTableFieldTypeDescription; size?: number } {
-      if (type === 'VARCHAR') {
-        return { type: 'string' };
-      }
-      const varcharMatch = varcharRegex.exec(type);
-      if (varcharMatch && varcharMatch.groups) {
-        return { type: 'string', size: parseInt(varcharMatch.groups['size']) };
-      }
-
-      return { type: 'unknown' };
-    },
-    schemaTypeToDatabaseType(type: SchemaTableFieldTypeDescription, size: number | undefined): string {
+  const testAdapter: RelationalOrmAdapter = {
+    getDatabaseType(type: SchemaTableFieldTypeDescription, size: string | undefined): string {
       if (type === 'string') {
         if (size === undefined) {
           return 'VARCHAR';

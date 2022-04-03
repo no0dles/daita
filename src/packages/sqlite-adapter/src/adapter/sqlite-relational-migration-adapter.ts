@@ -1,19 +1,6 @@
 import { SqliteSql } from '../sql/sqlite-sql';
-import { getTableFromSchema, hasAddTableStep, MigrationStorage, orderSqls, RelationalOrmAdapter } from '@daita/orm';
-import { MigrationPlan } from '@daita/orm';
+import { RelationalOrmAdapter, SchemaTableFieldTypeDescription } from '@daita/orm';
 import { createLogger, failNever, parseJson } from '@daita/common';
-import { MigrationDescription } from '@daita/orm';
-import { addTableAction } from '@daita/orm';
-import { addTableFieldAction } from '@daita/orm';
-import { dropTableAction } from '@daita/orm';
-import { createIndexAction } from '@daita/orm';
-import { dropIndexAction } from '@daita/orm';
-import { addViewAction } from '@daita/orm';
-import { alterViewAction } from '@daita/orm';
-import { dropViewAction } from '@daita/orm';
-import { insertSeedAction } from '@daita/orm';
-import { updateSeedAction } from '@daita/orm';
-import { deleteSeedAction } from '@daita/orm';
 import { SqliteRelationalTransactionAdapter } from './sqlite-relational-transaction-adapter';
 import Sqlite, { Database } from 'better-sqlite3';
 import {
@@ -24,11 +11,9 @@ import {
   RelationalRawResult,
   RelationalTransactionAdapter,
   SelectSql,
-  table,
   UpdateSql,
 } from '@daita/relational';
 import { SqliteFormatContext, sqliteFormatter } from '../formatter';
-import { dropTableFieldAction, migrateTableAction } from '../orm';
 
 export class SqliteRelationalMigrationAdapter
   extends BaseRelationalAdapter
@@ -36,9 +21,6 @@ export class SqliteRelationalMigrationAdapter
 {
   private readonly db: Database;
   protected readonly logger = createLogger({ adapter: 'sqlite', package: 'sqlite' });
-  private storage = new MigrationStorage(this, {
-    idType: 'TEXT',
-  });
 
   constructor(private connectionString: string) {
     super();
@@ -47,6 +29,37 @@ export class SqliteRelationalMigrationAdapter
         this.logger.debug(message, additionalArgs);
       },
     });
+  }
+
+  getDatabaseType(type: SchemaTableFieldTypeDescription, size?: string): string {
+    if (type === 'string') {
+      return 'TEXT';
+    }
+    if (type === 'number') {
+      return 'REAL';
+    }
+    if (type === 'date') {
+      return 'TEXT';
+    }
+    if (type === 'boolean') {
+      return 'TEXT';
+    }
+    if (
+      type === 'string[]' ||
+      type === 'boolean[]' ||
+      type === 'number[]' ||
+      type === 'date[]' ||
+      type === 'uuid' ||
+      type === 'json'
+    ) {
+      return 'TEXT';
+    }
+
+    if (type === 'unknown') {
+      throw new Error('cant get type for unknown');
+    }
+
+    failNever(type, `unknown data type ${type}`);
   }
 
   exec(sql: DeleteSql | SelectSql<any> | UpdateSql<any> | InsertSql<any>): Promise<RelationalRawResult> {
@@ -103,21 +116,21 @@ export class SqliteRelationalMigrationAdapter
     return this.connectionString === ':memory:' ? 'sqlite-memory' : 'sqlite-file';
   }
 
-  async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
-    await this.storage.initialize();
-    await this.transaction((trx) => {
-      const sqls = this.applyMigrationPlan(migrationPlan);
-      for (const sql of sqls) {
-        trx.exec(sql);
-      }
-      this.storage.add(trx, schema, migrationPlan.migration);
-    });
-  }
-
-  async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
-    await this.storage.initialize();
-    return this.storage.get(schema);
-  }
+  // async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
+  //   await this.storage.initialize();
+  //   await this.transaction((trx) => {
+  //     const sqls = this.applyMigrationPlan(migrationPlan);
+  //     for (const sql of sqls) {
+  //       trx.exec(sql);
+  //     }
+  //     this.storage.add(trx, schema, migrationPlan.migration);
+  //   });
+  // }
+  //
+  // async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
+  //   await this.storage.initialize();
+  //   return this.storage.get(schema);
+  // }
 
   async transaction(action: (adapter: RelationalTransactionAdapter<SqliteSql>) => void): Promise<void> {
     this.db
@@ -127,64 +140,64 @@ export class SqliteRelationalMigrationAdapter
       .exclusive();
   }
 
-  private applyMigrationPlan(migrationPlan: MigrationPlan): SqliteSql[] {
-    const result: SqliteSql[] = [];
-    for (const migrationPlanStep of migrationPlan.steps) {
-      const step = migrationPlanStep.migrationStep;
-      if (step.kind === 'add_table') {
-        result.push(addTableAction(step, migrationPlan.migration));
-      } else if (step.kind === 'add_table_field') {
-        if (hasAddTableStep(migrationPlan.migration, step)) {
-          continue;
-        }
-
-        result.push(addTableFieldAction(step));
-      } else if (step.kind === 'add_table_primary_key') {
-        if (hasAddTableStep(migrationPlan.migration, step)) {
-          continue;
-        }
-
-        const targetTable = getTableFromSchema(migrationPlanStep.schema, table(step.table, step.schema));
-        result.push(...migrateTableAction(migrationPlanStep.schema, targetTable.table));
-      } else if (step.kind === 'add_table_foreign_key') {
-        if (hasAddTableStep(migrationPlan.migration, step)) {
-          continue;
-        }
-
-        const targetTable = getTableFromSchema(migrationPlanStep.schema, table(step.table, step.schema));
-        result.push(...migrateTableAction(migrationPlanStep.schema, targetTable.table));
-      } else if (step.kind === 'drop_table_primary_key') {
-        const targetTable = getTableFromSchema(migrationPlanStep.schema, table(step.table, step.schema));
-        result.push(...migrateTableAction(migrationPlanStep.schema, targetTable.table));
-      } else if (step.kind === 'drop_table') {
-        result.push(dropTableAction(step));
-      } else if (step.kind === 'drop_table_field') {
-        result.push(dropTableFieldAction(step));
-      } else if (step.kind === 'create_index') {
-        result.push(createIndexAction(step));
-      } else if (step.kind === 'drop_index') {
-        result.push(dropIndexAction({ kind: 'drop_index', name: step.name, table: step.table }));
-      } else if (step.kind === 'drop_table_foreign_key') {
-        const targetTable = getTableFromSchema(migrationPlanStep.schema, table(step.table, step.schema));
-        result.push(...migrateTableAction(migrationPlanStep.schema, targetTable.table));
-      } else if (step.kind === 'add_rule') {
-      } else if (step.kind === 'drop_rule') {
-      } else if (step.kind === 'add_view') {
-        result.push(addViewAction(step));
-      } else if (step.kind === 'alter_view') {
-        result.push(alterViewAction(step));
-      } else if (step.kind === 'drop_view') {
-        result.push(dropViewAction(step));
-      } else if (step.kind === 'insert_seed') {
-        result.push(insertSeedAction(step));
-      } else if (step.kind === 'update_seed') {
-        result.push(updateSeedAction(step));
-      } else if (step.kind === 'delete_seed') {
-        result.push(deleteSeedAction(step));
-      } else {
-        failNever(step, 'unknown migration step');
-      }
-    }
-    return orderSqls(result);
-  }
+  // private applyMigrationPlan(migrationPlan: MigrationPlan): SqliteSql[] {
+  //   const result: SqliteSql[] = [];
+  //   for (const migrationPlanStep of migrationPlan.steps) {
+  //     const step = migrationPlanStep.migrationStep;
+  //     if (step.kind === 'add_table') {
+  //       result.push(addTableAction(step, migrationPlan.migration));
+  //     } else if (step.kind === 'add_table_field') {
+  //       if (hasAddTableStep(migrationPlan.migration, step)) {
+  //         continue;
+  //       }
+  //
+  //       result.push(addTableFieldAction(step));
+  //     } else if (step.kind === 'add_table_primary_key') {
+  //       if (hasAddTableStep(migrationPlan.migration, step)) {
+  //         continue;
+  //       }
+  //
+  //       const targetTable = getTableFromSchema(migrationPlanStep.schema, table(step.table, step.schema));
+  //       result.push(...migrateTableAction(migrationPlanStep.schema, targetTable.table));
+  //     } else if (step.kind === 'add_table_foreign_key') {
+  //       if (hasAddTableStep(migrationPlan.migration, step)) {
+  //         continue;
+  //       }
+  //
+  //       const targetTable = getTableFromSchema(migrationPlanStep.schema, table(step.table, step.schema));
+  //       result.push(...migrateTableAction(migrationPlanStep.schema, targetTable.table));
+  //     } else if (step.kind === 'drop_table_primary_key') {
+  //       const targetTable = getTableFromSchema(migrationPlanStep.schema, table(step.table, step.schema));
+  //       result.push(...migrateTableAction(migrationPlanStep.schema, targetTable.table));
+  //     } else if (step.kind === 'drop_table') {
+  //       result.push(dropTableAction(step));
+  //     } else if (step.kind === 'drop_table_field') {
+  //       result.push(dropTableFieldAction(step));
+  //     } else if (step.kind === 'create_index') {
+  //       result.push(createIndexAction(step));
+  //     } else if (step.kind === 'drop_index') {
+  //       result.push(dropIndexAction({ kind: 'drop_index', name: step.name, table: step.table }));
+  //     } else if (step.kind === 'drop_table_foreign_key') {
+  //       const targetTable = getTableFromSchema(migrationPlanStep.schema, table(step.table, step.schema));
+  //       result.push(...migrateTableAction(migrationPlanStep.schema, targetTable.table));
+  //     } else if (step.kind === 'add_rule') {
+  //     } else if (step.kind === 'drop_rule') {
+  //     } else if (step.kind === 'add_view') {
+  //       result.push(addViewAction(step));
+  //     } else if (step.kind === 'alter_view') {
+  //       result.push(alterViewAction(step));
+  //     } else if (step.kind === 'drop_view') {
+  //       result.push(dropViewAction(step));
+  //     } else if (step.kind === 'insert_seed') {
+  //       result.push(insertSeedAction(step));
+  //     } else if (step.kind === 'update_seed') {
+  //       result.push(updateSeedAction(step));
+  //     } else if (step.kind === 'delete_seed') {
+  //       result.push(deleteSeedAction(step));
+  //     } else {
+  //       failNever(step, 'unknown migration step');
+  //     }
+  //   }
+  //   return orderSqls(result);
+  // }
 }

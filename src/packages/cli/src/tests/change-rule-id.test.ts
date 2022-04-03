@@ -21,23 +21,32 @@ schema.rules([userRule]);
 
 schema.migration({
   id: 'first',
-  steps: [
-    { kind: 'add_table', table: 'User' },
-    {
-      kind: 'add_table_field',
-      table: 'User',
-      fieldName: 'id',
-      required: true,
-      type: 'string',
-    },
-    {
-      kind: 'add_table_field',
-      table: 'User',
-      fieldName: 'admin',
-      required: true,
-      type: 'boolean',
-    },
-    { kind: 'add_table_primary_key', table: 'User', fieldNames: ['id'] },
-    { kind: 'add_rule', ruleId: userRuleId, rule: userRule },
-  ],
+  up: (trx) => {
+    trx.exec({
+      createTable: table(User),
+      columns: [
+        {
+          name: 'id',
+          type: 'VARCHAR',
+          primaryKey: true,
+          notNull: true,
+        },
+        {
+          name: 'admin',
+          type: 'BOOLEAN',
+          notNull: true,
+        },
+      ],
+    });
+    trx.exec({
+      insert: { id: 'a', admin: false },
+      into: table(User),
+    });
+    // { kind: 'add_rule', ruleId: userRuleId, rule: userRule }, // TODO
+  },
+  down: (trx) => {
+    trx.exec({
+      dropTable: table(User),
+    });
+  },
 });

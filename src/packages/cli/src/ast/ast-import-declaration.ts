@@ -37,9 +37,8 @@ export class AstImportDeclaration {
       return null;
     }
 
-    const namedImport = isKind(this.node.importClause.namedBindings, SyntaxKind.NamedImports);
-    if (namedImport) {
-      for (const elm of namedImport.elements) {
+    if (isKind(this.node.importClause.namedBindings, SyntaxKind.NamedImports)) {
+      for (const elm of this.node.importClause.namedBindings.elements) {
         const exportName = getName(elm.name, 'identifier');
         if (exportName === name) {
           if (elm.propertyName) {
@@ -68,9 +67,8 @@ export class AstImportDeclaration {
   }
 
   private get moduleSpecifier(): string {
-    const stringLiteral = isKind(this.node.moduleSpecifier, SyntaxKind.StringLiteral);
-    if (stringLiteral) {
-      return stringLiteral.text;
+    if (isKind(this.node.moduleSpecifier, SyntaxKind.StringLiteral)) {
+      return this.node.moduleSpecifier.text;
     }
 
     throw new AstError(this.node, 'unable to parse module specifier');

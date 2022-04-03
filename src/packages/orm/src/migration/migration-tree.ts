@@ -1,28 +1,31 @@
-import { MigrationDescription } from './migration-description';
-import { emptySchema, getSchemaDescription } from '../schema/relational-schema-description';
-import { SchemaMapper } from '../schema/description/schema-mapper';
-import { NormalMapper } from '../schema/description/normal-mapper';
+export interface Migration<TSql> {
+  id: string;
+  after?: string;
+  resolve?: string;
+  upMigration: TSql[];
+  downMigration: TSql[];
+}
 
-export class MigrationTree {
-  private migrationMap: { [id: string]: MigrationDescription } = {};
-  private afterMigrations: { [id: string]: MigrationDescription[] } = {};
+export class MigrationTree<TSql> {
+  private migrationMap: { [id: string]: Migration<TSql> } = {};
+  private afterMigrations: { [id: string]: Migration<TSql>[] } = {};
   private rootMigrations: {
     [id: string]: {
-      root: MigrationDescription;
-      next: MigrationDescription | null;
-      last: MigrationDescription | null;
+      root: Migration<TSql>;
+      next: Migration<TSql> | null;
+      last: Migration<TSql> | null;
     };
   } = {};
 
   migrationCount = 0;
 
-  constructor(public name: string, migrations: MigrationDescription[] = []) {
+  constructor(public name: string, migrations: Migration<TSql>[] = []) {
     for (const migration of migrations) {
       this.add(migration);
     }
   }
 
-  add(migration: MigrationDescription) {
+  add(migration: Migration<TSql>) {
     if (this.migrationMap[migration.id]) {
       throw new Error(`migration with id ${migration.id} already exists`);
     }
@@ -58,8 +61,8 @@ export class MigrationTree {
     return Object.keys(this.rootMigrations).map((id) => this.migrationMap[id]);
   }
 
-  last() {
-    const migrations: MigrationDescription[] = [];
+  last(): Migration<TSql>[] {
+    const migrations: Migration<TSql>[] = [];
     const migrationIds = Object.keys(this.migrationMap);
     for (const migrationId of migrationIds) {
       if (this.afterMigrations[migrationId]) {
@@ -94,22 +97,9 @@ export class MigrationTree {
     }
   }
 
-  getSchemaDescription() {
-    // if (options.backwardCompatible) {
-    //   return getSchemaDescription(
-    //     this.name,
-    //     new SchemaMapper(() => new BackwardCompatibleMapper()),
-    //     this.defaultPath(),
-    //   );
-    // } else {
-    // }
-    const schema = emptySchema(this.name);
-    return getSchemaDescription(schema, new SchemaMapper(() => new NormalMapper()), this.defaultPath());
-  }
-
   path(id: string) {
     const targetMigration = this.migrationMap[id];
-    const migrations: MigrationDescription[] = [targetMigration];
+    const migrations: Migration<TSql>[] = [targetMigration];
     let current = targetMigration.after ? this.migrationMap[targetMigration.after] : null;
     while (current !== null) {
       migrations.unshift(current);
@@ -119,4 +109,4 @@ export class MigrationTree {
   }
 }
 
-export const isMigrationTree = (val: any): val is MigrationTree => typeof val.path === 'function';
+export const isMigrationTree = (val: any): val is MigrationTree<any> => typeof val.path === 'function';

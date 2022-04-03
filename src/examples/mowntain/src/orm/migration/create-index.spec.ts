@@ -30,14 +30,17 @@ describe('orm/migration/create-index', () => {
         },
       },
     },
-    expectedSteps: [
+    expectedUp: [
       {
-        fields: ['username'],
-        kind: 'create_index',
-        name: 'username',
-        schema: 'custom',
-        table: 'User',
-        unique: true,
+        createIndex: 'username',
+        on: table('User', 'custom'),
+        columns: ['username'],
+      },
+    ],
+    expectedDown: [
+      {
+        dropIndex: 'username',
+        on: table('User', 'custom'),
       },
     ],
     verifySqls: [

@@ -71,8 +71,8 @@ export function createTableSchema(name: string, options: CreateSchemaTableDescri
       map[fieldKey] = {
         name: fieldKey,
         defaultValue: fields[fieldKey].defaultValue,
-        size: fields[fieldKey].size,
         type: fields[fieldKey].type,
+        size: fields[fieldKey].size ?? null,
         required: fields[fieldKey].required ?? false,
       };
       return map;
@@ -293,7 +293,7 @@ export function addTableField(
   field: {
     key: string;
     type: SchemaTableFieldTypeDescription;
-    size: number | undefined;
+    size: string | undefined;
     required: boolean;
     defaultValue: any;
   },
@@ -308,8 +308,8 @@ export function addTableField(
       name: field.key,
       defaultValue: field.defaultValue,
       required: field.required,
-      size: field.size,
       type: field.type,
+      size: field.size ?? null,
     };
   });
 }
@@ -334,7 +334,7 @@ export interface SchemaTableSeedDescription {
 
 export interface CreateSchemaTableFieldDescription {
   type: SchemaTableFieldTypeDescription;
-  size?: number | undefined;
+  size?: string;
   required?: boolean;
   defaultValue?: any;
 }
@@ -342,7 +342,7 @@ export interface CreateSchemaTableFieldDescription {
 export interface SchemaTableFieldDescription {
   name: string;
   type: SchemaTableFieldTypeDescription;
-  size?: number | undefined;
+  size: string | null;
   required: boolean;
   defaultValue?: any;
 }

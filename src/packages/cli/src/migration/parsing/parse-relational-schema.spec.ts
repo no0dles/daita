@@ -5,6 +5,7 @@ import { allow } from '@daita/relational';
 import { authorized } from '@daita/relational';
 import {
   CreateSchemaTableDescription,
+  CreateSchemaTableFieldDescription,
   createTableSchema,
   getFieldsFromSchemaTable,
   getIndicesFromSchemaTable,
@@ -13,7 +14,6 @@ import {
   getTableFromSchema,
   getTablesFromSchema,
   SchemaDescription,
-  SchemaTableFieldDescription,
 } from '@daita/orm';
 import { all } from '@daita/relational';
 import { table } from '@daita/relational';
@@ -51,18 +51,16 @@ describe('parse-relational-schema', () => {
     expect(actualRules).toEqual([allow(authorized(), { select: all(), from: table('User') })]);
   });
 
-  const baseFields: { [key: string]: SchemaTableFieldDescription } = {
+  const baseFields: { [key: string]: CreateSchemaTableFieldDescription } = {
     createdDate: {
       required: true,
       type: 'date',
       defaultValue: undefined,
-      name: 'createdDate',
     },
     modifiedDate: {
       required: false,
       type: 'date',
       defaultValue: undefined,
-      name: 'modifiedDate',
     },
   };
 
@@ -84,7 +82,7 @@ describe('parse-relational-schema', () => {
         required: true,
         type: 'string',
         defaultValue: '1234',
-        size: 64,
+        size: '64',
       },
       lastLogin: {
         required: true,

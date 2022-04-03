@@ -1,11 +1,21 @@
-import { allow, authorized, RelationalAdapter } from '@daita/relational';
+import { RelationalAdapter } from '@daita/relational';
 import { now } from '@daita/relational';
-import { authorizable, createMigrationTree, migrate, RelationalOrmAdapter } from '@daita/orm';
+import { authorizable, migrate, MigrationTree, RelationalOrmAdapter } from '@daita/orm';
 import { getTestAdapter } from '../../../testing';
 
 describe('packages/orm/migration/steps/relational-add-rule', () => {
-  const migrationTree = createMigrationTree([
-    { kind: 'add_rule', rule: allow(authorized(), { select: now() }), ruleId: 'a' },
+  const migrationTree = new MigrationTree('test', [
+    {
+      id: 'test',
+      upMigration: [
+        // {
+        //   insert: {},
+        //   into: table(MigrationRules),
+        // },
+        // TODO
+      ],
+      downMigration: [],
+    },
   ]);
 
   let ctx: RelationalOrmAdapter & RelationalAdapter<any>;

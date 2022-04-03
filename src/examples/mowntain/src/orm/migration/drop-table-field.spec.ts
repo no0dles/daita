@@ -26,12 +26,20 @@ describe('orm/migration/drop-table-field', () => {
         },
       },
     },
-    expectedSteps: [
+    expectedUp: [
       {
-        kind: 'drop_table_field',
-        table: 'User',
-        fieldName: 'username',
-        schema: 'custom',
+        alterTable: table('User', 'custom'),
+        drop: { column: 'username' },
+      },
+    ],
+    expectedDown: [
+      {
+        alterTable: table('User', 'custom'),
+        add: {
+          column: 'username',
+          type: 'string',
+          notNull: true,
+        },
       },
     ],
     verifySqls: [

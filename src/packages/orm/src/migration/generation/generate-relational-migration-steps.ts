@@ -56,6 +56,7 @@ const tableFields: GenerateOptions<{ table: SchemaTableDescription; field: Schem
         schema: table.schema,
         fieldName: field.name,
         type: field.type,
+        size: field.size ?? undefined,
         required: field.required,
         defaultValue: field.defaultValue,
       },

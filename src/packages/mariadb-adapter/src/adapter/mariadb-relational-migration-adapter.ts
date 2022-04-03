@@ -1,7 +1,5 @@
 import { MariadbSql } from '../sql/mariadb-sql';
-import { addTableAction, hasAddTableStep, MigrationStorage, RelationalOrmAdapter } from '@daita/orm';
-import { MigrationPlan } from '@daita/orm';
-import { MigrationDescription } from '@daita/orm';
+import { RelationalOrmAdapter, SchemaTableFieldTypeDescription } from '@daita/orm';
 import {
   BaseRelationalAdapter,
   RelationalAdapter,
@@ -9,25 +7,11 @@ import {
   RelationalTransactionAdapter,
   RelationDoesNotExistsError,
 } from '@daita/relational';
-import { addTableFieldAction } from '@daita/orm';
-import { addTablePrimaryKeyAction } from '@daita/orm';
-import { addTableForeignKeyAction } from '@daita/orm';
-import { dropTablePrimaryKeyAction } from '@daita/orm';
-import { dropTableAction } from '@daita/orm';
-import { dropTableField } from '@daita/orm';
-import { createIndexAction } from '@daita/orm';
-import { dropIndexAction } from '@daita/orm';
-import { dropTableForeignKeyAction } from '@daita/orm';
-import { addViewAction } from '@daita/orm';
-import { alterViewAction } from '@daita/orm';
-import { dropViewAction } from '@daita/orm';
-import { insertSeedAction } from '@daita/orm';
-import { updateSeedAction } from '@daita/orm';
-import { deleteSeedAction } from '@daita/orm';
-import { failNever, parseJson } from '@daita/common';
+import { parseJson } from '@daita/common';
 import { Execution, MariadbRelationalDataAdapter } from './mariadb-relational-data-adapter';
-import { MariadbFormatContext, mariadbFormatter } from '../formatter';
+import { mariadbFormatter } from '../formatter';
 import { Connection, createPool, Pool } from 'mariadb';
+import { MariadbFormatContext } from '../formatter/mariadb-format-context';
 
 export interface MariadbRelationalMigrationAdapterOptions {
   connectionString: string;
@@ -37,14 +21,47 @@ export class MariadbRelationalMigrationAdapter
   extends BaseRelationalAdapter
   implements RelationalOrmAdapter, RelationalAdapter<MariadbSql>
 {
-  private readonly storage = new MigrationStorage(this, {
-    idType: 'VARCHAR(255)',
-  });
   private readonly pool: Pool;
 
   constructor(private options: MariadbRelationalMigrationAdapterOptions) {
     super();
     this.pool = createPool(this.options.connectionString);
+  }
+
+  getDatabaseType(type: SchemaTableFieldTypeDescription, size?: string): string {
+    switch (type) {
+      case 'string':
+        if (size) {
+          return `VARCHAR(${size})`;
+        }
+        return 'TEXT';
+      case 'number':
+        if (size) {
+          return `DECIMAL(${size})`;
+        } else {
+          return 'DECIMAL(26,10)';
+        }
+      case 'date':
+        if (size) {
+          return `DATETIME(${size})`;
+        } else {
+          return 'DATETIME(3)';
+        }
+      case 'boolean':
+        return 'BOOLEAN';
+      case 'json':
+        return 'JSON';
+      case 'number[]':
+        return `JSON`;
+      case 'string[]':
+        return `JSON`;
+      case 'boolean[]':
+        return `JSON`;
+      case 'uuid':
+        return 'VARCHAR(36)';
+    }
+
+    throw new Error(`unknown data type ${type}`);
   }
 
   async close(): Promise<void> {
@@ -68,17 +85,6 @@ export class MariadbRelationalMigrationAdapter
 
   supportsQuery<S>(sql: S): this is RelationalAdapter<MariadbSql | S> {
     return mariadbFormatter.canHandle(sql);
-  }
-
-  async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
-    await this.storage.initialize();
-    await this.transaction(async (trx) => {
-      const sqls = this.applyMigrationPlan(migrationPlan);
-      for (const sql of sqls) {
-        trx.exec(sql);
-      }
-      this.storage.add(trx, schema, migrationPlan.migration);
-    });
   }
 
   async transaction(action: (adapter: RelationalTransactionAdapter<MariadbSql>) => void): Promise<void> {
@@ -143,63 +149,5 @@ export class MariadbRelationalMigrationAdapter
       }
       throw e;
     }
-  }
-
-  async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
-    return this.storage.get(schema);
-  }
-
-  private applyMigrationPlan(migrationPlan: MigrationPlan): MariadbSql[] {
-    const result: MariadbSql[] = [];
-
-    for (const step of migrationPlan.migration.steps) {
-      if (step.kind === 'add_table') {
-        result.push(addTableAction(step, migrationPlan.migration));
-      } else if (step.kind === 'add_table_field') {
-        result.push(addTableFieldAction(step));
-      } else if (step.kind === 'add_table_primary_key') {
-        if (hasAddTableStep(migrationPlan.migration, step)) {
-          continue;
-        }
-
-        result.push(addTablePrimaryKeyAction(step));
-      } else if (step.kind === 'add_table_foreign_key') {
-        if (hasAddTableStep(migrationPlan.migration, step)) {
-          continue;
-        }
-
-        result.push(addTableForeignKeyAction(step));
-      } else if (step.kind === 'drop_table_primary_key') {
-        result.push(dropTablePrimaryKeyAction(step));
-      } else if (step.kind === 'drop_table') {
-        result.push(dropTableAction(step));
-      } else if (step.kind === 'drop_table_field') {
-        result.push(dropTableField(step));
-      } else if (step.kind === 'create_index') {
-        result.push(createIndexAction(step));
-      } else if (step.kind === 'drop_index') {
-        result.push(dropIndexAction(step));
-      } else if (step.kind === 'drop_table_foreign_key') {
-        result.push(dropTableForeignKeyAction(step));
-      } else if (step.kind === 'add_rule') {
-      } else if (step.kind === 'drop_rule') {
-      } else if (step.kind === 'add_view') {
-        result.push(addViewAction(step));
-      } else if (step.kind === 'alter_view') {
-        result.push(alterViewAction(step));
-      } else if (step.kind === 'drop_view') {
-        result.push(dropViewAction(step));
-      } else if (step.kind === 'insert_seed') {
-        result.push(insertSeedAction(step));
-      } else if (step.kind === 'update_seed') {
-        result.push(updateSeedAction(step));
-      } else if (step.kind === 'delete_seed') {
-        result.push(deleteSeedAction(step));
-      } else {
-        failNever(step, 'unknown migration step');
-      }
-    }
-
-    return result;
   }
 }

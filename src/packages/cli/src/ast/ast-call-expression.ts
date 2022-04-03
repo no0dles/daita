@@ -11,9 +11,8 @@ export class AstCallExpression implements AstNode {
   constructor(public block: AstBlock, public node: CallExpression) {}
 
   get variableName(): string | null {
-    const propertyAccess = isKind(this.node.expression, SyntaxKind.PropertyAccessExpression);
-    if (propertyAccess) {
-      return getName(propertyAccess.expression, 'call expression');
+    if (isKind(this.node.expression, SyntaxKind.PropertyAccessExpression)) {
+      return getName(this.node.expression.expression, 'call expression');
     }
     return null;
   }
@@ -27,13 +26,12 @@ export class AstCallExpression implements AstNode {
   }
 
   get methodName(): string {
-    const propertyAccess = isKind(this.node.expression, SyntaxKind.PropertyAccessExpression);
-    if (propertyAccess) {
-      return getName(propertyAccess.name, 'call expression');
+    if (isKind(this.node.expression, SyntaxKind.PropertyAccessExpression)) {
+      return getName(this.node.expression.name, 'call expression');
     }
-    const identifier = isKind(this.node.expression, SyntaxKind.Identifier);
-    if (identifier) {
-      return getName(identifier, 'call expression');
+
+    if (isKind(this.node.expression, SyntaxKind.Identifier)) {
+      return getName(this.node.expression, 'call expression');
     }
     throw new AstError(this.node, 'unknown method name');
   }

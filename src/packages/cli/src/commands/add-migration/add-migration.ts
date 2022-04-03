@@ -3,8 +3,9 @@ import { AstContext } from '../../ast/ast-context';
 import { addMigrationImport, addMigrationRegistration, writeMigration } from '../../migration/writing/write-migration';
 import * as fs from 'fs';
 import { getMigrationName } from '../../migration/utils';
-import { generateRelationalMigrationSteps } from '@daita/orm';
+import { generateMigration } from '@daita/orm';
 import { createLogger } from '@daita/common';
+import { getMigrationTreeSchema } from '@daita/orm';
 
 const logger = createLogger({ package: 'cli', command: 'migration:add' });
 export async function addMigration(name: string, options: { cwd?: string; schema?: string }) {
@@ -17,21 +18,26 @@ export async function addMigration(name: string, options: { cwd?: string; schema
   }
 
   const migrationTree = schemaInfo.getMigrationTree();
-  const currentSchema = migrationTree.getSchemaDescription();
+  const currentSchema = getMigrationTreeSchema(migrationTree);
   const lastMigration = migrationTree.last()[0];
-
-  const steps = generateRelationalMigrationSteps(currentSchema.schema, schemaInfo.getRelationalSchema());
-  if (steps.length === 0) {
-    logger.info('there are no pending changes');
-    return;
-  }
 
   const existing = migrationTree.get(name);
   if (existing) {
     throw new Error(`migration name "${name}" is already taken`);
   }
 
-  const sourceFile = writeMigration(name, lastMigration ? lastMigration.id : undefined, undefined, steps);
+  const newMigration = generateMigration(currentSchema, schemaInfo.getRelationalSchema(), {
+    id: name,
+    after: lastMigration ? lastMigration.id : undefined,
+    resolve: undefined,
+  });
+
+  if (newMigration.upMigration.length === 0) {
+    logger.info('there are no pending changes');
+    return;
+  }
+
+  const sourceFile = writeMigration(newMigration);
   const date = new Date();
   if (!fs.existsSync(schemaLocation.migrationDirectory)) {
     fs.mkdirSync(schemaLocation.migrationDirectory, { recursive: true });

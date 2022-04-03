@@ -30,12 +30,17 @@ describe('orm/migration/drop-index', () => {
         },
       },
     },
-    expectedSteps: [
+    expectedUp: [
       {
-        kind: 'drop_index',
-        name: 'username',
-        schema: 'custom',
-        table: 'User',
+        dropIndex: 'username',
+        on: table('User', 'custom'),
+      },
+    ],
+    expectedDown: [
+      {
+        createIndex: 'username',
+        columns: ['username'],
+        on: table('User', 'custom'),
       },
     ],
     verifySqls: [

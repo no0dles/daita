@@ -15,7 +15,24 @@ describe('orm/migration/drop-table', () => {
       },
     },
     target: {},
-    expectedSteps: [{ kind: 'drop_table', table: 'User', schema: 'custom' }],
+    expectedUp: [
+      {
+        dropTable: table('User', 'custom'),
+      },
+    ],
+    expectedDown: [
+      {
+        createTable: table('User', 'schema'),
+        columns: [
+          {
+            name: 'id',
+            type: 'string',
+            notNull: true,
+            primaryKey: true,
+          },
+        ],
+      },
+    ],
     verifySqls: [
       {
         success: false,

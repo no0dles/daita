@@ -1,17 +1,27 @@
 import { SchemaTableOptions, SchemaTableRequiredKeyOptions } from './schema-table-options';
-import { RelationalSchemaOptions } from './relational-schema-options';
+import { DefaultRelationalSchemaOptions, RelationalSchemaOptions } from './relational-schema-options';
 import { RelationalMapper } from '../context/relational-mapper';
 import { RelationalBackwardCompatibleMapper, RelationalNormalMapper } from '../context/orm-mapper';
 import { OrmRelationalSchema } from './orm-relational-schema';
 import { SelectSql } from '@daita/relational';
-import { MigrationDescription } from '../migration/migration-description';
+import { MigrationAdapter, UpDownMigrationDescription } from '../migration/migration-description';
 import { MigrationTree } from '../migration/migration-tree';
 import { Rule } from '@daita/relational';
 import { Constructable, DefaultConstructable } from '@daita/common';
 import { SchemaDescription } from './description/relational-schema-description';
+import { getMigrationTreeSchema } from './migration-tree-schema';
+import { OrmSql } from '../migration';
 
-export class RelationalSchema implements OrmRelationalSchema {
-  private migrationTree = new MigrationTree(this.name);
+class MigrationRecorderAdapter<TSql> implements MigrationAdapter<TSql> {
+  recordedSqls: TSql[] = [];
+
+  exec(sql: TSql): void {
+    this.recordedSqls.push(sql);
+  }
+}
+
+export class RelationalSchema<TSql = OrmSql> implements OrmRelationalSchema<TSql> {
+  private migrationTree = new MigrationTree<TSql>(this.options.name);
   private _rules: Rule[] = [];
   private tables: Constructable<any>[] = [];
   private views: { view: Constructable<any>; query: SelectSql<any> }[] = [];
@@ -19,8 +29,8 @@ export class RelationalSchema implements OrmRelationalSchema {
 
   schema: string | null = null;
 
-  constructor(private name: string, private options?: RelationalSchemaOptions) {
-    if (options && options.schema) {
+  constructor(private options: RelationalSchemaOptions<TSql> | DefaultRelationalSchemaOptions<OrmSql>) {
+    if (options.schema) {
       this.schema = options.schema;
     }
   }
@@ -43,19 +53,31 @@ export class RelationalSchema implements OrmRelationalSchema {
     this.seeds.push({ model, values });
   }
 
-  migration(migration: MigrationDescription) {
-    this.migrationTree.add(migration);
+  migration(migration: UpDownMigrationDescription<TSql>) {
+    this.migrationTree.add({
+      id: migration.id,
+      after: migration.after,
+      resolve: migration.resolve,
+      upMigration: this.getSqlsFromMigration(migration.up),
+      downMigration: this.getSqlsFromMigration(migration.down),
+    });
+  }
+
+  private getSqlsFromMigration(fn: (client: MigrationAdapter<TSql>) => void): TSql[] {
+    const adapter = new MigrationRecorderAdapter<TSql>();
+    fn(adapter);
+    return adapter.recordedSqls;
   }
 
   private getSchemaDescription(): SchemaDescription {
-    return this.migrationTree.getSchemaDescription().schema;
+    return getMigrationTreeSchema(this.migrationTree);
   }
 
   getRules(): Rule[] {
     return this._rules;
   }
 
-  getMigrations(): MigrationTree {
+  getMigrations(): MigrationTree<TSql> {
     return this.migrationTree;
   }
 

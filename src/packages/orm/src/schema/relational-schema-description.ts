@@ -1,4 +1,3 @@
-import { SchemaMapper } from './description/schema-mapper';
 import {
   addExistingSeed,
   addIndexToTable,
@@ -20,7 +19,6 @@ import {
   alterViewFromSchema,
 } from './description/relational-schema-description';
 import { failNever } from '@daita/common';
-import { MigrationDescription } from '../migration/migration-description';
 import { table } from '@daita/relational';
 import { MigrationPlanStep } from '../context';
 import { MigrationStep } from '../migration';
@@ -39,7 +37,7 @@ function getMigrationPlanStep(step: MigrationStep, schema: SchemaDescription): S
         key: step.fieldName,
         required: step.required,
         defaultValue: step.defaultValue,
-        size: step.size,
+        size: `${step.size}`,
         type: step.type,
       },
     );
@@ -108,20 +106,17 @@ export function emptySchema(name: string): SchemaDescription {
 
 export function getSchemaDescription(
   schema: SchemaDescription,
-  schemaMapper: SchemaMapper,
-  paths: MigrationDescription[],
+  migrationSteps: MigrationStep[],
 ): { schema: SchemaDescription; steps: MigrationPlanStep[] } {
   const steps: MigrationPlanStep[] = [];
 
-  for (const path of paths) {
-    for (const step of path.steps) {
-      const newSchema = getMigrationPlanStep(step, schema);
-      steps.push({
-        schema: newSchema,
-        migrationStep: step,
-      });
-      schema = newSchema;
-    }
+  for (const migrationStep of migrationSteps) {
+    const newSchema = getMigrationPlanStep(migrationStep, schema);
+    steps.push({
+      schema: newSchema,
+      migrationStep,
+    });
+    schema = newSchema;
   }
 
   return { schema, steps };

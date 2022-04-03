@@ -28,33 +28,44 @@ describe('orm/migration/add-table-field', () => {
         },
       },
     },
-    expectedSteps: [
+    expectedUp: [
       {
-        kind: 'add_table_field',
-        table: 'User',
-        fieldName: 'username',
-        type: 'string',
-        required: true,
-        defaultValue: undefined,
-        schema: 'custom',
+        alterTable: table('User', 'custom'),
+        add: {
+          column: 'username',
+          type: 'string',
+          notNull: true,
+        },
       },
       {
-        kind: 'add_table_field',
-        table: 'User',
-        fieldName: 'lastLogin',
-        type: 'date',
-        required: false,
-        defaultValue: undefined,
-        schema: 'custom',
+        alterTable: table('User', 'custom'),
+        add: {
+          column: 'lastLogin',
+          type: 'date',
+        },
       },
       {
-        kind: 'add_table_field',
-        table: 'User',
-        fieldName: 'enabled',
-        type: 'boolean',
-        required: true,
-        defaultValue: true,
-        schema: 'custom',
+        alterTable: table('User', 'custom'),
+        add: {
+          column: 'enabled',
+          type: 'boolean',
+          defaultValue: true,
+          notNull: true,
+        },
+      },
+    ],
+    expectedDown: [
+      {
+        alterTable: table('User', 'custom'),
+        drop: { column: 'enabled' },
+      },
+      {
+        alterTable: table('User', 'custom'),
+        drop: { column: 'lastLogin' },
+      },
+      {
+        alterTable: table('User', 'custom'),
+        drop: { column: 'username' },
       },
     ],
     verifySqls: [

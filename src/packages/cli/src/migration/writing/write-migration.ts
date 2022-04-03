@@ -16,18 +16,18 @@ import { getIdentifierName, isKind, parseSourceFile } from '../../ast/utils';
 import * as fs from 'fs';
 import { getMigrationName } from '../utils';
 import { createExpressionFromValue } from './write-migration-step';
-import { MigrationStep } from '@daita/orm';
+import { Migration, OrmSql } from '@daita/orm';
 
 export function addMigrationImport(schemaFilePath: string, migrationFilePath: string, migrationName: string) {
   const sourceFile = parseSourceFile(schemaFilePath);
 
   let lastImport: ImportDeclaration | null = null;
   for (const statement of sourceFile.statements) {
-    const importDeclaration = isKind(statement, SyntaxKind.ImportDeclaration);
-    if (!importDeclaration && lastImport) {
+    const isImportDeclaration = isKind(statement, SyntaxKind.ImportDeclaration);
+    if (!isImportDeclaration && lastImport) {
       break;
-    } else if (importDeclaration) {
-      lastImport = importDeclaration;
+    } else if (isImportDeclaration) {
+      lastImport = statement;
     }
   }
 
@@ -52,30 +52,27 @@ export function removeMigrationRegistration(schemaFilePath: string, migrationNam
   const content = fs.readFileSync(schemaFilePath).toString();
 
   for (const statement of sourceFile.statements) {
-    const expressionStatement = isKind(statement, SyntaxKind.ExpressionStatement);
-    if (!expressionStatement) {
+    if (!isKind(statement, SyntaxKind.ExpressionStatement)) {
       continue;
     }
 
-    const callExpression = isKind(expressionStatement.expression, SyntaxKind.CallExpression);
-    if (!callExpression) {
+    if (!isKind(statement.expression, SyntaxKind.CallExpression)) {
       continue;
     }
 
-    const propertyAccessExpr = isKind(callExpression.expression, SyntaxKind.PropertyAccessExpression);
-    if (!propertyAccessExpr) {
+    if (!isKind(statement.expression.expression, SyntaxKind.PropertyAccessExpression)) {
       continue;
     }
 
-    if (propertyAccessExpr.name.text !== 'migration') {
+    if (statement.expression.expression.name.text !== 'migration') {
       continue;
     }
 
-    for (const arg of callExpression.arguments) {
+    for (const arg of statement.expression.arguments) {
       const name = getIdentifierName(arg);
       if (name === migrationName) {
-        const prefix = content.substring(0, expressionStatement.getStart());
-        const suffix = content.substring(getEndOfLine(content, expressionStatement.getEnd()));
+        const prefix = content.substring(0, statement.expression.getStart());
+        const suffix = content.substring(getEndOfLine(content, statement.expression.getEnd()));
         fs.writeFileSync(schemaFilePath, `${prefix}${suffix}`);
         return true;
       }
@@ -90,29 +87,28 @@ export function removeMigrationImport(schemaFilePath: string, migrationFilePath:
   const content = fs.readFileSync(schemaFilePath).toString();
 
   for (const statement of sourceFile.statements) {
-    const importDeclaration = isKind(statement, SyntaxKind.ImportDeclaration);
-    if (!importDeclaration) {
+    if (!isKind(statement, SyntaxKind.ImportDeclaration)) {
       continue;
     }
 
-    if (!importDeclaration.importClause) {
+    if (!statement.importClause) {
       continue;
     }
 
-    if (!importDeclaration.importClause.namedBindings) {
+    if (!statement.importClause.namedBindings) {
       continue;
     }
 
-    const namedImport = isKind(importDeclaration.importClause.namedBindings, SyntaxKind.NamedImports);
-    if (!namedImport) {
+    const namedImport = statement.importClause.namedBindings;
+    if (!isKind(namedImport, SyntaxKind.NamedImports)) {
       continue;
     }
 
     const identifiers: string[] = namedImport.elements.map((element) => element.name.escapedText.toString());
     if (identifiers.length === 1) {
       if (identifiers[0] === migrationName) {
-        const prefix = content.substring(0, importDeclaration.getStart());
-        const suffix = content.substring(getEndOfLine(content, importDeclaration.getEnd()));
+        const prefix = content.substring(0, statement.getStart());
+        const suffix = content.substring(getEndOfLine(content, statement.getEnd()));
         fs.writeFileSync(schemaFilePath, `${prefix}${suffix}`);
         return true;
       }
@@ -147,31 +143,29 @@ export function addMigrationRegistration(schemaFilePath: string, variableName: s
 
   let lastExpression: ExpressionStatement | null = null;
   for (const statement of sourceFile.statements) {
-    const expressionStatement = isKind(statement, SyntaxKind.ExpressionStatement);
-    if (!expressionStatement) {
+    if (!isKind(statement, SyntaxKind.ExpressionStatement)) {
       continue;
     }
 
-    const callExpression = isKind(expressionStatement.expression, SyntaxKind.CallExpression);
-    if (!callExpression) {
+    const callExpression = statement.expression;
+    if (!isKind(callExpression, SyntaxKind.CallExpression)) {
       continue;
     }
 
-    const propertyAccessExpr = isKind(callExpression.expression, SyntaxKind.PropertyAccessExpression);
-    if (!propertyAccessExpr) {
+    if (!isKind(callExpression.expression, SyntaxKind.PropertyAccessExpression)) {
       continue;
     }
 
-    const variableExpression = isKind(propertyAccessExpr.expression, SyntaxKind.Identifier);
+    const variableExpression = isKind(callExpression.expression.expression, SyntaxKind.Identifier);
     if (!variableExpression) {
       continue;
     }
 
-    if (variableExpression.text !== variableName) {
+    if (callExpression.expression.expression.text !== variableName) {
       continue;
     }
 
-    lastExpression = expressionStatement;
+    lastExpression = statement;
   }
 
   if (!lastExpression) {
@@ -190,12 +184,7 @@ export function addMigrationRegistration(schemaFilePath: string, variableName: s
   return true;
 }
 
-export function writeMigration(
-  name: string,
-  after: string | undefined,
-  resolve: string | undefined,
-  steps: MigrationStep[],
-): string {
+export function writeMigration(migration: Migration<OrmSql>): string {
   const importStmt = factory.createImportDeclaration(
     undefined,
     undefined,
@@ -210,18 +199,21 @@ export function writeMigration(
   );
 
   const properties: PropertyAssignment[] = [
-    factory.createPropertyAssignment(factory.createIdentifier('id'), factory.createStringLiteral(name)),
+    factory.createPropertyAssignment(factory.createIdentifier('id'), factory.createStringLiteral(migration.id)),
   ];
 
-  if (after) {
+  if (migration.after) {
     properties.push(
-      factory.createPropertyAssignment(factory.createIdentifier('after'), factory.createStringLiteral(after)),
+      factory.createPropertyAssignment(factory.createIdentifier('after'), factory.createStringLiteral(migration.after)),
     );
   }
 
-  if (resolve) {
+  if (migration.resolve) {
     properties.push(
-      factory.createPropertyAssignment(factory.createIdentifier('resolve'), factory.createStringLiteral(resolve)),
+      factory.createPropertyAssignment(
+        factory.createIdentifier('resolve'),
+        factory.createStringLiteral(migration.resolve),
+      ),
     );
   }
 
@@ -240,7 +232,7 @@ export function writeMigration(
     factory.createVariableDeclarationList(
       [
         factory.createVariableDeclaration(
-          factory.createIdentifier(getMigrationName(name)),
+          factory.createIdentifier(getMigrationName(migration.id)),
           undefined,
           factory.createTypeReferenceNode(factory.createIdentifier('MigrationDescription'), undefined),
           factory.createObjectLiteralExpression(properties, true),
@@ -250,7 +242,7 @@ export function writeMigration(
     ),
   );
 
-  const sourceFile = createSourceFile(`${name}.migration.ts`, '', ScriptTarget.Latest, false, ScriptKind.TS);
+  const sourceFile = createSourceFile(`${migration.id}.migration.ts`, '', ScriptTarget.Latest, false, ScriptKind.TS);
   const printer = createPrinter({
     newLine: NewLineKind.LineFeed,
   });

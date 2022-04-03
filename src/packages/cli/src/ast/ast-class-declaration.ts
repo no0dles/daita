@@ -96,9 +96,8 @@ export class AstClassDeclaration implements AstNode {
 
   private *getMethods() {
     for (const member of this.node.members) {
-      const methodDeclaration = isKind(member, SyntaxKind.MethodDeclaration);
-      if (methodDeclaration) {
-        yield new AstMethodDeclaration(this.block, methodDeclaration);
+      if (isKind(member, SyntaxKind.MethodDeclaration)) {
+        yield new AstMethodDeclaration(this.block, member);
       }
     }
   }
@@ -126,9 +125,8 @@ export class AstClassDeclaration implements AstNode {
 
   private *getProps() {
     for (const member of this.node.members) {
-      const propertyDeclaration = isKind(member, SyntaxKind.PropertyDeclaration);
-      if (propertyDeclaration) {
-        yield new AstClassDeclarationProp(this.block, propertyDeclaration);
+      if (isKind(member, SyntaxKind.PropertyDeclaration)) {
+        yield new AstClassDeclarationProp(this.block, member);
       }
     }
   }

@@ -61,7 +61,6 @@ export function parseRelationalSchemaTableReferences(
 
     schema = addTableReference(schema, table, tableDescription, {
       name: property.name,
-      //required: isRequiredProperty(property),
       onUpdate,
       onDelete,
     });

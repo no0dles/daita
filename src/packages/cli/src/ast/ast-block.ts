@@ -13,7 +13,7 @@ import { AstTypeDeclaration } from './ast-type-declaration';
 import { AstKeywordValue } from './ast-keyword-value';
 
 export class AstBlock {
-  constructor(public sourceFile: AstSourceFile, private block: BlockLike) {}
+  constructor(public sourceFile: AstSourceFile, private block: BlockLike, private parentBlock: AstBlock | null) {}
 
   get classes(): Generator<AstClassDeclaration> {
     return this.getClasses();
@@ -176,19 +176,17 @@ export class AstBlock {
 
   private *getEnums() {
     for (const statement of this.block.statements) {
-      const node = isKind(statement, SyntaxKind.EnumDeclaration);
-      if (node) {
-        yield new AstEnumDeclaration(this, node);
+      if (isKind(statement, SyntaxKind.EnumDeclaration)) {
+        yield new AstEnumDeclaration(this, statement);
       }
     }
   }
 
   private *getVariables() {
     for (const statement of this.block.statements) {
-      const node = isKind(statement, SyntaxKind.VariableStatement);
-      if (node && node.declarationList) {
-        for (const declarationNode of node.declarationList.declarations) {
-          yield new AstVariableDeclaration(this, node, declarationNode);
+      if (isKind(statement, SyntaxKind.VariableStatement) && statement.declarationList) {
+        for (const declarationNode of statement.declarationList.declarations) {
+          yield new AstVariableDeclaration(this, statement, declarationNode);
         }
       }
     }
@@ -196,36 +194,32 @@ export class AstBlock {
 
   private *getExpressionStatements() {
     for (const statement of this.block.statements) {
-      const node = isKind(statement, SyntaxKind.ExpressionStatement);
-      if (node) {
-        yield new AstExpressionStatement(this, node);
+      if (isKind(statement, SyntaxKind.ExpressionStatement)) {
+        yield new AstExpressionStatement(this, statement);
       }
     }
   }
 
   private *getTypes() {
     for (const statement of this.block.statements) {
-      const node = isKind(statement, SyntaxKind.TypeAliasDeclaration);
-      if (node) {
-        yield new AstTypeDeclaration(this, node);
+      if (isKind(statement, SyntaxKind.TypeAliasDeclaration)) {
+        yield new AstTypeDeclaration(this, statement);
       }
     }
   }
 
   private *getClasses() {
     for (const statement of this.block.statements) {
-      const node = isKind(statement, SyntaxKind.ClassDeclaration);
-      if (node) {
-        yield new AstClassDeclaration(this, node);
+      if (isKind(statement, SyntaxKind.ClassDeclaration)) {
+        yield new AstClassDeclaration(this, statement);
       }
     }
   }
 
   private *getFunctions() {
     for (const statement of this.block.statements) {
-      const functionNode = isKind(statement, SyntaxKind.FunctionDeclaration);
-      if (functionNode) {
-        yield new AstFunctionDeclaration(this, functionNode);
+      if (isKind(statement, SyntaxKind.FunctionDeclaration)) {
+        yield new AstFunctionDeclaration(this, statement);
       }
     }
   }
