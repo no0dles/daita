@@ -1,42 +1,50 @@
-<h1 align="center">
-  <a href="https://daita.ch"><img src="assets/logo.svg" alt="daita" width="250"></a>
-</h1>
+---
+description: Daita Instruction
+---
 
-# Daita
+# Introduction
 
-Daita provides an easy way to interact with relational databases. 
-It's goal is to provide the full flexibility of sql within the typescript syntax to provide the best developer experience.
+## [<img src="assets/logo.svg" alt="daita" data-size="line">](https://daita.ch) TLDR
 
-## Quick Overview
-Daita contains different multiple modules with diffrent purposes.
+Daita provides an easy way to interact with relational databases. It's goal is to provide the full flexibility of sql within the typescript syntax to provide the best developer experience.
+
+```typescript
+// fetch the 5 highest mountains
+const mountains = await client.select({
+    select: {
+       mountain: field(Mountain, 'name'),
+       height: field(Moutain, 'height'),
+    },
+    from: table(Mountain),
+    orderBy: desc(field(Moutain, 'height')),
+    limit: 5,
+})
+// const mountains: { mountain: string, height: number }[]
+```
+
+
+
+### Quick Overview
+
+Daita contains different multiple modules with different purposes. They build on top of each other, but can be used independently.
 
 ![Daita overview](assets/daita-overview.png)
 
-- **Postgres / SQLite / MariaDB Adapter**
+*   **Postgres / SQLite / MariaDB Adapter**
 
-  Database drivers for connecting, formatting and executing sql commands.
-- **Http Adapter**
+    Database drivers for connecting, formatting and executing sql commands.
+*   **Http Adapter**
 
-  Database proxy to use relational databases over HTTP.
-- **Relational**
+    Database proxy to use relational databases over HTTP.
+*   **Relational**
 
-  SQL Language interfaces and query builder functions.
-- **ORM**
+    SQL Language interfaces and query builder functions.
+*   **ORM**
 
-  Schema definition and table/data migrations.
-- **cli**
+    Schema definition and table/data migrations.
+*   **cli**
 
-  Generating and applying database migratings.
-- **eslint**
-  
-  Enforcing best practices and preventing invalid sql queries.
+    Generating and applying database migratings.
+*   **eslint**
 
-
-## Getting started
-
-## API Documentation
-
-usage
-relational
-eslint
-cli
+    Enforcing best practices and preventing invalid sql queries.
