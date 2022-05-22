@@ -41,10 +41,10 @@ Daita contains different multiple modules with different purposes. They build on
     SQL Language interfaces and query builder functions.
 *   **ORM**
 
-    Schema definition and table/data migrations.
+    Schema definition and data migrations with support for schemas, tables, indices and views.
 *   **cli**
 
-    Generating and applying database migratings.
+    Setting up new projects, generating and applying database migrations.
 *   **eslint**
 
     Enforcing best practices and preventing invalid sql queries.
