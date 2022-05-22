@@ -1,15 +1,16 @@
 # Summary​
 
-## Use headings to create page groups like this one​
+* [Introduction](README.md)    
 
-* [First page's title](page1/README.md)    
-    * [Some child page](page1/page1-1.md)    
-    * [Some other child page](part1/page1-2.md)
+* [Getting started](getting-started/README.md)    
 
-* [Second page's title](page2/README.md)    
-    * [Some child page](page2/page2-1.md)    
-    * [Some other child page](part2/page2-2.md)    
+* [Usage](usage/README.md)    
+    * [relational](usage/relational.md)    
+    * [ORM](usage/orm.md)    
+    * [cli](usage/cli.md)    
 
-## A second-page group​
-
-* [Yet another page](another-page.md)
+* [Adapters](adapters/README.md)    
+    * [pg-adapter](adapters/pg-adapter.md)    
+    * [sqlite-adpater](adapters/sqlite-adapter.md)    
+    * [mariadb-adpater](adapters/mariadb-adapter.md)  
+    * [http-adpater](adapters/http-adapter.md)     
