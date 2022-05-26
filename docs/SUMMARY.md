@@ -3,7 +3,7 @@
 * [Introduction](README.md)
 * [Getting started](getting-started.md)
 * [Usage](usage/README.md)
-  * [relational](usage/relational/README.md)
+  * [relational](usage/relational.md)
     * [SELECT](usage/relational/select.md)
     * [INSERT](usage/relational/insert.md)
     * [UPDATE](usage/relational/update.md)
