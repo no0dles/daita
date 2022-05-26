@@ -90,17 +90,119 @@ const mountains = await client.selectFirst({
 
 ### table
 
+```typescript
+const mountains = await client.select({
+   select: field(Moutain, 'name'),
+   from: table(Mountain),
+});
+// sql: SELECT "Mountain"."name" FROM "Mountain"
+//
+// const mountains: string[]
+```
+
 ### alias
+
+```typescript
+const mountainAlias = alias(table(Mountain), 'm')
+const mountains = await client.select({
+   select: field(mountainAlias, 'name'),
+   from: mountainAlias,
+});
+// sql: SELECT "m"."name" FROM "Mountain" "m"
+//
+// const mountains: string[]
+```
 
 ### subSelect
 
+```typescript
+const mountainSubSelect = subSelect({
+   select: {
+      country: field(Mountain, 'country'),
+      count: count()
+   },
+   from: table(Mountain),
+   groupBy: field(Mountain, 'country'),
+});
+const moutainSubSelectAlias = alias(mountainSubSelect, 'm')
+const mountains = await client.select({
+   select: field(moutainSubSelectAlias, 'country'),
+   from: moutainSubSelectAlias,
+   where: greaterThan(field(moutainSubSelectAlias, 'count'), 10),
+});
+// sql: SELECT "m"."country" 
+//      FROM (
+//        SELECT "Mountain"."country", count(*) 
+//        FROM "Mountain" 
+//        GROUP BY "Mountain"."country"
+//      ) "m"
+//      WHERE "m"."count" > 10  
+//
+// const mountains: string[]
+```
+
+
 ## JOIN
+
+### join
+
+```typescript
+const mountains = await client.select({
+   select: {
+     mountain: field(Moutain, 'name'),
+     date: field(Ascent, 'date'),
+   },
+   from: table(Mountain),
+   join: [
+     join(Ascent, equal(field(Mountain, 'firstAscent'), field(Ascent, 'id')))
+   ],
+});
+// sql: SELECT "Mountain"."name", "Mountain"."country" 
+//      FROM "Mountain"
+//      JOIN "Mountain"."firstAscent" = "Ascent"."id"
+//
+// const mountains: { country: string, mountain: number }[]
+```
 
 ### leftJoin
 
+```typescript
+const mountains = await client.select({
+   select: {
+     mountain: field(Moutain, 'name'),
+     date: field(Ascent, 'date'),
+   },
+   from: table(Mountain),
+   join: [
+     leftJoin(Ascent, equal(field(Mountain, 'firstAscent'), field(Ascent, 'id')))
+   ],
+});
+// sql: SELECT "Mountain"."name", "Mountain"."country" 
+//      FROM "Mountain"
+//      LEFT JOIN "Mountain"."firstAscent" = "Ascent"."id"
+//
+// const mountains: { country: string, mountain: number }[]
+```
+
 ### rightJoin
 
-### join
+```typescript
+const mountains = await client.select({
+   select: {
+     mountain: field(Moutain, 'name'),
+     date: field(Ascent, 'date'),
+   },
+   from: table(Mountain),
+   join: [
+     rightJoin(Ascent, equal(field(Mountain, 'firstAscent'), field(Ascent, 'id')))
+   ],
+});
+// sql: SELECT "Mountain"."name", "Mountain"."country" 
+//      FROM "Mountain"
+//      RIGHT JOIN "Mountain"."firstAscent" = "Ascent"."id"
+//
+// const mountains: { country: string, mountain: number }[]
+```
 
 ## WHERE
 
