@@ -34,6 +34,7 @@ import {
   MonthDatePartFormatter,
   SecondDatePartFormatter,
   YearDatePartFormatter,
+  WeekOfYearPartFormatter,
 } from './date-part-formatter';
 
 export const postgresFormatter = new Formatter();
@@ -65,6 +66,7 @@ postgresFormatter.add(new MonthDatePartFormatter());
 postgresFormatter.add(new DayOfYearDatePartFormatter());
 postgresFormatter.add(new DayOfWeekDatePartFormatter());
 postgresFormatter.add(new DayOfMonthDatePartFormatter());
+postgresFormatter.add(new WeekOfYearPartFormatter());
 postgresFormatter.add(new HourDatePartFormatter());
 postgresFormatter.add(new MinuteDatePartFormatter());
 postgresFormatter.add(new SecondDatePartFormatter());
