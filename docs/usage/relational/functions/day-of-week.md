@@ -4,7 +4,7 @@
 const mountains = await client.select({
    select: {
        name: field(Mountain, 'name'),
-       day: dayOfMonth(field(Moutain, 'firstAscentDate')),
+       day: dayOfWeek(field(Moutain, 'firstAscentDate')),
    },
    from: table(Mountain),
 });
