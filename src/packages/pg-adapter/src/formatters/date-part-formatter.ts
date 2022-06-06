@@ -124,7 +124,7 @@ export class WeekOfYearPartFormatter implements FormatHandle<WeekOfYearDescripti
     return isWeekOfYearDescription(param);
   }
 
-  handle(param: SecondDescription, ctx: FormatContext, formatter: Formatter): string {
-    return `date_part('week', ${formatter.format(param.second.value, ctx)})`;
+  handle(param: WeekOfYearDescription, ctx: FormatContext, formatter: Formatter): string {
+    return `date_part('week', ${formatter.format(param.weekOfYear.value, ctx)})`;
   }
 }
