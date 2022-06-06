@@ -3,6 +3,7 @@ import {
   DayOfWeekDescription,
   DayOfYearDescription,
   HourDescription,
+  WeekOfYearDescription,
   isDayOfMonthDescription,
   isDayOfWeekDescription,
   isDayOfYearDescription,
@@ -11,6 +12,7 @@ import {
   isMonthDescription,
   isSecondDescription,
   isYearDescription,
+  isWeekOfYearDescription,
   MinuteDescription,
   MonthDescription,
   SecondDescription,
@@ -112,5 +114,17 @@ export class SecondDatePartFormatter implements FormatHandle<SecondDescription> 
 
   handle(param: SecondDescription, ctx: FormatContext, formatter: Formatter): string {
     return `date_part('second', ${formatter.format(param.second.value, ctx)})`;
+  }
+}
+
+export class WeekOfYearPartFormatter implements FormatHandle<WeekOfYearDescription> {
+  type = FormatType.Value;
+
+  canHandle(param: any): boolean {
+    return isWeekOfYearDescription(param);
+  }
+
+  handle(param: SecondDescription, ctx: FormatContext, formatter: Formatter): string {
+    return `date_part('week', ${formatter.format(param.second.value, ctx)})`;
   }
 }
