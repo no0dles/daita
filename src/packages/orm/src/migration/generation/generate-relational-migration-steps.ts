@@ -16,38 +16,18 @@ import {
   SchemaViewDescription,
 } from '../../schema/description/relational-schema-description';
 import { MigrationStep } from '../migration-step';
-import { merge, mergeArray, MergeListResult } from '@daita/common';
+import { merge, mergeArray } from '@daita/common';
 import { table } from '@daita/relational';
 import { isTableReferenceRequiredInTable } from '../../schema/description/relational-table-reference-description';
 import { sortSteps } from '../sort-steps';
+import { GenerateOptions } from './generate-options';
+import { generateDifference } from './generate-difference';
+import { extendMergeResult } from './extend-merge-result';
 
-interface GenerateOptions<T> {
-  addFunction: (schema: SchemaDescription, result: T) => MigrationStep[];
-  mergeFunction: (schema: SchemaDescription, prev: T, next: T) => MigrationStep[];
-  removeFunction: (schema: SchemaDescription, prev: T) => MigrationStep[];
-}
-
-function generateSteps<T>(
-  newSchema: SchemaDescription,
-  merge: MergeListResult<T>,
-  options: GenerateOptions<T>,
-): MigrationStep[] {
-  const steps: MigrationStep[] = [];
-
-  for (const removed of merge.removed) {
-    steps.push(...options.removeFunction(newSchema, removed.item));
-  }
-  for (const merged of merge.merge) {
-    steps.push(...options.mergeFunction(newSchema, merged.current, merged.target));
-  }
-  for (const added of merge.added) {
-    steps.push(...options.addFunction(newSchema, added.item));
-  }
-
-  return steps;
-}
-
-const tableFields: GenerateOptions<{ table: SchemaTableDescription; field: SchemaTableFieldDescription }> = {
+const tableFields: GenerateOptions<
+  { table: SchemaTableDescription; field: SchemaTableFieldDescription },
+  MigrationStep
+> = {
   addFunction: (newSchema, { table, field }) => {
     return [
       {
@@ -87,25 +67,7 @@ const tableFields: GenerateOptions<{ table: SchemaTableDescription; field: Schem
   },
 };
 
-function extendMergeResult<S, T>(source: MergeListResult<S>, extend: (source: S) => T): MergeListResult<T> {
-  return {
-    added: source.added.map((added) => ({
-      key: added.key,
-      item: extend(added.item),
-    })),
-    removed: source.removed.map((removed) => ({
-      key: removed.key,
-      item: extend(removed.item),
-    })),
-    merge: source.merge.map((merge) => ({
-      key: merge.key,
-      current: extend(merge.current),
-      target: extend(merge.target),
-    })),
-  };
-}
-
-const tableOptions: GenerateOptions<SchemaTableDescription> = {
+const tableOptions: GenerateOptions<SchemaTableDescription, MigrationStep> = {
   addFunction: (schema, table) => {
     const steps: MigrationStep[] = [];
     steps.push({ kind: 'add_table', table: table.name, schema: table.schema });
@@ -168,7 +130,7 @@ const tableOptions: GenerateOptions<SchemaTableDescription> = {
 
     const steps = sortSteps(
       [
-        ...generateSteps(schema, mergedFields, tableFields),
+        ...generateDifference(schema, mergedFields, tableFields),
         ...(mergedPrimaryKeys.hasChanges
           ? primaryKeyOptions.mergeFunction(
               schema,
@@ -176,9 +138,9 @@ const tableOptions: GenerateOptions<SchemaTableDescription> = {
               { table: target, primaryKeys: target.primaryKeys },
             )
           : []),
-        ...generateSteps(schema, mergedReferences, foreignKeyOptions),
-        ...generateSteps(schema, mergedIndices, indexOptions),
-        ...generateSteps(schema, mergedSeeds, seedOptions),
+        ...generateDifference(schema, mergedReferences, foreignKeyOptions),
+        ...generateDifference(schema, mergedIndices, indexOptions),
+        ...generateDifference(schema, mergedSeeds, seedOptions),
       ],
       kindOrder,
     );
@@ -186,7 +148,10 @@ const tableOptions: GenerateOptions<SchemaTableDescription> = {
   },
 };
 
-const seedOptions: GenerateOptions<{ table: SchemaTableDescription; seed: SchemaTableSeedDescription }> = {
+export const seedOptions: GenerateOptions<
+  { table: SchemaTableDescription; seed: SchemaTableSeedDescription },
+  MigrationStep
+> = {
   addFunction: (schema, { table, seed }) => {
     return [
       {
@@ -227,10 +192,13 @@ const seedOptions: GenerateOptions<{ table: SchemaTableDescription; seed: Schema
   },
 };
 
-const foreignKeyOptions: GenerateOptions<{
-  table: SchemaTableDescription;
-  foreignKey: SchemaTableReferenceDescription;
-}> = {
+const foreignKeyOptions: GenerateOptions<
+  {
+    table: SchemaTableDescription;
+    foreignKey: SchemaTableReferenceDescription;
+  },
+  MigrationStep
+> = {
   addFunction: (schema, opts) => {
     const foreignTable = getTableFromSchema(schema, table(opts.foreignKey.table, opts.foreignKey.schema));
     return [
@@ -283,45 +251,47 @@ const foreignKeyOptions: GenerateOptions<{
   },
 };
 
-const primaryKeyOptions: GenerateOptions<{ table: SchemaTableDescription; primaryKeys: string[] | undefined | null }> =
-  {
-    addFunction: (schema, { table, primaryKeys }) => {
-      if (!primaryKeys) {
-        return [];
-      }
-
-      return [
-        {
-          kind: 'add_table_primary_key',
-          table: table.name,
-          schema: table.schema,
-          fieldNames: getFieldNamesFromSchemaTable(table, primaryKeys),
-        },
-      ];
-    },
-    removeFunction: (schema, { table, primaryKeys }) => {
-      if (!primaryKeys) {
-        return [];
-      }
-
-      return [
-        {
-          kind: 'drop_table_primary_key',
-          schema: table.schema,
-          table: table.name,
-        },
-      ];
-    },
-    mergeFunction: (schema, current, target) => {
-      const fields = mergeArray(current.primaryKeys, target.primaryKeys);
-      if (fields.hasChanges) {
-        return [...primaryKeyOptions.removeFunction(schema, current), ...primaryKeyOptions.addFunction(schema, target)];
-      }
+const primaryKeyOptions: GenerateOptions<
+  { table: SchemaTableDescription; primaryKeys: string[] | undefined | null },
+  MigrationStep
+> = {
+  addFunction: (schema, { table, primaryKeys }) => {
+    if (!primaryKeys) {
       return [];
-    },
-  };
+    }
 
-const ruleOptions: GenerateOptions<SchemaRuleDescription> = {
+    return [
+      {
+        kind: 'add_table_primary_key',
+        table: table.name,
+        schema: table.schema,
+        fieldNames: getFieldNamesFromSchemaTable(table, primaryKeys),
+      },
+    ];
+  },
+  removeFunction: (schema, { table, primaryKeys }) => {
+    if (!primaryKeys) {
+      return [];
+    }
+
+    return [
+      {
+        kind: 'drop_table_primary_key',
+        schema: table.schema,
+        table: table.name,
+      },
+    ];
+  },
+  mergeFunction: (schema, current, target) => {
+    const fields = mergeArray(current.primaryKeys, target.primaryKeys);
+    if (fields.hasChanges) {
+      return [...primaryKeyOptions.removeFunction(schema, current), ...primaryKeyOptions.addFunction(schema, target)];
+    }
+    return [];
+  },
+};
+
+const ruleOptions: GenerateOptions<SchemaRuleDescription, MigrationStep> = {
   addFunction: (schema, rule) => {
     return [{ kind: 'add_rule', rule: rule.rule, ruleId: rule.id }];
   },
@@ -334,7 +304,7 @@ const ruleOptions: GenerateOptions<SchemaRuleDescription> = {
   },
 };
 
-const viewOptions: GenerateOptions<SchemaViewDescription> = {
+const viewOptions: GenerateOptions<SchemaViewDescription, MigrationStep> = {
   addFunction: (schema, view) => {
     return [
       {
@@ -366,7 +336,10 @@ const viewOptions: GenerateOptions<SchemaViewDescription> = {
   },
 };
 
-const indexOptions: GenerateOptions<{ table: SchemaTableDescription; index: SchemaTableIndexDescription }> = {
+export const indexOptions: GenerateOptions<
+  { table: SchemaTableDescription; index: SchemaTableIndexDescription },
+  MigrationStep
+> = {
   addFunction: (schema, { table, index }) => {
     return [
       {
@@ -407,9 +380,9 @@ export function generateRelationalMigrationSteps(currentSchema: SchemaDescriptio
   const mergedViews = merge(currentSchema.views, newSchema.views);
   const mergedRules = merge(currentSchema.rules, newSchema.rules);
 
-  steps.push(...generateSteps(newSchema, mergedTables, tableOptions));
-  steps.push(...generateSteps(newSchema, mergedViews, viewOptions));
-  steps.push(...generateSteps(newSchema, mergedRules, ruleOptions));
+  steps.push(...generateDifference(newSchema, mergedTables, tableOptions));
+  steps.push(...generateDifference(newSchema, mergedViews, viewOptions));
+  steps.push(...generateDifference(newSchema, mergedRules, ruleOptions));
 
   return reorderSteps(
     steps.map((step) => {

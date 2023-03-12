@@ -22,6 +22,20 @@ export function testMigrationStepsTest(options: {
   const baseMigration = generateMigration(createSchema('test', {}), baseSchema, { id: 'base' });
   const targetMigration = generateMigration(baseSchema, targetSchema, { id: 'target', after: 'base' });
 
+  it('should generate up migration', () => {
+    expect(targetMigration.upMigration).toEqual(options.expectedUp);
+  });
+
+  it('should generate down migration', () => {
+    expect(targetMigration.downMigration).toEqual(options.expectedDown);
+  });
+
+  it('should not generate another migration if nothing changes', () => {
+    const nextMigration = generateMigration(targetSchema, targetSchema, { id: 'empty', after: 'target' });
+    expect(nextMigration.upMigration).toEqual([]);
+    expect(nextMigration.downMigration).toEqual([]);
+  });
+
   describe.each([['pg'], ['sqlite']])('%s', (adapter) => {
     let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
 
@@ -30,20 +44,6 @@ export function testMigrationStepsTest(options: {
     });
 
     afterAll(async () => ctx.close());
-
-    it('should generate up migration', () => {
-      expect(targetMigration.upMigration).toEqual(options.expectedUp);
-    });
-
-    it('should generate down migration', () => {
-      expect(targetMigration.downMigration).toEqual(options.expectedDown);
-    });
-
-    it('should not generate another migration if nothing changes', () => {
-      const nextMigration = generateMigration(targetSchema, targetSchema, { id: 'empty', after: 'target' });
-      expect(nextMigration.upMigration).toEqual([]);
-      expect(nextMigration.downMigration).toEqual([]);
-    });
 
     it('should migrate base schema', async () => {
       const migrationTree = new MigrationTree<OrmSql>('test', [baseMigration]);

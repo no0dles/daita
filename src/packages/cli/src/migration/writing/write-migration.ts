@@ -219,10 +219,54 @@ export function writeMigration(migration: Migration<OrmSql>): string {
 
   properties.push(
     factory.createPropertyAssignment(
-      factory.createIdentifier('steps'),
-      factory.createArrayLiteralExpression(
-        steps.map((step) => createExpressionFromValue(step)),
-        true,
+      factory.createIdentifier('up'),
+      factory.createArrowFunction(
+        undefined,
+        undefined,
+        [factory.createParameterDeclaration(undefined, undefined, undefined, 'trx', undefined, undefined, undefined)],
+        undefined,
+        factory.createToken(SyntaxKind.EqualsGreaterThanToken),
+        factory.createBlock(
+          migration.upMigration.map((sql) =>
+            factory.createExpressionStatement(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('trx'),
+                  factory.createIdentifier('exec'),
+                ),
+                undefined,
+                [createExpressionFromValue(sql)],
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  properties.push(
+    factory.createPropertyAssignment(
+      factory.createIdentifier('down'),
+      factory.createArrowFunction(
+        undefined,
+        undefined,
+        [factory.createParameterDeclaration(undefined, undefined, undefined, 'trx', undefined, undefined, undefined)],
+        undefined,
+        factory.createToken(SyntaxKind.EqualsGreaterThanToken),
+        factory.createBlock(
+          migration.downMigration.map((sql) =>
+            factory.createExpressionStatement(
+              factory.createCallExpression(
+                factory.createPropertyAccessExpression(
+                  factory.createIdentifier('trx'),
+                  factory.createIdentifier('exec'),
+                ),
+                undefined,
+                [createExpressionFromValue(sql)],
+              ),
+            ),
+          ),
+        ),
       ),
     ),
   );

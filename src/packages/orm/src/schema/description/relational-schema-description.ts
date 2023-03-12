@@ -145,7 +145,9 @@ export function addTableReference(
       const foreignField = getFieldFromSchemaTable(foreignTable.table, primaryKey);
 
       if (!containsTableField(table, key)) {
-        throw new Error(`missing foreign key property ${key} with type ${foreignField.type} for relation ${name}`);
+        throw new Error(
+          `missing foreign key property ${key} with type ${foreignField.type} for relation ${options.name}`,
+        );
 
         // if (!table.fields) {
         //   table.fields = {};
