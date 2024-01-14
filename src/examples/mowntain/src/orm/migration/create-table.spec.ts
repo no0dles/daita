@@ -8,26 +8,30 @@ describe('orm/migration/create-table', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
+            id: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
         },
       },
     },
-    expectedSteps: [
-      { kind: 'add_table', table: 'User', schema: 'custom' },
+    expectedUp: [
       {
-        kind: 'add_table_field',
-        table: 'User',
-        fieldName: 'id',
-        type: 'string',
-        required: true,
-        defaultValue: undefined,
-        schema: 'custom',
+        createTable: table('User', 'schema'),
+        columns: [
+          {
+            name: 'id',
+            type: 'string',
+            notNull: true,
+            primaryKey: true,
+          },
+        ],
       },
-      { kind: 'add_table_primary_key', table: 'User', fieldNames: ['id'], schema: 'custom' },
+    ],
+    expectedDown: [
+      {
+        dropTable: table('User', 'schema'),
+      },
     ],
     verifySqls: [
       {

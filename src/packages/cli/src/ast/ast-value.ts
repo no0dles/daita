@@ -10,6 +10,7 @@ import { AstVariableDeclaration } from './ast-variable-declaration';
 import { AstObjectPropertyValue } from './ast-object-property-value';
 import { AstSpreadElement } from './ast-spread-element';
 import { AstRegularExpressionLiteral } from './ast-regular-expression-literal';
+import { AstArrowFunction } from './ast-arrow-function';
 
 export type AstValue =
   | AstType
@@ -23,4 +24,5 @@ export type AstValue =
   | AstLiteralValue<any>
   | AstKeywordValue
   | AstRegularExpressionLiteral
-  | AstArrayValue;
+  | AstArrayValue
+  | AstArrowFunction;

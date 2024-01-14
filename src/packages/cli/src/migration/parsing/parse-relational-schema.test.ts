@@ -41,6 +41,7 @@ export class Role extends BaseTable {
   name!: string;
   description: string | null = null;
   parentRole?: Role;
+  parentRoleName?: string;
 }
 
 export class Permission extends BaseTable {
@@ -68,7 +69,7 @@ export class UserPermissions {
 
 export const userRules = [allow(authorized(), { select: all(), from: table(User) })];
 
-const schema = new RelationalSchema('test');
+const schema = new RelationalSchema({ name: 'test' });
 schema.table(User, {
   indices: {
     username: {

@@ -67,6 +67,8 @@ import {
   ComputedPropertyName,
   createSourceFile,
   ScriptTarget,
+  ArrowFunction,
+  Block,
 } from 'typescript';
 import { AstArrayType } from './ast-array-type';
 import { AstVariableDeclaration } from './ast-variable-declaration';
@@ -76,74 +78,78 @@ import { AstCallExpression } from './ast-call-expression';
 import { AstPropertyAccessExpression } from './ast-property-access-expression';
 import { AstSpreadElement } from './ast-spread-element';
 import { AstRegularExpressionLiteral } from './ast-regular-expression-literal';
+import { AstArrowFunction } from './ast-arrow-function';
 
-export function isKind(node: Node | undefined, kind: SyntaxKind.TypeLiteral): TypeLiteralNode | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.SpreadElement): SpreadElement | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.TypeAliasDeclaration): TypeAliasDeclaration | null;
+export function isKind(node: Node | undefined, kind: SyntaxKind.TypeLiteral): node is TypeLiteralNode;
+export function isKind(node: Node | undefined, kind: SyntaxKind.Block): node is Block;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ArrowFunction): node is ArrowFunction;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ArrowFunction): node is ArrowFunction;
+export function isKind(node: Node | undefined, kind: SyntaxKind.SpreadElement): node is SpreadElement;
+export function isKind(node: Node | undefined, kind: SyntaxKind.TypeAliasDeclaration): node is TypeAliasDeclaration;
 export function isKind(
   node: Node | undefined,
   kind: SyntaxKind.RegularExpressionLiteral,
-): RegularExpressionLiteral | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.ExportDeclaration): ExportDeclaration | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.EnumDeclaration): EnumDeclaration | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.TrueKeyword): BooleanLiteral | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.FalseKeyword): BooleanLiteral | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.NullKeyword): NullLiteral | null;
+): node is RegularExpressionLiteral;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ExportDeclaration): node is ExportDeclaration;
+export function isKind(node: Node | undefined, kind: SyntaxKind.EnumDeclaration): node is EnumDeclaration;
+export function isKind(node: Node | undefined, kind: SyntaxKind.TrueKeyword): node is BooleanLiteral;
+export function isKind(node: Node | undefined, kind: SyntaxKind.FalseKeyword): node is BooleanLiteral;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NullKeyword): node is NullLiteral;
 export function isKind(
   node: Node | undefined,
   kind: SyntaxKind.UndefinedKeyword,
-): KeywordTypeNode<SyntaxKind.UndefinedKeyword> | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.SpreadAssignment): SpreadAssignment | null;
+): node is KeywordTypeNode<SyntaxKind.UndefinedKeyword>;
+export function isKind(node: Node | undefined, kind: SyntaxKind.SpreadAssignment): node is SpreadAssignment;
 export function isKind(
   node: Node | undefined,
   kind: SyntaxKind.ShorthandPropertyAssignment,
-): ShorthandPropertyAssignment | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.NamedImports): NamedImports | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.NamespaceImport): NamespaceImport | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.ClassDeclaration): ClassDeclaration | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.VariableStatement): VariableStatement | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.FunctionDeclaration): FunctionDeclaration | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.MethodDeclaration): MethodDeclaration | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.PropertyAssignment): PropertyAssignment | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.NamedExports): NamedExports | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.LiteralType): LiteralTypeNode | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.StringLiteral): StringLiteral | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.NumericLiteral): NumericLiteral | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.NumericLiteral): NumericLiteral | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.PropertySignature): PropertySignature | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.TypeReference): TypeReferenceNode | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.ArrayType): ArrayTypeNode | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.UnionType): UnionTypeNode | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.NewExpression): NewExpression | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.NamespaceImport): NamespaceImport | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.PropertyDeclaration): PropertyDeclaration | null;
+): node is ShorthandPropertyAssignment;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NamedImports): node is NamedImports;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NamespaceImport): node is NamespaceImport;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ClassDeclaration): node is ClassDeclaration;
+export function isKind(node: Node | undefined, kind: SyntaxKind.VariableStatement): node is VariableStatement;
+export function isKind(node: Node | undefined, kind: SyntaxKind.FunctionDeclaration): node is FunctionDeclaration;
+export function isKind(node: Node | undefined, kind: SyntaxKind.MethodDeclaration): node is MethodDeclaration;
+export function isKind(node: Node | undefined, kind: SyntaxKind.PropertyAssignment): node is PropertyAssignment;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NamedExports): node is NamedExports;
+export function isKind(node: Node | undefined, kind: SyntaxKind.LiteralType): node is LiteralTypeNode;
+export function isKind(node: Node | undefined, kind: SyntaxKind.StringLiteral): node is StringLiteral;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NumericLiteral): node is NumericLiteral;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NumericLiteral): node is NumericLiteral;
+export function isKind(node: Node | undefined, kind: SyntaxKind.PropertySignature): node is PropertySignature;
+export function isKind(node: Node | undefined, kind: SyntaxKind.TypeReference): node is TypeReferenceNode;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ArrayType): node is ArrayTypeNode;
+export function isKind(node: Node | undefined, kind: SyntaxKind.UnionType): node is UnionTypeNode;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NewExpression): node is NewExpression;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NamespaceImport): node is NamespaceImport;
+export function isKind(node: Node | undefined, kind: SyntaxKind.PropertyDeclaration): node is PropertyDeclaration;
 export function isKind(
   node: Node | undefined,
   kind: SyntaxKind.ObjectLiteralExpression,
-): ObjectLiteralExpression | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.ExpressionStatement): ExpressionStatement | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.ImportDeclaration): ImportDeclaration | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.ExportAssignment): ExportAssignment | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.Identifier): Identifier | null;
+): node is ObjectLiteralExpression;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ExpressionStatement): node is ExpressionStatement;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ImportDeclaration): node is ImportDeclaration;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ExportAssignment): node is ExportAssignment;
+export function isKind(node: Node | undefined, kind: SyntaxKind.Identifier): node is Identifier;
 export function isKind(
   node: Node | undefined,
   kind: SyntaxKind.PropertyAccessExpression,
-): PropertyAccessExpression | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.CallExpression): CallExpression | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.NamedImports): NamedImports | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.NewExpression): NewExpression | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.ArrayLiteralExpression): ArrayLiteralExpression | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.StringLiteral): StringLiteral | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind.BooleanKeyword): BooleanLiteral | null;
-export function isKind(node: Node | undefined, kind: SyntaxKind): Node | null {
+): node is PropertyAccessExpression;
+export function isKind(node: Node | undefined, kind: SyntaxKind.CallExpression): node is CallExpression;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NamedImports): node is NamedImports;
+export function isKind(node: Node | undefined, kind: SyntaxKind.NewExpression): node is NewExpression;
+export function isKind(node: Node | undefined, kind: SyntaxKind.ArrayLiteralExpression): node is ArrayLiteralExpression;
+export function isKind(node: Node | undefined, kind: SyntaxKind.StringLiteral): node is StringLiteral;
+export function isKind(node: Node | undefined, kind: SyntaxKind.BooleanKeyword): node is BooleanLiteral;
+export function isKind(node: Node | undefined, kind: SyntaxKind): node is Node {
   if (!node) {
-    return null;
+    return false;
   }
 
   if (node.kind === kind) {
-    return node;
+    return true;
   }
-  return null;
+  return false;
 }
 
 export function getBooleanValue(value: AstValue): boolean {
@@ -211,9 +217,8 @@ export function getName(
     return identifier;
   }
 
-  const identifierNode = isKind(identifier, SyntaxKind.Identifier);
-  if (identifierNode) {
-    return identifierNode.getText();
+  if (isKind(identifier, SyntaxKind.Identifier)) {
+    return identifier.getText();
   }
 
   //TODO binding pattern + property name + qualifiedname
@@ -249,29 +254,24 @@ export function getType(block: AstBlock, node: TypeNode | undefined): AstType | 
     return new AstKeywordType(node as any);
   }
 
-  const literalType = isKind(node, SyntaxKind.LiteralType);
-  if (literalType) {
-    return new AstLiteralType(literalType);
+  if (isKind(node, SyntaxKind.LiteralType)) {
+    return new AstLiteralType(node);
   }
 
-  const typeLiteral = isKind(node, SyntaxKind.TypeLiteral);
-  if (typeLiteral) {
-    return new AstTypeLiteralType(block, typeLiteral);
+  if (isKind(node, SyntaxKind.TypeLiteral)) {
+    return new AstTypeLiteralType(block, node);
   }
 
-  const typeRef = isKind(node, SyntaxKind.TypeReference);
-  if (typeRef) {
-    return new AstReferenceType(block, typeRef);
+  if (isKind(node, SyntaxKind.TypeReference)) {
+    return new AstReferenceType(block, node);
   }
 
-  const arrayType = isKind(node, SyntaxKind.ArrayType);
-  if (arrayType) {
-    return new AstArrayType(block, arrayType);
+  if (isKind(node, SyntaxKind.ArrayType)) {
+    return new AstArrayType(block, node);
   }
 
-  const unionType = isKind(node, SyntaxKind.UnionType);
-  if (unionType) {
-    return new AstUnionType(block, unionType);
+  if (isKind(node, SyntaxKind.UnionType)) {
+    return new AstUnionType(block, node);
   }
 
   throw new AstError(node, 'get type');
@@ -296,71 +296,64 @@ export function getValueFromExpression(block: AstBlock, expression: Expression |
     return null;
   }
 
-  const numericLiteral = isKind(expression, SyntaxKind.NumericLiteral);
-  if (numericLiteral) {
-    return new AstNumericLiteralValue(numericLiteral);
+  if (isKind(expression, SyntaxKind.NumericLiteral)) {
+    return new AstNumericLiteralValue(expression);
   }
 
-  const stringLiteral = isKind(expression, SyntaxKind.StringLiteral);
-  if (stringLiteral) {
-    return new AstStringLiteralValue(stringLiteral);
+  if (isKind(expression, SyntaxKind.StringLiteral)) {
+    return new AstStringLiteralValue(expression);
   }
 
-  const objectLiteral = isKind(expression, SyntaxKind.ObjectLiteralExpression);
-  if (objectLiteral) {
-    return new AstObjectValue(block, objectLiteral);
+  if (isKind(expression, SyntaxKind.ObjectLiteralExpression)) {
+    return new AstObjectValue(block, expression);
   }
 
-  const newExpression = isKind(expression, SyntaxKind.NewExpression);
-  if (newExpression) {
-    return new AstNewExpression(block, newExpression);
+  if (isKind(expression, SyntaxKind.NewExpression)) {
+    return new AstNewExpression(block, expression);
   }
 
-  const trueKeyword = isKind(expression, SyntaxKind.TrueKeyword);
-  if (trueKeyword) {
-    return new AstBooleanLiteralValue(trueKeyword);
-  }
-  const falseKeyword = isKind(expression, SyntaxKind.FalseKeyword);
-  if (falseKeyword) {
-    return new AstBooleanLiteralValue(falseKeyword);
-  }
-  const nullKeyword = isKind(expression, SyntaxKind.NullKeyword);
-  if (nullKeyword) {
-    return new AstKeywordValue(nullKeyword);
-  }
-  const undefinedKeyword = isKind(expression, SyntaxKind.UndefinedKeyword);
-  if (undefinedKeyword) {
-    return new AstKeywordValue(undefinedKeyword);
+  if (isKind(expression, SyntaxKind.TrueKeyword)) {
+    return new AstBooleanLiteralValue(expression);
   }
 
-  const array = isKind(expression, SyntaxKind.ArrayLiteralExpression);
-  if (array) {
-    return new AstArrayValue(block, array);
+  if (isKind(expression, SyntaxKind.FalseKeyword)) {
+    return new AstBooleanLiteralValue(expression);
   }
 
-  const identifierNode = isKind(expression, SyntaxKind.Identifier);
-  if (identifierNode) {
-    return block.getValue(identifierNode);
+  if (isKind(expression, SyntaxKind.NullKeyword)) {
+    return new AstKeywordValue(expression);
   }
 
-  const callExpression = isKind(expression, SyntaxKind.CallExpression);
-  if (callExpression) {
-    return new AstCallExpression(block, callExpression);
+  if (isKind(expression, SyntaxKind.UndefinedKeyword)) {
+    return new AstKeywordValue(expression);
   }
 
-  const propertyAccessExpression = isKind(expression, SyntaxKind.PropertyAccessExpression);
-  if (propertyAccessExpression) {
-    return new AstPropertyAccessExpression(block, propertyAccessExpression);
+  if (isKind(expression, SyntaxKind.ArrayLiteralExpression)) {
+    return new AstArrayValue(block, expression);
   }
 
-  const spreadElement = isKind(expression, SyntaxKind.SpreadElement);
-  if (spreadElement) {
-    return new AstSpreadElement(block, spreadElement);
+  if (isKind(expression, SyntaxKind.Identifier)) {
+    return block.getValue(expression);
   }
 
-  const regularExpressionLiteral = isKind(expression, SyntaxKind.RegularExpressionLiteral);
-  if (regularExpressionLiteral) {
-    return new AstRegularExpressionLiteral(block, regularExpressionLiteral);
+  if (isKind(expression, SyntaxKind.CallExpression)) {
+    return new AstCallExpression(block, expression);
+  }
+
+  if (isKind(expression, SyntaxKind.PropertyAccessExpression)) {
+    return new AstPropertyAccessExpression(block, expression);
+  }
+
+  if (isKind(expression, SyntaxKind.SpreadElement)) {
+    return new AstSpreadElement(block, expression);
+  }
+
+  if (isKind(expression, SyntaxKind.RegularExpressionLiteral)) {
+    return new AstRegularExpressionLiteral(block, expression);
+  }
+
+  if (isKind(expression, SyntaxKind.ArrowFunction)) {
+    return new AstArrowFunction(block, expression);
   }
 
   //TODO

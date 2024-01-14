@@ -6,8 +6,6 @@ describe('orm/migration/drop-view', () => {
     base: {
       views: {
         User: {
-          name: 'User',
-          key: 'User',
           schema: 'custom',
           query: {
             select: 1,
@@ -16,11 +14,17 @@ describe('orm/migration/drop-view', () => {
       },
     },
     target: {},
-    expectedSteps: [
+    expectedUp: [
       {
-        kind: 'drop_view',
-        schema: 'custom',
-        view: 'User',
+        dropView: table('User', 'custom'),
+      },
+    ],
+    expectedDown: [
+      {
+        createView: table('User', 'custom'),
+        as: {
+          select: 1,
+        },
       },
     ],
     verifySqls: [

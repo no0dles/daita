@@ -68,17 +68,16 @@ export class AstObjectValue implements AstNode {
 
   private *getProps(): Generator<AstObjectPropertyValue> {
     for (const property of this.node.properties) {
-      const propertyAssignment = isKind(property, SyntaxKind.PropertyAssignment);
-      if (propertyAssignment) {
-        yield new AstObjectPropertyAssignmentValue(this.block, propertyAssignment);
+      if (isKind(property, SyntaxKind.PropertyAssignment)) {
+        yield new AstObjectPropertyAssignmentValue(this.block, property);
       }
-      const shorthandPropertyAssignment = isKind(property, SyntaxKind.ShorthandPropertyAssignment);
-      if (shorthandPropertyAssignment) {
-        yield new AstObjectPropertyShorthandValue(this.block, shorthandPropertyAssignment);
+
+      if (isKind(property, SyntaxKind.ShorthandPropertyAssignment)) {
+        yield new AstObjectPropertyShorthandValue(this.block, property);
       }
-      const spreadAssignment = isKind(property, SyntaxKind.SpreadAssignment);
-      if (spreadAssignment) {
-        const variableName = getName(spreadAssignment.expression, 'spread assignment');
+
+      if (isKind(property, SyntaxKind.SpreadAssignment)) {
+        const variableName = getName(property.expression, 'spread assignment');
         const variable = this.block.variable(variableName);
         if (!variable) {
           throw new AstError(this.node, 'unable to find variable');

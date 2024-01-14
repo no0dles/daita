@@ -31,6 +31,7 @@ import {
   isWeekOfYearDescription,
   isYearDescription,
 } from '../../function';
+import { isJsonDescription } from '../../../types';
 
 export interface SelectSql<T> {
   select: T;
@@ -55,6 +56,7 @@ export const isSingleFieldSelect = (fields: any) =>
   isLeastDescription(fields) ||
   isGreatestDescription(fields) ||
   isCeilDescription(fields) ||
+  isJsonDescription(fields) ||
   isFloorDescription(fields) ||
   isMinDescription(fields) ||
   isMaxDescription(fields) ||

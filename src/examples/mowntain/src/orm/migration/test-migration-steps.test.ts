@@ -1,15 +1,11 @@
 import {
   createSchema,
   CreateSchemaOptions,
-  emptySchema,
-  generateRelationalMigrationSteps,
-  getSchemaDescription,
-  MigrationDescription,
-  MigrationPlan,
-  MigrationStep,
-  NormalMapper,
+  generateMigration,
+  migrate,
+  MigrationTree,
+  OrmSql,
   RelationalOrmAdapter,
-  SchemaMapper,
 } from '@daita/orm';
 import { getTestAdapter } from '../../testing';
 import { RelationalAdapter, Sql } from '@daita/relational';
@@ -17,21 +13,28 @@ import { RelationalAdapter, Sql } from '@daita/relational';
 export function testMigrationStepsTest(options: {
   base: CreateSchemaOptions;
   target: CreateSchemaOptions;
-  expectedSteps: MigrationStep[];
+  expectedUp: OrmSql[];
+  expectedDown: OrmSql[];
   verifySqls: { sql: Sql<any>; success: boolean; expectedResult?: any }[];
 }) {
   const baseSchema = createSchema('test', options.base);
   const targetSchema = createSchema('test', options.target);
-  const baseSteps = generateRelationalMigrationSteps(createSchema('test', {}), baseSchema);
-  const steps = generateRelationalMigrationSteps(baseSchema, targetSchema);
-  const baseMigration: MigrationDescription = {
-    id: 'base',
-    steps: baseSteps,
-  };
-  const targetMigration: MigrationDescription = {
-    id: 'target',
-    steps,
-  };
+  const baseMigration = generateMigration(createSchema('test', {}), baseSchema, { id: 'base' });
+  const targetMigration = generateMigration(baseSchema, targetSchema, { id: 'target', after: 'base' });
+
+  it('should generate up migration', () => {
+    expect(targetMigration.upMigration).toEqual(options.expectedUp);
+  });
+
+  it('should generate down migration', () => {
+    expect(targetMigration.downMigration).toEqual(options.expectedDown);
+  });
+
+  it('should not generate another migration if nothing changes', () => {
+    const nextMigration = generateMigration(targetSchema, targetSchema, { id: 'empty', after: 'target' });
+    expect(nextMigration.upMigration).toEqual([]);
+    expect(nextMigration.downMigration).toEqual([]);
+  });
 
   describe.each([['pg'], ['sqlite']])('%s', (adapter) => {
     let ctx: RelationalOrmAdapter & RelationalAdapter<any>;
@@ -42,43 +45,14 @@ export function testMigrationStepsTest(options: {
 
     afterAll(async () => ctx.close());
 
-    it('should generate steps', () => {
-      expect(steps).toEqual(options.expectedSteps);
-    });
-
-    it('should not generate steps if nothing changes', () => {
-      expect(generateRelationalMigrationSteps(targetSchema, targetSchema)).toEqual([]);
-    });
-
     it('should migrate base schema', async () => {
-      const description = getSchemaDescription(emptySchema('test'), new SchemaMapper(() => new NormalMapper()), [
-        baseMigration,
-      ]);
-      const plan: MigrationPlan = {
-        targetSchema: baseSchema,
-        direction: 'forward',
-        migration: baseMigration,
-        steps: description.steps,
-      };
-      await ctx.applyMigration('test', plan);
+      const migrationTree = new MigrationTree<OrmSql>('test', [baseMigration]);
+      await migrate(ctx, migrationTree);
     });
 
     it('should migrate target schema', async () => {
-      const baseDescription = getSchemaDescription(emptySchema('test'), new SchemaMapper(() => new NormalMapper()), [
-        baseMigration,
-      ]);
-      const targetDescription = getSchemaDescription(
-        baseDescription.schema,
-        new SchemaMapper(() => new NormalMapper()),
-        [targetMigration],
-      );
-      const plan: MigrationPlan = {
-        targetSchema: targetSchema,
-        direction: 'forward',
-        migration: targetMigration,
-        steps: targetDescription.steps,
-      };
-      await ctx.applyMigration('test', plan);
+      const migrationTree = new MigrationTree<OrmSql>('test', [baseMigration, targetMigration]);
+      await migrate(ctx, migrationTree);
     });
 
     it('verify schema', async () => {

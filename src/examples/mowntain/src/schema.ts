@@ -4,10 +4,13 @@ import { AscentPerson } from './models/ascent-person';
 import { Canton } from './models/canton';
 import { Mountain } from './models/mountain';
 import { Person } from './models/person';
-import { InitialMigration } from './migrations/2020-10-01-165516-initial';
 import { allow, authorized, now } from '@daita/relational';
+import { SqliteSql } from '@daita/sqlite-adapter';
 
-export const schema = new RelationalSchema('test-schema');
+export const schema = new RelationalSchema<SqliteSql>({
+  name: 'test-schema',
+});
+
 schema.table(Ascent);
 schema.table(AscentPerson, {
   key: ['ascentId', 'personId'],
@@ -25,4 +28,3 @@ schema.table(Canton, {
 schema.table(Mountain);
 schema.table(Person);
 schema.rules([allow(authorized(), { select: now() })]);
-schema.migration(InitialMigration);

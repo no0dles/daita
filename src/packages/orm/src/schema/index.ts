@@ -5,3 +5,5 @@ export * from './relational-schema-options';
 export * from './relational-schema';
 export * from './schema-table-field-type-description';
 export * from './schema-table-options';
+export * from './schema-data-type';
+export * from './migration-tree-schema';

@@ -1,3 +1,5 @@
+import { Json } from '@daita/relational';
+
 export class Migrations {
   static schema = 'daita';
   static table = 'migrations';
@@ -6,4 +8,6 @@ export class Migrations {
   schema!: string;
   after?: string;
   resolve?: string;
+  upMigration!: Json<any[]>;
+  downMigration!: Json<any[]>;
 }

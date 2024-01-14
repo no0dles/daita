@@ -9,10 +9,9 @@ describe('get-migration-steps', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
+            id: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
         },
       },
     });
@@ -42,8 +41,7 @@ describe('get-migration-steps', () => {
     const currentSchema = createSchema('test', {
       tables: {
         User: {
-          name: 'User',
-          fields: { id: { type: 'string', required: true, name: 'id' } },
+          fields: { id: { type: 'string', required: true } },
           primaryKeys: ['id'],
         },
       },
@@ -57,8 +55,7 @@ describe('get-migration-steps', () => {
     const currentSchema = createSchema('test', {
       tables: {
         User: {
-          name: 'User',
-          fields: { id: { type: 'string', name: 'id', required: true } },
+          fields: { id: { type: 'string', required: true } },
           primaryKeys: ['id'],
         },
       },
@@ -66,11 +63,9 @@ describe('get-migration-steps', () => {
     const newSchema = createSchema('test', {
       tables: {
         User: {
-          name: 'User',
           fields: {
-            id: { type: 'string', required: true, name: 'id' },
+            id: { type: 'string', required: true },
             username: {
-              name: 'username',
               type: 'string',
               required: false,
               defaultValue: 'admin',
@@ -97,13 +92,11 @@ describe('get-migration-steps', () => {
     const currentSchema = createSchema('test', {
       tables: {
         User: {
-          name: 'User',
-          fields: { id: { type: 'string', required: true, name: 'id' } },
+          fields: { id: { type: 'string', required: true } },
           primaryKeys: ['id'],
         },
         Role: {
-          name: 'Role',
-          fields: { id: { type: 'string', required: true, name: 'id' } },
+          fields: { id: { type: 'string', required: true } },
           primaryKeys: ['id'],
         },
       },
@@ -111,25 +104,22 @@ describe('get-migration-steps', () => {
     const newSchema = createSchema('test', {
       tables: {
         User: {
-          name: 'User',
           fields: {
-            id: { type: 'string', required: true, name: 'id' },
-            roleId: { type: 'string', required: true, name: 'roleId' },
+            id: { type: 'string', required: true },
+            roleId: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
           references: {
             role: {
               table: 'Role',
               keys: [{ field: 'roleId', foreignField: 'id' }],
-              name: 'role',
               onDelete: null,
               onUpdate: null,
             },
           },
         },
         Role: {
-          name: 'Role',
-          fields: { id: { type: 'string', required: true, name: 'id' } },
+          fields: { id: { type: 'string', required: true } },
           primaryKeys: ['id'],
         },
       },
@@ -159,11 +149,9 @@ describe('get-migration-steps', () => {
     const currentSchema = createSchema('test', {
       tables: {
         User: {
-          name: 'User',
           fields: {
-            id: { type: 'string', required: true, name: 'id' },
+            id: { type: 'string', required: true },
             username: {
-              name: 'username',
               type: 'string',
               required: false,
               defaultValue: 'admin',
@@ -176,9 +164,8 @@ describe('get-migration-steps', () => {
     const newSchema = createSchema('test', {
       tables: {
         User: {
-          fields: { id: { type: 'string', required: true, name: 'id' } },
+          fields: { id: { type: 'string', required: true } },
           primaryKeys: ['id'],
-          name: 'User',
         },
       },
     });
@@ -196,13 +183,11 @@ describe('get-migration-steps', () => {
     const currentSchema = createSchema('test', {
       tables: {
         User: {
-          name: 'User',
-          fields: { id: { type: 'string', required: true, name: 'id' } },
+          fields: { id: { type: 'string', required: true } },
           references: {
             parent: {
               keys: [{ field: 'parentId', foreignField: 'id' }],
               table: 'User',
-              name: 'parent',
               onDelete: null,
               onUpdate: null,
             },
@@ -220,9 +205,8 @@ describe('get-migration-steps', () => {
     const currentSchema = createSchema('test', {
       tables: {
         User: {
-          name: 'User',
           fields: {
-            id: { type: 'string', required: true, name: 'id' },
+            id: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
         },
@@ -231,9 +215,8 @@ describe('get-migration-steps', () => {
     const newSchema = createSchema('test', {
       tables: {
         User: {
-          name: 'User',
-          fields: { id: { type: 'string', required: true, name: 'id' } },
-          indices: { id: { unique: true, fields: ['id'], name: 'id' } },
+          fields: { id: { type: 'string', required: true } },
+          indices: { id: { unique: true, fields: ['id'] } },
           primaryKeys: ['id'],
         },
       },
@@ -412,5 +395,6 @@ describe('get-migration-steps', () => {
       },
     ];
     const orderedSteps = reorderSteps(steps);
+    console.log(orderedSteps);
   });
 });

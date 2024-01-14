@@ -1,4 +1,4 @@
-import { FormatContext, FormatDataType } from './format-context';
+import { FormatContext } from './format-context';
 import { ValueType } from '../sql/operands/value-type';
 
 export abstract class SimpleFormatContext implements FormatContext {
@@ -11,10 +11,6 @@ export abstract class SimpleFormatContext implements FormatContext {
     return this.paramKey;
   }
 
-  restoreValue(type: FormatDataType, value: any) {
-    return value;
-  }
-
   getValues(): ValueType[] {
     return this.values;
   }
@@ -22,6 +18,4 @@ export abstract class SimpleFormatContext implements FormatContext {
   escape(value: string): string {
     return this.escapeKey + value + this.escapeKey;
   }
-
-  abstract getDataType(type: FormatDataType): string;
 }

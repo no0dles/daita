@@ -4,6 +4,9 @@ import { parseRelationalSchema } from './parse-relational-schema';
 import { allow } from '@daita/relational';
 import { authorized } from '@daita/relational';
 import {
+  CreateSchemaTableDescription,
+  CreateSchemaTableFieldDescription,
+  createTableSchema,
   getFieldsFromSchemaTable,
   getIndicesFromSchemaTable,
   getReferencesFromSchemaTable,
@@ -11,8 +14,6 @@ import {
   getTableFromSchema,
   getTablesFromSchema,
   SchemaDescription,
-  SchemaTableDescription,
-  SchemaTableFieldDescription,
 } from '@daita/orm';
 import { all } from '@daita/relational';
 import { table } from '@daita/relational';
@@ -50,88 +51,74 @@ describe('parse-relational-schema', () => {
     expect(actualRules).toEqual([allow(authorized(), { select: all(), from: table('User') })]);
   });
 
-  const baseFields: { [key: string]: SchemaTableFieldDescription } = {
+  const baseFields: { [key: string]: CreateSchemaTableFieldDescription } = {
     createdDate: {
       required: true,
       type: 'date',
       defaultValue: undefined,
-      name: 'createdDate',
     },
     modifiedDate: {
       required: false,
       type: 'date',
       defaultValue: undefined,
-      name: 'modifiedDate',
     },
   };
 
-  shouldHaveTable(parsedSchema, {
-    name: 'User',
+  shouldHaveTable(parsedSchema, 'User', {
     primaryKeys: ['id'],
-    indices: { username: { fields: ['username'], unique: true, name: 'username' } },
+    indices: { username: { fields: ['username'], unique: true } },
     fields: {
       id: {
         required: true,
         type: 'uuid',
         defaultValue: undefined,
-        name: 'id',
       },
       username: {
         required: true,
         type: 'string',
         defaultValue: undefined,
-        name: 'username',
       },
       password: {
         required: true,
         type: 'string',
         defaultValue: '1234',
-        name: 'password',
-        size: 64,
+        size: '64',
       },
       lastLogin: {
         required: true,
         type: 'date',
         defaultValue: undefined,
-        name: 'lastLogin',
       },
       userType: {
         required: true,
         type: 'string',
-        name: 'userType',
         defaultValue: 'local',
       },
       userStatus: {
         required: true,
         type: 'number',
-        name: 'userStatus',
         defaultValue: undefined,
       },
       admin: {
         required: true,
         type: 'boolean',
         defaultValue: false,
-        name: 'admin',
       },
       extra: {
         required: true,
         type: 'json',
-        name: 'extra',
       },
       extraTyped: {
         required: true,
         type: 'json',
-        name: 'extraTyped',
       },
       ...baseFields,
     },
   });
 
-  shouldHaveTable(parsedSchema, {
-    name: 'Role',
+  shouldHaveTable(parsedSchema, 'Role', {
     references: {
       parentRole: {
-        name: 'parentRole',
         table: 'Role',
         keys: [{ field: 'parentRoleName', foreignField: 'name' }],
         onUpdate: null,
@@ -139,56 +126,48 @@ describe('parse-relational-schema', () => {
       },
     },
     primaryKeys: ['name'],
-    indices: { desc: { fields: ['description'], unique: false, name: 'desc' } },
+    indices: { desc: { fields: ['description'], unique: false } },
     fields: {
       name: {
         required: true,
         type: 'string',
         defaultValue: undefined,
-        name: 'name',
       },
       description: {
         required: false,
         type: 'string',
         defaultValue: null,
-        name: 'description',
       },
       parentRoleName: {
         required: false,
         type: 'string',
         defaultValue: undefined,
-        name: 'parentRoleName',
       },
       ...baseFields,
     },
   });
 
-  shouldHaveTable(parsedSchema, {
-    name: 'Permission',
+  shouldHaveTable(parsedSchema, 'Permission', {
     primaryKeys: ['name'],
     fields: {
       name: {
         required: true,
         type: 'string',
         defaultValue: undefined,
-        name: 'name',
       },
       ...baseFields,
     },
   });
 
-  shouldHaveTable(parsedSchema, {
-    name: 'UserRole',
+  shouldHaveTable(parsedSchema, 'UserRole', {
     references: {
       role: {
-        name: 'role',
         table: 'Role',
         keys: [{ field: 'roleName', foreignField: 'name' }],
         onUpdate: null,
         onDelete: null,
       },
       user: {
-        name: 'user',
         table: 'User',
         keys: [{ field: 'userId', foreignField: 'id' }],
         onUpdate: null,
@@ -200,31 +179,26 @@ describe('parse-relational-schema', () => {
       userId: {
         required: true,
         defaultValue: undefined,
-        name: 'userId',
         type: 'uuid',
       },
       roleName: {
         required: true,
         defaultValue: undefined,
-        name: 'roleName',
         type: 'string',
       },
       ...baseFields,
     },
   });
 
-  shouldHaveTable(parsedSchema, {
-    name: 'RolePermission',
+  shouldHaveTable(parsedSchema, 'RolePermission', {
     references: {
       role: {
-        name: 'role',
         table: 'Role',
         keys: [{ field: 'roleName', foreignField: 'name' }],
         onUpdate: null,
         onDelete: null,
       },
       permission: {
-        name: 'permission',
         table: 'Permission',
         keys: [{ field: 'permissionName', foreignField: 'name' }],
         onUpdate: null,
@@ -236,13 +210,11 @@ describe('parse-relational-schema', () => {
       permissionName: {
         required: true,
         defaultValue: undefined,
-        name: 'permissionName',
         type: 'string',
       },
       roleName: {
         required: true,
         defaultValue: undefined,
-        name: 'roleName',
         type: 'string',
       },
       ...baseFields,
@@ -250,22 +222,29 @@ describe('parse-relational-schema', () => {
   });
 });
 
-function shouldHaveTable(relationalSchema: SchemaDescription, expected: SchemaTableDescription) {
-  describe(`${expected.name} table`, () => {
-    const roleTable = getTableFromSchema(relationalSchema, table(expected.name));
+function shouldHaveTable(
+  relationalSchema: SchemaDescription,
+  tableName: string,
+  expected: CreateSchemaTableDescription,
+) {
+  describe(`${tableName} table`, () => {
+    const roleTable = getTableFromSchema(relationalSchema, table(tableName));
+    const expectedTableDescription = createTableSchema(tableName, expected);
 
     it('should parse primary keys', () => {
       expect(roleTable.table.primaryKeys).toEqual(expected.primaryKeys);
     });
 
     it('should parse indices', () => {
-      expect(getIndicesFromSchemaTable(roleTable.table)).toEqual(getIndicesFromSchemaTable(expected));
+      expect(getIndicesFromSchemaTable(roleTable.table)).toEqual(getIndicesFromSchemaTable(expectedTableDescription));
     });
     it('should parse references', () => {
-      expect(getReferencesFromSchemaTable(roleTable.table)).toEqual(getReferencesFromSchemaTable(expected));
+      expect(getReferencesFromSchemaTable(roleTable.table)).toEqual(
+        getReferencesFromSchemaTable(expectedTableDescription),
+      );
     });
     it('should parse fields', () => {
-      expect(getFieldsFromSchemaTable(roleTable.table)).toEqual(getFieldsFromSchemaTable(expected));
+      expect(getFieldsFromSchemaTable(roleTable.table)).toEqual(getFieldsFromSchemaTable(expectedTableDescription));
     });
   });
 }

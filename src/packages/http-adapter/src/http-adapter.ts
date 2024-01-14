@@ -8,34 +8,15 @@ import {
 import { handleErrorResponse } from './error-handling';
 import { randomString } from '@daita/common';
 import { HttpTransactionDataAdapter } from './http-transaction-data-adapter';
-import { MigrationDescription, MigrationPlan, RelationalOrmAdapter } from '@daita/orm';
+import { RelationalOrmAdapter, SchemaTableFieldTypeDescription } from '@daita/orm';
 
 export class HttpAdapter extends BaseRelationalAdapter implements RelationalAdapter<any>, RelationalOrmAdapter {
   constructor(protected http: Http) {
     super();
   }
 
-  async applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void> {
-    const result = await this.http.json<{ message?: string }>({
-      path: `api/orm/${schema}/migrations`,
-      data: { migrationPlan },
-      authorized: true,
-    });
-    if (result.statusCode >= 400) {
-      throw new Error(result.data.message);
-    }
-  }
-
-  async getAppliedMigrations(schema: string): Promise<MigrationDescription[]> {
-    //TODO better response typing
-    const result = await this.http.get<{ message?: string; migrations: MigrationDescription[] }>({
-      path: `api/orm/${schema}/migrations`,
-      authorized: true,
-    });
-    if (result.statusCode >= 400) {
-      throw new Error(result.data.message);
-    }
-    return result.data.migrations;
+  getDatabaseType(type: SchemaTableFieldTypeDescription, size?: string): string {
+    return size ? `${type},${size}` : `${type}`;
   }
 
   async execRaw(sql: string, values: any[]): Promise<RelationalRawResult> {

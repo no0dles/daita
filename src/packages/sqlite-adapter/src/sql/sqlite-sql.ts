@@ -8,6 +8,7 @@ import { DropViewSql } from '@daita/relational';
 import { CreateTableSql } from '@daita/relational';
 import { LockTableSql } from '@daita/relational';
 import { CreateSchemaSql } from '@daita/relational';
+import { PragmaSql } from './pragma-sql';
 
 export type SqliteSql =
   | Sql<any>
@@ -21,4 +22,5 @@ export type SqliteSql =
   | DropIndexSql
   | CreateIndexSql<any>
   | CreateViewSql<any>
-  | DropViewSql;
+  | DropViewSql
+  | PragmaSql;

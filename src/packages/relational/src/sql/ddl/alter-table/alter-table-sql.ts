@@ -38,7 +38,7 @@ export const isAlterTableDropConstraintSql = (val: any): val is AlterTableDropCo
 
 export interface AlterTableAddColumnSql {
   alterTable: TableDescription<any>;
-  add: { column: string; type: string; size?: number };
+  add: { column: string; type: string; notNull?: boolean; defaultValue?: any };
 }
 
 export const isAlterTableAddColumnSql = (val: any): val is AlterTableAddColumnSql =>

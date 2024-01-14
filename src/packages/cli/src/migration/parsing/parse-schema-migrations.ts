@@ -2,11 +2,11 @@ import { parseSchemaMigration } from './parse-schema-migration';
 import { AstVariableDeclaration } from '../../ast/ast-variable-declaration';
 import { getObjectValue } from '../../ast/utils';
 import { parseRelationalSchemaName } from './parse-relational-schema';
-import { MigrationTree } from '@daita/orm';
+import { MigrationTree, OrmSql } from '@daita/orm';
 
-export function parseSchemaMigrations(schemaVariable: AstVariableDeclaration): MigrationTree {
+export function parseSchemaMigrations(schemaVariable: AstVariableDeclaration): MigrationTree<OrmSql> {
   const nameValue = parseRelationalSchemaName(schemaVariable);
-  const migrationTree = new MigrationTree(nameValue);
+  const migrationTree = new MigrationTree<OrmSql>(nameValue);
 
   for (const migrationCall of parseSchemaMigrationCalls(schemaVariable)) {
     const migration = parseSchemaMigration(migrationCall);

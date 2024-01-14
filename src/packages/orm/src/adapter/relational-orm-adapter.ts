@@ -1,9 +1,8 @@
-import { MigrationDescription } from '../migration/migration-description';
-import { MigrationPlan } from '../context/migration-plan';
+import { SchemaTableFieldTypeDescription } from '../schema';
 
 export interface RelationalOrmAdapter {
-  getAppliedMigrations(schema: string): Promise<MigrationDescription[]>;
-  applyMigration(schema: string, migrationPlan: MigrationPlan): Promise<void>;
+  getDatabaseType(type: SchemaTableFieldTypeDescription, size?: string): string;
+  //getSchemaType(type: string): SchemaDataType;
 }
 
 export const isOrmAdapter = (val: any): val is RelationalOrmAdapter =>

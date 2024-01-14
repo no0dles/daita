@@ -17,9 +17,12 @@ export class CreateTableFormatter implements FormatHandle<CreateTableSql> {
     sql += ` ${formatter.format(param.createTable, ctx)}`;
     sql += ` (${param.columns
       .map((col) => {
-        let fieldSql = `${ctx.escape(col.name)} ${ctx.getDataType({ type: col.type, size: col.size })}`;
+        let fieldSql = `${ctx.escape(col.name)} ${col.type}`;
         if (col.notNull) {
           fieldSql += ` NOT NULL`;
+        }
+        if (col.defaultValue) {
+          fieldSql += ` DEFAULT ${col.defaultValue}`;
         }
         return fieldSql;
       })

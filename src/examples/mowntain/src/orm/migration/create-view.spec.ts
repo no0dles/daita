@@ -7,8 +7,6 @@ describe('orm/migration/create-view', () => {
     target: {
       views: {
         Test: {
-          name: 'Test',
-          key: 'Test',
           schema: 'custom',
           query: {
             select: "'hello'",
@@ -16,14 +14,17 @@ describe('orm/migration/create-view', () => {
         },
       },
     },
-    expectedSteps: [
+    expectedUp: [
       {
-        kind: 'add_view',
-        query: {
+        createView: table('Test', 'custom'),
+        as: {
           select: "'hello'",
         },
-        schema: 'custom',
-        view: 'Test',
+      },
+    ],
+    expectedDown: [
+      {
+        dropView: table('Test', 'custom'),
       },
     ],
     verifySqls: [

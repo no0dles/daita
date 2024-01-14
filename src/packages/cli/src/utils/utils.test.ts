@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { generateRelationalMigrationSteps } from '@daita/orm';
+import { generateRelationalMigrationSteps, getMigrationTreeSchema } from '@daita/orm';
 import { getSchemaInformation, SchemaLocation } from './path';
 import { AstContext } from '../ast/ast-context';
 
@@ -22,7 +22,7 @@ export async function getMigrationSteps(fileName: string) {
   }
 
   const migrationTree = schemaInfo.getMigrationTree();
-  const currentSchema = migrationTree.getSchemaDescription();
+  const currentSchema = getMigrationTreeSchema(migrationTree);
 
-  return generateRelationalMigrationSteps(currentSchema.schema, schemaInfo.getRelationalSchema());
+  return generateRelationalMigrationSteps(currentSchema, schemaInfo.getRelationalSchema());
 }

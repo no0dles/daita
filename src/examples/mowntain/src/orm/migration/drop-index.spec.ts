@@ -7,14 +7,13 @@ describe('orm/migration/drop-index', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
-            username: { type: 'string', name: 'username', required: true },
+            id: { type: 'string', required: true },
+            username: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
           indices: {
-            username: { unique: true, name: 'username', fields: ['username'] },
+            username: { unique: true, fields: ['username'] },
           },
         },
       },
@@ -23,21 +22,25 @@ describe('orm/migration/drop-index', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
-            username: { type: 'string', name: 'username', required: true },
+            id: { type: 'string', required: true },
+            username: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
         },
       },
     },
-    expectedSteps: [
+    expectedUp: [
       {
-        kind: 'drop_index',
-        name: 'username',
-        schema: 'custom',
-        table: 'User',
+        dropIndex: 'username',
+        on: table('User', 'custom'),
+      },
+    ],
+    expectedDown: [
+      {
+        createIndex: 'username',
+        columns: ['username'],
+        on: table('User', 'custom'),
       },
     ],
     verifySqls: [

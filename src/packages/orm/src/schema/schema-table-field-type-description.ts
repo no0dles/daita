@@ -8,4 +8,5 @@ export type SchemaTableFieldTypeDescription =
   | 'boolean'
   | 'boolean[]'
   | 'uuid'
-  | 'json';
+  | 'json'
+  | 'unknown';

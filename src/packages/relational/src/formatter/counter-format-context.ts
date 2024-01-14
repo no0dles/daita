@@ -1,7 +1,7 @@
-import { FormatContext, FormatDataType } from './format-context';
+import { FormatContext } from './format-context';
 import { ValueType } from '../sql/operands/value-type';
 
-export abstract class CounterFormatContext implements FormatContext {
+export class CounterFormatContext implements FormatContext {
   private values: ValueType[] = [];
 
   constructor(private prefix: string) {}
@@ -21,12 +21,10 @@ export abstract class CounterFormatContext implements FormatContext {
   }
 
   escape(value: string): string {
-    return `"${value}"`;
-  }
-
-  abstract getDataType(options: FormatDataType): string;
-
-  restoreValue(type: FormatDataType, value: any): any {
-    return value;
+    if (typeof value === 'number') {
+      return value;
+    } else {
+      return `"${value}"`;
+    }
   }
 }

@@ -7,10 +7,9 @@ describe('orm/migration/add-table-field', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
+            id: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
         },
       },
@@ -19,44 +18,54 @@ describe('orm/migration/add-table-field', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
-            username: { type: 'string', name: 'username', required: true },
-            lastLogin: { type: 'date', name: 'lastLogin', required: false },
-            enabled: { type: 'boolean', name: 'enabled', required: true, defaultValue: true },
+            id: { type: 'string', required: true },
+            username: { type: 'string', required: true },
+            lastLogin: { type: 'date', required: false },
+            enabled: { type: 'boolean', required: true, defaultValue: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
         },
       },
     },
-    expectedSteps: [
+    expectedUp: [
       {
-        kind: 'add_table_field',
-        table: 'User',
-        fieldName: 'username',
-        type: 'string',
-        required: true,
-        defaultValue: undefined,
-        schema: 'custom',
+        alterTable: table('User', 'custom'),
+        add: {
+          column: 'username',
+          type: 'string',
+          notNull: true,
+        },
       },
       {
-        kind: 'add_table_field',
-        table: 'User',
-        fieldName: 'lastLogin',
-        type: 'date',
-        required: false,
-        defaultValue: undefined,
-        schema: 'custom',
+        alterTable: table('User', 'custom'),
+        add: {
+          column: 'lastLogin',
+          type: 'date',
+        },
       },
       {
-        kind: 'add_table_field',
-        table: 'User',
-        fieldName: 'enabled',
-        type: 'boolean',
-        required: true,
-        defaultValue: true,
-        schema: 'custom',
+        alterTable: table('User', 'custom'),
+        add: {
+          column: 'enabled',
+          type: 'boolean',
+          defaultValue: true,
+          notNull: true,
+        },
+      },
+    ],
+    expectedDown: [
+      {
+        alterTable: table('User', 'custom'),
+        drop: { column: 'enabled' },
+      },
+      {
+        alterTable: table('User', 'custom'),
+        drop: { column: 'lastLogin' },
+      },
+      {
+        alterTable: table('User', 'custom'),
+        drop: { column: 'username' },
       },
     ],
     verifySqls: [

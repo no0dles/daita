@@ -7,18 +7,16 @@ describe('orm/migration/update-table-foreign-key', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
-            username: { type: 'string', name: 'username', required: true },
-            parentId: { type: 'string', name: 'parentId', required: false },
+            id: { type: 'string', required: true },
+            username: { type: 'string', required: true },
+            parentId: { type: 'string', required: false },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
           references: {
             parent: {
               table: 'User',
               schema: 'custom',
-              name: 'parent',
               keys: [{ field: 'parentId', foreignField: 'id' }],
               onDelete: 'set null',
               onUpdate: null,
@@ -31,18 +29,16 @@ describe('orm/migration/update-table-foreign-key', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
-            username: { type: 'string', name: 'username', required: true },
-            parentUsername: { type: 'string', name: 'parentUsername', required: false },
+            id: { type: 'string', required: true },
+            username: { type: 'string', required: true },
+            parentUsername: { type: 'string', required: false },
           },
           primaryKeys: ['username'],
-          name: 'User',
           schema: 'custom',
           references: {
             parent: {
               table: 'User',
               schema: 'custom',
-              name: 'parent',
               keys: [{ field: 'parentUsername', foreignField: 'username' }],
               onDelete: 'set null',
               onUpdate: null,
@@ -51,49 +47,52 @@ describe('orm/migration/update-table-foreign-key', () => {
         },
       },
     },
-    expectedSteps: [
+    expectedUp: [
+      { alterTable: table('User', 'custom'), drop: { constraint: 'parent' } },
+      { alterTable: table('User', 'custom'), drop: { constraint: 'User_pkey' } },
       {
-        kind: 'drop_table_foreign_key',
-        schema: 'custom',
-        table: 'User',
-        name: 'parent',
+        alterTable: table('User', 'custom'),
+        drop: { column: 'parentId' },
       },
       {
-        kind: 'drop_table_primary_key',
-        schema: 'custom',
-        table: 'User',
+        alterTable: table('User', 'custom'),
+        add: { column: 'parentUsername', type: 'string' },
       },
       {
-        fieldName: 'parentId',
-        kind: 'drop_table_field',
-        schema: 'custom',
-        table: 'User',
+        alterTable: table('User', 'custom'),
+        add: { primaryKey: ['username'] },
       },
       {
-        fieldName: 'parentUsername',
-        kind: 'add_table_field',
-        required: false,
-        schema: 'custom',
-        table: 'User',
-        type: 'string',
+        alterTable: table('User', 'custom'),
+        add: {
+          foreignKey: ['parent'],
+          constraint: 'parent',
+          references: { table: table('User', 'custom'), primaryKeys: ['username'] },
+        },
+      },
+    ],
+    expectedDown: [
+      { alterTable: table('User', 'custom'), drop: { constraint: 'parent' } },
+      { alterTable: table('User', 'custom'), drop: { constraint: 'User_pkey' } },
+      {
+        alterTable: table('User', 'custom'),
+        drop: { column: 'parentUsername' },
       },
       {
-        fieldNames: ['username'],
-        kind: 'add_table_primary_key',
-        schema: 'custom',
-        table: 'User',
+        alterTable: table('User', 'custom'),
+        add: { column: 'parentId', type: 'string' },
       },
       {
-        fieldNames: ['parentUsername'],
-        foreignFieldNames: ['username'],
-        foreignTable: 'User',
-        foreignTableSchema: 'custom',
-        kind: 'add_table_foreign_key',
-        name: 'parent',
-        onDelete: 'set null',
-        required: false,
-        schema: 'custom',
-        table: 'User',
+        alterTable: table('User', 'custom'),
+        add: { primaryKey: ['id'] },
+      },
+      {
+        alterTable: table('User', 'custom'),
+        add: {
+          foreignKey: ['parentId'],
+          constraint: 'parent',
+          references: { table: table('User', 'custom'), primaryKeys: ['id'] },
+        },
       },
     ],
     verifySqls: [

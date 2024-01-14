@@ -27,9 +27,9 @@ export class AstExportDeclaration {
     if (!this.node.moduleSpecifier) {
       return null;
     }
-    const stringLiteral = isKind(this.node.moduleSpecifier, SyntaxKind.StringLiteral);
-    if (stringLiteral) {
-      return stringLiteral.text;
+
+    if (isKind(this.node.moduleSpecifier, SyntaxKind.StringLiteral)) {
+      return this.node.moduleSpecifier.text;
     }
 
     throw new AstError(this.node, 'unable to parse module specifier');

@@ -14,9 +14,9 @@ export function getTableDescriptionIdentifier(table: TableDescription<any>): str
 
 export interface SchemaDescription {
   name: string;
-  tables?: { [key: string]: SchemaTableDescription };
-  views?: { [key: string]: SchemaViewDescription };
-  rules?: { [key: string]: SchemaRuleDescription };
+  tables: { [key: string]: SchemaTableDescription };
+  views: { [key: string]: SchemaViewDescription };
+  rules: { [key: string]: SchemaRuleDescription };
 }
 
 export interface SchemaRuleDescription {
@@ -28,22 +28,76 @@ export interface SchemaTableDescription {
   name: string;
   //key: string;
   schema?: string;
+  primaryKeys: string[];
+  fields: { [key: string]: SchemaTableFieldDescription };
+  references: { [key: string]: SchemaTableReferenceDescription };
+  indices: { [key: string]: SchemaTableIndexDescription };
+  seeds: { [key: string]: SchemaTableSeedDescription };
+}
+
+export interface CreateSchemaTableDescription {
+  schema?: string;
   primaryKeys?: string[];
-  fields?: { [key: string]: SchemaTableFieldDescription };
-  references?: { [key: string]: SchemaTableReferenceDescription };
-  indices?: { [key: string]: SchemaTableIndexDescription };
+  fields?: { [key: string]: CreateSchemaTableFieldDescription };
+  references?: { [key: string]: CreateSchemaTableReferenceDescription };
+  indices?: { [key: string]: CreateSchemaTableIndexDescription };
   seeds?: { [key: string]: SchemaTableSeedDescription };
 }
 
 export interface CreateSchemaOptions {
-  tables?: { [key: string]: SchemaTableDescription };
-  views?: { [key: string]: SchemaViewDescription };
+  tables?: { [key: string]: CreateSchemaTableDescription };
+  views?: { [key: string]: CreateSchemaViewDescription };
   rules?: { [key: string]: Rule };
+}
+
+export function createTableSchema(name: string, options: CreateSchemaTableDescription): SchemaTableDescription {
+  const indices = options.indices ?? {};
+  const fields = options.fields ?? {};
+  const references = options.references ?? {};
+  return {
+    name: name,
+    schema: options.schema,
+    primaryKeys: options.primaryKeys ?? [],
+    seeds: options.seeds ?? {},
+    indices: Object.keys(indices).reduce<{ [key: string]: SchemaTableIndexDescription }>((map, indexKey) => {
+      map[indexKey] = {
+        name: indexKey,
+        fields: indices[indexKey].fields,
+        unique: indices[indexKey].unique,
+      };
+      return map;
+    }, {}),
+    fields: Object.keys(fields).reduce<{ [key: string]: SchemaTableFieldDescription }>((map, fieldKey) => {
+      map[fieldKey] = {
+        name: fieldKey,
+        defaultValue: fields[fieldKey].defaultValue,
+        type: fields[fieldKey].type,
+        size: fields[fieldKey].size ?? null,
+        required: fields[fieldKey].required ?? false,
+      };
+      return map;
+    }, {}),
+    references: Object.keys(references).reduce<{ [key: string]: SchemaTableReferenceDescription }>(
+      (map, referenceKey) => {
+        map[referenceKey] = {
+          name: referenceKey,
+          table: references[referenceKey].table,
+          schema: references[referenceKey].schema,
+          onDelete: references[referenceKey].onDelete ?? null,
+          onUpdate: references[referenceKey].onUpdate ?? null,
+          keys: references[referenceKey].keys,
+        };
+        return map;
+      },
+      {},
+    ),
+  };
 }
 
 export function createSchema(name: string, options?: CreateSchemaOptions): SchemaDescription {
   const tables = options?.tables ?? {};
   const rules = options?.rules ?? {};
+  const views = options?.views ?? {};
   return {
     name,
     rules: Object.keys(rules).reduce<{ [key: string]: SchemaRuleDescription }>((map, id) => {
@@ -51,11 +105,19 @@ export function createSchema(name: string, options?: CreateSchemaOptions): Schem
       return map;
     }, {}),
     tables: Object.keys(tables).reduce<{ [key: string]: SchemaTableDescription }>((result, key) => {
-      const tableKey = getTableDescriptionIdentifier({ table: key, schema: tables[key].schema });
-      result[tableKey] = tables[key];
+      const table = tables[key];
+      const tableKey = getTableDescriptionIdentifier({ table: key, schema: table.schema });
+      result[tableKey] = createTableSchema(key, table);
       return result;
     }, {}),
-    views: options?.views ?? {},
+    views: Object.keys(views).reduce<{ [key: string]: SchemaViewDescription }>((map, viewKey) => {
+      map[viewKey] = {
+        name: viewKey,
+        schema: views[viewKey].schema,
+        query: views[viewKey].query,
+      };
+      return map;
+    }, {}),
   };
 }
 
@@ -65,7 +127,6 @@ export function addTableReference(
   foreignTableAlias: TableDescription<any>,
   options: {
     name: string;
-    required: boolean;
     onUpdate: ForeignKeyConstraint | null;
     onDelete: ForeignKeyConstraint | null;
   },
@@ -84,17 +145,21 @@ export function addTableReference(
       const foreignField = getFieldFromSchemaTable(foreignTable.table, primaryKey);
 
       if (!containsTableField(table, key)) {
-        if (!table.fields) {
-          table.fields = {};
-        }
-        table.fields[key] = {
-          //key: field.key,
-          name: key,
-          defaultValue: undefined,
-          required: options.required,
-          size: foreignField.size,
-          type: foreignField.type,
-        };
+        throw new Error(
+          `missing foreign key property ${key} with type ${foreignField.type} for relation ${options.name}`,
+        );
+
+        // if (!table.fields) {
+        //   table.fields = {};
+        // }
+        // table.fields[key] = {
+        //   //key: field.key,
+        //   name: key,
+        //   defaultValue: undefined,
+        //   required: options.required,
+        //   size: foreignField.size,
+        //   type: foreignField.type,
+        // };
       } else {
         const field = getFieldFromSchemaTable(table, key);
         if (field.type !== foreignField.type) {
@@ -174,7 +239,7 @@ export function removeSeed(
     const { table, key } = getTableFromSchema(newSchema, tableAlias);
     if (table.seeds) {
       const seedKey = getKeyForSeed(key, table, keys);
-      delete table.seeds[seedKey];
+      table.seeds = removeProperty(table.seeds, seedKey);
     }
   });
 }
@@ -209,7 +274,7 @@ export function addSeed(schema: SchemaDescription, tableAlias: TableDescription<
     const seedKeys: any = {};
     for (const primaryKey of table.primaryKeys) {
       seedKeys[primaryKey] = seed[primaryKey];
-      delete seed[primaryKey];
+      seed = removeProperty(seed, primaryKey);
     }
 
     if (!table.seeds) {
@@ -230,7 +295,7 @@ export function addTableField(
   field: {
     key: string;
     type: SchemaTableFieldTypeDescription;
-    size: number | undefined;
+    size: string | undefined;
     required: boolean;
     defaultValue: any;
   },
@@ -245,8 +310,8 @@ export function addTableField(
       name: field.key,
       defaultValue: field.defaultValue,
       required: field.required,
-      size: field.size,
       type: field.type,
+      size: field.size ?? null,
     };
   });
 }
@@ -259,7 +324,7 @@ export function doDropTableField(
   return extendSchema(schema, (newSchema) => {
     const { table } = getTableFromSchema(newSchema, tableAlias);
     if (table.fields) {
-      delete table.fields[key];
+      table.fields = removeProperty(table.fields, key);
     }
   });
 }
@@ -269,18 +334,38 @@ export interface SchemaTableSeedDescription {
   seedKeys: any;
 }
 
+export interface CreateSchemaTableFieldDescription {
+  type: SchemaTableFieldTypeDescription;
+  size?: string;
+  required?: boolean;
+  defaultValue?: any;
+}
+
 export interface SchemaTableFieldDescription {
   name: string;
   type: SchemaTableFieldTypeDescription;
-  size?: number | undefined;
+  size: string | null;
   required: boolean;
   defaultValue?: any;
+}
+
+export interface CreateSchemaTableIndexDescription {
+  fields: string[];
+  unique: boolean;
 }
 
 export interface SchemaTableIndexDescription {
   name: string;
   fields: string[];
   unique: boolean;
+}
+
+export interface CreateSchemaTableReferenceDescription {
+  table: string;
+  schema?: string;
+  keys: SchemaTableReferenceKeyDescription[];
+  onUpdate?: ForeignKeyConstraint | null;
+  onDelete?: ForeignKeyConstraint | null;
 }
 
 export interface SchemaTableReferenceDescription {
@@ -297,9 +382,13 @@ export interface SchemaTableReferenceKeyDescription {
   field: string;
 }
 
+export interface CreateSchemaViewDescription {
+  query: SelectSql<any>;
+  schema?: string;
+}
+
 export interface SchemaViewDescription {
   query: SelectSql<any>;
-  key: string;
   name: string;
   schema?: string;
 }
@@ -468,7 +557,6 @@ export function addViewToSchema(
       query: view.query,
       schema: view.schema,
       name: view.name,
-      key: view.name,
     };
   });
 }
@@ -498,7 +586,7 @@ export function dropTableIndex(
   return extendSchema(schema, (newSchema) => {
     const { table } = getTableFromSchema(newSchema, tableAlias);
     if (table.indices) {
-      delete table.indices[key];
+      table.indices = removeProperty(table.indices, key);
     }
   });
 }
@@ -511,7 +599,7 @@ export function dropTableReference(
   return extendSchema(schema, (newSchema) => {
     const { table } = getTableFromSchema(newSchema, tableAlias);
     if (table.references) {
-      delete table.references[key];
+      table.references = removeProperty(table.references, key);
     }
   });
 }
@@ -526,21 +614,26 @@ export function addRuleToSchema(schema: SchemaDescription, id: string, rule: Rul
 export function dropRuleFromSchema(schema: SchemaDescription, id: string): SchemaDescription {
   return extendSchema(schema, (newSchema) => {
     if (newSchema.rules) {
-      delete newSchema.rules[id];
+      newSchema.rules = removeProperty(newSchema.rules, id);
     }
   });
 }
+function removeProperty<T>(obj: { [key: string]: T }, key: string): { [key: string]: T } {
+  const { [key]: unused, ...rest } = obj;
+  return rest;
+}
+
 export function dropTableFromSchema(schema: SchemaDescription, key: TableDescription<any>): SchemaDescription {
   return extendSchema(schema, (newSchema) => {
     if (newSchema.tables) {
-      delete newSchema.tables[getTableDescriptionIdentifier(key)];
+      newSchema.tables = removeProperty(newSchema.tables, getTableDescriptionIdentifier(key));
     }
   });
 }
 export function dropViewFromSchema(schema: SchemaDescription, key: TableDescription<any>): SchemaDescription {
   return extendSchema(schema, (newSchema) => {
     if (newSchema.views) {
-      delete newSchema.views[getTableDescriptionIdentifier(key)];
+      newSchema.views = removeProperty(newSchema.views, getTableDescriptionIdentifier(key));
     }
   });
 }

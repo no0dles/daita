@@ -22,9 +22,8 @@ export class AstTypeLiteralType implements AstNode {
 
   private *getMembers() {
     for (const member of this.node.members) {
-      const propertySignature = isKind(member, SyntaxKind.PropertySignature);
-      if (propertySignature) {
-        yield new AstPropertySignature(this.block, propertySignature);
+      if (isKind(member, SyntaxKind.PropertySignature)) {
+        yield new AstPropertySignature(this.block, member);
       }
     }
   }

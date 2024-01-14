@@ -7,11 +7,10 @@ describe('orm/migration/create-index', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
-            username: { type: 'string', name: 'username', required: true },
+            id: { type: 'string', required: true },
+            username: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
         },
       },
@@ -20,26 +19,28 @@ describe('orm/migration/create-index', () => {
       tables: {
         User: {
           fields: {
-            id: { type: 'string', name: 'id', required: true },
-            username: { type: 'string', name: 'username', required: true },
+            id: { type: 'string', required: true },
+            username: { type: 'string', required: true },
           },
           primaryKeys: ['id'],
-          name: 'User',
           schema: 'custom',
           indices: {
-            username: { unique: true, name: 'username', fields: ['username'] },
+            username: { unique: true, fields: ['username'] },
           },
         },
       },
     },
-    expectedSteps: [
+    expectedUp: [
       {
-        fields: ['username'],
-        kind: 'create_index',
-        name: 'username',
-        schema: 'custom',
-        table: 'User',
-        unique: true,
+        createIndex: 'username',
+        on: table('User', 'custom'),
+        columns: ['username'],
+      },
+    ],
+    expectedDown: [
+      {
+        dropIndex: 'username',
+        on: table('User', 'custom'),
       },
     ],
     verifySqls: [

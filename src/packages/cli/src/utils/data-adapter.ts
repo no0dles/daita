@@ -124,7 +124,7 @@ function getAdapter(options: any, contextConfig: DaitaContextConfig) {
   }
 }
 
-export function getContextFromConfig(options: any): RelationalAdapter<any> & RelationalOrmAdapter {
+export function getContextFromConfig(options: any): RelationalAdapter<unknown> & RelationalOrmAdapter {
   const contextConfig = getProjectConfig(options);
   if (!contextConfig.connectionString) {
     throw new Error('missing connection string');
