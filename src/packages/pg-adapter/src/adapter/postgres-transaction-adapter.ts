@@ -41,6 +41,7 @@ export function parseError(e: any) {
   if (
     e.code === 'ECONNREFUSED' ||
     e.errno === -61 ||
+    e.errno === -54 ||
     e.errno === -111 ||
     e.message === 'Client has encountered a connection error and is not queryable'
   ) {
