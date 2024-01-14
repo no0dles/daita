@@ -1,0 +1,9 @@
+{
+  "$schema": "@daita/cli/schema.json",
+  "context": {
+    "default": {
+      "schemaLocation": "src/schema.ts",
+      "connectionString": "postgres://localhost/postgres"
+    }
+  }
+}

@@ -1,1 +1,0 @@
-const varRegex = /[a-z]+/;

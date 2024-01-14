@@ -1,0 +1,33 @@
+{
+  "name": "@daita/pg-adapter",
+  "version": "0.4.0-alpha.5",
+  "license": "MIT",
+  "homepage": "https://daita.ch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "eslint src",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@daita/common": "^0.4.0-alpha.5",
+    "@daita/node": "^0.4.0-alpha.5",
+    "@daita/orm": "^0.4.0-alpha.5",
+    "@daita/relational": "^0.4.0-alpha.5",
+    "pg": "^8.7.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.6.4"
+  }
+}

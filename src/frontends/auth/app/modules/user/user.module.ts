@@ -9,7 +9,6 @@ import { FormLayoutModule } from '../form-layout/form-layout.module';
 import { CardModule } from '../card/card.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
-
 @NgModule({
   declarations: [UserListComponent, UserCreateComponent],
   imports: [
@@ -22,4 +21,4 @@ import { ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,
   ],
 })
-export class UserModule { }
+export class UserModule {}

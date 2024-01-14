@@ -11,25 +11,20 @@ jobs:
   build:
     name: test daita
     runs-on: ubuntu-20.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
-          node-version: 14.x
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.npm
-            node_modules
-            */**/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: 16.x
       - run: npm ci
-      - run: npm test
+      - run: lerna bootstrap
+      - run: npm run build
+      - run: npx jest --coverage --maxWorkers=50% --forceExit
+        env:
+          NODE_OPTIONS: "--max-old-space-size=8192"
       - name: coverage upload
-        uses: codacy/codacy-coverage-reporter-action@master
+        uses: checkity/upload@v1
         with:
-          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-          coverage-reports: coverage/lcov.info
+          file-pattern: 'coverage/lcov.info'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

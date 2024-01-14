@@ -8,7 +8,6 @@ tmp
 keys
 
 src/tests
-src/containers/**/package.json
 src/docs/build
 
 .docusaurus
@@ -18,3 +17,6 @@ yarn.lock
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+src/**/*.d.ts
+src/**/*.js
+**/.angular

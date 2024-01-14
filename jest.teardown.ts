@@ -1,19 +1,18 @@
-import Docker from 'dockerode';
+import { listContainers, removeContainer } from './src/packages/node/src';
 
 async function tearDown() {
-  const docker = new Docker();
-  const infos = await docker.listContainers({ all: true, filters: { label: ['ch.daita.source=test'] } });
-  for (const info of infos) {
-    if (info.Labels['ch.daita.source'] !== 'test') {
-      continue;
-    }
+  const containers = await listContainers({
+    all: true,
+    filters: {
+      label: ['ch.daita.source=test'],
+    },
+  });
 
-    const container = docker.getContainer(info.Id);
+  for (const container of containers) {
     try {
-      await container.stop();
+      await removeContainer(container.id, { force: true, removeLinks: false, removeVolumes: true });
     } catch (e) {
-    } finally {
-      await container.remove();
+      console.error(e);
     }
   }
 }

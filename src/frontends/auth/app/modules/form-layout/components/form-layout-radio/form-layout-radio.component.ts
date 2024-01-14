@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 @Component({
@@ -6,7 +6,7 @@ import { FormGroup } from '@angular/forms';
   templateUrl: './form-layout-radio.component.html',
   styleUrls: ['./form-layout-radio.component.scss'],
 })
-export class FormLayoutRadioComponent implements OnInit {
+export class FormLayoutRadioComponent {
   @Input()
   id!: string;
 
@@ -21,8 +21,4 @@ export class FormLayoutRadioComponent implements OnInit {
 
   @Input()
   form!: FormGroup;
-
-  constructor() {}
-
-  ngOnInit(): void {}
 }

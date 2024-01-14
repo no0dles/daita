@@ -38,5 +38,4 @@ export class UserPoolDetailSettingsComponent {
   }
 
   async save() {}
-  ngOnInit(): void {}
 }

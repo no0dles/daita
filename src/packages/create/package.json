@@ -1,5 +1,36 @@
 {
-  "bin": {
-    "create-daita": "index.js"
+  "name": "@daita/create",
+  "version": "0.4.0-alpha.5",
+  "license": "MIT",
+  "homepage": "https://daita.ch",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/no0dles/daita"
+  },
+  "bugs": {
+    "url": "https://github.com/no0dles/daita/issues"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./create": "./dist/create.js"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "eslint src"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": "dist/cmd.js",
+  "dependencies": {
+    "@daita/common": "^0.4.0-alpha.5",
+    "@daita/node": "^0.4.0-alpha.5",
+    "commander": "^8.3.0",
+    "inquirer": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^8.1.3"
   }
 }

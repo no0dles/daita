@@ -1,0 +1,59 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "rootDir": "src",
+    "module": "CommonJS",
+    "target": "ES2015",
+    "outDir": "dist",
+    "resolveJsonModule": true,
+    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo",
+    "lib": [
+      "es2016",
+      "es2019",
+      "ES2020",
+      "dom"
+    ],
+    "moduleResolution": "node",
+    "declaration": true,
+    "declarationMap": false,
+    "esModuleInterop": true,
+    "incremental": true,
+    "sourceMap": true,
+    "composite": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "isolatedModules": true
+  },
+  "references": [{
+    "path": "../common"
+  }, {
+    "path": "../http-adapter"
+  }, {
+    "path": "../sqlite-adapter"
+  }, {
+    "path": "../pg-adapter"
+  }, {
+    "path": "../orm"
+  }, {
+    "path": "../create"
+  }, {
+    "path": "../node"
+  }, {
+    "path": "../http-interface"
+  }, {
+    "path": "../auth-server"
+  }, {
+    "path": "../relational"
+  }, {
+    "path": "../http-server"
+  }, {
+    "path": "../../tooling/testing"
+  }],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "schemas",
+    "jest.config.ts"
+  ]
+}

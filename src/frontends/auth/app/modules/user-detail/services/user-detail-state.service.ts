@@ -1,17 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store';
 import { ApiService } from '../../../services/api.service';
-import { field } from '../../../../../../packages/relational/sql/keyword/field/field';
-import { table } from '../../../../../../packages/relational/sql/keyword/table/table';
-import { equal } from '../../../../../../packages/relational/sql/operands/comparison/equal/equal';
 import { UserDetailLoad } from '../actions/user-detail-load';
-import { User } from '../../../../../../packages/auth-server/models/user';
-import { and } from '../../../../../../packages/relational/sql/keyword/and/and';
-import { UserPool } from '../../../../../../packages/auth-server/models/user-pool';
-import { join } from '../../../../../../packages/relational/sql/dml/select/join/join';
-import { UserRole } from '../../../../../../packages/auth-server/models/user-role';
-import { Role } from '../../../../../../packages/auth-server/models/role';
-import { leftJoin } from '../../../../../../packages/relational/sql/dml/select/join/left-join';
+import { equal, field, join, leftJoin, table, and } from '@daita/relational';
+import { Role, User, UserPool, UserRole } from '@daita/auth';
 
 export interface UserDetailStateModel {
   id: string | null;
@@ -54,9 +46,7 @@ export class UserDetailStateService implements NgxsOnInit {
 
   constructor(private api: ApiService) {}
 
-  ngxsOnInit(ctx?: StateContext<any>): any {
-    console.log('init user detail');
-  }
+  ngxsOnInit(ctx?: StateContext<any>): any {}
 
   @Action(UserDetailLoad)
   async onLoadRoles(ctx: StateContext<UserDetailStateModel>, action: UserDetailLoad) {
@@ -76,20 +66,20 @@ export class UserDetailStateService implements NgxsOnInit {
       from: table(Role),
       join: [
         leftJoin(
-          UserRole,
+          table(UserRole),
           and(
             equal(field(UserRole, 'roleUserPoolId'), field(Role, 'userPoolId')),
             equal(field(UserRole, 'roleName'), field(Role, 'name')),
           ),
         ),
-        leftJoin(UserPool, equal(field(UserPool, 'id'), field(UserRole, 'roleUserPoolId'))),
+        join(table(User), equal(field(User, 'username'), field(UserRole, 'userUsername'))),
+        leftJoin(table(UserPool), equal(field(UserPool, 'id'), field(UserRole, 'roleUserPoolId'))),
       ],
       where: and(
         equal(field(UserRole, 'userUsername'), action.username),
         equal(field(UserPool, 'id'), action.userPoolId),
       ),
     });
-    console.log(result);
   }
 
   @Action(UserDetailLoad)

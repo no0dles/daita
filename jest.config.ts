@@ -1,31 +1,23 @@
 import type { Config } from '@jest/types';
 
 const config: Config.InitialOptions = {
-  setupFilesAfterEnv: ['jest-extended'],
-  moduleFileExtensions: ['ts', 'js'],
-  transform: {
-    '^.+\\.ts$': 'ts-jest',
-  },
   testTimeout: 25000,
-  testRegex: 'src/.*.spec.ts',
-  testEnvironment: 'node',
   collectCoverage: true,
+  collectCoverageFrom: ['src/**'],
   coverageDirectory: '<rootDir>/coverage/',
-  collectCoverageFrom: [
-    'src/**',
-    '!dist/**',
-    '!coverage/**',
-    '!tmp/**',
-    '!src/docs/**',
-    '!src/testing/**',
-    '!src/frontends/**',
-    '!src/scripts/**',
-    '!src/experimental/**',
-    '!src/**/*.test.ts',
-    '!src/**/*.spec.ts',
-  ],
-  globalTeardown: '<rootDir>/jest.teardown.ts',
   coverageReporters: ['json', 'html', 'lcov'],
+  globalTeardown: '<rootDir>/jest.teardown.ts',
+  projects: [
+    '<rootDir>/src/packages/auth-server/jest.config.ts',
+    '<rootDir>/src/packages/cli/jest.config.ts',
+    '<rootDir>/src/packages/node/jest.config.ts',
+    '<rootDir>/src/packages/orm/jest.config.ts',
+    '<rootDir>/src/packages/relational/jest.config.ts',
+    '<rootDir>/src/packages/pg-adapter/jest.config.ts',
+    '<rootDir>/src/packages/common/jest.config.ts',
+    '<rootDir>/src/examples/mowntain/jest.config.ts',
+    //'<rootDir>/src/tooling/npm/jest.config.ts',
+  ],
 };
 
 export default config;

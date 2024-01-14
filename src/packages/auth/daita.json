@@ -1,0 +1,10 @@
+{
+  "context": {
+    "default": {
+      "module": "../pg-adapter",
+      "connectionString": "postgres://postgres:postgres@localhost/auth",
+      "schemaLocation": "src/schema.ts",
+      "migrationLocation": "src/migrations"
+    }
+  }
+}

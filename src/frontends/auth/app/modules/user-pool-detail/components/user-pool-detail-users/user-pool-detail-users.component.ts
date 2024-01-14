@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
   UserPoolDetailUsersStateService,
@@ -11,11 +11,7 @@ import { Select } from '@ngxs/store';
   templateUrl: './user-pool-detail-users.component.html',
   styleUrls: ['./user-pool-detail-users.component.scss'],
 })
-export class UserPoolDetailUsersComponent implements OnInit {
+export class UserPoolDetailUsersComponent {
   @Select(UserPoolDetailUsersStateService.items)
   users$!: Observable<UserPoolDetailUserStateItem[]>;
-
-  constructor() {}
-
-  ngOnInit(): void {}
 }
