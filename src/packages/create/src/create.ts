@@ -1,4 +1,3 @@
-import * as inquirer from 'inquirer';
 import * as fs from 'fs';
 import * as path from 'path';
 import { randomString } from '@daita/common';
@@ -8,6 +7,7 @@ import { DockerCompose } from '@daita/node';
 import { ensurePathExists } from '@daita/node';
 import { failNever } from '@daita/common';
 import { shell } from '@daita/node';
+import {prompt} from 'inquirer';
 
 export interface CreateOptions {
   cwd?: string;
@@ -36,7 +36,7 @@ export interface SetupSqliteOptions {
 }
 
 export async function create(options: CreateOptions) {
-  const prompts = inquirer.prompt<{
+  const prompts = prompt<{
     projectName: string;
     adapter: 'pg' | 'sqlite';
     npmClient: 'npm' | 'yarn' | 'none';

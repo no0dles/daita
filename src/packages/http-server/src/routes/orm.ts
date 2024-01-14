@@ -3,7 +3,7 @@ import { HttpServerOptions } from '../http-server-options';
 import { getRequestUser } from '../get-request-user';
 import { isOrmAdapter } from '@daita/orm';
 
-export function ormRoute(options: HttpServerOptions) {
+export function ormRoute(options: HttpServerOptions):Router {
   const router = Router();
 
   const ormAdapter = options.relational?.dataAdapter;

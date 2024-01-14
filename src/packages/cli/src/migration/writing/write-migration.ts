@@ -198,7 +198,6 @@ export function writeMigration(
 ): string {
   const importStmt = factory.createImportDeclaration(
     undefined,
-    undefined,
     factory.createImportClause(
       false,
       undefined,

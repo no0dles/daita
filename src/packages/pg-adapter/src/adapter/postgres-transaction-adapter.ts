@@ -21,7 +21,7 @@ export async function mapError(
 ): Promise<RelationalRawResult> {
   try {
     const result = await run;
-    return { rows: result.rows, rowCount: result.rowCount };
+    return { rows: result.rows, rowCount: result.rowCount ?? 0 };
   } catch (e: any) {
     logger.trace(e, { query: sql, queryValues: values });
     if (e.code === '23505') {

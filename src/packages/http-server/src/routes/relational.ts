@@ -4,7 +4,7 @@ import { RequestAdapterResolver } from '../get-request-context';
 import { HttpServerOptions, HttpServerRelationalOptions } from '../http-server-options';
 import { ContextManager } from '../context-manager';
 
-export function relationalRoute(options: HttpServerOptions) {
+export function relationalRoute(options: HttpServerOptions):Router {
   const router = Router();
 
   const relationalOptions = options.relational;

@@ -9,7 +9,7 @@ import { RelationalAdapter } from '@daita/relational';
 import { getRequiredRequestUserProp } from '@daita/http-server';
 import { User, UserEmailVerify } from '@daita/auth';
 
-export function resendRoute(ctx: RelationalAdapter<any>) {
+export function resendRoute(ctx: RelationalAdapter<any>):Router {
   const router = Router({ mergeParams: true });
 
   router.use(authMiddleware);

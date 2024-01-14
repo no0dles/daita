@@ -1,5 +1,5 @@
 import { getName, getTypeFromValue, getValueFromExpression } from './utils';
-import { createNumericLiteral, EnumMember } from 'typescript';
+import { EnumMember, factory } from 'typescript';
 import { AstValue } from './ast-value';
 import { AstBlock } from './ast-block';
 import { AstNumericLiteralValue } from './ast-literal-value';
@@ -24,7 +24,7 @@ export class AstEnumMember {
     if (this.node.initializer) {
       return getValueFromExpression(this.block, this.node.initializer);
     } else {
-      return new AstNumericLiteralValue(createNumericLiteral(this.indexValue.toString()));
+      return new AstNumericLiteralValue(factory.createNumericLiteral(this.indexValue.toString()));
     }
   }
 }

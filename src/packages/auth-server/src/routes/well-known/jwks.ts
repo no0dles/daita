@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { getKeys } from '../../modules/key';
 
-export const wellKnownRoute = Router();
+export const wellKnownRoute:Router = Router();
 
 wellKnownRoute.get<{ userPoolId: string }>('/jwks.json', async (req, res, next) => {
   try {
