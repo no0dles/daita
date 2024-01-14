@@ -1,6 +1,7 @@
 {
   "name": "daita",
   "version": "0.4.0-alpha.5",
+  "private": true,
   "scripts": {
     "test": "jest",
     "test:browser": "karma start",
@@ -20,7 +21,8 @@
     "src/packages/*",
     "src/tooling/*",
     "src/containers/*",
-    "src/examples/*"
+    "src/examples/*",
+    "src/frontends"
   ],
   "license": "MIT",
   "repository": {
@@ -28,7 +30,6 @@
     "url": "https://github.com/no0dles/daita.git"
   },
   "dependencies": {
-    "lerna": "^8.0.2",
     "typescript": "^5.3.3"
   },
   "devDependencies": {

@@ -7,7 +7,7 @@ import { DockerCompose } from '@daita/node';
 import { ensurePathExists } from '@daita/node';
 import { failNever } from '@daita/common';
 import { shell } from '@daita/node';
-import inquirer from 'inquirer';
+import {prompt} from 'inquirer';
 
 export interface CreateOptions {
   cwd?: string;
@@ -36,7 +36,7 @@ export interface SetupSqliteOptions {
 }
 
 export async function create(options: CreateOptions) {
-  const prompts = inquirer.prompt<{
+  const prompts = prompt<{
     projectName: string;
     adapter: 'pg' | 'sqlite';
     npmClient: 'npm' | 'yarn' | 'none';

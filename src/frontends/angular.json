@@ -79,5 +79,7 @@
       }
     }
   },
-  "defaultProject": "auth"
+  "cli": {
+    "analytics": false
+  }
 }

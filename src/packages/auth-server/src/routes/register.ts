@@ -15,7 +15,7 @@ const successRegisterCounter = new Counter({
   registers: [metricRegister],
 });
 
-export function registerRoute(ctx: RelationalAdapter<any>) {
+export function registerRoute(ctx: RelationalAdapter<any>):Router {
   const router = Router({ mergeParams: true });
 
   router.post<{ userPoolId: string }>('/', async (req, res, next) => {

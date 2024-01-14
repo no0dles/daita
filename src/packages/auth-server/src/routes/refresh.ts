@@ -22,7 +22,7 @@ const invalidRefreshTokenCounter = new Counter({
   registers: [metricRegister],
 });
 
-export function refreshRoute(ctx: RelationalAdapter<any>) {
+export function refreshRoute(ctx: RelationalAdapter<any>):Router {
   const router = Router({ mergeParams: true });
 
   router.post<{ userPoolId: string }>('/', async (req, res, next) => {

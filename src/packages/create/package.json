@@ -28,9 +28,9 @@
     "@daita/common": "^0.4.0-alpha.5",
     "@daita/node": "^0.4.0-alpha.5",
     "commander": "^11.1.0",
-    "inquirer": "^9.2.12"
+    "inquirer": "^8.2.6"
   },
   "devDependencies": {
-    "@types/inquirer": "^9.0.7"
+    "@types/inquirer": "^8.2.10"
   }
 }

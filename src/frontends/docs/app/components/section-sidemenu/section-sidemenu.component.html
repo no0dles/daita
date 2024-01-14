@@ -1,4 +1,0 @@
-<a [href]="sectionUrl">{{section.title}}</a>
-<div class="pl-4 text-sm text-gray-500" *ngIf="section.sections && section.sections.length > 0">
-  <app-section-sidemenu *ngFor="let subSection of section.sections" [section]="subSection" [level]="level+1"></app-section-sidemenu>
-</div>

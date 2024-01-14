@@ -9,7 +9,7 @@ import { createToken } from '../seed';
 import { getRequiredRequestUserProp } from '@daita/http-server';
 import { UserToken } from '@daita/auth';
 
-export function tokenRoute(ctx: RelationalAdapter<any>) {
+export function tokenRoute(ctx: RelationalAdapter<any>):Router {
   const router = Router({ mergeParams: true });
 
   router.use(authMiddleware);

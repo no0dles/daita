@@ -21,7 +21,7 @@ const successVerifyCounter = new Counter({
   registers: [metricRegister],
 });
 
-export function verifyRoute(ctx: RelationalAdapter<any>) {
+export function verifyRoute(ctx: RelationalAdapter<any>):Router {
   const router = Router({ mergeParams: true });
 
   router.get('/', async (req, res, next) => {

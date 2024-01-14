@@ -8,7 +8,7 @@ import { equal } from '@daita/relational';
 import { getRoles } from '../modules/roles';
 import { User, UserPoolUser, UserToken } from '@daita/auth';
 
-export function adminTokenRoute(client: RelationalAdapter<any>) {
+export function adminTokenRoute(client: RelationalAdapter<any>):Router {
   const router = Router({ mergeParams: true });
 
   router.post<{ userPoolId: string; token: string }>('/:token', async (req, res, next) => {
