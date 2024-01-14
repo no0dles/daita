@@ -1,6 +1,6 @@
 import { PostgresMigrationAdapter } from '@daita/pg-adapter';
 import { getPostgresDb } from '@daita/testing';
-import { ConnectionError, RelationalAdapter } from '@daita/relational';
+import { ConnectionError, RelationalAdapter, UnknownError } from '@daita/relational';
 
 describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
   it('should handle disconnect after initial connection', async () => {
@@ -12,6 +12,9 @@ describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
       try {
         await testConnection(adapter);
       } catch (e) {
+        if (e instanceof UnknownError) {
+          console.log(e);
+        }
         expect(e).toBeInstanceOf(ConnectionError);
       }
       await db.start();
@@ -31,6 +34,9 @@ describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
       try {
         await testConnection(adapter);
       } catch (e) {
+        if (e instanceof UnknownError) {
+          console.log(e);
+        }
         expect(e).toBeInstanceOf(ConnectionError);
       }
       await db.start();
