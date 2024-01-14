@@ -15,7 +15,7 @@ export class ContractStorage {
   private initialized = false;
 
   constructor(
-    private client: RelationalAdapter<InsertSql<any> | CreateTableSql | SelectSql<any>>,
+    private client: RelationalAdapter<InsertSql<any> | CreateTableSql | CreateSchemaSql | SelectSql<any>>,
     private options: StorageOptions,
   ) {}
 

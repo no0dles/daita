@@ -25,9 +25,9 @@
     "@daita/http-interface": "^0.4.0-alpha.5",
     "@daita/orm": "^0.4.0-alpha.5",
     "@daita/relational": "^0.4.0-alpha.5",
-    "yaml": "^1.10.0"
+    "yaml": "^2.3.4"
   },
   "devDependencies": {
-    "@types/node": "^16.11.9"
+    "@types/node": "^20.11.0"
   }
 }

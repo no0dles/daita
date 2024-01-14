@@ -24,6 +24,6 @@
     "@daita/node": "^0.4.0-alpha.5",
     "@daita/orm": "^0.4.0-alpha.5",
     "@daita/relational": "^0.4.0-alpha.5",
-    "mariadb": "^2.5.1"
+    "mariadb": "^3.2.3"
   }
 }

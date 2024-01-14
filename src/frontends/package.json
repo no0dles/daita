@@ -28,7 +28,6 @@
     "@angular-devkit/build-angular": "^13.2.2",
     "@angular/cli": "~13.2.2",
     "@angular/compiler-cli": "~13.2.1",
-    "@types/estree": "^0.0.50",
     "ng-packagr": "^13.2.1",
     "postcss": "^8.4.6",
     "postcss-loader": "^6.2.1",

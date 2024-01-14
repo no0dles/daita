@@ -152,7 +152,7 @@ export class RelationalBackwardCompatibleMapper implements RelationalMapper {
     const items: any[] = [];
 
     for (const item of data) {
-      const objectKeys = Object.keys(item);
+      const objectKeys = typeof item === 'object' ? Object.keys(item as object) : [];
       const object: any = {};
       for (const { field, key } of getFieldsFromSchemaTable(tableDescription.table)) {
         const index = objectKeys.indexOf(key);

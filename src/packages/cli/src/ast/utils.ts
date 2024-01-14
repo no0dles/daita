@@ -66,7 +66,7 @@ import {
   BindingName,
   ComputedPropertyName,
   createSourceFile,
-  ScriptTarget,
+  ScriptTarget, NodeArray, ModifierLike,
 } from 'typescript';
 import { AstArrayType } from './ast-array-type';
 import { AstVariableDeclaration } from './ast-variable-declaration';
@@ -220,7 +220,7 @@ export function getName(
   throw new AstError(identifier, `unable to parse name of ${nodeType}`);
 }
 
-export function hasModifier(modifiers: ModifiersArray | undefined, kind: SyntaxKind): boolean {
+export function hasModifier(modifiers: NodeArray<ModifierLike> | undefined, kind: SyntaxKind): boolean {
   return modifiers !== undefined && modifiers.some((m) => m.kind === kind);
 }
 

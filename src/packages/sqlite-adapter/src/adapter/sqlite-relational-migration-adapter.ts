@@ -44,7 +44,7 @@ export class SqliteRelationalMigrationAdapter
     super();
     this.db = Sqlite(connectionString, {
       verbose: (message, additionalArgs) => {
-        this.logger.debug(message, additionalArgs);
+        this.logger.debug(`${message}`, {'args': `${additionalArgs}`});
       },
     });
   }
@@ -67,7 +67,7 @@ export class SqliteRelationalMigrationAdapter
     } else {
       const result = statement.all(values);
       return {
-        rows: result.map((row) => {
+        rows: result.map((row: any) => {
           const columnKeys = Object.keys(row);
           for (const columnKey of columnKeys) {
             const columnValue = row[columnKey];

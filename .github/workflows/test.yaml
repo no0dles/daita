@@ -18,7 +18,6 @@ jobs:
         with:
           node-version: 20.x
       - run: npm ci
-      - run: npx lerna bootstrap
       - run: npm run build
       - run: npx jest --coverage --maxWorkers=50% --forceExit
         env:
