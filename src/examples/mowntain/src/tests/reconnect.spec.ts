@@ -12,9 +12,7 @@ describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
       try {
         await testConnection(adapter);
       } catch (e) {
-        if (e instanceof UnknownError) {
-          console.log(e);
-        }
+        expect((e as any).message).toEqual('unable to connect to database TODO');
         expect(e).toBeInstanceOf(ConnectionError);
       }
       await db.start();
@@ -34,9 +32,7 @@ describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
       try {
         await testConnection(adapter);
       } catch (e) {
-        if (e instanceof UnknownError) {
-          console.log(e);
-        }
+        expect((e as any).message).toEqual('unable to connect to database TODO');
         expect(e).toBeInstanceOf(ConnectionError);
       }
       await db.start();

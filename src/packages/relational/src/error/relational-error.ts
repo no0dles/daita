@@ -25,7 +25,7 @@ export class DuplicateKeyError extends Error {
 
 export class UnknownError extends Error {
   constructor(public sourceError: Error, public sourceSql: string, public sourceSqlValues: any[]) {
-    super(sourceError.message);
+    super('errno' in sourceError ? `${sourceError.message} (errno: ${(sourceError as any).errno})` : sourceError.message);
   }
 }
 
