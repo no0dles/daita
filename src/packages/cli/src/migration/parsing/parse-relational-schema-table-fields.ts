@@ -22,8 +22,13 @@ export function parseRelationalSchemaTableFields(
       throw new Error('missing prop type');
     }
 
-    if (property.type instanceof AstReferenceType && property.type.referenceType instanceof AstClassDeclaration) {
-      continue;
+    if (property.type instanceof AstReferenceType) {
+      const referenceType = property.type.referenceType;
+      if (referenceType instanceof AstClassDeclaration) {
+        if (referenceType.name !== 'Json') {
+          continue;
+        }
+      }
     }
 
     let size: number | undefined = undefined;

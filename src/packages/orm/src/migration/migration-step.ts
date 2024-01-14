@@ -16,6 +16,7 @@ import { RelationalDropTableForeignKeyMigrationStep } from './steps/drop-table-f
 import { RelationalAddViewMigrationStep } from './steps/add-view/relational-add-view.migration-step';
 import { RelationalDeleteSeedMigrationStep } from './steps/delete-seed/relational-delete-seed.migration-step';
 import { RelationalDropRuleMigrationStep } from './steps/drop-rule/relational-drop-rule.migration-step';
+import { RelationalUpdateTableFieldRequiredMigrationStep } from './steps/update-table-field-required/relational-update-table-field-required.migration-step';
 
 export type MigrationStep =
   | RelationalAddTableMigrationStep
@@ -35,4 +36,5 @@ export type MigrationStep =
   | RelationalInsertSeedMigrationStep
   | RelationalUpdateSeedMigrationStep
   | RelationalDeleteSeedMigrationStep
-  | RelationalDropTablePrimaryKeyMigrationStep;
+  | RelationalDropTablePrimaryKeyMigrationStep
+  | RelationalUpdateTableFieldRequiredMigrationStep;

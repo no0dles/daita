@@ -7,14 +7,14 @@ import { getProjectConfig } from '../../utils/config';
 import { createAuthApp, hashPassword } from '@daita/auth-server';
 import { createHttpServerApp } from '@daita/http-server';
 import { seedPoolUser, seedRoles, seedUserPool, seedUserPoolCors, seedUserRole } from '@daita/auth-server';
-import { Debouncer, ExcludeNonPrimitive } from '@daita/common';
+import { Debouncer } from '@daita/common';
 import { AstContext } from '../../ast/ast-context';
 import { Defer } from '@daita/common';
 import { createLogger } from '@daita/common';
 import { HttpServerOptions } from '@daita/http-server';
 import { authSchema, Role, User, UserPool, UserRole } from '@daita/auth';
 import { migrate, RelationalOrmAdapter } from '@daita/orm';
-import { RelationalAdapter } from '@daita/relational';
+import { ExcludeNonPrimitive, RelationalAdapter } from '@daita/relational';
 import { Server } from 'http';
 import { getServer } from '@daita/node';
 

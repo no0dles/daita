@@ -10,21 +10,21 @@ on:
 jobs:
   build:
     name: test daita
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: 16.x
+          node-version: 20.x
       - run: npm ci
-      - run: lerna bootstrap
+      - run: npx lerna bootstrap
       - run: npm run build
       - run: npx jest --coverage --maxWorkers=50% --forceExit
         env:
           NODE_OPTIONS: "--max-old-space-size=8192"
-      - name: coverage upload
-        uses: checkity/upload@v1
-        with:
-          file-pattern: 'coverage/lcov.info'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+#      - name: coverage upload
+#        uses: checkity/upload@v1
+#        with:
+#          file-pattern: 'coverage/lcov.info'
+#          repo-token: ${{ secrets.GITHUB_TOKEN }}

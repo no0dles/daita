@@ -76,11 +76,18 @@ const tableFields: GenerateOptions<{ table: SchemaTableDescription; field: Schem
     if (current.field.type !== next.field.type) {
       return [...tableFields.removeFunction(schema, next), ...tableFields.addFunction(schema, next)];
     } else if (
-      current.field.defaultValue !== next.field.defaultValue ||
-      current.field.required !== next.field.required ||
-      current.field.size !== next.field.size
+      current.field.required !== next.field.required
     ) {
-      // TODO
+      return [
+        {
+          kind: 'update_table_field_required',
+          table: current.table.name,
+          schema: current.table.schema,
+          name: current.field.name,
+          required: next.field.required,
+        }
+      ]
+      // TODO size / defaultValue
     }
 
     return [];

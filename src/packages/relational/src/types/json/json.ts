@@ -1,7 +1,9 @@
 import { JsonDescription } from './json-description';
 
-export type Json<T = any> = T;
+export class Json<T> implements JsonDescription {
+  constructor(public json: { value: T }) {}
+}
 
-export function json<T = any>(value: T): T {
-  return (<JsonDescription>{ json: { value } }) as any;
+export function json<T>(value: T): Json<T> {
+  return new Json<T>({ value });
 }

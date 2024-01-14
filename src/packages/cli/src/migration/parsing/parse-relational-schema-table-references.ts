@@ -23,7 +23,7 @@ export function parseRelationalSchemaTableReferences(
       continue;
     }
 
-    if (property.type.name === 'Date') {
+    if (property.type.name === 'Date' || property.type.name === 'Json') {
       continue;
     }
 

@@ -6,7 +6,7 @@ export class DaitaEvent {
 
   id!: string;
   type!: string;
-  payload!: Json;
+  payload!: Json<any>;
   createdAt!: Date;
   userId?: string;
   userIssuer?: string;

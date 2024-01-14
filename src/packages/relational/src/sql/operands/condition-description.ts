@@ -13,6 +13,9 @@ import { IsNullDescription } from './comparison/is-null/is-null-description';
 import { GreaterEqualThanDescription } from './comparison/greater-equal-than/greater-equal-than-description';
 import { LowerThanDescription } from './comparison/lower-than/lower-than-description';
 import { LowerEqualThanDescription } from './comparison/lower-equal-than/lower-equal-than-description';
+import { IsNotNullDescription } from './comparison/is-not-null/is-not-null-description';
+import { IsTrueDescription } from './comparison/is-true/is-true-description';
+import { IsFalseDescription } from './comparison/is-false/is-false-description';
 
 export type ConditionDescription =
   | EqualDescription<any>
@@ -24,6 +27,9 @@ export type ConditionDescription =
   | NotEqualDescription<any>
   | LikeDescription<any>
   | IsNullDescription<any>
+  | IsTrueDescription
+  | IsFalseDescription
+  | IsNotNullDescription<any>
   | GreaterThanDescription<any>
   | GreaterEqualThanDescription<any>
   | LowerThanDescription<any>

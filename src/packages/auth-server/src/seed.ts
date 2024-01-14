@@ -1,6 +1,5 @@
-import { ExcludeNonPrimitive } from '@daita/common';
 import { randomString } from '@daita/common';
-import { field, isNotIn, RelationalTransactionAdapter } from '@daita/relational';
+import { ExcludeNonPrimitive, field, isNotIn, RelationalTransactionAdapter } from '@daita/relational';
 import { table } from '@daita/relational';
 import { equal } from '@daita/relational';
 import { getSha1 } from './modules/hash';

@@ -18,6 +18,7 @@ import { isSumDescription } from '../../function/aggregation/sum/sum-description
 import { isCountDescription } from '../../function/aggregation/count/count-description';
 import { isConcatDescription } from '../../function/string/concat/concat-description';
 import { isNowDescription } from '../../function/date/now/now-description';
+
 import {
   isCeilDescription,
   isDayOfMonthDescription,
@@ -31,6 +32,7 @@ import {
   isWeekOfYearDescription,
   isYearDescription,
 } from '../../function';
+import { isJsonFieldDescription } from '../../keyword';
 
 export interface SelectSql<T> {
   select: T;
@@ -71,4 +73,6 @@ export const isSingleFieldSelect = (fields: any) =>
   isDayOfYearDescription(fields) ||
   isHourDescription(fields) ||
   isMinuteDescription(fields) ||
-  isSecondDescription(fields);
+  isSecondDescription(fields) ||
+  isNowDescription(fields) ||
+  isJsonFieldDescription(fields);

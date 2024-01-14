@@ -2,6 +2,9 @@ import { RelationalRawResult } from './relational-raw-result';
 import { RuleContext } from '../permission';
 import { DeleteSql, InsertSql, SelectSql, UpdateSql } from '../sql';
 import { RelationalDeleteResult, RelationalInsertResult, RelationalUpdateResult } from '../client';
+import { Json } from '../types';
+
+export type ResolvedValue<T> = T extends string ? T : T extends Date ? T : T extends number ? T : T extends Json<infer J> ? J : {[Prop in keyof T]: ResolvedValue<T[Prop]>}
 
 export interface RelationalAdapter<TQuery> {
   execRaw(sql: string, values: any[]): Promise<RelationalRawResult>;
@@ -10,8 +13,8 @@ export interface RelationalAdapter<TQuery> {
   delete(sql: DeleteSql): Promise<RelationalDeleteResult>;
   update<T>(sql: UpdateSql<T>): Promise<RelationalUpdateResult>;
   insert<T>(sql: InsertSql<T>): Promise<RelationalInsertResult>;
-  select<T>(sql: SelectSql<T>): Promise<T[]>;
-  selectFirst<T>(sql: SelectSql<T>): Promise<T | null>;
+  select<T>(sql: SelectSql<T>): Promise<ResolvedValue<T>[]>;
+  selectFirst<T>(sql: SelectSql<T>): Promise<ResolvedValue<T> | null>;
   close(): Promise<void>;
   transaction(action: (adapter: RelationalTransactionAdapter<TQuery>) => void): Promise<void>;
 }

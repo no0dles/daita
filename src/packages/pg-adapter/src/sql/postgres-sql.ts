@@ -11,6 +11,7 @@ import { DropViewSql } from '@daita/relational';
 import { CreateTableSql } from '@daita/relational';
 import { LockTableSql } from '@daita/relational';
 import { CreateSchemaSql } from '@daita/relational';
+import { PostgresAlterTableSql } from './alter-table-sql';
 
 export type PostgresSql =
   | PostgresListenSql
@@ -20,6 +21,7 @@ export type PostgresSql =
   | LockTableSql
   | DropTableSql
   | AlterTableSql
+  | PostgresAlterTableSql
   | CreateTableSql
   | CreateSchemaSql
   | DropIndexSql

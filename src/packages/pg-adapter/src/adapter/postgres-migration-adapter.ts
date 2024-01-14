@@ -29,9 +29,10 @@ import { addTableForeignKeyAction } from '@daita/orm';
 import { dropTablePrimaryKeyAction } from '@daita/orm';
 import { parseConnectionString } from '../postgres.util';
 import { Pool, PoolClient, types } from 'pg';
-import { exec, execRaw, PostgresTransactionAdapter } from './postgres-transaction-adapter';
+import { exec, execRaw, mapError, parseError, PostgresTransactionAdapter } from './postgres-transaction-adapter';
 import { postgresFormatter } from '../formatters';
 import { isPostgresError } from './postgres-error';
+import { updateTableFieldRequiredAction } from './actions/update-table-field-required';
 
 export interface PostgresNotificationSubscriber {
   (msg: string | undefined): void;
@@ -168,6 +169,8 @@ export class PostgresMigrationAdapter
         result.push(updateSeedAction(step));
       } else if (step.kind === 'delete_seed') {
         result.push(deleteSeedAction(step));
+      } else if(step.kind === 'update_table_field_required') {
+        result.push(updateTableFieldRequiredAction(step))
       } else {
         failNever(step, 'unknown migration step');
       }
@@ -305,11 +308,9 @@ export class PostgresMigrationAdapter
       await adapter.run();
       await client.query('COMMIT');
     } catch (e) {
-      if (isPostgresError(e) && e.errno === -111) {
-        throw new ConnectionError('TODO', e); //TODO after connection string parsing
+      if (!(e instanceof ConnectionError)) {
+        await client.query('ROLLBACK');
       }
-
-      await client.query('ROLLBACK');
       throw e;
     } finally {
       client?.release();

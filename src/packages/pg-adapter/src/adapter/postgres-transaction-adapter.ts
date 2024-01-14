@@ -27,20 +27,27 @@ export async function mapError(
     if (e.code === '23505') {
       throw new DuplicateKeyError(e, sql, values, e.schema, e.table, e.constraint);
     }
-    if (
-      e.errno === -61 ||
-      e.errno === -111 ||
-      e.message === 'Client has encountered a connection error and is not queryable'
-    ) {
-      throw new ConnectionError('TODO', e); // TODO change after db connection string parse rewrite
-    }
     if (e.code === '42P01') {
       const regex = /.+"(?<schema>.*?)\.?(?<relation>.*?)" does not exist/g;
       const groups = regex.exec(e.message)?.groups || {};
       throw new RelationDoesNotExistsError(e, sql, values, groups.schema, groups.relation);
     }
-    throw new UnknownError(e, sql, values);
+
+    throw parseError(e)
   }
+}
+
+export function parseError(e: any) {
+  if (
+    e.code === 'ECONNREFUSED' ||
+    e.errno === -61 ||
+    e.errno === -54 ||
+    e.errno === -111 ||
+    e.message === 'Client has encountered a connection error and is not queryable'
+  ) {
+    return new ConnectionError('TODO', e); // TODO change after db connection string parse rewrite
+  }
+  return new UnknownError(e);
 }
 
 export async function exec(logger: Logger, client: PoolClient | Client | Pool, sql: any) {

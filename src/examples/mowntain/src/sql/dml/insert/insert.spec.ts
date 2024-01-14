@@ -69,7 +69,10 @@ describe('insert', () => {
         elevation: 20,
         prominence: 30,
         extra: json({
-          foo: 'bar',
+          value: 10,
+          bool: true,
+          date: new Date(),
+          text: 'bar',
         }),
         cantonShortname: 'BE',
         name: 'Hörnli',

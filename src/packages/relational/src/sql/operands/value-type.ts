@@ -1,4 +1,6 @@
-export type ValueType = number | string | boolean | Date | undefined | null;
+import { Json } from '../../types/json/json';
+
+export type ValueType = number | string | boolean | Date | Json<any> | undefined | null;
 
 export const isValueType = (val: any): val is ValueType =>
   typeof val === 'number' ||

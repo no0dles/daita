@@ -17,3 +17,4 @@ export * from './drop-view';
 export * from './insert-seed';
 export * from './update-seed';
 export * from './get-where-from-keys';
+export * from './update-table-field-required';

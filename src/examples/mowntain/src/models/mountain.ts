@@ -10,7 +10,7 @@ export class Mountain {
   elevation!: number;
   prominence!: number;
   ascents?: number;
-  extra?: Json;
+  extra?: Json<{ bool: boolean; text: string; value: number; date: Date }>;
   // coordinates!: {
   //   lat: number;
   //   lon: number;

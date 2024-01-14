@@ -103,7 +103,7 @@ export function setupEnv(
       notExists(dir: string, file?: RegExp): Promise<void> {
         return exists(dir, file).then((exists) => {
           if (exists) {
-            expect('').toBe(`could find matching file for ${file}`);
+            expect('').toBe(`could find matching file for ${file}, should not exists`);
           }
         });
       },
