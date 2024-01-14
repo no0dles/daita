@@ -1,4 +1,4 @@
-FROM node:16-alpine as base
+FROM node:20 as base
 
 WORKDIR /build
 COPY package.json .
@@ -6,7 +6,7 @@ COPY package-lock.json .
 RUN npm ci
 
 ###################################
-FROM node:16-alpine as runetime-modules
+FROM node:20 as runetime-modules
 
 WORKDIR /build
 COPY package.json .
@@ -18,7 +18,7 @@ COPY src/tooling/ src/tooling
 RUN node_modules/.bin/lerna bootstrap -- --production
 
 ###################################
-FROM node:16-alpine as build
+FROM node:20 as build
 
 WORKDIR /build
 COPY package.json .
@@ -43,7 +43,7 @@ ENV NODE_ENV production
 RUN npx ng build --prod --base-href /admin/ auth
 
 ###################################
-FROM alpine:3.12 as runtime
+FROM alpine:3.19 as runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
