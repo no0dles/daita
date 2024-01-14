@@ -29,7 +29,7 @@ import { addTableForeignKeyAction } from '@daita/orm';
 import { dropTablePrimaryKeyAction } from '@daita/orm';
 import { parseConnectionString } from '../postgres.util';
 import { Pool, PoolClient, types } from 'pg';
-import { exec, execRaw, PostgresTransactionAdapter } from './postgres-transaction-adapter';
+import { exec, execRaw, mapError, parseError, PostgresTransactionAdapter } from './postgres-transaction-adapter';
 import { postgresFormatter } from '../formatters';
 import { isPostgresError } from './postgres-error';
 import { updateTableFieldRequiredAction } from './actions/update-table-field-required';
@@ -308,12 +308,7 @@ export class PostgresMigrationAdapter
       await adapter.run();
       await client.query('COMMIT');
     } catch (e) {
-      if (isPostgresError(e) && (e.errno === -111 || e.errno === -54)) {
-        throw new ConnectionError('TODO', e); //TODO after connection string parsing
-      }
-
       await client.query('ROLLBACK');
-      throw e;
     } finally {
       client?.release();
     }
