@@ -13,7 +13,7 @@ describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
       try {
         await testConnection(adapter);
       } catch (e) {
-        expect(e).toEqual('[Error: unable to connect to database TODO]');
+        expect(`${e}`).toEqual('[Error: unable to connect to database TODO]');
         expect(e).toBeInstanceOf(ConnectionError);
       }
       await db.start();
@@ -33,7 +33,7 @@ describe('pg-adapter/adapter/postgres-adapter/reconnect', () => {
       try {
         await testConnection(adapter);
       } catch (e) {
-        expect(e).toEqual('[Error: unable to connect to database TODO]');
+        expect(`${e}`).toEqual('[Error: unable to connect to database TODO]');
         expect(e).toBeInstanceOf(ConnectionError);
       }
       await db.start();

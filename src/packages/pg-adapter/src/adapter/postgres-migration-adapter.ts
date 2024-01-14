@@ -308,7 +308,10 @@ export class PostgresMigrationAdapter
       await adapter.run();
       await client.query('COMMIT');
     } catch (e) {
-      await client.query('ROLLBACK');
+      if (!(e instanceof ConnectionError)) {
+        await client.query('ROLLBACK');
+      }
+      throw e;
     } finally {
       client?.release();
     }
